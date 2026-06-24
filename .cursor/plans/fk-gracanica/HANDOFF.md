@@ -9,7 +9,7 @@
 | Polje | Vrijednost |
 |-------|------------|
 | **Branch** | `main` |
-| **Zadnji commit** | `f5c4b15` — production roadmap P1–P8 |
+| **Zadnji commit** | `48b119c` — production roadmap P1–P8 |
 | **Aktivna faza** | Post-roadmap — hardening & QA |
 | **Plan folder** | `.cursor/plans/fk-gracanica/` (`13_`…`20_phase-*.md`) |
 
