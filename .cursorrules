@@ -1,0 +1,21 @@
+# STRICT ARCHITECTURE & CONTEXT BUDGET RULES
+
+## 1. FILE LENGTH & MODULARITY (HARD LIMITS)
+- MAXIMUM FILE LENGTH is 200 lines. Configuration, routing tables, and schemas can extend up to 400 lines max.
+- If a task causes a file to exceed 200 lines, you MUST stop immediately, trigger a refactor, and split the logic into isolated helper files or utility modules.
+- Prefer pure, predictable helper functions over bloated class components or monolithic modules.
+
+## 2. CONTEXT & TOKEN CONSERVATION (BUDGET RULES)
+- NEVER read, ingest, or modify an entire repository or full files if a bug can be isolated.
+- Before writing or modifying code, pinpoint the exact lines causing the issue.
+- When proposing fixes, output ONLY the targeted Git Diff or the specific code snippet that needs changing. Never rewrite unaffected lines or print boilerplate code.
+- Keep responses short, technical, and direct. Avoid conversational filler or long explanations of what the code does.
+
+## 3. STRICT TWO-PHASE WORKFLOW (PLAN THEN EXECUTE)
+- For every task or modification, you must follow this 2-step process:
+  1. PHASE 1 (PLANNING): State the specific file(s) and exact line numbers you need to target. Propose a minimal fix or modular addition. Wait for user confirmation.
+  2. PHASE 2 (EXECUTION): Once the plan is approved, execute the targeted fix using minimal tokens.
+
+## 4. CHAT HANDOFF TRIGGER
+- Monitor the current chat context length. If the conversation history becomes complex or exceeds 5-6 turns, you MUST append this notice to your response:
+  "⚠️ CONTEXT WARNING: This chat is getting long. Please request a HANDOFF SUMMARY to move to a fresh session and save your Pro budget."

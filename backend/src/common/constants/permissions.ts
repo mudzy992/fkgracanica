@@ -1,0 +1,38 @@
+export const PERMISSIONS = [
+  { key: 'users.read', description: 'Pregled korisnika' },
+  { key: 'users.create', description: 'Kreiranje korisnika' },
+  { key: 'users.update', description: 'Uređivanje korisnika' },
+  { key: 'users.delete', description: 'Brisanje korisnika' },
+  { key: 'rbac.read', description: 'Pregled rola i dozvola' },
+  { key: 'settings.read', description: 'Pregled postavki' },
+  { key: 'settings.update', description: 'Uređivanje postavki' },
+  { key: 'audit.read', description: 'Pregled audit loga' },
+  { key: 'cms.manage', description: 'Upravljanje CMS blokovima' },
+  { key: 'media.manage', description: 'Upravljanje medijima' },
+  { key: 'news.manage', description: 'Upravljanje vijestima' },
+  { key: 'news.approve', description: 'Odobravanje vijesti' },
+  { key: 'gallery.manage', description: 'Upravljanje galerijama' },
+  { key: 'gallery.approve', description: 'Odobravanje galerija' },
+  { key: 'sponsors.manage', description: 'Upravljanje sponzorima' },
+  { key: 'trophies.manage', description: 'Upravljanje trofejima' },
+  { key: 'club-timeline.manage', description: 'Upravljanje historijom kluba' },
+  { key: 'contact.read', description: 'Pregled kontakt poruka' },
+  { key: 'newsletter.read', description: 'Pregled newsletter pretplatnika' },
+  { key: 'clubs.manage', description: 'Upravljanje klubovima' },
+  { key: 'players.manage', description: 'Upravljanje igračima' },
+  { key: 'competitions.manage', description: 'Upravljanje takmičenjima' },
+  { key: 'matches.manage', description: 'Upravljanje utakmicama' },
+  { key: 'statistics.manage', description: 'Upravljanje statistikom' },
+  { key: 'live.manage', description: 'Vođenje live utakmice' },
+  { key: 'live.approve', description: 'Odobravanje live izvještaja' },
+  { key: 'membership.manage', description: 'Upravljanje članstvom' },
+  { key: 'ticketing.manage', description: 'Upravljanje ulaznicama' },
+  { key: 'hall-of-fame.manage', description: 'Upravljanje Hall of Fame' },
+  { key: 'museum.manage', description: 'Upravljanje muzejom' },
+  { key: 'analytics.read', description: 'Pregled analitike' },
+  { key: 'dashboard.read', description: 'Pregled dashboard KPI' },
+] as const;
+
+export type PermissionKey = (typeof PERMISSIONS)[number]['key'];
+
+export const ALL_PERMISSION_KEYS = PERMISSIONS.map((p) => p.key);

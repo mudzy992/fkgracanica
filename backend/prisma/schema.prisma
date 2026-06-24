@@ -1,0 +1,693 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+// ─── Auth & RBAC ─────────────────────────────────────────────
+
+model User {
+  id           String    @id @default(cuid())
+  email        String    @unique
+  passwordHash String
+  firstName    String?
+  lastName     String?
+  isActive     Boolean   @default(true)
+  deletedAt    DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  roles            UserRole[]
+  refreshTokens    RefreshToken[]
+  notifications    Notification[]
+  auditLogs        AuditLog[]        @relation("AuditActor")
+  news             News[]
+  comments         Comment[]
+  memberships      Membership[]
+  ticketOrders     TicketOrder[]
+  contactMessages  ContactMessage[]
+  matchEvents      MatchEvent[]      @relation("EventCreator")
+  liveComments     LiveComment[]
+
+  @@index([email])
+  @@index([deletedAt])
+}
+
+model Role {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  users       UserRole[]
+  permissions RolePermission[]
+}
+
+model Permission {
+  id          String   @id @default(cuid())
+  key         String   @unique
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  roles RolePermission[]
+}
+
+model UserRole {
+  userId String
+  roleId String
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role   Role @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  @@id([userId, roleId])
+}
+
+model RolePermission {
+  roleId       String
+  permissionId String
+  role         Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@id([roleId, permissionId])
+}
+
+model RefreshToken {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  userId    String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+// ─── Settings ────────────────────────────────────────────────
+
+enum SettingScope {
+  PUBLIC
+  PRIVATE
+}
+
+enum SettingType {
+  STRING
+  NUMBER
+  BOOLEAN
+  JSON
+}
+
+model Setting {
+  id          String       @id @default(cuid())
+  key         String       @unique
+  value       String       @db.Text
+  type        SettingType  @default(STRING)
+  scope       SettingScope @default(PUBLIC)
+  description String?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  @@index([scope])
+}
+
+// ─── Notifications & Audit ───────────────────────────────────
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  title     String
+  body      String   @db.Text
+  isRead    Boolean  @default(false)
+  type      String   @default("info")
+  metadata  Json?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, isRead])
+}
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  actorId    String?
+  action     String
+  entity     String?
+  entityId   String?
+  metadata   Json?
+  ipAddress  String?
+  createdAt  DateTime @default(now())
+  actor      User?    @relation("AuditActor", fields: [actorId], references: [id], onDelete: SetNull)
+
+  @@index([actorId])
+  @@index([entity, entityId])
+  @@index([createdAt])
+}
+
+// ─── Media ───────────────────────────────────────────────────
+
+model MediaFolder {
+  id        String   @id @default(cuid())
+  name      String
+  parentId  String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  parent    MediaFolder?  @relation("FolderTree", fields: [parentId], references: [id])
+  children  MediaFolder[] @relation("FolderTree")
+  assets    MediaAsset[]
+
+  @@index([parentId])
+}
+
+model MediaAsset {
+  id           String   @id @default(cuid())
+  filename     String
+  originalPath String
+  thumbPath    String?
+  mediumPath   String?
+  mimeType     String
+  size         Int
+  folderId     String?
+  tags         String?  @db.Text
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  folder       MediaFolder? @relation(fields: [folderId], references: [id], onDelete: SetNull)
+
+  @@index([folderId])
+}
+
+// ─── CMS ─────────────────────────────────────────────────────
+
+enum ContentStatus {
+  DRAFT
+  PENDING
+  PUBLISHED
+  ARCHIVED
+}
+
+model CmsBlock {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  title     String
+  content   Json
+  page      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// ─── News & Comments ─────────────────────────────────────────
+
+model NewsCategory {
+  id        String   @id @default(cuid())
+  name      String
+  slug      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  news      News[]
+}
+
+model News {
+  id          String        @id @default(cuid())
+  title       String
+  slug        String        @unique
+  excerpt     String?       @db.Text
+  content     String        @db.LongText
+  coverPath   String?
+  status      ContentStatus @default(DRAFT)
+  seoTitle    String?
+  seoDesc     String?
+  authorId    String?
+  categoryId  String?
+  publishedAt DateTime?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  author      User?         @relation(fields: [authorId], references: [id], onDelete: SetNull)
+  category    NewsCategory? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  comments    Comment[]
+  tags        NewsTag[]
+
+  @@index([status])
+  @@index([publishedAt])
+}
+
+model NewsTag {
+  id     String @id @default(cuid())
+  name   String
+  newsId String
+  news   News   @relation(fields: [newsId], references: [id], onDelete: Cascade)
+
+  @@index([newsId])
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  content   String   @db.Text
+  newsId    String
+  userId    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  news      News     @relation(fields: [newsId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([newsId])
+}
+
+// ─── Gallery ─────────────────────────────────────────────────
+
+model Gallery {
+  id          String        @id @default(cuid())
+  title       String
+  slug        String        @unique
+  description String?       @db.Text
+  status      ContentStatus @default(DRAFT)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  photos      GalleryPhoto[]
+}
+
+model GalleryPhoto {
+  id         String   @id @default(cuid())
+  galleryId  String
+  path       String
+  caption    String?
+  sortOrder  Int      @default(0)
+  exifData   Json?
+  createdAt  DateTime @default(now())
+  gallery    Gallery  @relation(fields: [galleryId], references: [id], onDelete: Cascade)
+
+  @@index([galleryId])
+}
+
+// ─── Sponsors & Trophies ─────────────────────────────────────
+
+enum SponsorTier {
+  GENERAL
+  GOLD
+  SILVER
+  BRONZE
+  PARTNER
+}
+
+model Sponsor {
+  id        String      @id @default(cuid())
+  name      String
+  logoPath  String?
+  url       String?
+  tier      SponsorTier @default(PARTNER)
+  sortOrder Int         @default(0)
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+}
+
+model Trophy {
+  id          String   @id @default(cuid())
+  name        String
+  year        Int
+  description String?  @db.Text
+  imagePath   String?
+  competition String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// ─── Club History ────────────────────────────────────────────
+
+model ClubTimelineEvent {
+  id          String   @id @default(cuid())
+  year        Int
+  title       String
+  description String?  @db.Text
+  imagePath   String?
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([year])
+}
+
+model HallOfFameEntry {
+  id          String   @id @default(cuid())
+  name        String
+  role        String
+  bio         String?  @db.LongText
+  imagePath   String?
+  achievements Json?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model MuseumItem {
+  id          String   @id @default(cuid())
+  title       String
+  year        Int?
+  category    String
+  description String?  @db.Text
+  imagePath   String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([year])
+  @@index([category])
+}
+
+// ─── Competition ─────────────────────────────────────────────
+
+model Club {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique
+  crestPath   String?
+  stadium     String?
+  city        String?
+  description String?  @db.Text
+  isOwnClub   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  homeMatches Match[]  @relation("HomeClub")
+  awayMatches Match[]  @relation("AwayClub")
+  players     Player[]
+}
+
+model Competition {
+  id        String   @id @default(cuid())
+  name      String
+  slug      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  seasons   Season[]
+}
+
+model Season {
+  id            String      @id @default(cuid())
+  name          String
+  yearStart     Int
+  yearEnd       Int
+  isActive      Boolean     @default(false)
+  competitionId String
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  competition   Competition @relation(fields: [competitionId], references: [id], onDelete: Cascade)
+  matches       Match[]
+
+  @@index([competitionId])
+}
+
+enum PlayerPosition {
+  GK
+  DEF
+  MID
+  FWD
+}
+
+model Player {
+  id            String         @id @default(cuid())
+  firstName     String
+  lastName      String
+  number        Int?
+  position      PlayerPosition?
+  dateOfBirth   DateTime?
+  nationality   String?
+  height        Int?
+  weight        Int?
+  preferredFoot String?
+  bio           String?        @db.Text
+  photoPath     String?
+  clubId        String?
+  isActive      Boolean        @default(true)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  club          Club?          @relation(fields: [clubId], references: [id], onDelete: SetNull)
+  statistics    PlayerStatistics[]
+  matchEvents   MatchEvent[]
+  lineupSlots   MatchLineup[]
+
+  @@index([clubId])
+}
+
+model Team {
+  id          String   @id @default(cuid())
+  name        String
+  seasonId    String?
+  formation   String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+enum MatchStatus {
+  SCHEDULED
+  LIVE
+  HALFTIME
+  FINISHED
+  POSTPONED
+  CANCELLED
+}
+
+enum MatchReportStatus {
+  DRAFT
+  PENDING_APPROVAL
+  APPROVED
+}
+
+model Match {
+  id              String            @id @default(cuid())
+  seasonId        String
+  homeClubId      String
+  awayClubId      String
+  homeScore       Int               @default(0)
+  awayScore       Int               @default(0)
+  round           Int?
+  scheduledAt     DateTime
+  venue           String?
+  status          MatchStatus       @default(SCHEDULED)
+  reportStatus    MatchReportStatus @default(DRAFT)
+  youtubeUrl      String?
+  minute          Int               @default(0)
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  season          Season            @relation(fields: [seasonId], references: [id], onDelete: Cascade)
+  homeClub        Club              @relation("HomeClub", fields: [homeClubId], references: [id])
+  awayClub        Club              @relation("AwayClub", fields: [awayClubId], references: [id])
+  events          MatchEvent[]
+  lineup          MatchLineup[]
+  liveComments    LiveComment[]
+  tickets         Ticket[]
+  teamStats       TeamStatistics[]
+
+  @@index([seasonId])
+  @@index([status])
+  @@index([scheduledAt])
+}
+
+enum MatchEventType {
+  KICKOFF
+  HALFTIME
+  SECOND_HALF
+  FULL_TIME
+  EXTRA_TIME
+  GOAL
+  OWN_GOAL
+  PENALTY_SCORED
+  PENALTY_MISSED
+  CORNER
+  OFFSIDE
+  FREE_KICK
+  FOUL
+  YELLOW_CARD
+  RED_CARD
+  SECOND_YELLOW
+  SUBSTITUTION
+  INJURY
+  VAR
+  SHOT
+  SHOT_ON_TARGET
+  SAVE
+  COMMENT
+}
+
+model MatchEvent {
+  id          String         @id @default(cuid())
+  matchId     String
+  type        MatchEventType
+  minute      Int
+  playerId    String?
+  teamSide    String?
+  description String?        @db.Text
+  createdById String?
+  createdAt   DateTime       @default(now())
+  match       Match          @relation(fields: [matchId], references: [id], onDelete: Cascade)
+  player      Player?        @relation(fields: [playerId], references: [id], onDelete: SetNull)
+  createdBy   User?          @relation("EventCreator", fields: [createdById], references: [id], onDelete: SetNull)
+
+  @@index([matchId])
+}
+
+model MatchLineup {
+  id        String @id @default(cuid())
+  matchId   String
+  playerId  String
+  positionX Float?
+  positionY Float?
+  isStarter Boolean @default(true)
+  match     Match  @relation(fields: [matchId], references: [id], onDelete: Cascade)
+  player    Player @relation(fields: [playerId], references: [id], onDelete: Cascade)
+
+  @@index([matchId])
+}
+
+model LiveComment {
+  id        String   @id @default(cuid())
+  matchId   String
+  userId    String?
+  message   String   @db.Text
+  minute    Int?
+  createdAt DateTime @default(now())
+  match     Match    @relation(fields: [matchId], references: [id], onDelete: Cascade)
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([matchId])
+}
+
+model PlayerStatistics {
+  id         String @id @default(cuid())
+  playerId   String
+  seasonId   String
+  appearances Int   @default(0)
+  goals      Int    @default(0)
+  assists    Int    @default(0)
+  yellowCards Int   @default(0)
+  redCards   Int    @default(0)
+  minutes    Int    @default(0)
+  player     Player @relation(fields: [playerId], references: [id], onDelete: Cascade)
+
+  @@unique([playerId, seasonId])
+}
+
+model TeamStatistics {
+  id       String @id @default(cuid())
+  matchId  String
+  clubId   String
+  shots    Int    @default(0)
+  shotsOn  Int    @default(0)
+  corners  Int    @default(0)
+  fouls    Int    @default(0)
+  possession Int? @default(0)
+  match    Match  @relation(fields: [matchId], references: [id], onDelete: Cascade)
+
+  @@index([matchId])
+}
+
+// ─── Membership & Ticketing ──────────────────────────────────
+
+enum MembershipStatus {
+  PENDING
+  ACTIVE
+  EXPIRED
+  CANCELLED
+}
+
+model Membership {
+  id        String           @id @default(cuid())
+  userId    String
+  status    MembershipStatus @default(PENDING)
+  startDate DateTime?
+  endDate   DateTime?
+  benefits  Json?
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  card      MembershipCard?
+
+  @@index([userId])
+  @@index([status])
+}
+
+model MembershipCard {
+  id           String     @id @default(cuid())
+  membershipId String     @unique
+  cardNumber   String     @unique
+  qrCode       String     @unique
+  issuedAt     DateTime   @default(now())
+  membership   Membership @relation(fields: [membershipId], references: [id], onDelete: Cascade)
+}
+
+enum TicketStatus {
+  RESERVED
+  PAID_AT_BOX_OFFICE
+  USED
+  CANCELLED
+  REFUND_REQUESTED
+}
+
+model Ticket {
+  id         String       @id @default(cuid())
+  matchId    String
+  category   String
+  price      Decimal      @db.Decimal(10, 2)
+  qrCode     String       @unique
+  status     TicketStatus @default(RESERVED)
+  orderId    String?
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+  match      Match        @relation(fields: [matchId], references: [id], onDelete: Cascade)
+  order      TicketOrder? @relation(fields: [orderId], references: [id], onDelete: SetNull)
+
+  @@index([matchId])
+  @@index([status])
+}
+
+model TicketOrder {
+  id        String   @id @default(cuid())
+  userId    String
+  total     Decimal  @db.Decimal(10, 2)
+  status    String   @default("pending")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tickets   Ticket[]
+  payment   Payment?
+
+  @@index([userId])
+}
+
+enum PaymentStatus {
+  PENDING_BOX_OFFICE
+  CONFIRMED
+  REFUNDED
+  CANCELLED
+}
+
+model Payment {
+  id        String        @id @default(cuid())
+  orderId   String        @unique
+  amount    Decimal       @db.Decimal(10, 2)
+  status    PaymentStatus @default(PENDING_BOX_OFFICE)
+  method    String        @default("box_office")
+  confirmedAt DateTime?
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+  order     TicketOrder   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+}
+
+// ─── Contact & Newsletter ──────────────────────────────────────
+
+model ContactMessage {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  subject   String?
+  message   String   @db.Text
+  userId    String?
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([isRead])
+}
+
+model NewsletterSubscriber {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+}
