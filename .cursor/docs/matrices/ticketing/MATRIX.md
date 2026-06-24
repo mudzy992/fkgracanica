@@ -22,6 +22,7 @@ RESERVED → PAID_AT_BOX_OFFICE → USED
 
 - Order created with `Payment.status: PENDING_BOX_OFFICE`
 - Admin confirms → `CONFIRMED`, tickets → `PAID_AT_BOX_OFFICE`
+- Validate at gate → ticket → `USED` (rejects `RESERVED`, `USED`, `CANCELLED`)
 
 ## Changelog
 

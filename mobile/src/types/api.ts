@@ -42,6 +42,14 @@ export type Match = {
   minute: number;
   homeClub: Club;
   awayClub: Club;
+  events?: MatchEvent[];
+};
+
+export type MatchEvent = {
+  id: string;
+  type: string;
+  minute: number;
+  description?: string | null;
 };
 
 export type Notification = {

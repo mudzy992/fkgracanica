@@ -48,7 +48,18 @@ export class TicketingService {
     if (ticket.status === TicketStatus.CANCELLED) {
       throw new BadRequestException('Ulaznica je otkazana');
     }
-    return ticket;
+    if (ticket.status === TicketStatus.RESERVED) {
+      throw new BadRequestException('Ulaznica nije plaćena');
+    }
+    if (ticket.status !== TicketStatus.PAID_AT_BOX_OFFICE) {
+      throw new BadRequestException('Ulaznica nije validna');
+    }
+
+    return this.prisma.ticket.update({
+      where: { id: ticket.id },
+      data: { status: TicketStatus.USED },
+      include: { match: { include: { homeClub: true, awayClub: true } } },
+    });
   }
 
   async confirmBoxOfficePayment(orderId: string) {
