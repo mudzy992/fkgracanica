@@ -5,13 +5,17 @@ import { Skeleton } from '../ui/skeleton';
 interface AdminListPageProps {
   title: string;
   isLoading?: boolean;
+  actions?: ReactNode;
   children: ReactNode;
 }
 
-export function AdminPageShell({ title, isLoading, children }: AdminListPageProps) {
+export function AdminPageShell({ title, isLoading, actions, children }: AdminListPageProps) {
   return (
     <div>
-      <h1 className="mb-6 text-2xl font-bold text-text">{title}</h1>
+      <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+        <h1 className="text-2xl font-bold text-text">{title}</h1>
+        {actions}
+      </div>
       {isLoading ? (
         <div className="space-y-3">
           {Array.from({ length: 5 }).map((_, i) => (

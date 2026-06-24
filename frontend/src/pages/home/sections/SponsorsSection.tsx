@@ -23,13 +23,13 @@ export function SponsorsSection() {
           : items.map((s) => (
               <a
                 key={s.id}
-                href={s.websiteUrl ?? '#'}
+                href={s.url ?? '#'}
                 target="_blank"
                 rel="noreferrer"
                 className="flex items-center justify-center rounded-lg border border-slate-200 bg-background p-4"
               >
                 {s.logoPath ? (
-                  <img src={mediaUrl(s.logoPath)} alt={s.name} className="max-h-12 object-contain" />
+                  <img src={mediaUrl(s.logoPath, 'thumb')} alt={s.name} className="max-h-12 object-contain" />
                 ) : (
                   <span className="text-sm font-medium text-text-muted">{s.name}</span>
                 )}

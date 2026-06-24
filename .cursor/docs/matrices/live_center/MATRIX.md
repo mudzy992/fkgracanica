@@ -11,10 +11,13 @@
 
 ## Socket events
 
+- `match:join` / `match:leave` — client room subscription
 - `match:score` — homeScore, awayScore, minute
 - `match:event` — new MatchEvent
 - `match:comment` — LiveComment
 - `match:status` — status change
+
+Public clients: connect without JWT, emit `match:join`. Komentator: JWT + REST `POST /live/matches/:id/events`.
 
 ## Komentator actions
 

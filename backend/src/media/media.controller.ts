@@ -7,9 +7,13 @@ import {
   Patch,
   Post,
   Query,
+  UploadedFile,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { memoryStorage } from 'multer';
+import { ApiBearerAuth, ApiConsumes, ApiTags } from '@nestjs/swagger';
 import { MediaService } from './media.service';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { PermissionsGuard } from '../common/guards/permissions.guard';
@@ -46,6 +50,13 @@ export class MediaController {
   @Get('assets')
   findAssets(@Query('folderId') folderId?: string) {
     return this.mediaService.findAssets(folderId);
+  }
+
+  @Post('upload')
+  @ApiConsumes('multipart/form-data')
+  @UseInterceptors(FileInterceptor('file', { storage: memoryStorage() }))
+  upload(@UploadedFile() file: Express.Multer.File, @Body('folderId') folderId?: string) {
+    return this.mediaService.uploadAsset(file, folderId || undefined);
   }
 
   @Post('assets')

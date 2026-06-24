@@ -3,6 +3,9 @@ import {
   WebSocketServer,
   OnGatewayConnection,
   OnGatewayDisconnect,
+  SubscribeMessage,
+  ConnectedSocket,
+  MessageBody,
 } from '@nestjs/websockets';
 import { Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
@@ -30,14 +33,17 @@ export class RealtimeGateway
   ) {}
 
   async handleConnection(client: Socket) {
+    const token =
+      (client.handshake.auth?.token as string) ||
+      (client.handshake.headers.authorization?.replace('Bearer ', '') ?? '');
+
+    if (!token) {
+      client.data.public = true;
+      this.logger.debug('Public client connected');
+      return;
+    }
+
     try {
-      const token =
-        (client.handshake.auth?.token as string) ||
-        (client.handshake.headers.authorization?.replace('Bearer ', '') ?? '');
-      if (!token) {
-        client.disconnect();
-        return;
-      }
       const payload = await this.jwt.verifyAsync<{ sub: string }>(token, {
         secret: this.config.getOrThrow<string>('JWT_ACCESS_SECRET'),
       });
@@ -57,7 +63,26 @@ export class RealtimeGateway
   }
 
   handleDisconnect(client: Socket) {
-    this.logger.debug(`Client disconnected: ${client.data.userId ?? 'anon'}`);
+    this.logger.debug(`Client disconnected: ${client.data.userId ?? 'public'}`);
+  }
+
+  @SubscribeMessage('match:join')
+  handleMatchJoin(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() body: { matchId?: string },
+  ) {
+    if (!body?.matchId) return { ok: false };
+    client.join(`match:${body.matchId}`);
+    return { ok: true, matchId: body.matchId };
+  }
+
+  @SubscribeMessage('match:leave')
+  handleMatchLeave(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() body: { matchId?: string },
+  ) {
+    if (body?.matchId) client.leave(`match:${body.matchId}`);
+    return { ok: true };
   }
 
   emitSettingsChanged(scope: string, settings: Record<string, string>) {
@@ -76,7 +101,10 @@ export class RealtimeGateway
     this.server.to(`match:${matchId}`).emit('match:status', status);
   }
 
-  joinMatchRoom(client: Socket, matchId: string) {
-    client.join(`match:${matchId}`);
+  emitMatchScore(
+    matchId: string,
+    score: { homeScore: number; awayScore: number; minute: number },
+  ) {
+    this.server.to(`match:${matchId}`).emit('match:score', score);
   }
 }

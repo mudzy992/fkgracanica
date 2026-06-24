@@ -41,9 +41,25 @@ export interface Sponsor {
   id: string;
   name: string;
   logoPath?: string | null;
-  websiteUrl?: string | null;
+  url?: string | null;
   tier: string;
   sortOrder: number;
+}
+
+export interface CmsBlock {
+  id: string;
+  key: string;
+  title: string;
+  content: Record<string, unknown>;
+  page?: string | null;
+}
+
+export interface HomeHeroContent {
+  foundedYear?: string;
+  title?: string;
+  subtitle?: string;
+  primaryCtaPath?: string;
+  secondaryCtaPath?: string;
 }
 
 export interface Trophy {

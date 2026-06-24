@@ -3,6 +3,7 @@ import { MatchEventType, MatchReportStatus, MatchStatus } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { RealtimeGateway } from '../realtime/realtime.gateway';
 import { StatisticsService } from '../statistics/statistics.service';
+import { applyScore, isScoringEvent } from './live-score.util';
 
 @Injectable()
 export class LiveService {
@@ -21,6 +22,22 @@ export class LiveService {
     createdById?: string;
   }) {
     const event = await this.prisma.matchEvent.create({ data: { ...data, matchId } });
+
+    if (isScoringEvent(data.type)) {
+      const current = await this.prisma.match.findUniqueOrThrow({ where: { id: matchId } });
+      const scores = applyScore(current.homeScore, current.awayScore, data.type, data.teamSide);
+      const match = await this.prisma.match.update({
+        where: { id: matchId },
+        data: { ...scores, minute: data.minute },
+      });
+      this.realtime.emitMatchScore(matchId, {
+        homeScore: match.homeScore,
+        awayScore: match.awayScore,
+        minute: match.minute,
+      });
+      this.realtime.emitMatchStatus(matchId, match);
+    }
+
     this.realtime.emitMatchEvent(matchId, event);
     return event;
   }

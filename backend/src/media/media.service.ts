@@ -1,9 +1,16 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { PrismaService } from '../prisma/prisma.service';
+import { UploadService } from '../upload/upload.service';
+import { deleteStoredFiles } from './media-storage.util';
 
 @Injectable()
 export class MediaService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly config: ConfigService,
+    private readonly uploadService: UploadService,
+  ) {}
 
   findFolders() {
     return this.prisma.mediaFolder.findMany({
@@ -32,6 +39,19 @@ export class MediaService {
     });
   }
 
+  async uploadAsset(file: Express.Multer.File, folderId?: string) {
+    const saved = await this.uploadService.saveFile(file);
+    return this.createAsset({
+      filename: saved.originalName,
+      originalPath: saved.path,
+      thumbPath: saved.thumbPath ?? undefined,
+      mediumPath: saved.mediumPath ?? undefined,
+      mimeType: saved.mimeType,
+      size: saved.size,
+      folderId,
+    });
+  }
+
   createAsset(data: {
     filename: string;
     originalPath: string;
@@ -51,12 +71,15 @@ export class MediaService {
   }
 
   async removeAsset(id: string) {
-    await this.ensureAsset(id);
+    const asset = await this.ensureAsset(id);
+    const uploadRoot = this.config.get<string>('UPLOAD_PATH', './uploads');
+    await deleteStoredFiles(uploadRoot, [asset.originalPath, asset.thumbPath, asset.mediumPath]);
     return this.prisma.mediaAsset.delete({ where: { id } });
   }
 
   private async ensureAsset(id: string) {
     const asset = await this.prisma.mediaAsset.findUnique({ where: { id } });
     if (!asset) throw new NotFoundException('Asset nije pronađen');
+    return asset;
   }
 }

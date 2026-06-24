@@ -11,6 +11,7 @@ import { Input } from '../../components/ui/input';
 import { Switch } from '../../components/ui/switch';
 import { Skeleton } from '../../components/ui/skeleton';
 import { cn } from '../../lib/utils';
+import { settingLabel } from '../../lib/settings-labels';
 
 export function SettingsPage() {
   const [tab, setTab] = useState<'public' | 'private'>('public');
@@ -59,7 +60,7 @@ export function SettingsPage() {
         <div className="max-w-xl space-y-4">
           {Object.entries(values ?? {}).map(([key, value]) => (
             <div key={key} className="flex flex-col gap-2">
-              <label className="text-sm font-medium text-text">{key}</label>
+              <label className="text-sm font-medium text-text">{settingLabel(key)}</label>
               {value === 'true' || value === 'false' ? (
                 <Switch
                   checked={(draft[key] ?? value) === 'true'}

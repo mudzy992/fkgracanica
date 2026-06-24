@@ -216,6 +216,11 @@ export function useCmsBlocks() {
   });
 }
 
+export function useCmsBlock(key: string) {
+  const { data, ...rest } = useCmsBlocks();
+  return { data: data?.find((b: { key: string }) => b.key === key), ...rest };
+}
+
 export function useMediaAssets() {
   return useQuery({
     queryKey: ['media', 'assets'],
@@ -267,3 +272,7 @@ export function useUpdatePrivateSettings() {
     onSuccess: () => void qc.invalidateQueries({ queryKey: ['settings', 'private'] }),
   });
 }
+
+export * from './use-news-admin';
+export * from './use-media-admin';
+export * from './use-live-admin';

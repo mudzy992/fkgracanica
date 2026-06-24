@@ -1,7 +1,7 @@
 # HANDOFF — FK Gračanica
 
-> Predložak za buduće sesije: [HANDOFF_TEMPLATE.md](./HANDOFF_TEMPLATE.md)  
-> Ažurirano: **2026-06-24**
+> Predložak: [HANDOFF_TEMPLATE.md](./HANDOFF_TEMPLATE.md)  
+> Ažurirano: **2026-06-24** (kraj sesije — koraci 1–4 gotovi)
 
 ---
 
@@ -9,17 +9,17 @@
 
 | Polje | Vrijednost |
 |-------|------------|
-| **Branch** | `main` |
-| **Zadnji commit** | `6c0ccaf` — sync backend package-lock za Docker build |
+| **Branch** | `main` (lokalno **nije commitano** — vidi §9) |
+| **Zadnji commit** | `8a012b9` — handoff template |
 | **Repo** | https://github.com/mudzy992/fkgracanica (private) |
-| **Aktivna faza** | **Post-scaffold** — infrastruktura + API/UI skeleton gotovi; sadržaj i hardening sljedeći |
+| **Aktivna faza** | **Post-scaffold** — koraci 1–4 gotovi; sljedeći **§7 korak 5 (sigurnost)** |
 | **Plan folder** | `.cursor/plans/fk-gracanica/` |
 
 ---
 
 ## 2. Status u jednoj rečenici
 
-Monorepo (backend + frontend + mobile), Prisma 7 migracije/seed, Docker/Traefik deploy i svi moduli su **scaffoldani i pokrenuti u produkciji**; sljedeće je **popuna pravim sadržajem, testiranje tokova i prod hardening** (upload renditions, E2E, uklanjanje `.env` iz gita).
+Produkcija radi sa **demo sadržajem**, **admin news/objava**, **upload renditions (sharp)** i **live centrom (socket + komentator UI)**; sljedeće je **sigurnost**, **dodatni testovi** i **mobile parity**.
 
 ---
 
@@ -31,135 +31,114 @@ Monorepo (backend + frontend + mobile), Prisma 7 migracije/seed, Docker/Traefik 
 | **API** | https://fkgracanica.ba101.top/backend/api/v1 |
 | **Swagger** | https://fkgracanica.ba101.top/backend/api/docs |
 | **Health** | https://fkgracanica.ba101.top/backend/api/v1/health |
-| **Traefik** | mreža `web`, TLS `le`, backend StripPrefix `/backend` |
-| **App mreža** | `fkgracanica-network` (backend + redis) |
-| **Upload host** | `/mnt/shared-app-files/fkgracanica` → kontejner `/app/uploads` |
+| **Socket** | `wss://…/backend/realtime`, path klijenta `/backend/socket.io` |
+| **Upload host** | `/mnt/shared-app-files/fkgracanica` → `/app/uploads` |
 
-**Docker (zadnje poznato stanje):** `fkgracanica-backend`, `fkgracanica-frontend`, `fkgracanica-redis` — svi **healthy**.
+**Docker:** `fkgracanica-backend`, `fkgracanica-frontend`, `fkgracanica-redis` — **healthy** (zadnji deploy ove sesije).
 
 ```bash
 cd /home/administrator/Documents/GitHub/fkgracanica
-docker compose ps
-./scripts/docker-prod-build.sh   # rebuild
+./scripts/sync-docker-locks.sh      # OBAVEZNO prije builda ako je dodan npm paket
+./scripts/docker-prod-build.sh
 docker compose up -d
+docker compose ps
 ```
+
+**Docker lock pravilo:** `backend/` i `frontend/` imaju **svoj** `package-lock.json` za `npm ci` u Dockerfileu. Root workspace lock nije dovoljan. Skripta: `scripts/sync-docker-locks.sh`.
 
 ---
 
 ## 4. Env
 
-- **Lokacija:** root [`.env`](../../../.env) (compose `env_file`)
-- **`.env` je trenutno u gitu** — korisnik će ručno dodati u `.gitignore` kad prebaci secreta
-- **Kritične varijable:** `DATABASE_URL`, `JWT_ACCESS_SECRET`, `JWT_REFRESH_SECRET`, `REDIS_URL`, `UPLOAD_PATH`, `CORS_ORIGINS`, `API_PUBLIC_URL`, `SOCKET_IO_PATH`, `VITE_API_URL`, `ADMIN_EMAIL`, `ADMIN_PASSWORD`
-- **MySQL:** host `sql.ba101.top`, baza `fkgracanica` (dev kredencijali u `.env`)
-- **Redis u Dockeru:** `redis://redis:6379`
+- **Lokacija:** root `.env` (compose `env_file`)
+- **`.env` je u gitu** — korak 5: `.gitignore` + rotacija secreta
+- **Kritično:** `DATABASE_URL`, `JWT_*`, `REDIS_URL`, `UPLOAD_PATH`, `CORS_ORIGINS`, `API_PUBLIC_URL`, `VITE_API_URL`, `ADMIN_EMAIL`, `ADMIN_PASSWORD`
+- **`SOCKET_IO_PATH`:** u **kontejneru** mora biti `/socket.io` (`docker-compose.yml` override). Klijent (frontend) na produkciji automatski koristi `/backend/socket.io`. Ako lokalni dev backend ne radi socket — postavi `SOCKET_IO_PATH=/socket.io` u root `.env`.
 
 ---
 
 ## 5. Pokretanje
 
-### Produkcija (preporučeno na serveru)
-
 ```bash
-sudo ./scripts/setup-upload-dir.sh   # jednom, ako /mnt/shared-app-files/fkgracanica ne postoji
-./scripts/docker-prod-build.sh
-docker compose up -d
-```
-
-### Lokalni dev
-
-```bash
+# Lokalni dev
 npm run dev:backend    # :3000
-npm run dev:frontend     # :5173 (Vite čita .env iz roota)
-npm run dev:mobile       # Expo
-npm run db:migrate       # prisma migrate dev
-npm run db:seed          # role + admin + settings
+npm run dev:frontend   # :5173
+npm run db:seed        # RBAC + admin + demo sadržaj
+
+# Testovi (backend)
+cd backend && npm run test:e2e   # admin-smoke, live-center, upload-renditions, health
 ```
 
-**Admin login (seed):** `admin@fkgracanica.ba` / `Admin123!` — promijeniti u produkciji.
+**Admin:** `admin@fkgracanica.ba` / iz `ADMIN_PASSWORD` u `.env`
 
 ---
 
 ## 6. Šta radi / šta ne radi
 
-### Radi
-- NestJS API (33 modula), JWT + RBAC, Settings registry, notifikacije, audit
-- Javni portal + admin UI (rute i CRUD ekrani)
-- Expo mobile scaffold (login, vijesti, live stub, članstvo, ulaznice)
-- Prisma 7 + MariaDB adapter, migracija `20260624104219_init`, seed
-- Docker build (`npm ci` u backendu — lock fiksiran u `6c0ccaf`)
-- Traefik rutiranje, health + Swagger preko HTTPS
+### Radi (E2E ove sesije)
+- **Seed:** klub, sezona, 3 vijesti, CMS `home.hero`, sponzori, 2 utakmice (`backend/prisma/seed/`)
+- **Hero** čita CMS; naslovna prikazuje vijesti/utakmice/sponzore
+- **Admin vijesti:** kreiranje nacrta → objava (`NewsAdminPage`)
+- **Upload:** `sharp` → `originals/`, `thumbs/`, `medium/`; `POST /media/upload`; MediaPage
+- **Live:** komentator start/gol/završi → socket `match:join|event|score|status` → `/live/:id` live
+- **E2E:** `admin-smoke`, `upload-renditions`, `live-center`, `health`
 
-### Stubovi / tehnički dug
-- **Upload:** samo `originals/`; nema sharp renditions (`thumb`/`medium`)
-- **Plaćanje:** nema gatewaya — box office + admin potvrda (F6 defer)
-- **Live socket:** gateway postoji; frontend/mobile treba punu integraciju i test uživo
-- **CHECKLIST** označava faze kao [x] na nivou **scaffolda** — nije end-to-end QA
-- **E2E testovi:** minimalni (auth unit); nema punog smoke suitea
-- **Upload dir na hostu:** `setup-upload-dir.sh` može trebati `sudo` ako folder ne postoji
-- **Prisma OpenSSL warning** u build stageu — radi, ali razmotriti `apt-get install openssl` u Dockerfile runneru ako zatreba
+### Još nije / dug
+- **Plaćanje** — defer (F6)
+- **Mobile live** — stub (`socketStub` i18n), nema socket integracije
+- **Trophy frontend** — `title` vs Prisma `name` (zabilježeno, nije fixano)
+- **LeagueTable / FeaturedPlayers / Gallery** — prazni bez ručnog unosa
+- **`.env` u gitu**, JWT/admin lozinka nisu rotirani
 
 ---
 
-## 7. Sljedeći koraci (prioritet za novu sesiju)
+## 7. Sljedeći koraci (nova sesija)
 
-1. **Sadržaj i demo** — seed/prvi unos: vlastiti klub, sezona, 2–3 vijesti, CMS hero, sponzori, test utakmica
-2. **Admin smoke test** — login → settings → objavi vijest → javna stranica prikazuje
-3. **Upload renditions** — `sharp` u backendu, `thumb`/`medium`/`original`, ažurirati Media modul
-4. **Live centar E2E** — komentator unosi gol → socket → javna live stranica (vidi [live_center MATRIX](../../../docs/matrices/live_center/MATRIX.md))
-5. **Sigurnost** — rotacija JWT/admin lozinke, `.env` u `.gitignore`, novi secreta na serveru
-6. **Testovi** — integration za auth/settings; E2E za login + ticket QR (plan F7)
-7. **Mobile** — test na uređaju protiv `https://fkgracanica.ba101.top/backend/api/v1`
+1. **Sigurnost (§7.5)** — `.env` → `.gitignore`, novi JWT secreta, promjena admin lozinke na serveru
+2. **Commit** — sav uncommitted rad ove sesije (koraci 1–4 + lock skripte)
+3. **Testovi** — ticket QR E2E, više integration testova
+4. **Mobile** — socket + live protiv produkcijskog API-ja
+5. **Ručni QA** — komentator flow na produkciji (utakmica kolo 13 ako još SCHEDULED)
 
 ---
 
-## 8. Ključna struktura repoa
+## 8. Phase dokumenti (ova sesija)
 
-```
-backend/     NestJS, Prisma 7, Socket.IO, BullMQ/Redis cache stub
-frontend/    React/Vite, public + /admin, i18n BS, dark mode, PWA manifest
-mobile/      Expo Router, tabs
-docker-compose.yml   Traefik labels, redis, upload volume
-scripts/     docker-prod-build.sh, setup-upload-dir.sh
-```
-
-**Dokumenti:**
-- [aplikacijski-plan.md](../../../aplikacijski-plan.md) — master plan
-- [CHECKLIST.md](./CHECKLIST.md) — faze
-- [CHANGELOG.md](./CHANGELOG.md) — plan changelog
-- Matrice: `rbac`, `live_center`, `membership`, `ticketing`
-
----
-
-## 9. Fajlovi dirani u zadnjim sesijama
-
-| Fajl | Napomena |
+| Faza | Dokument |
 |------|----------|
-| `docker-compose.yml` | Traefik, fkgracanica-network, upload mount |
-| `backend/Dockerfile`, `frontend/Dockerfile` | prod images |
-| `backend/package-lock.json` | sync za `npm ci` u Dockeru |
-| `backend/src/main.ts` | static uploads, Swagger server URL |
-| `.env` | produkcijski URL-ovi i DB |
-| `.gitignore` | `.env` **nije** ignoriran (namjerno, privremeno) |
+| 8 Seed | [08_phase-seed-content.md](./08_phase-seed-content.md) |
+| 9 Admin smoke | [09_phase-admin-smoke.md](./09_phase-admin-smoke.md) |
+| 10 Upload | [10_phase-upload-renditions.md](./10_phase-upload-renditions.md) |
+| 11 Live E2E | [11_phase-live-center-e2e.md](./11_phase-live-center-e2e.md) |
+
+Matrica: [.cursor/docs/matrices/live_center/MATRIX.md](../../../.cursor/docs/matrices/live_center/MATRIX.md)
+
+---
+
+## 9. Ključni novi fajlovi (uncommitted)
+
+**Backend:** `prisma/seed/*`, `upload/image-rendition.service.ts`, `live/live-score.util.ts`, `realtime.gateway.ts` (public join), `test/*-e2e-spec.ts`  
+**Frontend:** `lib/realtime.ts`, `hooks/use-{match-realtime,live-admin,news-admin,media-admin}.ts`, `CommentatorControls.tsx`, `NewsAdminFormSheet.tsx`  
+**Ops:** `scripts/sync-docker-locks.sh`, `docker-compose.yml` (`SOCKET_IO_PATH`), lock fajlovi backend+frontend
 
 ---
 
 ## 10. Pravila za nastavak
 
-- **~100–150 linija** po fajlu; refaktor u helpers/services
-- **Plan-first** za veće featuree; faze u `01_phase-*.md`
-- **Matrix + CHANGELOG** kad mijenjaš live/ticketing/membership/RBAC logiku
-- **Ne editovati** `.cursor/plans/fk_gračanica_init_*.plan.md`
+- Fajlovi **~100–150 linija** → helpers
+- **Plan-first** za veće featuree
+- Matrix + CHANGELOG kad mijenjaš live/ticketing/RBAC
 - **Commit/push** samo na eksplicitni zahtjev korisnika
 
 ---
 
-## Brzi kontekst za novog agenta
+## Brzi start za novog agenta
 
 ```
-Projekat: FK Gračanica — football club CMS + live + ticketing.
+Projekat: FK Gračanica — CMS + live + ticketing.
 Stack: NestJS + Prisma 7 + MySQL, React, Expo.
-Deploy: Docker + Traefik na fkgracanica.ba101.top, API pod /backend.
-Trenutno: scaffold kompletan i live na serveru; treba sadržaj, QA i hardening.
-Kreni od: HANDOFF §7 korak 1 ili korisnikov konkretni zadatak.
+Deploy: Docker + Traefik, API /backend, socket /backend/realtime.
+Gotovo: seed, admin news, upload renditions, live socket E2E.
+Kreni od: HANDOFF §7 korak 1 (sigurnost) ili korisnikov zadatak.
+Prvo pitaj: želi li commit prije daljeg rada.
 ```

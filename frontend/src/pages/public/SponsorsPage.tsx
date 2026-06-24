@@ -24,8 +24,8 @@ export function SponsorsPage() {
                     <span className="text-lg font-bold">{s.name}</span>
                   )}
                   <Badge variant="muted">{s.tier}</Badge>
-                  {s.websiteUrl && (
-                    <a href={s.websiteUrl} target="_blank" rel="noreferrer" className="text-sm text-accent">
+                  {s.url && (
+                    <a href={s.url} target="_blank" rel="noreferrer" className="text-sm text-accent">
                       Web stranica
                     </a>
                   )}
