@@ -2,6 +2,7 @@ import { Redirect, Tabs } from 'expo-router';
 import { ActivityIndicator, Pressable, StyleSheet, Text, View, type ColorValue } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../src/lib/auth';
+import { useUnreadNotificationCount } from '../../src/hooks/use-unread-notifications';
 import { colors } from '../../src/lib/theme';
 
 function TabIcon({ label, color }: { label: string; color: ColorValue }) {
@@ -11,6 +12,7 @@ function TabIcon({ label, color }: { label: string; color: ColorValue }) {
 export default function TabsLayout() {
   const { t } = useTranslation();
   const { isAuthenticated, isLoading, logout } = useAuth();
+  const unreadCount = useUnreadNotificationCount();
 
   if (isLoading) {
     return (
@@ -57,6 +59,7 @@ export default function TabsLayout() {
         name="notifications"
         options={{
           title: t('notifications'),
+          tabBarBadge: unreadCount > 0 ? unreadCount : undefined,
           tabBarIcon: ({ color }) => <TabIcon label="🔔" color={color} />,
         }}
       />

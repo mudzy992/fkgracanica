@@ -36,10 +36,11 @@ export function useNewsItem(idOrSlug: string) {
   return useQuery({
     queryKey: ['news', idOrSlug],
     queryFn: async () => {
-      const published = (await api.get<NewsItem[]>('/news/published')).data;
-      const bySlug = published.find((n) => n.slug === idOrSlug);
-      if (bySlug) return bySlug;
-      return (await api.get<NewsItem>(`/news/${idOrSlug}`)).data;
+      try {
+        return (await api.get<NewsItem>(`/news/slug/${idOrSlug}`)).data;
+      } catch {
+        return (await api.get<NewsItem>(`/news/${idOrSlug}`)).data;
+      }
     },
     enabled: !!idOrSlug,
   });
@@ -160,10 +161,11 @@ export function useDashboardKpis() {
   });
 }
 
-export function useUsers() {
+export function useUsers(params: { page?: number; search?: string } = {}) {
   return useQuery({
-    queryKey: ['users'],
-    queryFn: async () => (await api.get<User[]>('/users')).data,
+    queryKey: ['users', params],
+    queryFn: async () =>
+      (await api.get('/users', { params })).data as import('../types/pagination').PaginatedResponse<User & { roles?: { role: { id: string; name: string } }[] }>,
   });
 }
 
@@ -228,10 +230,17 @@ export function useMediaAssets() {
   });
 }
 
-export function useAuditLog() {
+export function useAuditLog(params: Record<string, string | number | undefined> = {}) {
   return useQuery({
-    queryKey: ['audit'],
-    queryFn: async () => (await api.get('/audit')).data,
+    queryKey: ['audit', params],
+    queryFn: async () =>
+      (await api.get('/audit', { params })).data as import('../types/pagination').PaginatedResponse<{
+        id: string;
+        action: string;
+        createdAt: string;
+        actor?: { email: string } | null;
+        entity?: string | null;
+      }>,
   });
 }
 
@@ -239,6 +248,13 @@ export function useCompetitions() {
   return useQuery({
     queryKey: ['competitions'],
     queryFn: async () => (await api.get('/competitions')).data,
+  });
+}
+
+export function useSeasons() {
+  return useQuery({
+    queryKey: ['seasons'],
+    queryFn: async () => (await api.get('/competitions/seasons/list')).data,
   });
 }
 
@@ -276,3 +292,9 @@ export function useUpdatePrivateSettings() {
 export * from './use-news-admin';
 export * from './use-media-admin';
 export * from './use-live-admin';
+export * from './use-paginated-query';
+export * from './use-users-admin';
+export * from './use-notifications';
+export * from './use-cms-admin';
+export * from './use-content-admin';
+export * from './use-competition-admin';

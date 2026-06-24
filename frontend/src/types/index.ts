@@ -64,7 +64,7 @@ export interface HomeHeroContent {
 
 export interface Trophy {
   id: string;
-  title: string;
+  name: string;
   year: number;
   competition?: string | null;
   imagePath?: string | null;

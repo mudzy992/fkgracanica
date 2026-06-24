@@ -4,12 +4,36 @@ import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { generateQrCode } from '../common/utils/qr.util';
 
+const DEFAULT_CAPACITY = 5000;
+
 @Injectable()
 export class TicketingService {
   constructor(private readonly prisma: PrismaService) {}
 
+  private async getCapacity(): Promise<number> {
+    const setting = await this.prisma.setting.findUnique({
+      where: { key: 'ticketing.stadiumCapacity' },
+    });
+    return setting ? Number(setting.value) || DEFAULT_CAPACITY : DEFAULT_CAPACITY;
+  }
+
+  private async countSoldForMatch(matchId: string) {
+    return this.prisma.ticket.count({
+      where: {
+        matchId,
+        status: { notIn: [TicketStatus.CANCELLED] },
+      },
+    });
+  }
+
   async reserve(userId: string, data: { matchId: string; category: string; price: number; quantity?: number }) {
     const qty = data.quantity ?? 1;
+    const capacity = await this.getCapacity();
+    const sold = await this.countSoldForMatch(data.matchId);
+    if (sold + qty > capacity) {
+      throw new BadRequestException('Kapacitet stadiona je popunjen');
+    }
+
     const total = new Prisma.Decimal(data.price * qty);
     const order = await this.prisma.ticketOrder.create({
       data: {
@@ -34,6 +58,23 @@ export class TicketingService {
       include: { tickets: true, payment: true },
     });
     return order;
+  }
+
+  async requestRefund(orderId: string, userId: string) {
+    const order = await this.prisma.ticketOrder.findFirst({
+      where: { id: orderId, userId },
+      include: { tickets: true },
+    });
+    if (!order) throw new NotFoundException('Narudžba nije pronađena');
+    await this.prisma.ticket.updateMany({
+      where: { orderId },
+      data: { status: TicketStatus.CANCELLED },
+    });
+    return this.prisma.ticketOrder.update({
+      where: { id: orderId },
+      data: { status: 'refund_requested' },
+      include: { tickets: true },
+    });
   }
 
   async validateTicket(qrCode: string) {
@@ -94,6 +135,17 @@ export class TicketingService {
     return this.prisma.ticketOrder.findMany({
       where: { userId },
       include: { tickets: true, payment: true },
+      orderBy: { createdAt: 'desc' },
+    });
+  }
+
+  findAllOrders() {
+    return this.prisma.ticketOrder.findMany({
+      include: {
+        user: { select: { id: true, email: true } },
+        tickets: true,
+        payment: true,
+      },
       orderBy: { createdAt: 'desc' },
     });
   }

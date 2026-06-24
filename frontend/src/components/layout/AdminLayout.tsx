@@ -6,6 +6,8 @@ import { useAuth } from '../../lib/auth';
 import { cn } from '../../lib/utils';
 import { Button } from '../ui/button';
 import { ThemeToggle } from '../ui/ThemeToggle';
+import { NotificationBell } from '../notifications/NotificationBell';
+import { ErrorBoundary } from '../common/ErrorBoundary';
 import { Sheet, SheetContent, SheetHeader } from '../ui/sheet';
 
 const adminNav = [
@@ -16,6 +18,7 @@ const adminNav = [
   { to: '/admin/cms', labelKey: 'admin.cms' },
   { to: '/admin/media', labelKey: 'admin.media' },
   { to: '/admin/audit', labelKey: 'admin.audit' },
+  { to: '/admin/notifications', labelKey: 'notifications.title' },
   { to: '/admin/news', labelKey: 'admin.news' },
   { to: '/admin/gallery', labelKey: 'admin.gallery' },
   { to: '/admin/sponsors', labelKey: 'admin.sponsors' },
@@ -65,15 +68,18 @@ export function AdminLayout() {
   return (
     <div className="flex min-h-dvh bg-surface">
       <aside className="hidden w-64 shrink-0 border-r border-slate-200 bg-background p-4 lg:block">
-        <div className="mb-6">
-          <Link to="/admin" className="text-lg font-bold text-primary">
-            FK Admin
-          </Link>
-          {user && (
-            <p className="mt-1 truncate text-xs text-text-muted">
-              {user.firstName} {user.lastName}
-            </p>
-          )}
+        <div className="mb-6 flex items-center justify-between gap-2">
+          <div>
+            <Link to="/admin" className="text-lg font-bold text-primary">
+              FK Admin
+            </Link>
+            {user && (
+              <p className="mt-1 truncate text-xs text-text-muted">
+                {user.firstName} {user.lastName}
+              </p>
+            )}
+          </div>
+          <NotificationBell admin />
         </div>
         <SidebarNav />
         <Button variant="ghost" className="mt-6 w-full justify-start gap-2" onClick={() => void logout()}>
@@ -88,6 +94,7 @@ export function AdminLayout() {
             FK Admin
           </Link>
           <div className="flex items-center gap-1">
+            <NotificationBell admin />
             <ThemeToggle />
             <Button variant="ghost" size="icon" onClick={() => setOpen(true)}>
             <Menu className="h-5 w-5" />
@@ -111,7 +118,9 @@ export function AdminLayout() {
         </Sheet>
 
         <main className="flex-1 overflow-auto p-4 md:p-6">
-          <Outlet />
+          <ErrorBoundary>
+            <Outlet />
+          </ErrorBoundary>
         </main>
       </div>
     </div>

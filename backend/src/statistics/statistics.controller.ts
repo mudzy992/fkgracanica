@@ -27,4 +27,9 @@ export class StatisticsController {
   getTeamStats(@Param('matchId') matchId: string) {
     return this.service.getTeamStats(matchId);
   }
+
+  @Get('standings')
+  getStandings(@Query('seasonId') seasonId: string) {
+    return this.service.getStandings(seasonId);
+  }
 }

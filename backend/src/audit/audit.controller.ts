@@ -1,6 +1,7 @@
 import { Controller, Get, Query, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { AuditService } from './audit.service';
+import { AuditFilterDto } from './dto/audit-filter.dto';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { PermissionsGuard } from '../common/guards/permissions.guard';
 import { RequirePermissions } from '../common/decorators/permissions.decorator';
@@ -14,10 +15,7 @@ export class AuditController {
 
   @Get()
   @RequirePermissions('audit.read')
-  findAll(@Query('page') page?: string, @Query('limit') limit?: string) {
-    return this.auditService.findAll(
-      page ? Number(page) : 1,
-      limit ? Number(limit) : 50,
-    );
+  findAll(@Query() query: AuditFilterDto) {
+    return this.auditService.findAll(query);
   }
 }

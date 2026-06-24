@@ -40,4 +40,19 @@ export class TicketingController {
   confirmPayment(@Param('orderId') orderId: string) {
     return this.service.confirmBoxOfficePayment(orderId);
   }
+
+  @Get('admin/orders')
+  @UseGuards(PermissionsGuard)
+  @RequirePermissions('ticketing.manage')
+  findAllOrders() {
+    return this.service.findAllOrders();
+  }
+
+  @Post('orders/:orderId/refund')
+  refund(
+    @Param('orderId') orderId: string,
+    @CurrentUser() user: AuthUser,
+  ) {
+    return this.service.requestRefund(orderId, user.id);
+  }
 }

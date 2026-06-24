@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import { api } from '../../src/lib/api';
 import { colors, spacing, typography } from '../../src/lib/theme';
-import type { Notification } from '../../src/types/api';
+import type { Notification, PaginatedResponse } from '../../src/types/api';
 
 function formatDate(iso: string): string {
   return new Date(iso).toLocaleString('bs-BA', {
@@ -30,8 +30,8 @@ export default function NotificationsScreen() {
 
   const loadNotifications = useCallback(async () => {
     try {
-      const { data } = await api.get<Notification[]>('/notifications');
-      setItems(data);
+      const { data } = await api.get<PaginatedResponse<Notification>>('/notifications');
+      setItems(data.data);
     } catch {
       setItems([]);
     }

@@ -27,6 +27,7 @@ export function SettingsPage() {
   const values = { ...data, ...draft };
 
   const handleSave = async () => {
+    if (tab === 'private' && !window.confirm('Spremiti privatne postavke?')) return;
     if (tab === 'public') await updatePublic.mutateAsync(draft);
     else await updatePrivate.mutateAsync(draft);
     setDraft({});

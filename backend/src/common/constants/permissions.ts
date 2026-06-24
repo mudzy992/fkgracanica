@@ -4,6 +4,7 @@ export const PERMISSIONS = [
   { key: 'users.update', description: 'Uređivanje korisnika' },
   { key: 'users.delete', description: 'Brisanje korisnika' },
   { key: 'rbac.read', description: 'Pregled rola i dozvola' },
+  { key: 'rbac.update', description: 'Uređivanje dozvola po ulozi' },
   { key: 'settings.read', description: 'Pregled postavki' },
   { key: 'settings.update', description: 'Uređivanje postavki' },
   { key: 'audit.read', description: 'Pregled audit loga' },

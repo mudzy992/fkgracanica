@@ -1,6 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
+import { AuditFilterDto } from './dto/audit-filter.dto';
+import { paginate, parsePagination } from '../common/utils/pagination.util';
 
 export interface AuditLogInput {
   actorId?: string;
@@ -19,17 +21,28 @@ export class AuditService {
     return this.prisma.auditLog.create({ data: input });
   }
 
-  async findAll(page = 1, limit = 50) {
-    const skip = (page - 1) * limit;
-    const [items, total] = await Promise.all([
-      this.prisma.auditLog.findMany({
-        skip,
-        take: limit,
-        orderBy: { createdAt: 'desc' },
-        include: { actor: { select: { id: true, email: true } } },
-      }),
-      this.prisma.auditLog.count(),
-    ]);
-    return { items, total, page, limit };
+  async findAll(query: AuditFilterDto) {
+    const params = parsePagination(query);
+    const where: Prisma.AuditLogWhereInput = {};
+    if (query.action) where.action = query.action;
+    if (query.actorId) where.actorId = query.actorId;
+    if (query.entity) where.entity = query.entity;
+    if (query.from || query.to) {
+      where.createdAt = {};
+      if (query.from) where.createdAt.gte = new Date(query.from);
+      if (query.to) where.createdAt.lte = new Date(query.to);
+    }
+    return paginate(
+      params,
+      (skip, take) =>
+        this.prisma.auditLog.findMany({
+          where,
+          skip,
+          take,
+          orderBy: { createdAt: 'desc' },
+          include: { actor: { select: { id: true, email: true } } },
+        }),
+      () => this.prisma.auditLog.count({ where }),
+    );
   }
 }

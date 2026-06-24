@@ -3,12 +3,14 @@ import { SettingScope } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { SETTINGS_REGISTRY } from './settings.registry';
 import { RealtimeGateway } from '../realtime/realtime.gateway';
+import { NotificationsService } from '../notifications/notifications.service';
 
 @Injectable()
 export class SettingsService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly realtime: RealtimeGateway,
+    private readonly notifications: NotificationsService,
   ) {}
 
   async getPublic() {
@@ -25,12 +27,12 @@ export class SettingsService {
     return this.toKeyValue(settings);
   }
 
-  async updatePublic(updates: Record<string, string>) {
-    return this.updateByScope(SettingScope.PUBLIC, updates);
+  async updatePublic(updates: Record<string, string>, actorId?: string) {
+    return this.updateByScope(SettingScope.PUBLIC, updates, actorId);
   }
 
-  async updatePrivate(updates: Record<string, string>) {
-    return this.updateByScope(SettingScope.PRIVATE, updates);
+  async updatePrivate(updates: Record<string, string>, actorId?: string) {
+    return this.updateByScope(SettingScope.PRIVATE, updates, actorId);
   }
 
   async ensureDefaults() {
@@ -46,6 +48,7 @@ export class SettingsService {
   private async updateByScope(
     scope: SettingScope,
     updates: Record<string, string>,
+    actorId?: string,
   ) {
     const keys = Object.keys(updates);
     await Promise.all(
@@ -61,6 +64,15 @@ export class SettingsService {
         ? await this.getPublic()
         : await this.getPrivate();
     this.realtime.emitSettingsChanged(scope, result);
+    if (actorId) {
+      await this.notifications.create({
+        userId: actorId,
+        title: 'Postavke ažurirane',
+        body: `Ažurirano ${keys.length} ${scope === SettingScope.PUBLIC ? 'javnih' : 'privatnih'} postavki.`,
+        type: 'settings.updated',
+        metadata: { scope, keys },
+      });
+    }
     return result;
   }
 

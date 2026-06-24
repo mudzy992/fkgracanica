@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
@@ -14,6 +15,7 @@ import { CreateUserDto, UpdateUserDto } from './dto/user.dto';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { PermissionsGuard } from '../common/guards/permissions.guard';
 import { RequirePermissions } from '../common/decorators/permissions.decorator';
+import { PaginatedQueryDto } from '../common/dto/paginated-query.dto';
 
 @ApiTags('users')
 @Controller('users')
@@ -24,8 +26,8 @@ export class UsersController {
 
   @Get()
   @RequirePermissions('users.read')
-  findAll() {
-    return this.usersService.findAll();
+  findAll(@Query() query: PaginatedQueryDto) {
+    return this.usersService.findAll(query);
   }
 
   @Get(':id')

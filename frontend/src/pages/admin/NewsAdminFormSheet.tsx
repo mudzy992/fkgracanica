@@ -3,9 +3,9 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useCreateNews } from '../../hooks/use-news-admin';
+import { AdminFormSheet } from '../../components/admin/AdminFormSheet';
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
-import { Sheet, SheetContent, SheetHeader } from '../../components/ui/sheet';
 
 const schema = z.object({
   title: z.string().min(3, 'Naslov je obavezan'),
@@ -42,34 +42,31 @@ export function NewsAdminFormSheet({ open, onOpenChange }: Props) {
   };
 
   return (
-    <Sheet open={open} onOpenChange={onOpenChange} side="right">
-      <SheetHeader onClose={() => onOpenChange(false)}>Nova vijest</SheetHeader>
-      <SheetContent>
-        <form onSubmit={(e) => void handleSubmit(onSubmit)(e)} className="space-y-4">
-          <div>
-            <label className="mb-1 block text-sm font-medium">Naslov</label>
-            <Input {...register('title')} />
-            {errors.title && <p className="mt-1 text-xs text-danger">{errors.title.message}</p>}
-          </div>
-          <div>
-            <label className="mb-1 block text-sm font-medium">Uvod</label>
-            <Input {...register('excerpt')} />
-          </div>
-          <div>
-            <label className="mb-1 block text-sm font-medium">Sadržaj</label>
-            <textarea
-              {...register('content')}
-              rows={8}
-              className="w-full rounded-lg border border-slate-200 bg-background px-3 py-2 text-sm"
-            />
-            {errors.content && <p className="mt-1 text-xs text-danger">{errors.content.message}</p>}
-          </div>
-          {error && <p className="text-sm text-danger">{error}</p>}
-          <Button type="submit" disabled={isSubmitting}>
-            Kreiraj (nacrt)
-          </Button>
-        </form>
-      </SheetContent>
-    </Sheet>
+    <AdminFormSheet open={open} onOpenChange={onOpenChange} title="Nova vijest">
+      <form onSubmit={(e) => void handleSubmit(onSubmit)(e)} className="space-y-4">
+        <div>
+          <label className="mb-1 block text-sm font-medium">Naslov</label>
+          <Input {...register('title')} />
+          {errors.title && <p className="mt-1 text-xs text-danger">{errors.title.message}</p>}
+        </div>
+        <div>
+          <label className="mb-1 block text-sm font-medium">Uvod</label>
+          <Input {...register('excerpt')} />
+        </div>
+        <div>
+          <label className="mb-1 block text-sm font-medium">Sadržaj</label>
+          <textarea
+            {...register('content')}
+            rows={8}
+            className="w-full rounded-lg border border-slate-200 bg-background px-3 py-2 text-sm"
+          />
+          {errors.content && <p className="mt-1 text-xs text-danger">{errors.content.message}</p>}
+        </div>
+        {error && <p className="text-sm text-danger">{error}</p>}
+        <Button type="submit" disabled={isSubmitting}>
+          Kreiraj (nacrt)
+        </Button>
+      </form>
+    </AdminFormSheet>
   );
 }

@@ -4,6 +4,8 @@ import { SettingsService } from './settings.service';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { PermissionsGuard } from '../common/guards/permissions.guard';
 import { RequirePermissions } from '../common/decorators/permissions.decorator';
+import { CurrentUser } from '../common/decorators/current-user.decorator';
+import type { AuthUser } from '../common/types/auth-user.type';
 
 @ApiTags('settings')
 @Controller('settings')
@@ -27,15 +29,15 @@ export class SettingsController {
   @UseGuards(JwtAuthGuard, PermissionsGuard)
   @RequirePermissions('settings.update')
   @ApiBearerAuth()
-  updatePublic(@Body() body: Record<string, string>) {
-    return this.settingsService.updatePublic(body);
+  updatePublic(@Body() body: Record<string, string>, @CurrentUser() user: AuthUser) {
+    return this.settingsService.updatePublic(body, user.id);
   }
 
   @Put('private')
   @UseGuards(JwtAuthGuard, PermissionsGuard)
   @RequirePermissions('settings.update')
   @ApiBearerAuth()
-  updatePrivate(@Body() body: Record<string, string>) {
-    return this.settingsService.updatePrivate(body);
+  updatePrivate(@Body() body: Record<string, string>, @CurrentUser() user: AuthUser) {
+    return this.settingsService.updatePrivate(body, user.id);
   }
 }

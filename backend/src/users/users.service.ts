@@ -1,22 +1,45 @@
 import {
   ConflictException,
+  BadRequestException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateUserDto, UpdateUserDto } from './dto/user.dto';
+import { PaginatedQueryDto } from '../common/dto/paginated-query.dto';
+import { paginate, parsePagination } from '../common/utils/pagination.util';
 
 @Injectable()
 export class UsersService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async findAll() {
-    return this.prisma.user.findMany({
-      where: { deletedAt: null },
-      select: this.userSelect(),
-      orderBy: { createdAt: 'desc' },
-    });
+  async findAll(query: PaginatedQueryDto) {
+    const params = parsePagination(query);
+    const where = {
+      deletedAt: null,
+      ...(params.search
+        ? {
+            OR: [
+              { email: { contains: params.search } },
+              { firstName: { contains: params.search } },
+              { lastName: { contains: params.search } },
+            ],
+          }
+        : {}),
+    };
+    return paginate(
+      params,
+      (skip, take) =>
+        this.prisma.user.findMany({
+          where,
+          skip,
+          take,
+          select: this.userSelect(),
+          orderBy: { createdAt: 'desc' },
+        }),
+      () => this.prisma.user.count({ where }),
+    );
   }
 
   async findOne(id: string) {
@@ -49,7 +72,16 @@ export class UsersService {
   }
 
   async update(id: string, dto: UpdateUserDto) {
-    await this.findOne(id);
+    const existing = await this.findOne(id);
+    if (dto.isActive === false || (dto.roleIds && !dto.roleIds.length)) {
+      await this.ensureNotLastAdmin(id);
+    }
+    if (dto.roleIds) {
+      const adminRole = await this.prisma.role.findUnique({ where: { name: 'Administrator' } });
+      const hadAdmin = existing.roles?.some((r) => r.role.name === 'Administrator');
+      const willHaveAdmin = adminRole && dto.roleIds.includes(adminRole.id);
+      if (hadAdmin && !willHaveAdmin) await this.ensureNotLastAdmin(id);
+    }
     const data: Record<string, unknown> = {
       email: dto.email,
       firstName: dto.firstName,
@@ -75,12 +107,31 @@ export class UsersService {
   }
 
   async remove(id: string) {
+    await this.ensureNotLastAdmin(id);
     await this.findOne(id);
     return this.prisma.user.update({
       where: { id },
       data: { deletedAt: new Date(), isActive: false },
       select: this.userSelect(),
     });
+  }
+
+  private async ensureNotLastAdmin(userId: string) {
+    const adminRole = await this.prisma.role.findUnique({ where: { name: 'Administrator' } });
+    if (!adminRole) return;
+    const isAdmin = await this.prisma.userRole.findFirst({
+      where: { userId, roleId: adminRole.id },
+    });
+    if (!isAdmin) return;
+    const adminCount = await this.prisma.userRole.count({
+      where: {
+        roleId: adminRole.id,
+        user: { deletedAt: null, isActive: true },
+      },
+    });
+    if (adminCount <= 1) {
+      throw new BadRequestException('Ne možete ukloniti posljednjeg administratora');
+    }
   }
 
   private userSelect() {

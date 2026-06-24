@@ -10,6 +10,7 @@ import {
   View,
 } from 'react-native';
 import { api } from '../../src/lib/api';
+import { QrCodeView } from '../../src/components/QrCodeView';
 import { colors, spacing, typography } from '../../src/lib/theme';
 import type { Membership } from '../../src/types/api';
 
@@ -84,11 +85,7 @@ export default function MembershipScreen() {
 
       <View style={styles.qrBox}>
         <Text style={styles.label}>{t('qrCode')}</Text>
-        <View style={styles.qrPlaceholder}>
-          <Text style={styles.qrCode} selectable>
-            {active.card.qrCode}
-          </Text>
-        </View>
+        <QrCodeView value={active.card.qrCode} />
         <Text style={styles.qrHint}>Pokažite ovaj kod na ulazu</Text>
       </View>
     </ScrollView>

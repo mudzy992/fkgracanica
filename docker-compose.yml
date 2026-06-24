@@ -1,5 +1,5 @@
 # Produkcija — Traefik (mreža web), TLS le, host fkgracanica.ba101.top
-# Prije prvog up: mkdir -p /mnt/shared-app-files/fkgracanica && sudo chown -R 1000:1000 /mnt/shared-app-files/fkgracanica
+# Prije prvog up: ./scripts/setup-upload-dir.sh  (chown 999:999 za user `app` u kontejneru)
 # Build: docker compose build && docker compose up -d
 
 services:

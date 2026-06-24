@@ -1,6 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
+import { RealtimeGateway } from '../realtime/realtime.gateway';
+import { PaginatedQueryDto } from '../common/dto/paginated-query.dto';
+import { paginate, parsePagination } from '../common/utils/pagination.util';
 
 export interface CreateNotificationInput {
   userId: string;
@@ -12,23 +15,49 @@ export interface CreateNotificationInput {
 
 @Injectable()
 export class NotificationsService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly realtime: RealtimeGateway,
+  ) {}
 
-  findForUser(userId: string, unreadOnly = false) {
-    return this.prisma.notification.findMany({
-      where: { userId, ...(unreadOnly ? { isRead: false } : {}) },
-      orderBy: { createdAt: 'desc' },
-    });
+  async findForUser(userId: string, query: PaginatedQueryDto, unreadOnly = false) {
+    const params = parsePagination(query);
+    const where = {
+      userId,
+      ...(unreadOnly ? { isRead: false } : {}),
+    };
+    return paginate(
+      params,
+      (skip, take) =>
+        this.prisma.notification.findMany({
+          where,
+          skip,
+          take,
+          orderBy: { createdAt: 'desc' },
+        }),
+      () => this.prisma.notification.count({ where }),
+    );
   }
 
-  markRead(id: string, userId: string) {
-    return this.prisma.notification.updateMany({
+  async markRead(id: string, userId: string) {
+    await this.prisma.notification.updateMany({
       where: { id, userId },
       data: { isRead: true },
     });
+    return { ok: true };
   }
 
-  create(input: CreateNotificationInput) {
-    return this.prisma.notification.create({ data: input });
+  async markAllRead(userId: string) {
+    await this.prisma.notification.updateMany({
+      where: { userId, isRead: false },
+      data: { isRead: true },
+    });
+    return { ok: true };
+  }
+
+  async create(input: CreateNotificationInput) {
+    const notification = await this.prisma.notification.create({ data: input });
+    this.realtime.emitNotificationNew(input.userId, notification);
+    return notification;
   }
 }

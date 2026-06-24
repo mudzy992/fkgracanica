@@ -1,1 +1,23 @@
-{}
+{
+  "nav": {
+    "home": "Home",
+    "club": "About",
+    "news": "News",
+    "gallery": "Gallery",
+    "sponsors": "Sponsors",
+    "trophies": "Trophies",
+    "team": "Team",
+    "league": "League",
+    "contact": "Contact",
+    "search": "Search",
+    "hallOfFame": "Hall of Fame",
+    "museum": "Museum"
+  },
+  "notifications": {
+    "title": "Notifications",
+    "empty": "No new notifications",
+    "viewAll": "View all",
+    "markAllRead": "Mark all read",
+    "markRead": "Mark read"
+  }
+}

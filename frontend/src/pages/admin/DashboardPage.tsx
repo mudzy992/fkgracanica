@@ -2,6 +2,7 @@ import { useDashboardKpis } from '../../hooks';
 import { Seo } from '../../components/seo/Seo';
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/card';
 import { Skeleton } from '../../components/ui/skeleton';
+import { Button } from '../../components/ui/button';
 
 const kpiLabels: Record<string, string> = {
   users: 'Korisnici',
@@ -14,7 +15,18 @@ const kpiLabels: Record<string, string> = {
 };
 
 export function DashboardPage() {
-  const { data, isLoading } = useDashboardKpis();
+  const { data, isLoading, isError, refetch } = useDashboardKpis();
+
+  if (isError) {
+    return (
+      <div className="flex flex-col items-center gap-4 py-12">
+        <p className="text-text-muted">Nije moguće učitati KPI podatke.</p>
+        <Button variant="outline" onClick={() => void refetch()}>
+          Pokušaj ponovo
+        </Button>
+      </div>
+    );
+  }
 
   return (
     <div>

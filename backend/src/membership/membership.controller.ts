@@ -37,4 +37,11 @@ export class MembershipController {
   activate(@Param('id') id: string) {
     return this.service.activate(id);
   }
+
+  @Patch(':id/renew')
+  @UseGuards(PermissionsGuard)
+  @RequirePermissions('membership.manage')
+  renew(@Param('id') id: string) {
+    return this.service.renew(id);
+  }
 }

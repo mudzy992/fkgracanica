@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { MembershipStatus } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { generateQrCode } from '../common/utils/qr.util';
@@ -43,10 +43,25 @@ export class MembershipService {
       create: {
         membershipId: id,
         cardNumber,
-        qrCode: generateQrCode('member'),
+        qrCode: generateQrCode(`member-${id}`),
       },
       update: {},
     });
     return { membership, card };
+  }
+
+  async renew(id: string) {
+    const membership = await this.prisma.membership.findUnique({ where: { id } });
+    if (!membership) throw new NotFoundException('Članstvo nije pronađeno');
+    if (membership.status !== MembershipStatus.ACTIVE) {
+      throw new BadRequestException('Samo aktivno članstvo se može obnoviti');
+    }
+    const base = membership.endDate && membership.endDate > new Date() ? membership.endDate : new Date();
+    const endDate = new Date(base.getTime() + 365 * 24 * 60 * 60 * 1000);
+    return this.prisma.membership.update({
+      where: { id },
+      data: { endDate, status: MembershipStatus.ACTIVE },
+      include: { card: true },
+    });
   }
 }

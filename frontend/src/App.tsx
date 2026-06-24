@@ -42,6 +42,7 @@ import { ContactAdminPage } from './pages/admin/ContactAdminPage';
 import { NewsletterAdminPage } from './pages/admin/NewsletterAdminPage';
 import { HallOfFameAdminPage } from './pages/admin/HallOfFameAdminPage';
 import { MuseumAdminPage } from './pages/admin/MuseumAdminPage';
+import { NotificationsPage } from './pages/admin/NotificationsPage';
 
 export default function App() {
   return (
@@ -72,6 +73,7 @@ export default function App() {
           <Route element={<AdminLayout />}>
             <Route index element={<DashboardPage />} />
             <Route path="settings" element={<SettingsPage />} />
+            <Route path="notifications" element={<NotificationsPage />} />
             <Route path="users" element={<UsersPage />} />
             <Route path="roles" element={<RolesPage />} />
             <Route path="cms" element={<CmsPage />} />

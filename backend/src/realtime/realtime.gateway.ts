@@ -107,4 +107,8 @@ export class RealtimeGateway
   ) {
     this.server.to(`match:${matchId}`).emit('match:score', score);
   }
+
+  emitNotificationNew(userId: string, notification: unknown) {
+    this.server.to(`user:${userId}`).emit('notification:new', notification);
+  }
 }

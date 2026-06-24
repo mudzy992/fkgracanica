@@ -9,6 +9,7 @@ import {
   View,
 } from 'react-native';
 import { api } from '../../src/lib/api';
+import { QrCodeView } from '../../src/components/QrCodeView';
 import { colors, spacing, typography } from '../../src/lib/theme';
 import type { TicketOrder } from '../../src/types/api';
 
@@ -81,9 +82,9 @@ export default function TicketsScreen() {
               <Text style={styles.ticketLine}>
                 {t('status')}: {ticket.status}
               </Text>
-              <Text style={styles.qr} selectable>
-                QR: {ticket.qrCode}
-              </Text>
+              <View style={styles.qrWrap}>
+                <QrCodeView value={ticket.qrCode} size={120} />
+              </View>
             </View>
           ))}
         </View>
@@ -112,11 +113,6 @@ const styles = StyleSheet.create({
     borderTopColor: colors.border,
   },
   ticketLine: { ...typography.body, color: colors.text, marginTop: spacing.xs },
-  qr: {
-    fontFamily: 'monospace',
-    fontSize: 11,
-    color: colors.textMuted,
-    marginTop: spacing.sm,
-  },
+  qrWrap: { marginTop: spacing.sm, alignItems: 'flex-start' },
   empty: { textAlign: 'center', color: colors.textMuted, marginTop: spacing.xl },
 });

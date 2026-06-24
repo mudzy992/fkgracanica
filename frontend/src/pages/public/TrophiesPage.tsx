@@ -22,7 +22,7 @@ export function TrophiesPage() {
                   )}
                   <div>
                     <p className="text-2xl font-bold text-primary">{t.year}</p>
-                    <p className="font-semibold">{t.title}</p>
+                    <p className="font-semibold">{t.name}</p>
                     {t.competition && <p className="text-sm text-text-muted">{t.competition}</p>}
                     {t.description && <p className="mt-2 text-sm text-text-muted">{t.description}</p>}
                   </div>

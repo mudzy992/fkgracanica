@@ -2,6 +2,7 @@ import { useLocalSearchParams } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { RemoteImage } from '../../../src/components/RemoteImage';
 import { api } from '../../../src/lib/api';
 import { colors, spacing, typography } from '../../../src/lib/theme';
 import type { NewsItem } from '../../../src/types/api';
@@ -24,9 +25,8 @@ export default function NewsDetailScreen() {
   const loadArticle = useCallback(async () => {
     if (!slug) return;
     try {
-      const { data } = await api.get<NewsItem[]>('/news/published');
-      const found = data.find((item) => item.slug === slug);
-      setArticle(found ?? null);
+      const { data } = await api.get<NewsItem>(`/news/slug/${slug}`);
+      setArticle(data);
     } catch {
       setArticle(null);
     }
@@ -54,6 +54,7 @@ export default function NewsDetailScreen() {
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+      {article.coverPath ? <RemoteImage path={article.coverPath} style={styles.cover} /> : null}
       <Text style={styles.title}>{article.title}</Text>
       <Text style={styles.date}>
         {formatDate(article.publishedAt ?? article.createdAt)}
@@ -68,6 +69,7 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.background },
   content: { padding: spacing.md },
   center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
+  cover: { marginBottom: spacing.md },
   title: { ...typography.title, color: colors.text, marginBottom: spacing.sm },
   date: { ...typography.caption, color: colors.textMuted, marginBottom: spacing.lg },
   body: { ...typography.body, color: colors.text, lineHeight: 24 },

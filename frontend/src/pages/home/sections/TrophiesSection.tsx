@@ -24,7 +24,7 @@ export function TrophiesSection() {
               <Card key={tr.id}>
                 <CardContent className="p-4">
                   <p className="text-2xl font-bold text-primary">{tr.year}</p>
-                  <p className="font-medium">{tr.title}</p>
+                  <p className="font-medium">{tr.name}</p>
                   {tr.competition && <p className="text-sm text-text-muted">{tr.competition}</p>}
                 </CardContent>
               </Card>

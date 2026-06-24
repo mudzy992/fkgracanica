@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { ContentStatus } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { slugify } from '../common/utils/slug.util';
@@ -19,6 +19,15 @@ export class NewsService {
     return this.findAll(ContentStatus.PUBLISHED);
   }
 
+  async findBySlug(slug: string) {
+    const item = await this.prisma.news.findFirst({
+      where: { slug, status: ContentStatus.PUBLISHED },
+      include: { category: true, tags: true },
+    });
+    if (!item) throw new NotFoundException('Vijest nije pronađena');
+    return item;
+  }
+
   async findOne(id: string) {
     const item = await this.prisma.news.findUnique({
       where: { id },
@@ -28,7 +37,7 @@ export class NewsService {
     return item;
   }
 
-  create(data: {
+  async create(data: {
     title: string;
     content: string;
     excerpt?: string;
@@ -36,7 +45,7 @@ export class NewsService {
     categoryId?: string;
     coverPath?: string;
   }) {
-    const slug = slugify(data.title);
+    const slug = await this.uniqueSlug(slugify(data.title));
     return this.prisma.news.create({
       data: { ...data, slug, status: ContentStatus.DRAFT },
     });
@@ -61,5 +70,14 @@ export class NewsService {
   async remove(id: string) {
     await this.findOne(id);
     return this.prisma.news.delete({ where: { id } });
+  }
+
+  private async uniqueSlug(base: string): Promise<string> {
+    let slug = base;
+    let n = 1;
+    while (await this.prisma.news.findUnique({ where: { slug } })) {
+      slug = `${base}-${n++}`;
+    }
+    return slug;
   }
 }

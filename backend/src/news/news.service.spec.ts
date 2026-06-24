@@ -1,0 +1,42 @@
+import { Test, TestingModule } from '@nestjs/testing';
+import { NotFoundException } from '@nestjs/common';
+import { ContentStatus } from '@prisma/client';
+import { NewsService } from './news.service';
+import { PrismaService } from '../prisma/prisma.service';
+
+describe('NewsService', () => {
+  let service: NewsService;
+  const prisma = {
+    news: {
+      findFirst: jest.fn(),
+      findUnique: jest.fn(),
+      create: jest.fn(),
+    },
+  };
+
+  beforeEach(async () => {
+    const module: TestingModule = await Test.createTestingModule({
+      providers: [
+        NewsService,
+        { provide: PrismaService, useValue: prisma },
+      ],
+    }).compile();
+    service = module.get(NewsService);
+    jest.clearAllMocks();
+  });
+
+  it('findBySlug returns published article', async () => {
+    const article = { id: '1', slug: 'test', status: ContentStatus.PUBLISHED };
+    prisma.news.findFirst.mockResolvedValue(article);
+    await expect(service.findBySlug('test')).resolves.toEqual(article);
+    expect(prisma.news.findFirst).toHaveBeenCalledWith({
+      where: { slug: 'test', status: ContentStatus.PUBLISHED },
+      include: { category: true, tags: true },
+    });
+  });
+
+  it('findBySlug throws when not found', async () => {
+    prisma.news.findFirst.mockResolvedValue(null);
+    await expect(service.findBySlug('missing')).rejects.toBeInstanceOf(NotFoundException);
+  });
+});
