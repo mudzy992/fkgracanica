@@ -86,22 +86,6 @@ export interface Sponsor {
   sortOrder: number;
 }
 
-export interface CmsBlock {
-  id: string;
-  key: string;
-  title: string;
-  content: Record<string, unknown>;
-  page?: string | null;
-}
-
-export interface HomeHeroContent {
-  foundedYear?: string;
-  title?: string;
-  subtitle?: string;
-  primaryCtaPath?: string;
-  secondaryCtaPath?: string;
-}
-
 export interface Trophy {
   id: string;
   name: string;

@@ -1,18 +1,18 @@
 # HANDOFF — Web Complete (nova sesija)
 
 > **Datum:** 2026-06-25  
-> **Završeno u prethodnoj sesiji:** Gate moduli 1–2 APPROVED  
-> **Sljedeći fokus:** Modul **#3 CMS** → gate review + polish  
+> **Završeno:** Gate moduli 1–3 APPROVED (Vijesti, Media, CMS)  
+> **Sljedeći fokus:** Modul **#4 Galerija**  
 > **Mobile:** na pauzi — samo web + backend.
 
 ---
 
 ## 1. Prvo pročitaj (agent)
 
-1. [GATE_LOG.md](./GATE_LOG.md) — izvor istine za gate status
-2. [03_track-admin-modules.md](./03_track-admin-modules.md) — redoslijed 21 modula
-3. [../HANDOFF.md](../HANDOFF.md) — deploy, env, API
-4. Korisnikova prva poruka — `APPROVED` / `REVISE` po modulu
+1. [GATE_LOG.md](./GATE_LOG.md)
+2. [03_track-admin-modules.md](./03_track-admin-modules.md)
+3. [../HANDOFF.md](../HANDOFF.md) — deploy, env
+4. Korisnikova poruka — gate status po modulu
 
 ---
 
@@ -20,89 +20,67 @@
 
 | # | Modul | Status |
 |---|-------|--------|
-| 1 | **Vijesti** | **APPROVED** |
-| 2 | **Media** | **APPROVED** |
-| 3 | **CMS** | **Sljedeći** — gate review |
-| 4+ | Galerija → Dashboard | nije gate-ovan |
+| 1 | Vijesti | **APPROVED** |
+| 2 | Media | **APPROVED** |
+| 3 | CMS | **APPROVED** |
+| 4 | **Galerija** | **Sljedeći** — gate review |
+| 5+ | Sponzori → Dashboard | nije gate-ovan |
 
 ---
 
-## 3. Šta uraditi u novoj sesiji
+## 3. CMS — šta je isporučeno (APPROVED)
 
-### Korak 1 — CMS gate (`/admin/cms`)
+- **Page builder** — widgeti, drag reorder, live preview, dijalog za uređivanje sekcije
+- **15+ widgeta** — hero (CTA label+url), vijesti, galerija, custom HTML, moduli…
+- **Stranice** — `/p/:slug`, meta, objava; **brisanje samo DRAFT** (ne sistemska)
+- **Meni** — vizuelni editor, sistemske stavke zaključane (toggle + reorder), prilagođene CRUD
+- **Legacy `CmsBlock`** — uklonjen
+- Plan: [22_cms-page-builder/](../22_cms-page-builder/)
 
-Checklist iz [03_track-admin-modules.md](./03_track-admin-modules.md):
+### Ključni fajlovi
 
-- [ ] CRUD blokova (hero, sekcije, copy)
-- [ ] Rich text / JSON editor gdje treba (`CmsBlockEditor.tsx`)
-- [ ] Javni prikaz usklađen (`useCmsBlock`, `Hero.tsx`, ostale sekcije)
-- [ ] RBAC (`cms.manage` ili ekvivalent)
-- [ ] Dijalog pattern + `dirty` zaštita (kao vijesti)
-- [ ] Bez JS grešaka u konzoli
-
-Ako korisnik potvrdi → GATE_LOG: `CMS | APPROVED`.
-
-Ako `REVISE` → fix minimal diff, status `READY_FOR_REVIEW`, **ne idi na Galeriju**.
-
-### Korak 2 — Nastavak redoslijeda
-
-4. Galerija → 5. Sponzori → … → 21. Dashboard
-
-Za svaki modul: gate u GATE_LOG prije prelaska na sljedeći.
-
----
-
-## 4. Implementirano u sesijama (sažetak)
-
-### Infrastruktura (cross-cutting)
-- **Dijalozi** umjesto drawera: `dialog.tsx`, `AdminFormSheet` → centrirani dijalog, scroll, `dirty` blokira backdrop
-- **`asArray`** — API `{ data, meta }` normalizacija (`frontend/src/lib/as-array.ts`)
-- **`RichContent`** + `.rich-content` CSS — HTML render na javnim stranicama
-- **`PhotoGridWithLightbox`** — original u lightboxu (vijesti galerija, `/galerija/:slug`)
-- **TipTap** proširen: link, slika (mediji), YouTube, underline, H2/H3, liste, citat
-- **Prisma P3015** fix: obrisan prazan folder `20260625065651_news_extended`; OpenSSL u Docker runner stage
-
-### Vijesti (APPROVED)
-- Admin CRUD, workflow draft/pending/publish, kategorije (`NewsCategoriesDialog`)
-- `NewsAdminFormSheet` — dijalog, dirty guard, rich editor
-- Javno: `/vijesti`, `/vijesti/:slug` — `RichContent`, stripHtml na listama
-
-### Media (APPROVED)
-- Folder tree, upload, paginacija, edit/replace/delete
-- `MediaPicker` dijalog
-
----
-
-## 5. Ključni fajlovi za CMS modul
-
-| Područje | Fajlovi |
+| Područje | Putanja |
 |----------|---------|
-| Admin CMS | `frontend/src/pages/admin/CmsPage.tsx`, `CmsBlockEditor.tsx` |
-| Hooks | `frontend/src/hooks/use-cms-admin.ts`, `useCmsBlock` u `hooks/index.ts` |
-| Javni | `frontend/src/pages/home/sections/Hero.tsx`, ostale CMS-driven sekcije |
-| Backend | `backend/src/cms/*` |
-| Shared UI | `AdminFormSheet`, `RichTextEditor`, `RichContent` |
+| Admin hub | `frontend/src/pages/admin/cms/CmsHubPage.tsx` |
+| Page builder | `CmsPageBuilderPage.tsx`, `CmsSectionEditDialog.tsx` |
+| Meni | `CmsMenuEditor.tsx`, `CmsMenuSortableList.tsx` |
+| Javno | `frontend/src/cms/PageRenderer.tsx`, `widgets/*` |
+| API | `backend/src/cms/cms-pages.*`, `cms-menus.*` |
 
 ---
 
-## 6. Deploy
+## 4. Sljedeća sesija — Galerija (#4)
+
+Checklist (gate):
+
+- [ ] Admin CRUD albuma + fotografija
+- [ ] Media picker / upload
+- [ ] Javno `/galerija`, `/galerija/:slug` — lightbox, renditions
+- [ ] RBAC, paginacija ako ima
+- [ ] Usklađenost s CMS `gallery` widgetom
+
+Admin: `/admin/gallery`  
+Javno: `/galerija`
+
+---
+
+## 5. Deploy
 
 ```bash
 ./scripts/docker-prod-build.sh && docker compose up -d
 cd backend && npx prisma migrate deploy
 ```
 
+Migracije uključuju: `cms_page_builder`, `drop_cms_block`, `menu_system_enabled`.
+
 | Resurs | URL |
 |--------|-----|
-| Web | https://fkgracanica.ba101.top |
-| API | https://fkgracanica.ba101.top/backend/api/v1 |
 | Admin CMS | `/admin/cms` |
-
-**Git:** lokalno mnogo uncommitted promjena; gate rad vjerovatno nije pushan.
+| Admin Galerija | `/admin/gallery` |
 
 ---
 
-## 7. Prompt za korisnika (copy-paste)
+## 6. Prompt za korisnika (copy-paste)
 
 ```
 Nastavi Web Complete plan iz HANDOFF-a:
@@ -111,18 +89,16 @@ Nastavi Web Complete plan iz HANDOFF-a:
 Gate status:
 - Vijesti: APPROVED
 - Media: APPROVED
-- CMS: [APPROVED / REVISE / nisam testirao]
-
-[Napiši šta ne radi ako REVISE]
+- CMS: APPROVED
+- Galerija: [APPROVED / REVISE / nisam testirao]
 
 Nastavi po planu od modula koji nije APPROVED.
 ```
 
 ---
 
-## 8. Pravila
+## 7. Pravila
 
-- Max ~200 linija po fajlu; refaktor ako preraste
-- Plan → execute za veće izmjene; minimal diff
-- **Ne markiraj APPROVED** bez korisnikove potvrde
+- Max ~200 linija po fajlu
+- Gate APPROVED samo uz korisnikovu potvrdu
 - Mobile ne dirati

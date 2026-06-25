@@ -204,19 +204,6 @@ export function useTicketingOrders() {
   });
 }
 
-export function useCmsBlocks() {
-  return useQuery({
-    queryKey: ['cms', 'blocks'],
-    queryFn: async () => asArray<import('../types').CmsBlock>((await api.get('/cms/blocks')).data),
-  });
-}
-
-export function useCmsBlock(key: string) {
-  const { data, ...rest } = useCmsBlocks();
-  const blocks = asArray<{ key: string }>(data);
-  return { data: blocks.find((b) => b.key === key) as import('../types').CmsBlock | undefined, ...rest };
-}
-
 export function useAuditLog(params: Record<string, string | number | undefined> = {}) {
   return useQuery({
     queryKey: ['audit', params],
@@ -283,7 +270,6 @@ export * from './use-live-admin';
 export * from './use-paginated-query';
 export * from './use-users-admin';
 export * from './use-notifications';
-export * from './use-cms-admin';
 export * from './use-content-admin';
 export * from './use-competition-admin';
 export * from './use-ticketing-admin';

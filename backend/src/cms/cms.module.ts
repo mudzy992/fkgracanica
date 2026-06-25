@@ -1,9 +1,11 @@
 import { Module } from '@nestjs/common';
-import { CmsService } from './cms.service';
-import { CmsController } from './cms.controller';
+import { CmsPagesService } from './cms-pages.service';
+import { CmsPagesController } from './cms-pages.controller';
+import { CmsMenusService } from './cms-menus.service';
+import { CmsMenusController } from './cms-menus.controller';
 
 @Module({
-  controllers: [CmsController],
-  providers: [CmsService],
+  controllers: [CmsPagesController, CmsMenusController],
+  providers: [CmsPagesService, CmsMenusService],
 })
 export class CmsModule {}

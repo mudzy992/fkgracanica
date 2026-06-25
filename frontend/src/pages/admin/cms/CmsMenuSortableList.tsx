@@ -1,0 +1,155 @@
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+} from '@dnd-kit/core';
+import {
+  SortableContext,
+  sortableKeyboardCoordinates,
+  useSortable,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
+import { GripVertical, Lock } from 'lucide-react';
+import { Badge } from '../../../components/ui/badge';
+import { Button } from '../../../components/ui/button';
+import { Input } from '../../../components/ui/input';
+import { Switch } from '../../../components/ui/switch';
+import type { CmsPage } from '../../../cms/types';
+import { cn } from '../../../lib/utils';
+import type { MenuDraftItem } from './menu-utils';
+
+interface Props {
+  items: MenuDraftItem[];
+  pages: CmsPage[];
+  onChange: (items: MenuDraftItem[]) => void;
+}
+
+function SortableMenuRow({
+  item,
+  index,
+  pages,
+  onPatch,
+  onRemove,
+}: {
+  item: MenuDraftItem;
+  index: number;
+  pages: CmsPage[];
+  onPatch: (patch: Partial<MenuDraftItem>) => void;
+  onRemove: () => void;
+}) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id: item.id ?? `new-${index}`,
+  });
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={{ transform: CSS.Transform.toString(transform), transition }}
+      className={cn(
+        'rounded-lg border p-3',
+        item.isSystem ? 'border-primary/20 bg-primary/5' : 'border-slate-200 bg-background',
+        !item.enabled && 'opacity-50',
+        isDragging && 'shadow-md',
+      )}
+    >
+      <div className="mb-2 flex items-center gap-2">
+        <button type="button" className="cursor-grab text-text-muted" {...attributes} {...listeners}>
+          <GripVertical className="h-4 w-4" />
+        </button>
+        {item.isSystem ? (
+          <Badge variant="default" className="gap-1">
+            <Lock className="h-3 w-3" /> Sistemska
+          </Badge>
+        ) : (
+          <Badge variant="muted">Prilagođena</Badge>
+        )}
+        <label className="ml-auto flex items-center gap-2 text-xs">
+          <span>Aktivno</span>
+          <Switch checked={item.enabled} onCheckedChange={(v) => onPatch({ enabled: v })} />
+        </label>
+      </div>
+      {item.isSystem ? (
+        <div className="space-y-1 text-sm">
+          <p className="font-medium">{item.label}</p>
+          <p className="text-xs text-text-muted">{item.path}</p>
+        </div>
+      ) : (
+        <div className="grid gap-2 md:grid-cols-2">
+          <Input value={item.label} onChange={(e) => onPatch({ label: e.target.value })} placeholder="Label" />
+          <Input value={item.path} onChange={(e) => onPatch({ path: e.target.value })} placeholder="/putanja" />
+          <select
+            className="rounded-lg border border-slate-200 bg-background px-2 py-2 text-sm md:col-span-2"
+            value={item.pageId ?? ''}
+            onChange={(e) => {
+              const pageId = e.target.value || undefined;
+              const pg = pages.find((p) => p.id === pageId);
+              onPatch({
+                pageId,
+                path: pg ? (pg.slug === 'home' ? '/' : `/p/${pg.slug}`) : item.path,
+              });
+            }}
+          >
+            <option value="">CMS stranica (opcionalno)</option>
+            {pages.map((p) => (
+              <option key={p.id} value={p.id}>
+                {p.title}
+              </option>
+            ))}
+          </select>
+          <Button variant="outline" size="sm" className="text-danger md:col-span-2" onClick={onRemove}>
+            Obriši stavku
+          </Button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+export function CmsMenuSortableList({ items, pages, onChange }: Props) {
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 6 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
+  );
+
+  const ids = items.map((it, i) => it.id ?? `new-${i}`);
+
+  const onDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+    const oldIndex = ids.indexOf(String(active.id));
+    const newIndex = ids.indexOf(String(over.id));
+    if (oldIndex < 0 || newIndex < 0) return;
+    const next = [...items];
+    const [moved] = next.splice(oldIndex, 1);
+    next.splice(newIndex, 0, moved);
+    onChange(next.map((it, i) => ({ ...it, sortOrder: i })));
+  };
+
+  const patchAt = (index: number, patch: Partial<MenuDraftItem>) => {
+    onChange(items.map((it, i) => (i === index ? { ...it, ...patch } : it)));
+  };
+
+  return (
+    <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={onDragEnd}>
+      <SortableContext items={ids} strategy={verticalListSortingStrategy}>
+        <div className="space-y-2">
+          {items.map((item, i) => (
+            <SortableMenuRow
+              key={ids[i]}
+              item={item}
+              index={i}
+              pages={pages}
+              onPatch={(patch) => patchAt(i, patch)}
+              onRemove={() => onChange(items.filter((_, idx) => idx !== i))}
+            />
+          ))}
+        </div>
+      </SortableContext>
+    </DndContext>
+  );
+}

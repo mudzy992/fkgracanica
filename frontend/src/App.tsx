@@ -25,7 +25,8 @@ import { DashboardPage } from './pages/admin/DashboardPage';
 import { SettingsPage } from './pages/admin/SettingsPage';
 import { UsersPage } from './pages/admin/UsersPage';
 import { RolesPage } from './pages/admin/RolesPage';
-import { CmsPage } from './pages/admin/CmsPage';
+import { CmsHubPage } from './pages/admin/cms/CmsHubPage';
+import { CmsPageBuilderPage } from './pages/admin/cms/CmsPageBuilderPage';
 import { MediaPage } from './pages/admin/MediaPage';
 import { AuditPage } from './pages/admin/AuditPage';
 import { NewsAdminPage } from './pages/admin/NewsAdminPage';
@@ -45,6 +46,7 @@ import { NewsletterAdminPage } from './pages/admin/NewsletterAdminPage';
 import { HallOfFameAdminPage } from './pages/admin/HallOfFameAdminPage';
 import { MuseumAdminPage } from './pages/admin/MuseumAdminPage';
 import { NotificationsPage } from './pages/admin/NotificationsPage';
+import { CmsDynamicPage } from './pages/public/CmsDynamicPage';
 
 export default function App() {
   return (
@@ -69,6 +71,7 @@ export default function App() {
           <Route path="muzej" element={<MuseumPage />} />
           <Route path="clanstvo" element={<MembershipPage />} />
           <Route path="ulaznice" element={<TicketsPage />} />
+          <Route path="p/:slug" element={<CmsDynamicPage />} />
         </Route>
 
         <Route path="admin/login" element={<AdminLoginPage />} />
@@ -80,7 +83,8 @@ export default function App() {
             <Route path="notifications" element={<NotificationsPage />} />
             <Route path="users" element={<UsersPage />} />
             <Route path="roles" element={<RolesPage />} />
-            <Route path="cms" element={<CmsPage />} />
+            <Route path="cms" element={<CmsHubPage />} />
+            <Route path="cms/pages/:id" element={<CmsPageBuilderPage />} />
             <Route path="media" element={<MediaPage />} />
             <Route path="audit" element={<AuditPage />} />
             <Route path="news" element={<NewsAdminPage />} />
