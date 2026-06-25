@@ -1,11 +1,14 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '../lib/api';
+import type { StandingRow } from '../types';
+import { useQuery } from '@tanstack/react-query';
 
 export function useStandings(seasonId?: string) {
   return useQuery({
     queryKey: ['standings', seasonId],
     queryFn: async () =>
-      (await api.get('/statistics/standings', { params: seasonId ? { seasonId } : undefined })).data,
+      (await api.get<StandingRow[]>('/statistics/standings', { params: seasonId ? { seasonId } : undefined }))
+        .data,
     enabled: !!seasonId,
   });
 }
@@ -18,11 +21,101 @@ export function useCreatePlayer() {
   });
 }
 
+export function useUpdatePlayer() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ id, ...body }: { id: string } & Record<string, unknown>) =>
+      (await api.patch(`/players/${id}`, body)).data,
+    onSuccess: () => void qc.invalidateQueries({ queryKey: ['players'] }),
+  });
+}
+
+export function useDeletePlayer() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (id: string) => (await api.delete(`/players/${id}`)).data,
+    onSuccess: () => void qc.invalidateQueries({ queryKey: ['players'] }),
+  });
+}
+
 export function useCreateClub() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (body: Record<string, unknown>) => (await api.post('/clubs', body)).data,
     onSuccess: () => void qc.invalidateQueries({ queryKey: ['clubs'] }),
+  });
+}
+
+export function useUpdateClub() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ id, ...body }: { id: string } & Record<string, unknown>) =>
+      (await api.patch(`/clubs/${id}`, body)).data,
+    onSuccess: () => void qc.invalidateQueries({ queryKey: ['clubs'] }),
+  });
+}
+
+export function useDeleteClub() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (id: string) => (await api.delete(`/clubs/${id}`)).data,
+    onSuccess: () => void qc.invalidateQueries({ queryKey: ['clubs'] }),
+  });
+}
+
+export function useCreateCompetition() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (body: { name: string }) => (await api.post('/competitions', body)).data,
+    onSuccess: () => void qc.invalidateQueries({ queryKey: ['competitions'] }),
+  });
+}
+
+export function useUpdateCompetition() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ id, ...body }: { id: string; name?: string }) =>
+      (await api.patch(`/competitions/${id}`, body)).data,
+    onSuccess: () => void qc.invalidateQueries({ queryKey: ['competitions'] }),
+  });
+}
+
+export function useDeleteCompetition() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (id: string) => (await api.delete(`/competitions/${id}`)).data,
+    onSuccess: () => void qc.invalidateQueries({ queryKey: ['competitions'] }),
+  });
+}
+
+export function useCreateSeason() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (body: {
+      name: string;
+      yearStart: number;
+      yearEnd: number;
+      competitionId: string;
+      isActive?: boolean;
+    }) => (await api.post('/competitions/seasons', body)).data,
+    onSuccess: () => void qc.invalidateQueries({ queryKey: ['seasons'] }),
+  });
+}
+
+export function useUpdateSeason() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ id, ...body }: { id: string } & Record<string, unknown>) =>
+      (await api.patch(`/competitions/seasons/${id}`, body)).data,
+    onSuccess: () => void qc.invalidateQueries({ queryKey: ['seasons'] }),
+  });
+}
+
+export function useDeleteSeason() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (id: string) => (await api.delete(`/competitions/seasons/${id}`)).data,
+    onSuccess: () => void qc.invalidateQueries({ queryKey: ['seasons'] }),
   });
 }
 
@@ -34,10 +127,68 @@ export function useCreateMatch() {
   });
 }
 
+export function useUpdateMatch() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ id, ...body }: { id: string } & Record<string, unknown>) =>
+      (await api.patch(`/matches/${id}`, body)).data,
+    onSuccess: () => void qc.invalidateQueries({ queryKey: ['matches'] }),
+  });
+}
+
+export function useDeleteMatch() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (id: string) => (await api.delete(`/matches/${id}`)).data,
+    onSuccess: () => void qc.invalidateQueries({ queryKey: ['matches'] }),
+  });
+}
+
+export function useSetMatchLineup() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({
+      matchId,
+      slots,
+    }: {
+      matchId: string;
+      slots: { playerId: string; positionX: number; positionY: number; isStarter?: boolean }[];
+    }) => (await api.put(`/matches/${matchId}/lineup`, { slots })).data,
+    onSuccess: (_data, { matchId }) => {
+      void qc.invalidateQueries({ queryKey: ['matches'] });
+      void qc.invalidateQueries({ queryKey: ['matches', matchId] });
+    },
+  });
+}
+
 export function useApproveMatchReport() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (matchId: string) => (await api.post(`/live/matches/${matchId}/approve`)).data,
     onSuccess: () => void qc.invalidateQueries({ queryKey: ['matches'] }),
+  });
+}
+
+export function useActivateMembership() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (id: string) => (await api.patch(`/membership/${id}/activate`)).data,
+    onSuccess: () => void qc.invalidateQueries({ queryKey: ['membership'] }),
+  });
+}
+
+export function useSuspendMembership() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (id: string) => (await api.patch(`/membership/${id}/suspend`)).data,
+    onSuccess: () => void qc.invalidateQueries({ queryKey: ['membership'] }),
+  });
+}
+
+export function useCancelMembership() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (id: string) => (await api.patch(`/membership/${id}/cancel`)).data,
+    onSuccess: () => void qc.invalidateQueries({ queryKey: ['membership'] }),
   });
 }

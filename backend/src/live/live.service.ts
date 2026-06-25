@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { NotFoundException } from '@nestjs/common';
 import { MatchEventType, MatchReportStatus, MatchStatus } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { RealtimeGateway } from '../realtime/realtime.gateway';
@@ -73,6 +74,21 @@ export class LiveService {
     });
     await this.statistics.recalculateForMatch(matchId);
     this.realtime.emitMatchStatus(matchId, match);
+    return match;
+  }
+
+  async getFeed(matchId: string) {
+    const match = await this.prisma.match.findUnique({
+      where: { id: matchId },
+      include: {
+        homeClub: true,
+        awayClub: true,
+        events: { orderBy: { minute: 'asc' }, include: { player: true } },
+        liveComments: { orderBy: { createdAt: 'asc' } },
+        lineup: { include: { player: true } },
+      },
+    });
+    if (!match) throw new NotFoundException('Utakmica nije pronađena');
     return match;
   }
 }

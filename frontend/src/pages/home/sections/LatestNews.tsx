@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { usePublishedNews } from '../../../hooks';
+import { stripHtml } from '../../../lib/html-content';
 import { mediaUrl } from '../../../lib/media';
 import { formatDate } from '../../../lib/utils';
 import { Card, CardContent, CardHeader, CardTitle } from '../../../components/ui/card';
@@ -37,7 +38,7 @@ export function LatestNews() {
                     <CardTitle className="line-clamp-2 text-base">{item.title}</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <p className="line-clamp-2 text-sm text-text-muted">{item.excerpt}</p>
+                    <p className="line-clamp-2 text-sm text-text-muted">{stripHtml(item.excerpt ?? '')}</p>
                     <p className="mt-2 text-xs text-text-muted">
                       {item.publishedAt ? formatDate(item.publishedAt) : ''}
                     </p>

@@ -1,35 +1,69 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { asArray } from '../../lib/as-array';
 import { useNewsList } from '../../hooks';
-import { useDeleteNews, useUpdateNewsStatus } from '../../hooks/use-news-admin';
+import {
+  useDeleteNews,
+  useNewsCategories,
+  useSubmitNewsForReview,
+  useUpdateNewsStatus,
+  type NewsCategory,
+} from '../../hooks/use-news-admin';
+import { useAuth } from '../../lib/auth';
+import { hasPermission } from '../../lib/permissions';
+import { ConfirmDialog } from '../../components/admin/ConfirmDialog';
 import { Seo } from '../../components/seo/Seo';
 import { Badge } from '../../components/ui/badge';
 import { Button } from '../../components/ui/button';
 import { AdminDataTable, AdminPageShell } from '../../components/admin/AdminPageShell';
 import { NewsAdminFormSheet } from './NewsAdminFormSheet';
+import { NewsCategoriesDialog } from './NewsCategoriesDialog';
 import type { ContentStatus, NewsItem } from '../../types';
 
-function statusVariant(status: ContentStatus): 'default' | 'muted' {
-  if (status === 'PUBLISHED') return 'default';
+function statusVariant(status: ContentStatus): 'default' | 'success' | 'muted' {
+  if (status === 'PUBLISHED') return 'success';
+  if (status === 'PENDING') return 'default';
   return 'muted';
 }
 
 export function NewsAdminPage() {
-  const { data, isLoading } = useNewsList();
+  const { user } = useAuth();
+  const perms = user?.permissions ?? [];
+  const canSubmit = hasPermission(perms, 'news.submit');
+  const canApprove = hasPermission(perms, 'news.approve');
+  const canManage = hasPermission(perms, 'news.manage');
+  const [categoryId, setCategoryId] = useState('');
+  const { data: categoriesRaw } = useNewsCategories();
+  const categories = asArray<NewsCategory>(categoriesRaw);
+  const { data, isLoading } = useNewsList(undefined, categoryId || undefined);
   const updateStatus = useUpdateNewsStatus();
+  const submitReview = useSubmitNewsForReview();
   const deleteNews = useDeleteNews();
   const [formOpen, setFormOpen] = useState(false);
+  const [editItem, setEditItem] = useState<NewsItem | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<NewsItem | null>(null);
+  const [categoriesOpen, setCategoriesOpen] = useState(false);
+
+  const openCreate = () => {
+    setEditItem(null);
+    setFormOpen(true);
+  };
+
+  const openEdit = (item: NewsItem) => {
+    setEditItem(item);
+    setFormOpen(true);
+  };
 
   const publish = (item: NewsItem) => {
     void updateStatus.mutateAsync({ id: item.id, status: 'PUBLISHED' });
   };
 
-  const archive = (item: NewsItem) => {
-    void updateStatus.mutateAsync({ id: item.id, status: 'ARCHIVED' });
+  const submit = (item: NewsItem) => {
+    void submitReview.mutateAsync(item.id);
   };
 
-  const remove = (item: NewsItem) => {
-    if (window.confirm(`Obrisati "${item.title}"?`)) void deleteNews.mutateAsync(item.id);
+  const archive = (item: NewsItem) => {
+    void updateStatus.mutateAsync({ id: item.id, status: 'ARCHIVED' });
   };
 
   return (
@@ -38,13 +72,39 @@ export function NewsAdminPage() {
       <AdminPageShell
         title="Vijesti"
         isLoading={isLoading}
-        actions={<Button onClick={() => setFormOpen(true)}>Nova vijest</Button>}
+        actions={
+          <div className="flex flex-wrap items-center gap-2">
+            <select
+              className="rounded-lg border border-slate-200 bg-background px-3 py-2 text-sm"
+              value={categoryId}
+              onChange={(e) => setCategoryId(e.target.value)}
+            >
+              <option value="">Sve kategorije</option>
+              {categories.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.name}
+                </option>
+              ))}
+            </select>
+            {canManage && (
+              <Button variant="outline" onClick={() => setCategoriesOpen(true)}>
+                Kategorije
+              </Button>
+            )}
+            <Button onClick={openCreate}>Nova vijest</Button>
+          </div>
+        }
       >
         <AdminDataTable
-          rows={data ?? []}
+          rows={asArray<NewsItem>(data)}
           empty="Nema vijesti — kreirajte prvu."
           columns={[
             { key: 'title', header: 'Naslov', render: (r) => r.title },
+            {
+              key: 'category',
+              header: 'Kategorija',
+              render: (r) => r.category?.name ?? '—',
+            },
             {
               key: 'status',
               header: 'Status',
@@ -55,7 +115,20 @@ export function NewsAdminPage() {
               header: 'Akcije',
               render: (r) => (
                 <div className="flex flex-wrap gap-2">
-                  {r.status !== 'PUBLISHED' && (
+                  <Button size="sm" variant="outline" onClick={() => openEdit(r)}>
+                    Uredi
+                  </Button>
+                  {r.status === 'DRAFT' && canSubmit && !canApprove && (
+                    <Button size="sm" variant="outline" onClick={() => submit(r)} disabled={submitReview.isPending}>
+                      Predaj na pregled
+                    </Button>
+                  )}
+                  {r.status === 'PENDING' && canApprove && (
+                    <Button size="sm" onClick={() => publish(r)} disabled={updateStatus.isPending}>
+                      Odobri i objavi
+                    </Button>
+                  )}
+                  {r.status === 'DRAFT' && canApprove && (
                     <Button size="sm" onClick={() => publish(r)} disabled={updateStatus.isPending}>
                       Objavi
                     </Button>
@@ -72,7 +145,7 @@ export function NewsAdminPage() {
                       Arhiviraj
                     </Button>
                   )}
-                  <Button size="sm" variant="ghost" onClick={() => remove(r)}>
+                  <Button size="sm" variant="ghost" onClick={() => setDeleteTarget(r)}>
                     Obriši
                   </Button>
                 </div>
@@ -81,7 +154,25 @@ export function NewsAdminPage() {
           ]}
         />
       </AdminPageShell>
-      <NewsAdminFormSheet open={formOpen} onOpenChange={setFormOpen} />
+      <NewsCategoriesDialog open={categoriesOpen} onOpenChange={setCategoriesOpen} />
+      <NewsAdminFormSheet
+        open={formOpen}
+        onOpenChange={setFormOpen}
+        item={editItem}
+      />
+      <ConfirmDialog
+        open={!!deleteTarget}
+        onOpenChange={(o) => !o && setDeleteTarget(null)}
+        title="Obriši vijest"
+        description={deleteTarget ? `Obrisati "${deleteTarget.title}"?` : ''}
+        confirmLabel="Obriši"
+        variant="danger"
+        isPending={deleteNews.isPending}
+        onConfirm={() => {
+          if (!deleteTarget) return;
+          void deleteNews.mutateAsync(deleteTarget.id).then(() => setDeleteTarget(null));
+        }}
+      />
     </>
   );
 }

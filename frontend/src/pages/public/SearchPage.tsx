@@ -1,81 +1,95 @@
 import { useState } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
-import { useSearch } from '../../hooks';
+import { useSearchParams } from 'react-router-dom';
+import { useSearch } from '../../hooks/use-search';
+import { SearchResultSections } from '../../components/search/SearchResultSections';
 import { Seo } from '../../components/seo/Seo';
+import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
-import { Card, CardContent } from '../../components/ui/card';
 import { Skeleton } from '../../components/ui/skeleton';
+import { SEARCH_FACET_LABELS, SEARCH_FACETS, type SearchFacet } from '../../types/search';
 
 export function SearchPage() {
   const [params, setParams] = useSearchParams();
-  const [q, setQ] = useState(params.get('q') ?? '');
   const query = params.get('q') ?? '';
-  const { data, isLoading } = useSearch(query);
+  const type = (params.get('type') as SearchFacet | null) ?? undefined;
+  const page = Number(params.get('page') ?? '1') || 1;
+  const [q, setQ] = useState(query);
+  const { data, isLoading } = useSearch({ q: query, type, page });
+
+  const setSearch = (next: { q?: string; type?: SearchFacet | null; page?: number }) => {
+    const p = new URLSearchParams();
+    const qv = next.q ?? query;
+    if (qv) p.set('q', qv);
+    const tv = next.type === undefined ? type : next.type;
+    if (tv) p.set('type', tv);
+    const pv = next.page ?? (next.type !== undefined ? 1 : page);
+    if (pv > 1) p.set('page', String(pv));
+    setParams(p);
+  };
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    setParams(q ? { q } : {});
+    setSearch({ q, type: null, page: 1 });
   };
+
+  const hasResults = data && SEARCH_FACETS.some((f) => (data[f]?.length ?? 0) > 0);
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-12">
       <Seo title="Pretraga" />
       <h1 className="mb-6 text-3xl font-bold">Pretraga</h1>
-      <form onSubmit={handleSearch} className="mb-8">
-        <Input
-          value={q}
-          onChange={(e) => setQ(e.target.value)}
-          placeholder="Pretraži vijesti, igrače, utakmice..."
-        />
+      <form onSubmit={handleSearch} className="mb-6">
+        <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Pretraži vijesti, igrače, utakmice..." />
       </form>
       {query.length < 2 ? (
         <p className="text-text-muted">Unesite najmanje 2 karaktera.</p>
       ) : isLoading ? (
         <Skeleton className="h-32" />
       ) : (
-        <div className="space-y-6">
-          {data?.news && data.news.length > 0 && (
-            <section>
-              <h2 className="mb-3 font-semibold">Vijesti</h2>
-              {data.news.map((n) => (
-                <Link key={n.id} to={`/vijesti/${n.slug}`}>
-                  <Card className="mb-2 hover:shadow-sm">
-                    <CardContent className="p-4">{n.title}</CardContent>
-                  </Card>
-                </Link>
-              ))}
-            </section>
+        <>
+          {data?.facets && (
+            <div className="mb-6 flex flex-wrap gap-2">
+              <Button size="sm" variant={!type ? 'default' : 'outline'} onClick={() => setSearch({ type: null, page: 1 })}>
+                Sve
+              </Button>
+              {SEARCH_FACETS.map((facet) =>
+                data.facets[facet] > 0 ? (
+                  <Button
+                    key={facet}
+                    size="sm"
+                    variant={type === facet ? 'default' : 'outline'}
+                    onClick={() => setSearch({ type: facet, page: 1 })}
+                  >
+                    {SEARCH_FACET_LABELS[facet]} ({data.facets[facet]})
+                  </Button>
+                ) : null,
+              )}
+            </div>
           )}
-          {data?.players && data.players.length > 0 && (
-            <section>
-              <h2 className="mb-3 font-semibold">Igrači</h2>
-              {data.players.map((p) => (
-                <Card key={p.id} className="mb-2">
-                  <CardContent className="p-4">
-                    {p.firstName} {p.lastName}
-                  </CardContent>
-                </Card>
-              ))}
-            </section>
-          )}
-          {data?.matches && data.matches.length > 0 && (
-            <section>
-              <h2 className="mb-3 font-semibold">Utakmice</h2>
-              {data.matches.map((m) => (
-                <Link key={m.id} to={`/utakmice/${m.id}`}>
-                  <Card className="mb-2 hover:shadow-sm">
-                    <CardContent className="p-4">
-                      {m.homeClub?.name} vs {m.awayClub?.name}
-                    </CardContent>
-                  </Card>
-                </Link>
-              ))}
-            </section>
-          )}
-          {!data?.news?.length && !data?.players?.length && !data?.matches?.length && (
+          {hasResults && data ? (
+            <SearchResultSections data={data} type={type} />
+          ) : (
             <p className="text-text-muted">Nema rezultata.</p>
           )}
-        </div>
+          {type && data?.meta && data.meta.totalPages > 1 && (
+            <div className="mt-6 flex justify-center gap-2">
+              <Button variant="outline" size="sm" disabled={page <= 1} onClick={() => setSearch({ page: page - 1 })}>
+                Prethodna
+              </Button>
+              <span className="self-center text-sm text-text-muted">
+                {page} / {data.meta.totalPages}
+              </span>
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={page >= data.meta.totalPages}
+                onClick={() => setSearch({ page: page + 1 })}
+              >
+                Sljedeća
+              </Button>
+            </div>
+          )}
+        </>
       )}
     </div>
   );

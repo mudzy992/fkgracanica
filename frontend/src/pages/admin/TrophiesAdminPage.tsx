@@ -1,36 +1,40 @@
 import { useState } from 'react';
-import { Plus, Trash2 } from 'lucide-react';
+import { Pencil, Plus, Trash2 } from 'lucide-react';
 import { useTrophies } from '../../hooks';
-import { useCreateTrophy, useDeleteTrophy } from '../../hooks/use-content-admin';
+import { useDeleteTrophy } from '../../hooks/use-content-admin';
+import { useConfirm } from '../../hooks/use-confirm';
 import { Seo } from '../../components/seo/Seo';
 import { Button } from '../../components/ui/button';
-import { Input } from '../../components/ui/input';
 import { AdminDataTable, AdminPageShell } from '../../components/admin/AdminPageShell';
-import { AdminFormSheet } from '../../components/admin/AdminFormSheet';
+import { TrophiesAdminFormSheet } from './TrophiesAdminFormSheet';
+import type { Trophy } from '../../types';
 
 export function TrophiesAdminPage() {
   const { data, isLoading } = useTrophies();
-  const create = useCreateTrophy();
   const remove = useDeleteTrophy();
+  const { confirm, dialog } = useConfirm();
   const [open, setOpen] = useState(false);
-  const [name, setName] = useState('');
-  const [year, setYear] = useState(new Date().getFullYear());
-  const [competition, setCompetition] = useState('');
+  const [edit, setEdit] = useState<Trophy | null>(null);
 
-  const onCreate = async () => {
-    await create.mutateAsync({ name, year, competition: competition || undefined });
-    setName('');
-    setOpen(false);
+  const onDelete = async (item: Trophy) => {
+    const ok = await confirm({
+      title: 'Obrisati trofej?',
+      description: `"${item.name}" će biti obrisan.`,
+      confirmLabel: 'Obriši',
+      variant: 'danger',
+    });
+    if (ok) void remove.mutateAsync(item.id);
   };
 
   return (
     <>
       <Seo title="Trofeji" />
+      {dialog}
       <AdminPageShell
         title="Trofeji"
         isLoading={isLoading}
         actions={
-          <Button size="sm" onClick={() => setOpen(true)}>
+          <Button size="sm" onClick={() => { setEdit(null); setOpen(true); }}>
             <Plus className="mr-1 h-4 w-4" />
             Novi
           </Button>
@@ -43,35 +47,26 @@ export function TrophiesAdminPage() {
             { key: 'year', header: 'Godina', render: (r) => r.year },
             {
               key: 'actions',
-              header: '',
+              header: 'Akcije',
               render: (r) => (
-                <Button variant="ghost" size="icon" onClick={() => void remove.mutateAsync(r.id)}>
-                  <Trash2 className="h-4 w-4 text-danger" />
-                </Button>
+                <div className="flex gap-1">
+                  <Button variant="ghost" size="icon" onClick={() => { setEdit(r); setOpen(true); }}>
+                    <Pencil className="h-4 w-4" />
+                  </Button>
+                  <Button variant="ghost" size="icon" onClick={() => void onDelete(r)}>
+                    <Trash2 className="h-4 w-4 text-danger" />
+                  </Button>
+                </div>
               ),
             },
           ]}
         />
       </AdminPageShell>
-      <AdminFormSheet open={open} onOpenChange={setOpen} title="Novi trofej">
-        <div className="space-y-4">
-          <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Naziv" />
-          <Input
-            type="number"
-            value={year}
-            onChange={(e) => setYear(Number(e.target.value))}
-            placeholder="Godina"
-          />
-          <Input
-            value={competition}
-            onChange={(e) => setCompetition(e.target.value)}
-            placeholder="Takmičenje"
-          />
-          <Button onClick={() => void onCreate()} disabled={!name || create.isPending}>
-            Kreiraj
-          </Button>
-        </div>
-      </AdminFormSheet>
+      <TrophiesAdminFormSheet
+        open={open}
+        onOpenChange={(o) => { setOpen(o); if (!o) setEdit(null); }}
+        edit={edit}
+      />
     </>
   );
 }

@@ -49,7 +49,7 @@ describe('Membership card (e2e)', () => {
       .set('Authorization', `Bearer ${accessToken}`);
 
     expect(activated.status).toBe(200);
-    expect(activated.body.card.qrCode).toMatch(/^member_/);
+    expect(activated.body.card.qrCode).toMatch(/^member-/);
     expect(activated.body.card.cardNumber).toMatch(/^FK-/);
 
     const mine = await request(app.getHttpServer())

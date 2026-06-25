@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   useMarkAllNotificationsRead,
@@ -8,10 +9,12 @@ import { formatDateTime } from '../../lib/utils';
 import { Seo } from '../../components/seo/Seo';
 import { Button } from '../../components/ui/button';
 import { AdminPageShell } from '../../components/admin/AdminPageShell';
+import { AdminPagination } from '../../components/admin/AdminPagination';
 
 export function NotificationsPage() {
   const { t } = useTranslation();
-  const { data, isLoading } = useNotifications();
+  const [page, setPage] = useState(1);
+  const { data, isLoading } = useNotifications({ page });
   const markRead = useMarkNotificationRead();
   const markAll = useMarkAllNotificationsRead();
   const items = data?.data ?? [];
@@ -28,7 +31,10 @@ export function NotificationsPage() {
           </Button>
         }
       >
-        <ul className="space-y-2">
+        <ul className="space-y-2 p-4">
+          {items.length === 0 && (
+            <p className="text-center text-sm text-text-muted">{t('notifications.empty', 'Nema obavještenja.')}</p>
+          )}
           {items.map((n) => (
             <li
               key={n.id}
@@ -49,6 +55,7 @@ export function NotificationsPage() {
             </li>
           ))}
         </ul>
+        {data?.meta && <AdminPagination meta={data.meta} page={page} onPageChange={setPage} />}
       </AdminPageShell>
     </>
   );

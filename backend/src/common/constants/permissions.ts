@@ -11,6 +11,7 @@ export const PERMISSIONS = [
   { key: 'cms.manage', description: 'Upravljanje CMS blokovima' },
   { key: 'media.manage', description: 'Upravljanje medijima' },
   { key: 'news.manage', description: 'Upravljanje vijestima' },
+  { key: 'news.submit', description: 'Predaja vijesti na odobravanje' },
   { key: 'news.approve', description: 'Odobravanje vijesti' },
   { key: 'gallery.manage', description: 'Upravljanje galerijama' },
   { key: 'gallery.approve', description: 'Odobravanje galerija' },

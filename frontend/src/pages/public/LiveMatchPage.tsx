@@ -1,19 +1,10 @@
 import { useParams, Link } from 'react-router-dom';
 import { useMatch } from '../../hooks';
 import { useMatchRealtime } from '../../hooks/use-match-realtime';
+import { matchEventLabel } from '../../lib/match-event-labels';
 import { Seo } from '../../components/seo/Seo';
 import { Badge } from '../../components/ui/badge';
 import { Skeleton } from '../../components/ui/skeleton';
-
-const EVENT_LABELS: Record<string, string> = {
-  GOAL: 'Gol',
-  YELLOW_CARD: 'Žuti karton',
-  RED_CARD: 'Crveni karton',
-  SUBSTITUTION: 'Izmjena',
-  KICKOFF: 'Početak',
-  HALFTIME: 'Poluvrijeme',
-  FULL_TIME: 'Kraj',
-};
 
 export function LiveMatchPage() {
   const { id } = useParams<{ id: string }>();
@@ -45,7 +36,8 @@ export function LiveMatchPage() {
         {data.events?.map((ev) => (
           <div key={ev.id} className="rounded-lg border border-slate-200 p-3 text-sm">
             <span className="font-bold text-primary">{ev.minute}&apos;</span>{' '}
-            {EVENT_LABELS[ev.type] ?? ev.type}
+            {matchEventLabel(ev.type)}
+            {ev.player && ` — ${ev.player.firstName} ${ev.player.lastName}`}
             {ev.description && ` — ${ev.description}`}
           </div>
         ))}

@@ -1,9 +1,9 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '../lib/api';
+import { asArray } from '../lib/as-array';
 import type {
   Club,
   ClubTimelineEvent,
-  ContactMessage,
   DashboardKpis,
   GalleryItem,
   HallOfFameEntry,
@@ -11,24 +11,35 @@ import type {
   MuseumItem,
   NewsItem,
   Player,
-  SearchResults,
   Sponsor,
   Trophy,
   User,
 } from '../types';
 
-export function usePublishedNews() {
+export function usePublishedNews(categoryId?: string) {
   return useQuery({
-    queryKey: ['news', 'published'],
-    queryFn: async () => (await api.get<NewsItem[]>('/news/published')).data,
+    queryKey: ['news', 'published', categoryId],
+    queryFn: async () =>
+      asArray<NewsItem>(
+        (await api.get('/news/published', {
+          params: categoryId ? { categoryId } : undefined,
+        })).data,
+      ),
   });
 }
 
-export function useNewsList(status?: string) {
+export function useNewsList(status?: string, categoryId?: string) {
   return useQuery({
-    queryKey: ['news', status],
+    queryKey: ['news', status, categoryId],
     queryFn: async () =>
-      (await api.get<NewsItem[]>('/news', { params: status ? { status } : undefined })).data,
+      asArray<NewsItem>(
+        (await api.get('/news', {
+          params: {
+            ...(status ? { status } : {}),
+            ...(categoryId ? { categoryId } : {}),
+          },
+        })).data,
+      ),
   });
 }
 
@@ -50,7 +61,9 @@ export function useGalleryList(status?: string) {
   return useQuery({
     queryKey: ['gallery', status],
     queryFn: async () =>
-      (await api.get<GalleryItem[]>('/gallery', { params: status ? { status } : { status: 'PUBLISHED' } })).data,
+      asArray<GalleryItem>(
+        (await api.get('/gallery', { params: status ? { status } : { status: 'PUBLISHED' } })).data,
+      ),
   });
 }
 
@@ -58,7 +71,9 @@ export function useGalleryItem(slug: string) {
   return useQuery({
     queryKey: ['gallery', slug],
     queryFn: async () => {
-      const list = (await api.get<GalleryItem[]>('/gallery', { params: { status: 'PUBLISHED' } })).data;
+      const list = asArray<GalleryItem>(
+        (await api.get('/gallery', { params: { status: 'PUBLISHED' } })).data,
+      );
       const item = list.find((g) => g.slug === slug);
       if (!item) throw new Error('Not found');
       return (await api.get<GalleryItem>(`/gallery/${item.id}`)).data;
@@ -70,35 +85,35 @@ export function useGalleryItem(slug: string) {
 export function useSponsors() {
   return useQuery({
     queryKey: ['sponsors'],
-    queryFn: async () => (await api.get<Sponsor[]>('/sponsors')).data,
+    queryFn: async () => asArray<Sponsor>((await api.get('/sponsors')).data),
   });
 }
 
 export function useTrophies() {
   return useQuery({
     queryKey: ['trophies'],
-    queryFn: async () => (await api.get<Trophy[]>('/trophies')).data,
+    queryFn: async () => asArray<Trophy>((await api.get('/trophies')).data),
   });
 }
 
 export function useClubTimeline() {
   return useQuery({
     queryKey: ['club-timeline'],
-    queryFn: async () => (await api.get<ClubTimelineEvent[]>('/club-timeline')).data,
+    queryFn: async () => asArray<ClubTimelineEvent>((await api.get('/club-timeline')).data),
   });
 }
 
 export function usePlayers() {
   return useQuery({
     queryKey: ['players'],
-    queryFn: async () => (await api.get<Player[]>('/players')).data,
+    queryFn: async () => asArray<Player>((await api.get('/players')).data),
   });
 }
 
 export function useClubs() {
   return useQuery({
     queryKey: ['clubs'],
-    queryFn: async () => (await api.get<Club[]>('/clubs')).data,
+    queryFn: async () => asArray<Club>((await api.get('/clubs')).data),
   });
 }
 
@@ -106,7 +121,7 @@ export function useMatches(seasonId?: string) {
   return useQuery({
     queryKey: ['matches', seasonId],
     queryFn: async () =>
-      (await api.get<Match[]>('/matches', { params: seasonId ? { seasonId } : undefined })).data,
+      asArray<Match>((await api.get('/matches', { params: seasonId ? { seasonId } : undefined })).data),
   });
 }
 
@@ -121,22 +136,14 @@ export function useMatch(id: string) {
 export function useHallOfFame() {
   return useQuery({
     queryKey: ['hall-of-fame'],
-    queryFn: async () => (await api.get<HallOfFameEntry[]>('/hall-of-fame')).data,
+    queryFn: async () => asArray<HallOfFameEntry>((await api.get('/hall-of-fame')).data),
   });
 }
 
 export function useMuseum() {
   return useQuery({
     queryKey: ['museum'],
-    queryFn: async () => (await api.get<MuseumItem[]>('/museum')).data,
-  });
-}
-
-export function useSearch(q: string) {
-  return useQuery({
-    queryKey: ['search', q],
-    queryFn: async () => (await api.get<SearchResults>('/search', { params: { q } })).data,
-    enabled: q.length >= 2,
+    queryFn: async () => asArray<MuseumItem>((await api.get('/museum')).data),
   });
 }
 
@@ -172,62 +179,42 @@ export function useUsers(params: { page?: number; search?: string } = {}) {
 export function useRoles() {
   return useQuery({
     queryKey: ['roles'],
-    queryFn: async () => (await api.get('/rbac/roles')).data,
+    queryFn: async () => asArray((await api.get('/rbac/roles')).data),
   });
 }
 
 export function usePermissions() {
   return useQuery({
     queryKey: ['permissions'],
-    queryFn: async () => (await api.get('/rbac/permissions')).data,
-  });
-}
-
-export function useContactMessages() {
-  return useQuery({
-    queryKey: ['contact'],
-    queryFn: async () => (await api.get<ContactMessage[]>('/contact')).data,
-  });
-}
-
-export function useNewsletterSubscribers() {
-  return useQuery({
-    queryKey: ['newsletter'],
-    queryFn: async () => (await api.get('/newsletter')).data,
+    queryFn: async () => asArray((await api.get('/rbac/permissions')).data),
   });
 }
 
 export function useMemberships() {
   return useQuery({
     queryKey: ['membership'],
-    queryFn: async () => (await api.get('/membership')).data,
+    queryFn: async () => asArray((await api.get('/membership')).data),
   });
 }
 
 export function useTicketingOrders() {
   return useQuery({
     queryKey: ['ticketing', 'orders'],
-    queryFn: async () => (await api.get('/ticketing/orders')).data,
+    queryFn: async () => asArray((await api.get('/ticketing/orders')).data),
   });
 }
 
 export function useCmsBlocks() {
   return useQuery({
     queryKey: ['cms', 'blocks'],
-    queryFn: async () => (await api.get('/cms/blocks')).data,
+    queryFn: async () => asArray<import('../types').CmsBlock>((await api.get('/cms/blocks')).data),
   });
 }
 
 export function useCmsBlock(key: string) {
   const { data, ...rest } = useCmsBlocks();
-  return { data: data?.find((b: { key: string }) => b.key === key), ...rest };
-}
-
-export function useMediaAssets() {
-  return useQuery({
-    queryKey: ['media', 'assets'],
-    queryFn: async () => (await api.get('/media/assets')).data,
-  });
+  const blocks = asArray<{ key: string }>(data);
+  return { data: blocks.find((b) => b.key === key) as import('../types').CmsBlock | undefined, ...rest };
 }
 
 export function useAuditLog(params: Record<string, string | number | undefined> = {}) {
@@ -247,14 +234,14 @@ export function useAuditLog(params: Record<string, string | number | undefined> 
 export function useCompetitions() {
   return useQuery({
     queryKey: ['competitions'],
-    queryFn: async () => (await api.get('/competitions')).data,
+    queryFn: async () => asArray((await api.get('/competitions')).data),
   });
 }
 
 export function useSeasons() {
   return useQuery({
     queryKey: ['seasons'],
-    queryFn: async () => (await api.get('/competitions/seasons/list')).data,
+    queryFn: async () => asArray((await api.get('/competitions/seasons/list')).data),
   });
 }
 
@@ -289,6 +276,7 @@ export function useUpdatePrivateSettings() {
   });
 }
 
+export * from './use-news-comments';
 export * from './use-news-admin';
 export * from './use-media-admin';
 export * from './use-live-admin';
@@ -298,3 +286,10 @@ export * from './use-notifications';
 export * from './use-cms-admin';
 export * from './use-content-admin';
 export * from './use-competition-admin';
+export * from './use-ticketing-admin';
+export * from './use-contact-admin';
+export * from './use-newsletter-admin';
+export * from './use-heritage-admin';
+export * from './use-confirm';
+export * from './use-search';
+export * from './use-public-web';

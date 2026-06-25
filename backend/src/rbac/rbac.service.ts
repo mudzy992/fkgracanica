@@ -51,6 +51,21 @@ export class RbacService {
     });
   }
 
+  async createRole(data: { name: string; description?: string }) {
+    return this.prisma.role.create({ data });
+  }
+
+  async deleteRole(roleId: string) {
+    const role = await this.prisma.role.findUnique({ where: { id: roleId } });
+    if (!role) throw new NotFoundException('Uloga nije pronađena');
+    if (this.isSystemRole(role.name)) {
+      throw new BadRequestException('Sistemska uloga se ne može obrisati');
+    }
+    await this.prisma.rolePermission.deleteMany({ where: { roleId } });
+    await this.prisma.userRole.deleteMany({ where: { roleId } });
+    return this.prisma.role.delete({ where: { id: roleId } });
+  }
+
   isSystemRole(name: string) {
     return SYSTEM_ROLES.includes(name);
   }

@@ -26,13 +26,14 @@ export class AuthService {
     if (!user || !(await bcrypt.compare(password, user.passwordHash))) {
       throw new UnauthorizedException('Neispravni podaci za prijavu');
     }
+    const permissions = await this.getUserPermissions(user.id);
     const tokens = await this.issueTokens(user.id, user.email);
     await this.audit.log({
       actorId: user.id,
       action: 'auth.login',
       ipAddress: ip,
     });
-    return { user: this.sanitizeUser(user), ...tokens };
+    return { user: { ...this.sanitizeUser(user), permissions }, ...tokens };
   }
 
   async refresh(refreshToken: string) {
@@ -87,5 +88,21 @@ export class AuthService {
       firstName: user.firstName,
       lastName: user.lastName,
     };
+  }
+
+  private async getUserPermissions(userId: string): Promise<string[]> {
+    const roles = await this.prisma.userRole.findMany({
+      where: { userId },
+      include: {
+        role: {
+          include: { permissions: { include: { permission: true } } },
+        },
+      },
+    });
+    return [
+      ...new Set(
+        roles.flatMap((ur) => ur.role.permissions.map((rp) => rp.permission.key)),
+      ),
+    ];
   }
 }

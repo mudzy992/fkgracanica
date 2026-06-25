@@ -18,6 +18,8 @@ import { ContactPage } from './pages/public/ContactPage';
 import { SearchPage } from './pages/public/SearchPage';
 import { HallOfFamePage } from './pages/public/HallOfFamePage';
 import { MuseumPage } from './pages/public/MuseumPage';
+import { MembershipPage } from './pages/public/MembershipPage';
+import { TicketsPage } from './pages/public/TicketsPage';
 import { AdminLoginPage } from './pages/admin/AdminLoginPage';
 import { DashboardPage } from './pages/admin/DashboardPage';
 import { SettingsPage } from './pages/admin/SettingsPage';
@@ -65,6 +67,8 @@ export default function App() {
           <Route path="pretraga" element={<SearchPage />} />
           <Route path="hall-of-fame" element={<HallOfFamePage />} />
           <Route path="muzej" element={<MuseumPage />} />
+          <Route path="clanstvo" element={<MembershipPage />} />
+          <Route path="ulaznice" element={<TicketsPage />} />
         </Route>
 
         <Route path="admin/login" element={<AdminLoginPage />} />

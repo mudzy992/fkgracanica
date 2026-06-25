@@ -1,4 +1,5 @@
 import { useClubTimeline } from '../../hooks';
+import { RichContent } from '../../components/public/RichContent';
 import { mediaUrl } from '../../lib/media';
 import { Seo } from '../../components/seo/Seo';
 import { Skeleton } from '../../components/ui/skeleton';
@@ -19,7 +20,7 @@ export function ClubTimelinePage() {
               <span className="absolute -left-[1.65rem] top-1 flex h-4 w-4 rounded-full bg-primary" />
               <p className="text-sm font-bold text-primary">{event.year}</p>
               <h2 className="text-xl font-semibold">{event.title}</h2>
-              {event.description && <p className="mt-2 text-text-muted">{event.description}</p>}
+              {event.description && <RichContent html={event.description} className="mt-2 text-text-muted" />}
               {event.imagePath && (
                 <img src={mediaUrl(event.imagePath)} alt="" className="mt-4 rounded-lg" />
               )}

@@ -31,6 +31,13 @@ export class MembershipController {
     return this.service.findAll();
   }
 
+  @Get(':id')
+  @UseGuards(PermissionsGuard)
+  @RequirePermissions('membership.manage')
+  findOne(@Param('id') id: string) {
+    return this.service.findOne(id);
+  }
+
   @Patch(':id/activate')
   @UseGuards(PermissionsGuard)
   @RequirePermissions('membership.manage')
@@ -43,5 +50,19 @@ export class MembershipController {
   @RequirePermissions('membership.manage')
   renew(@Param('id') id: string) {
     return this.service.renew(id);
+  }
+
+  @Patch(':id/suspend')
+  @UseGuards(PermissionsGuard)
+  @RequirePermissions('membership.manage')
+  suspend(@Param('id') id: string) {
+    return this.service.suspend(id);
+  }
+
+  @Patch(':id/cancel')
+  @UseGuards(PermissionsGuard)
+  @RequirePermissions('membership.manage')
+  cancel(@Param('id') id: string) {
+    return this.service.cancel(id);
   }
 }

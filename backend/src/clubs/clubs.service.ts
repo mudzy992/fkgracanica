@@ -19,7 +19,11 @@ export class ClubsService {
   }
 
   update(id: string, data: Record<string, unknown>) {
-    return this.prisma.club.update({ where: { id }, data });
+    const patch = { ...data };
+    if (typeof patch.name === 'string') {
+      patch.slug = slugify(patch.name);
+    }
+    return this.prisma.club.update({ where: { id }, data: patch });
   }
 
   remove(id: string) {

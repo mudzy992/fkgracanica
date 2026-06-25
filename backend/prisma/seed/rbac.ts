@@ -18,7 +18,7 @@ const ROLE_PERMISSIONS: Record<string, string[]> = {
     'live.approve', 'hall-of-fame.manage', 'museum.manage', 'analytics.read',
     'players.manage', 'clubs.manage', 'competitions.manage', 'ticketing.manage', 'membership.manage',
   ],
-  Writer: ['news.manage', 'gallery.manage'],
+  Writer: ['news.manage', 'news.submit', 'gallery.manage'],
   Komentator: ['live.manage', 'matches.manage'],
   Član: [],
 };

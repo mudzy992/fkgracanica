@@ -11,7 +11,7 @@ import { NotificationsService } from './notifications.service';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
 import type { AuthUser } from '../common/types/auth-user.type';
-import { PaginatedQueryDto } from '../common/dto/paginated-query.dto';
+import { NotificationsListQueryDto } from './dto/notifications-list-query.dto';
 
 @ApiTags('notifications')
 @Controller('notifications')
@@ -21,15 +21,11 @@ export class NotificationsController {
   constructor(private readonly notificationsService: NotificationsService) {}
 
   @Get()
-  findAll(
-    @CurrentUser() user: AuthUser,
-    @Query() query: PaginatedQueryDto,
-    @Query('unreadOnly') unreadOnly?: string,
-  ) {
+  findAll(@CurrentUser() user: AuthUser, @Query() query: NotificationsListQueryDto) {
     return this.notificationsService.findForUser(
       user.id,
       query,
-      unreadOnly === 'true',
+      query.unreadOnly === true,
     );
   }
 

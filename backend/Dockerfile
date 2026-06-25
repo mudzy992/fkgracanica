@@ -18,6 +18,7 @@ WORKDIR /app
 ENV NODE_ENV=production
 ENV LANG=C.UTF-8
 ENV LC_ALL=C.UTF-8
+RUN apt-get update && apt-get install -y --no-install-recommends openssl && rm -rf /var/lib/apt/lists/*
 RUN groupadd --system app && useradd --system --gid app --home-dir /app app
 COPY --from=build /app/package.json ./
 COPY --from=build /app/package-lock.json ./

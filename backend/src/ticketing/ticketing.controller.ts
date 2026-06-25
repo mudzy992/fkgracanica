@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Query, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { TicketingService } from './ticketing.service';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
@@ -27,6 +27,16 @@ export class TicketingController {
     return this.service.findOrders(user.id);
   }
 
+  @Get('orders/:orderId')
+  findOrder(@Param('orderId') orderId: string, @CurrentUser() user: AuthUser) {
+    return this.service.findOrderById(orderId);
+  }
+
+  @Post('orders/:orderId/cancel')
+  cancelOrder(@Param('orderId') orderId: string, @CurrentUser() user: AuthUser) {
+    return this.service.cancelOrder(orderId, user.id);
+  }
+
   @Post('validate')
   @UseGuards(PermissionsGuard)
   @RequirePermissions('ticketing.manage')
@@ -44,8 +54,15 @@ export class TicketingController {
   @Get('admin/orders')
   @UseGuards(PermissionsGuard)
   @RequirePermissions('ticketing.manage')
-  findAllOrders() {
-    return this.service.findAllOrders();
+  findAllOrders(@Query('page') page?: string, @Query('limit') limit?: string) {
+    return this.service.findAllOrders(Number(page) || 1, Number(limit) || 20);
+  }
+
+  @Post('orders/:orderId/confirm-refund')
+  @UseGuards(PermissionsGuard)
+  @RequirePermissions('ticketing.manage')
+  confirmRefund(@Param('orderId') orderId: string) {
+    return this.service.confirmRefund(orderId);
   }
 
   @Post('orders/:orderId/refund')

@@ -4,13 +4,14 @@ import { api } from '../lib/api';
 import { getRealtimeSocket } from '../lib/realtime';
 import type { NotificationItem, PaginatedResponse } from '../types/pagination';
 
-export function useNotifications(unreadOnly = false) {
+export function useNotifications(params: { unreadOnly?: boolean; page?: number } = {}) {
+  const { unreadOnly = false, page = 1 } = params;
   return useQuery({
-    queryKey: ['notifications', unreadOnly],
+    queryKey: ['notifications', unreadOnly, page],
     queryFn: async () =>
       (
         await api.get<PaginatedResponse<NotificationItem>>('/notifications', {
-          params: unreadOnly ? { unreadOnly: 'true' } : undefined,
+          params: { unreadOnly: unreadOnly ? 'true' : undefined, page },
         })
       ).data,
   });

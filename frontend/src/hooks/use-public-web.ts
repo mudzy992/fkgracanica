@@ -1,0 +1,75 @@
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { api } from '../lib/api';
+import { asArray } from '../lib/as-array';
+import type { NewsItem } from '../types';
+
+export interface LeaderRow {
+  playerId: string;
+  firstName: string;
+  lastName: string;
+  value: number;
+}
+
+export interface TeamStatRow {
+  id: string;
+  matchId: string;
+  clubId: string;
+  shots: number;
+  shotsOn: number;
+  corners: number;
+  fouls: number;
+  possession?: number | null;
+}
+
+export function useTopScorers(seasonId?: string) {
+  return useQuery({
+    queryKey: ['statistics', 'top-scorers', seasonId],
+    queryFn: async () =>
+      (await api.get<LeaderRow[]>('/statistics/top-scorers', { params: { seasonId } })).data,
+    enabled: !!seasonId,
+  });
+}
+
+export function useTopAssists(seasonId?: string) {
+  return useQuery({
+    queryKey: ['statistics', 'top-assists', seasonId],
+    queryFn: async () =>
+      (await api.get<LeaderRow[]>('/statistics/top-assists', { params: { seasonId } })).data,
+    enabled: !!seasonId,
+  });
+}
+
+export function useTeamStats(matchId?: string) {
+  return useQuery({
+    queryKey: ['statistics', 'team', matchId],
+    queryFn: async () =>
+      (await api.get<TeamStatRow[]>(`/statistics/matches/${matchId}`)).data,
+    enabled: !!matchId,
+  });
+}
+
+export function useNewsForMatch(matchId?: string) {
+  return useQuery({
+    queryKey: ['news', 'for-match', matchId],
+    queryFn: async () => {
+      const all = asArray<NewsItem>((await api.get('/news/published')).data);
+      return all.filter((n) =>
+        n.relatedMatches?.some((rm) => rm.matchId === matchId || rm.match?.id === matchId),
+      );
+    },
+    enabled: !!matchId,
+  });
+}
+
+export function useRegisterMembership() {
+  return useMutation({
+    mutationFn: async () => (await api.post('/membership/register')).data,
+  });
+}
+
+export function useReserveTicket() {
+  return useMutation({
+    mutationFn: async (body: { matchId: string; category: string; price: number; quantity?: number }) =>
+      (await api.post('/ticketing/reserve', body)).data,
+  });
+}

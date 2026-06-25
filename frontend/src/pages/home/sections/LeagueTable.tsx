@@ -1,74 +1,14 @@
 import { useTranslation } from 'react-i18next';
-import { useClubs, useMatches } from '../../../hooks';
+import { useSeasons, useStandings } from '../../../hooks';
 import { Card, CardContent } from '../../../components/ui/card';
 import { Skeleton } from '../../../components/ui/skeleton';
 
-interface StandingRow {
-  clubId: string;
-  name: string;
-  played: number;
-  won: number;
-  drawn: number;
-  lost: number;
-  gf: number;
-  ga: number;
-  pts: number;
-}
-
-function computeStandings(
-  matches: { homeClubId: string; awayClubId: string; homeScore: number; awayScore: number; status: string }[],
-  clubs: { id: string; name: string }[],
-): StandingRow[] {
-  const map = new Map<string, StandingRow>();
-  for (const club of clubs) {
-    map.set(club.id, {
-      clubId: club.id,
-      name: club.name,
-      played: 0,
-      won: 0,
-      drawn: 0,
-      lost: 0,
-      gf: 0,
-      ga: 0,
-      pts: 0,
-    });
-  }
-  for (const m of matches.filter((x) => x.status === 'FINISHED')) {
-    const home = map.get(m.homeClubId);
-    const away = map.get(m.awayClubId);
-    if (!home || !away) continue;
-    home.played++;
-    away.played++;
-    home.gf += m.homeScore;
-    home.ga += m.awayScore;
-    away.gf += m.awayScore;
-    away.ga += m.homeScore;
-    if (m.homeScore > m.awayScore) {
-      home.won++;
-      home.pts += 3;
-      away.lost++;
-    } else if (m.homeScore < m.awayScore) {
-      away.won++;
-      away.pts += 3;
-      home.lost++;
-    } else {
-      home.drawn++;
-      away.drawn++;
-      home.pts += 1;
-      away.pts += 1;
-    }
-  }
-  return [...map.values()]
-    .filter((r) => r.played > 0)
-    .sort((a, b) => b.pts - a.pts || b.gf - b.ga - (a.gf - a.ga));
-}
-
 export function LeagueTable() {
   const { t } = useTranslation();
-  const { data: matches, isLoading: ml } = useMatches();
-  const { data: clubList, isLoading: cl } = useClubs();
-  const isLoading = ml || cl;
-  const standings = matches && clubList ? computeStandings(matches, clubList) : [];
+  const { data: seasons, isLoading: sl } = useSeasons();
+  const seasonId = (seasons as { id: string }[] | undefined)?.[0]?.id;
+  const { data: standings, isLoading: stl } = useStandings(seasonId);
+  const isLoading = sl || stl;
 
   return (
     <section className="mx-auto max-w-6xl px-4 py-12">
@@ -93,22 +33,22 @@ export function LeagueTable() {
                 </tr>
               </thead>
               <tbody>
-                {standings.map((row, i) => (
+                {(standings ?? []).map((row, i) => (
                   <tr key={row.clubId} className="border-b border-slate-100">
                     <td className="p-3">{i + 1}</td>
-                    <td className="p-3 font-medium">{row.name}</td>
+                    <td className="p-3 font-medium">{row.clubName}</td>
                     <td className="p-3">{row.played}</td>
                     <td className="p-3">{row.won}</td>
                     <td className="p-3">{row.drawn}</td>
                     <td className="p-3">{row.lost}</td>
-                    <td className="p-3">{row.gf}</td>
-                    <td className="p-3">{row.ga}</td>
-                    <td className="p-3 font-bold">{row.pts}</td>
+                    <td className="p-3">{row.goalsFor}</td>
+                    <td className="p-3">{row.goalsAgainst}</td>
+                    <td className="p-3 font-bold">{row.points}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
-            {standings.length === 0 && (
+            {(standings ?? []).length === 0 && (
               <p className="p-6 text-center text-text-muted">{t('common.noResults')}</p>
             )}
           </CardContent>

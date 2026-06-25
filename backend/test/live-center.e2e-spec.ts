@@ -35,10 +35,29 @@ describe('Live center (e2e)', () => {
     accessToken = login.body.accessToken as string;
 
     const matches = await request(app.getHttpServer()).get('/api/v1/matches');
-    const scheduled = (matches.body as { id: string; status: string; round?: number }[]).find(
+    let scheduled = (matches.body as { id: string; status: string }[]).find(
       (m) => m.status === 'SCHEDULED',
     );
-    if (!scheduled) throw new Error('No SCHEDULED match for live e2e');
+    if (!scheduled) {
+      const seasons = await request(app.getHttpServer()).get('/api/v1/competitions/seasons/list');
+      const clubs = await request(app.getHttpServer()).get('/api/v1/clubs');
+      const seasonId = (seasons.body as { id: string }[])[0]?.id;
+      const clubIds = (clubs.body as { id: string }[]).slice(0, 2).map((c) => c.id);
+      if (!seasonId || clubIds.length < 2) {
+        throw new Error('Missing season/clubs for live e2e');
+      }
+      const created = await request(app.getHttpServer())
+        .post('/api/v1/matches')
+        .set('Authorization', `Bearer ${accessToken}`)
+        .send({
+          seasonId,
+          homeClubId: clubIds[0],
+          awayClubId: clubIds[1],
+          scheduledAt: new Date(Date.now() + 86400000).toISOString(),
+          round: 99,
+        });
+      scheduled = created.body as { id: string; status: string };
+    }
     matchId = scheduled.id;
   });
 

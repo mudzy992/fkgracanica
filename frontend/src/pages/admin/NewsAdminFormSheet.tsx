@@ -1,71 +1,85 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useCreateNews } from '../../hooks/use-news-admin';
+import { useCreateNews, useUpdateNews } from '../../hooks/use-news-admin';
 import { AdminFormSheet } from '../../components/admin/AdminFormSheet';
 import { Button } from '../../components/ui/button';
-import { Input } from '../../components/ui/input';
-
-const schema = z.object({
-  title: z.string().min(3, 'Naslov je obavezan'),
-  excerpt: z.string().optional(),
-  content: z.string().min(10, 'Sadržaj je obavezan'),
-});
-
-type FormData = z.infer<typeof schema>;
+import type { NewsItem } from '../../types';
+import { NewsAdminFormFields } from './NewsAdminFormFields';
+import {
+  emptyNewsForm,
+  formToNewsBody,
+  newsFormSchema,
+  newsItemToForm,
+  type NewsFormData,
+} from './news-form-utils';
 
 interface Props {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  item?: NewsItem | null;
 }
 
-export function NewsAdminFormSheet({ open, onOpenChange }: Props) {
+export function NewsAdminFormSheet({ open, onOpenChange, item }: Props) {
   const create = useCreateNews();
+  const update = useUpdateNews();
   const [error, setError] = useState('');
-  const {
-    register,
-    handleSubmit,
-    reset,
-    formState: { isSubmitting, errors },
-  } = useForm<FormData>({ resolver: zodResolver(schema) });
+  const isEdit = !!item;
 
-  const onSubmit = async (data: FormData) => {
+  const form = useForm<NewsFormData>({
+    resolver: zodResolver(newsFormSchema),
+    defaultValues: emptyNewsForm,
+  });
+
+  const { register, handleSubmit, reset, control, watch, setValue, formState } = form;
+
+  useEffect(() => {
+    reset(item ? newsItemToForm(item) : emptyNewsForm);
+    setError('');
+  }, [item, open, reset]);
+
+  const onSubmit = async (data: NewsFormData) => {
     setError('');
     try {
-      await create.mutateAsync(data);
-      reset();
+      const body = formToNewsBody(data);
+      if (isEdit && item) await update.mutateAsync({ id: item.id, ...body });
+      else await create.mutateAsync(body);
       onOpenChange(false);
     } catch {
-      setError('Greška pri kreiranju vijesti');
+      setError('Greška pri spremanju vijesti');
     }
   };
 
+  const requestClose = () => {
+    if (formState.isDirty && !window.confirm('Ima nesačuvanih izmjena. Zatvoriti?')) return;
+    onOpenChange(false);
+  };
+
   return (
-    <AdminFormSheet open={open} onOpenChange={onOpenChange} title="Nova vijest">
+    <AdminFormSheet
+      open={open}
+      onOpenChange={(o) => (o ? onOpenChange(true) : requestClose())}
+      title={isEdit ? 'Uredi vijest' : 'Nova vijest'}
+      dirty={formState.isDirty}
+      size="lg"
+    >
       <form onSubmit={(e) => void handleSubmit(onSubmit)(e)} className="space-y-4">
-        <div>
-          <label className="mb-1 block text-sm font-medium">Naslov</label>
-          <Input {...register('title')} />
-          {errors.title && <p className="mt-1 text-xs text-danger">{errors.title.message}</p>}
-        </div>
-        <div>
-          <label className="mb-1 block text-sm font-medium">Uvod</label>
-          <Input {...register('excerpt')} />
-        </div>
-        <div>
-          <label className="mb-1 block text-sm font-medium">Sadržaj</label>
-          <textarea
-            {...register('content')}
-            rows={8}
-            className="w-full rounded-lg border border-slate-200 bg-background px-3 py-2 text-sm"
-          />
-          {errors.content && <p className="mt-1 text-xs text-danger">{errors.content.message}</p>}
-        </div>
+        <NewsAdminFormFields
+          register={register}
+          control={control}
+          watch={watch}
+          setValue={setValue}
+          errors={formState.errors}
+        />
         {error && <p className="text-sm text-danger">{error}</p>}
-        <Button type="submit" disabled={isSubmitting}>
-          Kreiraj (nacrt)
-        </Button>
+        <div className="flex gap-2">
+          <Button type="button" variant="outline" onClick={requestClose}>
+            Odustani
+          </Button>
+          <Button type="submit" disabled={formState.isSubmitting}>
+            {isEdit ? 'Sačuvaj' : 'Kreiraj (nacrt)'}
+          </Button>
+        </div>
       </form>
     </AdminFormSheet>
   );

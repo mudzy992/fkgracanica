@@ -63,6 +63,22 @@ export class GalleryController {
     return this.galleryService.addPhoto(id, body);
   }
 
+  @Post(':id/photos/reorder')
+  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @RequirePermissions('gallery.manage')
+  @ApiBearerAuth()
+  reorderPhotos(@Param('id') id: string, @Body('photoIds') photoIds: string[]) {
+    return this.galleryService.reorderPhotos(id, photoIds);
+  }
+
+  @Delete(':id/photos/:photoId')
+  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @RequirePermissions('gallery.manage')
+  @ApiBearerAuth()
+  removePhoto(@Param('photoId') photoId: string) {
+    return this.galleryService.removePhoto(photoId);
+  }
+
   @Delete(':id')
   @UseGuards(JwtAuthGuard, PermissionsGuard)
   @RequirePermissions('gallery.manage')

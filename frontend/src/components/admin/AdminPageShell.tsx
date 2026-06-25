@@ -41,10 +41,12 @@ export function AdminDataTable<T extends { id: string }>({
   rows,
   columns,
   empty = 'Nema podataka',
+  onRowClick,
 }: {
   rows: T[];
   columns: Column<T>[];
   empty?: string;
+  onRowClick?: (row: T) => void;
 }) {
   if (!rows.length) {
     return <p className="p-6 text-center text-text-muted">{empty}</p>;
@@ -63,7 +65,11 @@ export function AdminDataTable<T extends { id: string }>({
         </thead>
         <tbody>
           {rows.map((row) => (
-            <tr key={row.id} className="border-b border-slate-100 hover:bg-surface/50">
+            <tr
+              key={row.id}
+              className={`border-b border-slate-100 hover:bg-surface/50${onRowClick ? ' cursor-pointer' : ''}`}
+              onClick={onRowClick ? () => onRowClick(row) : undefined}
+            >
               {columns.map((col) => (
                 <td key={col.key} className="p-4">
                   {col.render(row)}

@@ -15,6 +15,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { memoryStorage } from 'multer';
 import { ApiBearerAuth, ApiConsumes, ApiTags } from '@nestjs/swagger';
 import { MediaService } from './media.service';
+import { MediaAssetQueryDto } from './dto/media-asset-query.dto';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { PermissionsGuard } from '../common/guards/permissions.guard';
 import { RequirePermissions } from '../common/decorators/permissions.decorator';
@@ -48,8 +49,13 @@ export class MediaController {
   }
 
   @Get('assets')
-  findAssets(@Query('folderId') folderId?: string) {
-    return this.mediaService.findAssets(folderId);
+  findAssets(@Query() query: MediaAssetQueryDto) {
+    return this.mediaService.findAssets(query);
+  }
+
+  @Get('assets/:id')
+  findAsset(@Param('id') id: string) {
+    return this.mediaService.findAsset(id);
   }
 
   @Post('upload')
@@ -72,5 +78,12 @@ export class MediaController {
   @Delete('assets/:id')
   removeAsset(@Param('id') id: string) {
     return this.mediaService.removeAsset(id);
+  }
+
+  @Post('assets/:id/replace')
+  @ApiConsumes('multipart/form-data')
+  @UseInterceptors(FileInterceptor('file', { storage: memoryStorage() }))
+  replaceAsset(@Param('id') id: string, @UploadedFile() file: Express.Multer.File) {
+    return this.mediaService.replaceAsset(id, file);
   }
 }

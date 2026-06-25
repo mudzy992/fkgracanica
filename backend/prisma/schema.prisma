@@ -214,21 +214,53 @@ model News {
   excerpt     String?       @db.Text
   content     String        @db.LongText
   coverPath   String?
+  videoUrl    String?
+  galleryId   String?
   status      ContentStatus @default(DRAFT)
   seoTitle    String?
   seoDesc     String?
   authorId    String?
   categoryId  String?
   publishedAt DateTime?
+  scheduledAt DateTime?
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
   author      User?         @relation(fields: [authorId], references: [id], onDelete: SetNull)
   category    NewsCategory? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  gallery     Gallery?      @relation(fields: [galleryId], references: [id], onDelete: SetNull)
   comments    Comment[]
   tags        NewsTag[]
+  relatedMatches NewsMatch[]
+  relatedPlayers NewsPlayer[]
 
   @@index([status])
   @@index([publishedAt])
+  @@index([scheduledAt])
+  @@index([categoryId])
+}
+
+model NewsMatch {
+  id      String @id @default(cuid())
+  newsId  String
+  matchId String
+  news    News   @relation(fields: [newsId], references: [id], onDelete: Cascade)
+  match   Match  @relation(fields: [matchId], references: [id], onDelete: Cascade)
+
+  @@unique([newsId, matchId])
+  @@index([newsId])
+  @@index([matchId])
+}
+
+model NewsPlayer {
+  id       String @id @default(cuid())
+  newsId   String
+  playerId String
+  news     News   @relation(fields: [newsId], references: [id], onDelete: Cascade)
+  player   Player @relation(fields: [playerId], references: [id], onDelete: Cascade)
+
+  @@unique([newsId, playerId])
+  @@index([newsId])
+  @@index([playerId])
 }
 
 model NewsTag {
@@ -264,6 +296,7 @@ model Gallery {
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
   photos      GalleryPhoto[]
+  newsItems   News[]
 }
 
 model GalleryPhoto {
@@ -421,6 +454,7 @@ model Player {
   statistics    PlayerStatistics[]
   matchEvents   MatchEvent[]
   lineupSlots   MatchLineup[]
+  newsLinks     NewsPlayer[]
 
   @@index([clubId])
 }
@@ -473,6 +507,7 @@ model Match {
   liveComments    LiveComment[]
   tickets         Ticket[]
   teamStats       TeamStatistics[]
+  newsLinks       NewsMatch[]
 
   @@index([seasonId])
   @@index([status])
@@ -582,6 +617,7 @@ model TeamStatistics {
 enum MembershipStatus {
   PENDING
   ACTIVE
+  SUSPENDED
   EXPIRED
   CANCELLED
 }

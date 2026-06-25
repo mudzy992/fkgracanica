@@ -10,13 +10,13 @@ import {
 } from '../../hooks/use-notifications';
 import { formatDateTime } from '../../lib/utils';
 import { Button } from '../ui/button';
-import { Sheet, SheetContent, SheetHeader } from '../ui/sheet';
+import { Dialog, DialogBody, DialogHeader } from '../ui/dialog';
 
 export function NotificationBell({ admin = false }: { admin?: boolean }) {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   useNotificationRealtime();
-  const { data } = useNotifications(true);
+  const { data } = useNotifications({ unreadOnly: true });
   const markRead = useMarkNotificationRead();
   const markAll = useMarkAllNotificationsRead();
   const unread = data?.data ?? [];
@@ -41,9 +41,9 @@ export function NotificationBell({ admin = false }: { admin?: boolean }) {
         )}
       </Button>
 
-      <Sheet open={open} onOpenChange={setOpen} side="right">
-        <SheetHeader onClose={() => setOpen(false)}>{t('notifications.title')}</SheetHeader>
-        <SheetContent>
+      <Dialog open={open} onOpenChange={setOpen} className="max-w-sm">
+        <DialogHeader onClose={() => setOpen(false)}>{t('notifications.title')}</DialogHeader>
+        <DialogBody>
           <div className="mb-3 flex justify-between">
             <Link to={listPath} className="text-sm text-accent hover:underline" onClick={() => setOpen(false)}>
               {t('notifications.viewAll')}
@@ -77,8 +77,8 @@ export function NotificationBell({ admin = false }: { admin?: boolean }) {
               ))
             )}
           </ul>
-        </SheetContent>
-      </Sheet>
+        </DialogBody>
+      </Dialog>
     </>
   );
 }

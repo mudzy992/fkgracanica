@@ -1,11 +1,12 @@
 import { useState } from 'react';
+import { asArray } from '../../lib/as-array';
 import { useCmsBlocks } from '../../hooks';
 import { useUpdateCmsBlock } from '../../hooks/use-cms-admin';
 import { Seo } from '../../components/seo/Seo';
 import { Button } from '../../components/ui/button';
-import { Input } from '../../components/ui/input';
 import { AdminDataTable, AdminPageShell } from '../../components/admin/AdminPageShell';
 import { AdminFormSheet } from '../../components/admin/AdminFormSheet';
+import { CmsBlockEditor } from './CmsBlockEditor';
 import type { CmsBlock } from '../../types';
 
 export function CmsPage() {
@@ -13,23 +14,11 @@ export function CmsPage() {
   const update = useUpdateCmsBlock();
   const [edit, setEdit] = useState<CmsBlock | null>(null);
   const [title, setTitle] = useState('');
-  const [json, setJson] = useState('{}');
-  const blocks = (data as CmsBlock[] | undefined) ?? [];
+  const blocks = asArray<CmsBlock>(data);
 
   const openEdit = (block: CmsBlock) => {
     setEdit(block);
     setTitle(block.title ?? '');
-    setJson(JSON.stringify(block.content ?? {}, null, 2));
-  };
-
-  const save = async () => {
-    if (!edit) return;
-    await update.mutateAsync({
-      id: edit.id,
-      title,
-      content: JSON.parse(json) as Record<string, unknown>,
-    });
-    setEdit(null);
   };
 
   return (
@@ -54,18 +43,19 @@ export function CmsPage() {
         />
       </AdminPageShell>
       <AdminFormSheet open={!!edit} onOpenChange={(o) => !o && setEdit(null)} title={`Uredi: ${edit?.key ?? ''}`}>
-        <div className="space-y-4">
-          <Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Naslov" />
-          <textarea
-            value={json}
-            onChange={(e) => setJson(e.target.value)}
-            rows={12}
-            className="w-full rounded-lg border border-slate-200 bg-background p-2 font-mono text-xs"
+        {edit && (
+          <CmsBlockEditor
+            block={edit}
+            title={title}
+            onTitleChange={setTitle}
+            isPending={update.isPending}
+            onSave={(content) => {
+              void update
+                .mutateAsync({ id: edit.id, title, content })
+                .then(() => setEdit(null));
+            }}
           />
-          <Button onClick={() => void save()} disabled={update.isPending}>
-            Sačuvaj
-          </Button>
-        </div>
+        )}
       </AdminFormSheet>
     </>
   );

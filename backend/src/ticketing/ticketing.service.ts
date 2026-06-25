@@ -26,15 +26,28 @@ export class TicketingService {
     });
   }
 
+  private async getMemberDiscountPercent(userId: string): Promise<number> {
+    const active = await this.prisma.membership.findFirst({
+      where: { userId, status: 'ACTIVE' },
+    });
+    if (!active) return 0;
+    const setting = await this.prisma.setting.findUnique({
+      where: { key: 'ticketing.memberDiscountPercent' },
+    });
+    return setting ? Number(setting.value) || 0 : 10;
+  }
+
   async reserve(userId: string, data: { matchId: string; category: string; price: number; quantity?: number }) {
     const qty = data.quantity ?? 1;
+    const discount = await this.getMemberDiscountPercent(userId);
+    const unitPrice = discount > 0 ? data.price * (1 - discount / 100) : data.price;
     const capacity = await this.getCapacity();
     const sold = await this.countSoldForMatch(data.matchId);
     if (sold + qty > capacity) {
       throw new BadRequestException('Kapacitet stadiona je popunjen');
     }
 
-    const total = new Prisma.Decimal(data.price * qty);
+    const total = new Prisma.Decimal(unitPrice * qty);
     const order = await this.prisma.ticketOrder.create({
       data: {
         userId,
@@ -43,7 +56,7 @@ export class TicketingService {
           create: Array.from({ length: qty }).map(() => ({
             matchId: data.matchId,
             category: data.category,
-            price: new Prisma.Decimal(data.price),
+            price: new Prisma.Decimal(unitPrice),
             qrCode: generateQrCode('ticket'),
             status: TicketStatus.RESERVED,
           })),
@@ -131,6 +144,31 @@ export class TicketingService {
     });
   }
 
+  async confirmRefund(orderId: string) {
+    const order = await this.prisma.ticketOrder.findUnique({
+      where: { id: orderId },
+      include: { payment: true },
+    });
+    if (!order) throw new NotFoundException('Narudžba nije pronađena');
+    if (order.status !== 'refund_requested') {
+      throw new BadRequestException('Narudžba nije u statusu za povrat');
+    }
+    await this.prisma.ticketOrder.update({
+      where: { id: orderId },
+      data: { status: 'refunded' },
+    });
+    if (order.payment) {
+      await this.prisma.payment.update({
+        where: { id: order.payment.id },
+        data: { status: PaymentStatus.REFUNDED },
+      });
+    }
+    return this.prisma.ticketOrder.findUnique({
+      where: { id: orderId },
+      include: { tickets: true, payment: true, user: { select: { email: true } } },
+    });
+  }
+
   findOrders(userId: string) {
     return this.prisma.ticketOrder.findMany({
       where: { userId },
@@ -139,14 +177,42 @@ export class TicketingService {
     });
   }
 
-  findAllOrders() {
+  findAllOrders(page = 1, limit = 20) {
+    const skip = (page - 1) * limit;
     return this.prisma.ticketOrder.findMany({
+      skip,
+      take: limit,
       include: {
         user: { select: { id: true, email: true } },
         tickets: true,
         payment: true,
       },
       orderBy: { createdAt: 'desc' },
+    });
+  }
+
+  async findOrderById(orderId: string) {
+    const order = await this.prisma.ticketOrder.findUnique({
+      where: { id: orderId },
+      include: { tickets: true, payment: true, user: { select: { id: true, email: true } } },
+    });
+    if (!order) throw new NotFoundException('Narudžba nije pronađena');
+    return order;
+  }
+
+  async cancelOrder(orderId: string, userId: string) {
+    const order = await this.prisma.ticketOrder.findFirst({
+      where: { id: orderId, userId },
+    });
+    if (!order) throw new NotFoundException('Narudžba nije pronađena');
+    await this.prisma.ticket.updateMany({
+      where: { orderId },
+      data: { status: TicketStatus.CANCELLED },
+    });
+    return this.prisma.ticketOrder.update({
+      where: { id: orderId },
+      data: { status: 'cancelled' },
+      include: { tickets: true, payment: true },
     });
   }
 }

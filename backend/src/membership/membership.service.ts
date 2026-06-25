@@ -64,4 +64,29 @@ export class MembershipService {
       include: { card: true },
     });
   }
+
+  async findOne(id: string) {
+    const item = await this.prisma.membership.findUnique({
+      where: { id },
+      include: { user: { select: { id: true, email: true } }, card: true },
+    });
+    if (!item) throw new NotFoundException('Članstvo nije pronađeno');
+    return item;
+  }
+
+  suspend(id: string) {
+    return this.prisma.membership.update({
+      where: { id },
+      data: { status: MembershipStatus.SUSPENDED },
+      include: { card: true },
+    });
+  }
+
+  cancel(id: string) {
+    return this.prisma.membership.update({
+      where: { id },
+      data: { status: MembershipStatus.CANCELLED },
+      include: { card: true },
+    });
+  }
 }

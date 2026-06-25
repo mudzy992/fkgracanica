@@ -32,4 +32,19 @@ export class StatisticsController {
   getStandings(@Query('seasonId') seasonId: string) {
     return this.service.getStandings(seasonId);
   }
+
+  @Get('top-scorers')
+  getTopScorers(@Query('seasonId') seasonId: string) {
+    return this.service.getTopScorers(seasonId);
+  }
+
+  @Get('top-assists')
+  getTopAssists(@Query('seasonId') seasonId: string) {
+    return this.service.getTopAssists(seasonId);
+  }
+
+  @Get('cards-leaders')
+  getCardsLeaders(@Query('seasonId') seasonId: string) {
+    return this.service.getCardsLeaders(seasonId);
+  }
 }

@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { MatchEventType, MatchReportStatus, MatchStatus } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { computeStandings } from './standings.util';
+import { getSeasonLeaders } from './leaders.util';
 
 @Injectable()
 export class StatisticsService {
@@ -78,5 +79,20 @@ export class StatisticsService {
       },
     });
     return computeStandings(matches);
+  }
+
+  getTopScorers(seasonId: string) {
+    return getSeasonLeaders(this.prisma, seasonId, 'goals');
+  }
+
+  getTopAssists(seasonId: string) {
+    return getSeasonLeaders(this.prisma, seasonId, 'assists');
+  }
+
+  getCardsLeaders(seasonId: string) {
+    return Promise.all([
+      getSeasonLeaders(this.prisma, seasonId, 'yellowCards', 5),
+      getSeasonLeaders(this.prisma, seasonId, 'redCards', 5),
+    ]).then(([yellow, red]) => ({ yellow, red }));
   }
 }

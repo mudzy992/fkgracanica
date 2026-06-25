@@ -1,11 +1,41 @@
 export type ContentStatus = 'DRAFT' | 'PENDING' | 'PUBLISHED' | 'ARCHIVED';
 export type MatchStatus = 'SCHEDULED' | 'LIVE' | 'HALFTIME' | 'FINISHED' | 'POSTPONED' | 'CANCELLED';
+export type MatchReportStatus = 'DRAFT' | 'PENDING_APPROVAL' | 'APPROVED';
 
 export interface User {
   id: string;
   email: string;
   firstName: string | null;
   lastName: string | null;
+  permissions?: string[];
+}
+
+export interface StandingRow {
+  clubId: string;
+  clubName: string;
+  played: number;
+  won: number;
+  drawn: number;
+  lost: number;
+  goalsFor: number;
+  goalsAgainst: number;
+  goalDifference: number;
+  points: number;
+  form: string;
+}
+
+export interface NewsComment {
+  id: string;
+  content: string;
+  newsId: string;
+  userId: string;
+  createdAt: string;
+  user?: Pick<User, 'id' | 'email' | 'firstName' | 'lastName'> | null;
+}
+
+export interface NewsTag {
+  id: string;
+  name: string;
 }
 
 export interface NewsItem {
@@ -15,10 +45,20 @@ export interface NewsItem {
   excerpt?: string | null;
   content: string;
   coverPath?: string | null;
+  videoUrl?: string | null;
+  galleryId?: string | null;
+  seoTitle?: string | null;
+  seoDesc?: string | null;
+  scheduledAt?: string | null;
   status: ContentStatus;
   publishedAt?: string | null;
   createdAt: string;
+  categoryId?: string | null;
   category?: { id: string; name: string; slug: string } | null;
+  tags?: NewsTag[];
+  gallery?: GalleryItem | null;
+  relatedMatches?: { matchId?: string; match?: Match }[];
+  relatedPlayers?: { player: Player }[];
 }
 
 export interface GalleryItem {
@@ -95,7 +135,10 @@ export interface Club {
   name: string;
   shortName?: string | null;
   logoPath?: string | null;
+  crestPath?: string | null;
   city?: string | null;
+  stadium?: string | null;
+  isOwnClub?: boolean;
 }
 
 export interface Match {
@@ -109,11 +152,14 @@ export interface Match {
   scheduledAt: string;
   venue?: string | null;
   status: MatchStatus;
+  reportStatus?: MatchReportStatus;
+  youtubeUrl?: string | null;
   minute: number;
   homeClub?: Club;
   awayClub?: Club;
   events?: MatchEvent[];
   lineups?: MatchLineup[];
+  lineup?: MatchLineup[];
 }
 
 export interface MatchEvent {
@@ -148,6 +194,7 @@ export interface HallOfFameEntry {
   years?: string | null;
   bio?: string | null;
   photoPath?: string | null;
+  imagePath?: string | null;
 }
 
 export interface MuseumItem {
@@ -155,6 +202,7 @@ export interface MuseumItem {
   title: string;
   description?: string | null;
   year?: number | null;
+  category?: string;
   imagePath?: string | null;
 }
 

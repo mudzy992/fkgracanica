@@ -44,3 +44,20 @@ export function useUpdateRolePermissions() {
     onSuccess: () => void qc.invalidateQueries({ queryKey: ['roles'] }),
   });
 }
+
+export function useCreateRole() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (body: { name: string; description?: string }) =>
+      (await api.post('/rbac/roles', body)).data,
+    onSuccess: () => void qc.invalidateQueries({ queryKey: ['roles'] }),
+  });
+}
+
+export function useDeleteRole() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (id: string) => (await api.delete(`/rbac/roles/${id}`)).data,
+    onSuccess: () => void qc.invalidateQueries({ queryKey: ['roles'] }),
+  });
+}

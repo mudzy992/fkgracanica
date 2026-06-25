@@ -1,7 +1,17 @@
 import { Link, useParams } from 'react-router-dom';
-import { useMatch } from '../../hooks';
+import { useMatch, useNewsForMatch, useTeamStats } from '../../hooks';
+import { useAuth } from '../../lib/auth';
+import { hasPermission } from '../../lib/permissions';
 import { formatDateTime } from '../../lib/utils';
+import { matchEventLabel } from '../../lib/match-event-labels';
 import { Seo } from '../../components/seo/Seo';
+import { VideoEmbed } from '../../components/public/VideoEmbed';
+import { MatchReportApproval } from '../../components/match/MatchReportApproval';
+import {
+  MatchLineupSection,
+  MatchRelatedNewsSection,
+  MatchTeamStatsSection,
+} from '../../components/match/MatchCenterSections';
 import { Card, CardContent } from '../../components/ui/card';
 import { Badge } from '../../components/ui/badge';
 import { Skeleton } from '../../components/ui/skeleton';
@@ -9,7 +19,11 @@ import { Button } from '../../components/ui/button';
 
 export function MatchCenterPage() {
   const { id } = useParams<{ id: string }>();
+  const { user } = useAuth();
   const { data, isLoading, isError } = useMatch(id ?? '');
+  const { data: teamStats, isLoading: tsl } = useTeamStats(id);
+  const { data: relatedNews, isLoading: rnl } = useNewsForMatch(id);
+  const canApprove = hasPermission(user?.permissions, 'live.approve');
 
   if (isLoading) return <Skeleton className="mx-auto mt-12 h-96 max-w-3xl" />;
   if (isError || !data) {
@@ -21,6 +35,7 @@ export function MatchCenterPage() {
   return (
     <div className="mx-auto max-w-3xl px-4 py-12">
       <Seo title={`${data.homeClub?.name} vs ${data.awayClub?.name}`} />
+      {canApprove && <MatchReportApproval matchId={data.id} reportStatus={data.reportStatus} />}
       <div className="mb-4 flex items-center justify-between">
         <Badge variant={isLive ? 'danger' : 'muted'}>{data.status}</Badge>
         {isLive && (
@@ -47,6 +62,15 @@ export function MatchCenterPage() {
         </CardContent>
       </Card>
 
+      {data.youtubeUrl && (
+        <div className="mt-8">
+          <VideoEmbed url={data.youtubeUrl} title="Snimak utakmice" />
+        </div>
+      )}
+
+      <MatchLineupSection match={data} />
+      <MatchTeamStatsSection match={data} stats={teamStats} loading={tsl} />
+
       {data.events && data.events.length > 0 && (
         <section className="mt-8">
           <h2 className="mb-4 text-xl font-semibold">Događaji</h2>
@@ -55,7 +79,7 @@ export function MatchCenterPage() {
               <div key={ev.id} className="flex gap-3 rounded-lg border border-slate-200 p-3 text-sm">
                 <span className="font-bold text-primary">{ev.minute}&apos;</span>
                 <span>
-                  {ev.type}
+                  {matchEventLabel(ev.type)}
                   {ev.player && ` — ${ev.player.firstName} ${ev.player.lastName}`}
                 </span>
               </div>
@@ -63,6 +87,8 @@ export function MatchCenterPage() {
           </div>
         </section>
       )}
+
+      <MatchRelatedNewsSection items={relatedNews} loading={rnl} />
     </div>
   );
 }

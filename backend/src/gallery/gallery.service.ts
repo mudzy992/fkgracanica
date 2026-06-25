@@ -42,6 +42,21 @@ export class GalleryService {
     return this.prisma.galleryPhoto.create({ data: { ...data, galleryId } });
   }
 
+  removePhoto(photoId: string) {
+    return this.prisma.galleryPhoto.delete({ where: { id: photoId } });
+  }
+
+  reorderPhotos(galleryId: string, photoIds: string[]) {
+    return this.prisma.$transaction(
+      photoIds.map((id, index) =>
+        this.prisma.galleryPhoto.update({
+          where: { id, galleryId },
+          data: { sortOrder: index },
+        }),
+      ),
+    );
+  }
+
   remove(id: string) {
     return this.prisma.gallery.delete({ where: { id } });
   }

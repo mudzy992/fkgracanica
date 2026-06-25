@@ -1,4 +1,5 @@
 import { useTrophies } from '../../hooks';
+import { RichContent } from '../../components/public/RichContent';
 import { mediaUrl } from '../../lib/media';
 import { Seo } from '../../components/seo/Seo';
 import { Card, CardContent } from '../../components/ui/card';
@@ -24,7 +25,7 @@ export function TrophiesPage() {
                     <p className="text-2xl font-bold text-primary">{t.year}</p>
                     <p className="font-semibold">{t.name}</p>
                     {t.competition && <p className="text-sm text-text-muted">{t.competition}</p>}
-                    {t.description && <p className="mt-2 text-sm text-text-muted">{t.description}</p>}
+                    {t.description && <RichContent html={t.description} className="mt-2 text-sm text-text-muted" />}
                   </div>
                 </CardContent>
               </Card>

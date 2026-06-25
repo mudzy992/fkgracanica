@@ -1,36 +1,40 @@
 import { useState } from 'react';
-import { Plus } from 'lucide-react';
+import { Pencil, Plus, Trash2 } from 'lucide-react';
 import { usePlayers } from '../../hooks';
-import { useCreatePlayer } from '../../hooks/use-competition-admin';
+import { useDeletePlayer } from '../../hooks/use-competition-admin';
+import { useConfirm } from '../../hooks/use-confirm';
 import { Seo } from '../../components/seo/Seo';
 import { Button } from '../../components/ui/button';
-import { Input } from '../../components/ui/input';
 import { AdminDataTable, AdminPageShell } from '../../components/admin/AdminPageShell';
-import { AdminFormSheet } from '../../components/admin/AdminFormSheet';
+import { PlayersAdminFormSheet } from './PlayersAdminFormSheet';
+import type { Player } from '../../types';
 
 export function PlayersAdminPage() {
   const { data, isLoading } = usePlayers();
-  const create = useCreatePlayer();
+  const remove = useDeletePlayer();
+  const { confirm, dialog } = useConfirm();
   const [open, setOpen] = useState(false);
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
-  const [position, setPosition] = useState('MF');
+  const [edit, setEdit] = useState<Player | null>(null);
 
-  const onCreate = async () => {
-    await create.mutateAsync({ firstName, lastName, position });
-    setFirstName('');
-    setLastName('');
-    setOpen(false);
+  const onDelete = async (item: Player) => {
+    const ok = await confirm({
+      title: 'Obrisati igrača?',
+      description: `${item.firstName} ${item.lastName} će biti obrisan.`,
+      confirmLabel: 'Obriši',
+      variant: 'danger',
+    });
+    if (ok) void remove.mutateAsync(item.id);
   };
 
   return (
     <>
       <Seo title="Igrači" />
+      {dialog}
       <AdminPageShell
         title="Igrači"
         isLoading={isLoading}
         actions={
-          <Button size="sm" onClick={() => setOpen(true)}>
+          <Button size="sm" onClick={() => { setEdit(null); setOpen(true); }}>
             <Plus className="mr-1 h-4 w-4" />
             Novi
           </Button>
@@ -39,26 +43,31 @@ export function PlayersAdminPage() {
         <AdminDataTable
           rows={data ?? []}
           columns={[
-            {
-              key: 'name',
-              header: 'Ime',
-              render: (r) => `${r.firstName} ${r.lastName}`,
-            },
+            { key: 'name', header: 'Ime', render: (r) => `${r.firstName} ${r.lastName}` },
             { key: 'position', header: 'Pozicija', render: (r) => r.position ?? '—' },
             { key: 'number', header: 'Broj', render: (r) => r.number ?? '—' },
+            {
+              key: 'actions',
+              header: 'Akcije',
+              render: (r) => (
+                <div className="flex gap-1">
+                  <Button variant="ghost" size="icon" onClick={() => { setEdit(r); setOpen(true); }}>
+                    <Pencil className="h-4 w-4" />
+                  </Button>
+                  <Button variant="ghost" size="icon" onClick={() => void onDelete(r)}>
+                    <Trash2 className="h-4 w-4 text-danger" />
+                  </Button>
+                </div>
+              ),
+            },
           ]}
         />
       </AdminPageShell>
-      <AdminFormSheet open={open} onOpenChange={setOpen} title="Novi igrač">
-        <div className="space-y-4">
-          <Input value={firstName} onChange={(e) => setFirstName(e.target.value)} placeholder="Ime" />
-          <Input value={lastName} onChange={(e) => setLastName(e.target.value)} placeholder="Prezime" />
-          <Input value={position} onChange={(e) => setPosition(e.target.value)} placeholder="Pozicija" />
-          <Button onClick={() => void onCreate()} disabled={!firstName || !lastName || create.isPending}>
-            Kreiraj
-          </Button>
-        </div>
-      </AdminFormSheet>
+      <PlayersAdminFormSheet
+        open={open}
+        onOpenChange={(o) => { setOpen(o); if (!o) setEdit(null); }}
+        edit={edit}
+      />
     </>
   );
 }
