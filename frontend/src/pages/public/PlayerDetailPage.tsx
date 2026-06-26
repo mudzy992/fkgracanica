@@ -36,7 +36,7 @@ export function PlayerDetailPage() {
     <div className="pb-20">
       <Seo title={`${data.firstName} ${data.lastName}`} description={data.bio ?? undefined} />
       <header className="border-b border-slate-200/80 bg-surface/60">
-        <div className="mx-auto flex max-w-4xl flex-col items-center gap-6 px-4 py-14 text-center md:flex-row md:text-left">
+        <div className="mx-auto flex max-w-4xl flex-col items-center gap-6 px-4 py-10 text-center sm:px-6 sm:py-14 md:flex-row md:text-left">
           {data.photoPath ? (
             <img
               src={mediaUrl(data.photoPath, 'medium')}
@@ -67,7 +67,7 @@ export function PlayerDetailPage() {
         </div>
       </header>
 
-      <div className="mx-auto max-w-4xl space-y-10 px-4 pt-10">
+      <div className="mx-auto max-w-4xl space-y-10 px-4 pt-10 sm:px-6">
         {data.bio && (
           <section className="rounded-2xl border border-slate-200/80 bg-surface/60 p-6">
             <h2 className="mb-3 text-lg font-semibold">O igraču</h2>
@@ -78,7 +78,7 @@ export function PlayerDetailPage() {
         {data.season && (
           <section>
             <h2 className="mb-4 text-xl font-bold">Sezona {data.season.name}</h2>
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-6">
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
               <StatBox label="Nastupi" value={data.seasonStats?.appearances} />
               <StatBox label="Golovi" value={data.seasonStats?.goals} />
               <StatBox label="Asist." value={data.seasonStats?.assists} />
@@ -91,7 +91,7 @@ export function PlayerDetailPage() {
 
         <section>
           <h2 className="mb-4 text-xl font-bold">Karijera (ukupno)</h2>
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-6">
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
             <StatBox label="Nastupi" value={data.careerTotals?.appearances} />
             <StatBox label="Golovi" value={data.careerTotals?.goals} />
             <StatBox label="Asist." value={data.careerTotals?.assists} />

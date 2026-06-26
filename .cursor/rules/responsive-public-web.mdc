@@ -1,0 +1,34 @@
+---
+description: Responsive javni web, skica, timeline, grb i premium landing pravila
+alwaysApply: true
+globs: "frontend/src/**/*.{tsx,ts,css}"
+---
+
+# Responsive Public Web
+
+## Breakpoints
+- `sm` (640px): grid column bump
+- `md` (768px): layout direction flip, padding bump
+- `lg` (1024px): desktop nav, horizontalna skica
+
+## Skica (FormationPitch)
+- `< lg`: vertikalna (`aspect-[3/4]`), koordinate remap via `mapPitchPosition()`, token `-rotate-90`
+- `≥ lg`: horizontalna (`aspect-[16/9]`)
+- Koristiti `ResponsiveFormationPitch` wrapper na svim stranicama sa skicom
+
+## Timeline mobilni (`/o-klubu`)
+- Bez linije i tačaka na `< lg`
+- Scroll-snap kartice (`snap-y snap-mandatory`)
+
+## Grb
+- `club.crestUrl` (PNG) → header logo + dynamic favicon
+- Fallback na `club.name` tekst
+
+## Mobile UX
+- Drawer/sheet umjesto modala na malim ekranima
+- Container: `mx-auto max-w-6xl px-4 sm:px-6`
+- Test: 375px, 768px, 1280px — bez horizontalnog overflowa
+
+## Premium landing
+- CMS widgeti u `AnimatedSection` shellu
+- `framer-motion` + `prefers-reduced-motion` fallback obavezno

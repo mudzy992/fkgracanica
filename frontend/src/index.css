@@ -23,6 +23,9 @@
   --color-accent: #2563eb;
   --color-success: #16a34a;
   --color-danger: #dc2626;
+  --gradient-hero: linear-gradient(135deg, #1e3a8a 0%, #2563eb 50%, #3b82f6 100%);
+  --glass-bg: rgba(255, 255, 255, 0.72);
+  --shadow-premium: 0 20px 50px -12px rgba(30, 58, 138, 0.18);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -226,6 +229,66 @@
       opacity: 1;
       transform: none;
       transition: none;
+    }
+  }
+
+  .timeline-mobile-snap {
+    scroll-padding-top: 1rem;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .timeline-mobile-hidden {
+    opacity: 0.35;
+    transform: translateY(24px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+  }
+
+  .timeline-mobile-visible {
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .timeline-mobile-hidden,
+    .timeline-mobile-visible {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+  }
+
+  .bg-gradient-hero {
+    background: var(--gradient-hero);
+  }
+
+  .shadow-premium {
+    box-shadow: var(--shadow-premium);
+  }
+
+  .glass-card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(12px);
+  }
+
+  .glass-dark {
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+  }
+
+  @keyframes pulse-soft {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+  }
+
+  .animate-pulse-soft {
+    animation: pulse-soft 2.5s ease-in-out infinite;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .animate-pulse-soft {
+      animation: none;
     }
   }
 }

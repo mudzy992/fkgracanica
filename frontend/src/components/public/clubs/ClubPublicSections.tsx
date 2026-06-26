@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import { formatDateTime } from '../../../lib/utils';
 import type { ClubPublicLastMatch } from '../../../hooks/use-club-public';
 import type { ClubSquadSlot } from '../../../types/club-hub';
-import { FormationPitch } from './FormationPitch';
+import { ResponsiveFormationPitch } from './ResponsiveFormationPitch';
 import { PlayerCard } from '../players/PlayerCard';
 import type { Player } from '../../../types';
 
@@ -37,7 +37,7 @@ export function LastMatchLineupSection({ lastMatch }: { lastMatch: ClubPublicLas
         </Link>
       </div>
       {pitchSlots.length > 0 ? (
-        <FormationPitch slots={pitchSlots} horizontal />
+        <ResponsiveFormationPitch slots={pitchSlots} />
       ) : (
         <p className="text-sm text-text-muted">Vizualna postava nije dostupna za ovu utakmicu.</p>
       )}

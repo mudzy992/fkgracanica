@@ -1,15 +1,27 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import {
+  DndContext,
+  DragOverlay,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+  type DragStartEvent,
+} from '@dnd-kit/core';
 import {
   useAssignClubSquad,
   useClubSquad,
   useUpdateClubFormation,
 } from '../../../../hooks/use-club-hub';
 import { usePlayers } from '../../../../hooks';
-import { FormationPitch } from '../../../../components/public/clubs/FormationPitch';
-import { Button } from '../../../../components/ui/button';
-import { Input } from '../../../../components/ui/input';
-import { Skeleton } from '../../../../components/ui/skeleton';
+import { buildSwapAssignments, parseDndId, resolveDragAssignments, squadSlotDndId } from '../../../../lib/formation-dnd';
 import type { ClubSquadSlot } from '../../../../types/club-hub';
+import { Skeleton } from '../../../../components/ui/skeleton';
+import { FormationEditablePitch } from '../../../../components/admin/formation/FormationEditablePitch';
+import { FormationInputs } from '../../../../components/admin/formation/FormationInputs';
+import { FormationPlayerPool } from '../../../../components/admin/formation/FormationPlayerPool';
+import { FormationSlotPanel } from '../../../../components/admin/formation/FormationSlotPanel';
+import { BenchDropRow } from '../../../../components/admin/formation/BenchDropRow';
 
 export function ClubFormationTab({ clubId }: { clubId: string }) {
   const { data, isLoading } = useClubSquad(clubId);
@@ -20,6 +32,9 @@ export function ClubFormationTab({ clubId }: { clubId: string }) {
   const [mid, setMid] = useState('3');
   const [fwd, setFwd] = useState('3');
   const [activeSlot, setActiveSlot] = useState<ClubSquadSlot | null>(null);
+  const [dragLabel, setDragLabel] = useState('');
+
+  const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 6 } }));
 
   useEffect(() => {
     if (!data) return;
@@ -28,74 +43,104 @@ export function ClubFormationTab({ clubId }: { clubId: string }) {
     setFwd(String(data.formation.fwd));
   }, [data]);
 
-  if (isLoading || !data) return <Skeleton className="h-96" />;
+  const bench = useMemo(() => data?.slots.filter((s) => s.isBench) ?? [], [data]);
+  const usedIds = useMemo(
+    () => new Set(data?.slots.map((s) => s.playerId).filter(Boolean) as string[]),
+    [data],
+  );
+  const poolPlayers = useMemo(
+    () => (players ?? []).filter((p) => !usedIds.has(p.id)),
+    [players, usedIds],
+  );
 
-  const bench = data.slots.filter((s) => s.isBench);
-  const usedIds = new Set(data.slots.map((s) => s.playerId).filter(Boolean));
+  if (isLoading || !data) return <Skeleton className="h-96" />;
 
   const applyFormation = async () => {
     await updateFormation.mutateAsync({ def: Number(def), mid: Number(mid), fwd: Number(fwd) });
-  };
-
-  const assignPlayer = async (playerId: string) => {
-    if (!activeSlot) return;
-    await assign.mutateAsync([
-      { slotIndex: activeSlot.slotIndex, isBench: activeSlot.isBench, playerId },
-    ]);
     setActiveSlot(null);
   };
 
+  const runAssign = async (assignments: Parameters<typeof assign.mutateAsync>[0]) => {
+    await assign.mutateAsync(assignments);
+    setActiveSlot(null);
+  };
+
+  const assignPlayer = (playerId: string) => {
+    if (!activeSlot) return;
+    void runAssign(buildSwapAssignments(data.slots, activeSlot, playerId));
+  };
+
+  const removePlayer = () => {
+    if (!activeSlot) return;
+    void runAssign([{ slotIndex: activeSlot.slotIndex, isBench: activeSlot.isBench, playerId: null }]);
+  };
+
+  const onDragStart = (event: DragStartEvent) => {
+    const parsed = parseDndId(String(event.active.id));
+    if (parsed?.kind === 'player') {
+      const p = players?.find((x) => x.id === parsed.playerId);
+      setDragLabel(p ? `${p.firstName} ${p.lastName}` : '');
+    } else if (parsed?.kind === 'slot') {
+      const slot = data.slots.find((s) => squadSlotDndId(s) === String(event.active.id));
+      setDragLabel(slot?.player ? `${slot.player.firstName} ${slot.player.lastName}` : '');
+    }
+  };
+
+  const onDragEnd = (event: DragEndEvent) => {
+    setDragLabel('');
+    const { active, over } = event;
+    if (!over) return;
+    const assignments = resolveDragAssignments(data.slots, String(active.id), String(over.id));
+    if (assignments) void runAssign(assignments);
+  };
+
   return (
-    <div className="grid gap-8 lg:grid-cols-2">
-      <div className="space-y-4">
-        <div className="flex flex-wrap items-end gap-2">
-          <Input type="number" min={1} max={10} value={def} onChange={(e) => setDef(e.target.value)} placeholder="ODB" />
-          <Input type="number" min={1} max={10} value={mid} onChange={(e) => setMid(e.target.value)} placeholder="VEZ" />
-          <Input type="number" min={1} max={10} value={fwd} onChange={(e) => setFwd(e.target.value)} placeholder="NAP" />
-          <Button size="sm" onClick={() => void applyFormation()} disabled={updateFormation.isPending}>
-            Primijeni
-          </Button>
+    <DndContext sensors={sensors} onDragStart={onDragStart} onDragEnd={onDragEnd}>
+      <div className="grid gap-8 lg:grid-cols-2">
+        <div className="space-y-4">
+          <FormationInputs
+            def={def}
+            mid={mid}
+            fwd={fwd}
+            onDef={setDef}
+            onMid={setMid}
+            onFwd={setFwd}
+            onApply={() => void applyFormation()}
+            applying={updateFormation.isPending}
+          />
+          <FormationEditablePitch
+            slots={data.slots}
+            activeSlot={activeSlot}
+            onSlotClick={setActiveSlot}
+          />
         </div>
-        <FormationPitch
-          slots={data.slots}
-          horizontal
-          editable
-          onSlotClick={setActiveSlot}
-        />
-      </div>
-      <div className="space-y-4">
-        {activeSlot && (
-          <div className="rounded-xl border border-primary/30 bg-primary/5 p-4">
-            <p className="mb-2 text-sm font-medium">Odaberi igrača za poziciju</p>
-            <div className="flex max-h-48 flex-wrap gap-2 overflow-y-auto">
-              {(players ?? [])
-                .filter((p) => !usedIds.has(p.id) || p.id === activeSlot.playerId)
-                .map((p) => (
-                  <Button key={p.id} size="sm" variant="outline" onClick={() => void assignPlayer(p.id)}>
-                    {p.firstName} {p.lastName}
-                  </Button>
-                ))}
+        <div className="space-y-4">
+          {activeSlot && (
+            <FormationSlotPanel
+              slot={activeSlot}
+              players={players ?? []}
+              onPick={assignPlayer}
+              onRemove={removePlayer}
+              onClose={() => setActiveSlot(null)}
+            />
+          )}
+          <FormationPlayerPool players={poolPlayers} />
+          <div>
+            <h3 className="mb-2 font-semibold">Klupa</h3>
+            <div className="space-y-2">
+              {bench.map((slot) => (
+                <BenchDropRow
+                  key={slot.id}
+                  slot={slot}
+                  active={activeSlot?.id === slot.id}
+                  onSelect={() => setActiveSlot(slot)}
+                />
+              ))}
             </div>
-            <Button className="mt-2" variant="ghost" size="sm" onClick={() => setActiveSlot(null)}>Odustani</Button>
-          </div>
-        )}
-        <div>
-          <h3 className="mb-2 font-semibold">Klupa</h3>
-          <div className="space-y-2">
-            {bench.map((slot) => (
-              <button
-                key={slot.id}
-                type="button"
-                onClick={() => setActiveSlot(slot)}
-                className="flex w-full items-center justify-between rounded-lg border border-slate-200 px-3 py-2 text-sm hover:bg-surface"
-              >
-                <span>{slot.player ? `${slot.player.firstName} ${slot.player.lastName}` : 'Prazno mjesto'}</span>
-                <span className="text-text-muted">#{slot.benchOrder ?? slot.slotIndex + 1}</span>
-              </button>
-            ))}
           </div>
         </div>
       </div>
-    </div>
+      <DragOverlay>{dragLabel ? <span className="rounded bg-primary px-2 py-1 text-xs text-white">{dragLabel}</span> : null}</DragOverlay>
+    </DndContext>
   );
 }

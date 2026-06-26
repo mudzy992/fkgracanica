@@ -1,39 +1,8 @@
-import { mediaUrl } from '../../../lib/media';
-import { RichContent } from '../RichContent';
 import { useInView } from '../../../hooks/use-in-view';
 import type { ClubTimelineEvent } from '../../../types';
 import { cn } from '../../../lib/utils';
-
-interface CardProps {
-  event: ClubTimelineEvent;
-  featured?: boolean;
-}
-
-function TimelineEventCard({ event, featured }: CardProps) {
-  return (
-    <div
-      className={cn(
-        'rounded-2xl border p-6 shadow-sm transition-shadow',
-        featured
-          ? 'border-primary/35 bg-gradient-to-br from-primary/8 via-background to-accent/5 shadow-md ring-1 ring-primary/10'
-          : 'border-slate-200/80 bg-background dark:border-slate-700',
-      )}
-    >
-      <p className="text-sm font-bold uppercase tracking-wider text-accent">{event.year}</p>
-      <h2 className="mt-1 text-xl font-bold text-text">{event.title}</h2>
-      {event.description && (
-        <RichContent html={event.description} className="mt-3 text-sm text-text-muted" />
-      )}
-      {event.imagePath && (
-        <img
-          src={mediaUrl(event.imagePath, 'medium')}
-          alt=""
-          className="mt-4 w-full rounded-xl object-cover"
-        />
-      )}
-    </div>
-  );
-}
+import { ClubTimelineMobile } from './ClubTimelineMobile';
+import { TimelineEventCard } from './TimelineEventCard';
 
 interface RevealProps {
   event: ClubTimelineEvent;
@@ -67,19 +36,28 @@ function TimelineRevealItem({ event, index, featured }: RevealProps) {
   );
 }
 
-interface Props {
-  events: ClubTimelineEvent[];
-}
-
-export function ClubTimelineRail({ events }: Props) {
+function ClubTimelineDesktop({ events }: { events: ClubTimelineEvent[] }) {
   return (
-    <div className="relative mx-auto max-w-4xl">
-      <div className="absolute bottom-0 left-4 top-0 w-px bg-gradient-to-b from-accent/50 via-primary/40 to-transparent md:left-1/2 md:-translate-x-px" />
+    <div className="relative mx-auto hidden max-w-4xl lg:block">
+      <div className="absolute bottom-0 left-1/2 top-0 w-px -translate-x-px bg-gradient-to-b from-accent/50 via-primary/40 to-transparent" />
       <div className="space-y-10">
         {events.map((event, index) => (
           <TimelineRevealItem key={event.id} event={event} index={index} featured={index === 0} />
         ))}
       </div>
     </div>
+  );
+}
+
+interface Props {
+  events: ClubTimelineEvent[];
+}
+
+export function ClubTimelineRail({ events }: Props) {
+  return (
+    <>
+      <ClubTimelineMobile events={events} />
+      <ClubTimelineDesktop events={events} />
+    </>
   );
 }

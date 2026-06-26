@@ -13,6 +13,7 @@ export interface User {
 export interface StandingRow {
   clubId: string;
   clubName: string;
+  clubSlug?: string;
   played: number;
   won: number;
   drawn: number;

@@ -1,6 +1,7 @@
 export interface StandingRow {
   clubId: string;
   clubName: string;
+  clubSlug: string;
   played: number;
   won: number;
   drawn: number;
@@ -19,17 +20,18 @@ export function computeStandings(
     homeScore: number;
     awayScore: number;
     status: string;
-    homeClub: { name: string };
-    awayClub: { name: string };
+    homeClub: { name: string; slug: string };
+    awayClub: { name: string; slug: string };
   }[],
 ): StandingRow[] {
   const table = new Map<string, StandingRow>();
 
-  const ensure = (id: string, name: string) => {
+  const ensure = (id: string, name: string, slug: string) => {
     if (!table.has(id)) {
       table.set(id, {
         clubId: id,
         clubName: name,
+        clubSlug: slug,
         played: 0,
         won: 0,
         drawn: 0,
@@ -46,8 +48,8 @@ export function computeStandings(
 
   const finished = matches.filter((m) => m.status === 'FINISHED');
   for (const m of finished) {
-    const home = ensure(m.homeClubId, m.homeClub.name);
-    const away = ensure(m.awayClubId, m.awayClub.name);
+    const home = ensure(m.homeClubId, m.homeClub.name, m.homeClub.slug);
+    const away = ensure(m.awayClubId, m.awayClub.name, m.awayClub.slug);
     home.played++;
     away.played++;
     home.goalsFor += m.homeScore;

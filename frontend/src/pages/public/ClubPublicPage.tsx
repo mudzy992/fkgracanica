@@ -4,7 +4,7 @@ import { mediaUrl } from '../../lib/media';
 import { clubCrestPath } from '../../lib/club-utils';
 import { ClubStatsSummary, PlayerStatsTable } from '../../components/club/ClubStatsPanels';
 import { ClubProfileHero } from '../../components/public/clubs/ClubProfileHero';
-import { FormationPitch } from '../../components/public/clubs/FormationPitch';
+import { ResponsiveFormationPitch } from '../../components/public/clubs/ResponsiveFormationPitch';
 import {
   ClubPlayersGrid,
   LastMatchLineupSection,
@@ -42,7 +42,7 @@ export function ClubPublicPage() {
     <div className="pb-20">
       <Seo title={club.name} description={club.description ?? `Profil kluba ${club.name}`} />
       <ClubProfileHero club={heroClub} eyebrow="Klub" title={club.name} />
-      <div className="mx-auto max-w-6xl space-y-12 px-4 pt-10">
+      <div className="mx-auto max-w-6xl space-y-12 px-4 pt-10 sm:px-6 sm:pt-12">
         <section className="rounded-2xl border border-slate-200/80 bg-surface/60 p-6 md:p-8">
           <div className="flex flex-wrap items-start gap-6">
             {crest && (
@@ -71,7 +71,7 @@ export function ClubPublicPage() {
 
         <section className="rounded-2xl border border-slate-200/80 bg-surface/60 p-6 md:p-8">
           <h2 className="mb-4 text-xl font-bold">Defaultna formacija</h2>
-          <FormationPitch slots={squad.slots} horizontal />
+          <ResponsiveFormationPitch slots={squad.slots} />
         </section>
 
         {lastMatch && (

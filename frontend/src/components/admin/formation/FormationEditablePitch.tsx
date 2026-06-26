@@ -1,0 +1,93 @@
+import { useDraggable, useDroppable } from '@dnd-kit/core';
+import { CSS } from '@dnd-kit/utilities';
+import { mediaUrl } from '../../../lib/media';
+import { POSITION_LABELS } from '../../../lib/player-utils';
+import { playerDndId, squadSlotDndId } from '../../../lib/formation-dnd';
+import type { ClubSquadSlot } from '../../../types/club-hub';
+import { cn } from '../../../lib/utils';
+import { PitchMarkings } from '../../public/clubs/PitchMarkings';
+
+function EditableSlot({
+  slot,
+  active,
+  onSlotClick,
+}: {
+  slot: ClubSquadSlot;
+  active: boolean;
+  onSlotClick: (slot: ClubSquadSlot) => void;
+}) {
+  const dropId = squadSlotDndId(slot);
+  const { setNodeRef: setDropRef, isOver } = useDroppable({ id: dropId });
+  const dragId = slot.playerId ? playerDndId(slot.playerId) : null;
+  const drag = useDraggable({
+    id: dragId ?? `empty-${dropId}`,
+    data: { playerId: slot.playerId },
+    disabled: !slot.playerId,
+  });
+
+  const setRef = (node: HTMLButtonElement | null) => {
+    setDropRef(node);
+    drag.setNodeRef(node);
+  };
+
+  const dragStyle = drag.transform ? { transform: CSS.Translate.toString(drag.transform) } : undefined;
+
+  return (
+    <button
+      ref={setRef}
+      type="button"
+      onClick={() => onSlotClick(slot)}
+      {...(slot.playerId ? { ...drag.listeners, ...drag.attributes } : {})}
+      className={cn(
+        'absolute z-10 flex -translate-x-1/2 -translate-y-1/2 flex-col items-center rounded-lg p-1 transition-shadow',
+        slot.playerId && 'cursor-grab',
+        (isOver || active) && 'ring-2 ring-yellow-300 ring-offset-1 ring-offset-green-700',
+        drag.isDragging && 'opacity-50',
+      )}
+      style={{ left: `${slot.positionX}%`, top: `${slot.positionY}%`, ...dragStyle }}
+    >
+      {slot.player?.photoPath ? (
+        <img
+          src={mediaUrl(slot.player.photoPath, 'thumb')}
+          alt=""
+          className="pointer-events-none h-9 w-9 rounded-full border-2 border-white object-cover md:h-11 md:w-11"
+        />
+      ) : (
+        <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-white md:h-11 md:w-11 md:text-xs">
+          {slot.player?.number ?? POSITION_LABELS[slot.lineRole as keyof typeof POSITION_LABELS]?.slice(0, 2) ?? '?'}
+        </div>
+      )}
+      <span className="mt-0.5 max-w-16 truncate text-center text-[9px] font-medium text-white md:max-w-20 md:text-[10px]">
+        {slot.player
+          ? `${slot.player.firstName[0]}. ${slot.player.lastName}`
+          : POSITION_LABELS[slot.lineRole as keyof typeof POSITION_LABELS]}
+      </span>
+    </button>
+  );
+}
+
+interface Props {
+  slots: ClubSquadSlot[];
+  activeSlot: ClubSquadSlot | null;
+  onSlotClick: (slot: ClubSquadSlot) => void;
+}
+
+export function FormationEditablePitch({ slots, activeSlot, onSlotClick }: Props) {
+  const starters = slots.filter((s) => !s.isBench);
+
+  return (
+    <div className="relative aspect-[16/9] w-full overflow-hidden rounded-2xl border border-slate-200 bg-green-700 shadow-lg">
+      <PitchMarkings horizontal />
+      {starters.map((slot) => (
+        <EditableSlot
+          key={slot.id}
+          slot={slot}
+          active={
+            activeSlot?.slotIndex === slot.slotIndex && activeSlot?.isBench === slot.isBench
+          }
+          onSlotClick={onSlotClick}
+        />
+      ))}
+    </div>
+  );
+}

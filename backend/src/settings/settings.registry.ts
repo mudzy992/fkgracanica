@@ -24,6 +24,13 @@ export const SETTINGS_REGISTRY: SettingDefinition[] = [
     description: 'Slogan kluba',
   },
   {
+    key: 'club.crestUrl',
+    value: '',
+    type: SettingType.STRING,
+    scope: SettingScope.PUBLIC,
+    description: 'Grb kluba (PNG upload) — logo u headeru i favicon',
+  },
+  {
     key: 'contact.email',
     value: 'info@fkgracanica.ba',
     type: SettingType.STRING,

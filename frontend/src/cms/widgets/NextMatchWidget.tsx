@@ -2,7 +2,8 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useMatches } from '../../hooks';
 import { formatDateTime } from '../../lib/utils';
-import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/card';
+import { Reveal } from '../../lib/motion/Reveal';
+import { Card, CardContent } from '../../components/ui/card';
 import { Skeleton } from '../../components/ui/skeleton';
 import { Badge } from '../../components/ui/badge';
 import type { WidgetConfigMap } from './schemas';
@@ -17,27 +18,31 @@ export function NextMatchWidget({ config }: Props) {
     .sort((a, b) => new Date(a.scheduledAt).getTime() - new Date(b.scheduledAt).getTime())[0];
 
   return (
-    <section className="mx-auto max-w-6xl px-4 py-12">
-      <h2 className="mb-6 text-2xl font-bold text-text">{config.title ?? t('home.nextMatch')}</h2>
+    <section className="mx-auto max-w-6xl px-4 py-12 sm:px-6 md:py-16">
+      <Reveal>
+        <h2 className="mb-8 text-3xl font-bold tracking-tight text-text">{config.title ?? t('home.nextMatch')}</h2>
+      </Reveal>
       {isLoading ? (
-        <Skeleton className="h-32 w-full" />
+        <Skeleton className="h-40 w-full rounded-2xl" />
       ) : next ? (
-        <Link to={`/utakmice/${next.id}`}>
-          <Card className="transition-shadow hover:shadow-md">
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <CardTitle>
-                  {next.homeClub?.name ?? 'Domaćin'} vs {next.awayClub?.name ?? 'Gost'}
-                </CardTitle>
-                <Badge>{next.round ? `Kolo ${next.round}` : 'Utakmica'}</Badge>
-              </div>
-            </CardHeader>
-            <CardContent className="text-text-muted">
-              <p>{formatDateTime(next.scheduledAt)}</p>
-              {next.venue && <p>{next.venue}</p>}
-            </CardContent>
-          </Card>
-        </Link>
+        <Reveal delay={0.1}>
+          <Link to={`/utakmice/${next.id}`} className="group block">
+            <Card className="glass-card overflow-hidden border-primary/20 transition-all duration-300 group-hover:-translate-y-1 group-hover:shadow-premium">
+              <CardContent className="p-6 sm:p-8">
+                <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
+                  <Badge className="animate-pulse-soft">{next.round ? `Kolo ${next.round}` : 'Sljedeća utakmica'}</Badge>
+                </div>
+                <p className="text-center text-2xl font-bold text-text sm:text-3xl">
+                  {next.homeClub?.name ?? 'Domaćin'}
+                  <span className="mx-3 text-primary">vs</span>
+                  {next.awayClub?.name ?? 'Gost'}
+                </p>
+                <p className="mt-4 text-center text-text-muted">{formatDateTime(next.scheduledAt)}</p>
+                {next.venue && <p className="mt-1 text-center text-sm text-text-muted">{next.venue}</p>}
+              </CardContent>
+            </Card>
+          </Link>
+        </Reveal>
       ) : (
         <p className="text-text-muted">{t('common.noResults')}</p>
       )}

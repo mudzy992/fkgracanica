@@ -1,6 +1,6 @@
 # HANDOFF — FK Gračanica
 
-> Ažurirano: **2026-06-25** (Web Complete — gate Vijesti/Media, asArray bugfix)
+> Ažurirano: **2026-06-26** (Responsive + Premium Web redizajn)
 
 ---
 
@@ -10,9 +10,10 @@
 |-------|------------|
 | **Branch** | `main` (lokalno mnogo uncommitted promjena) |
 | **Zadnji commit (origin)** | `48b119c` — production roadmap P1–P8 |
-| **Aktivna faza** | **Web Complete** Track 3 — admin gate moduli |
-| **Plan folder** | `.cursor/plans/fk-gracanica/21_web-complete/` |
-| **Session handoff** | [21_web-complete/HANDOFF.md](./21_web-complete/HANDOFF.md) |
+| **Aktivna faza** | **Responsive + Premium Web** (Track 23) |
+| **Plan folder** | `.cursor/plans/fk-gracanica/23_responsive-premium-web/` |
+| **Session handoff** | [23_responsive-premium-web/HANDOFF.md](./23_responsive-premium-web/HANDOFF.md) |
+| **Paralelno** | Web Complete Track 3 — [21_web-complete/HANDOFF.md](./21_web-complete/HANDOFF.md) |
 
 ---
 

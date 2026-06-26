@@ -19,7 +19,7 @@ export function ClubTimelinePage() {
         subtitle="Od osnivanja do današnjih dana — ključni trenuci u historiji kluba."
       />
 
-      <div className="mx-auto max-w-6xl px-4 pt-12">
+      <div className="mx-auto max-w-6xl px-4 pt-12 sm:px-6">
         {isLoading ? (
           <div className="space-y-6">
             {Array.from({ length: 4 }).map((_, i) => (

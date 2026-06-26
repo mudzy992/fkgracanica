@@ -20,7 +20,7 @@ export function NewsListPage() {
   const items = asArray<NewsItem>(data);
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-12">
+    <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6">
       <Seo title="Vijesti" />
       <h1 className="mb-6 text-3xl font-bold">Vijesti</h1>
       {categories && categories.length > 0 && (
@@ -44,7 +44,7 @@ export function NewsListPage() {
           ))}
         </div>
       )}
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {isLoading
           ? Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)
           : items.map((item) => (

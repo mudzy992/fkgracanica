@@ -9,8 +9,8 @@ describe('standings.util', () => {
         homeScore: 2,
         awayScore: 1,
         status: 'FINISHED',
-        homeClub: { name: 'A' },
-        awayClub: { name: 'B' },
+        homeClub: { name: 'A', slug: 'a' },
+        awayClub: { name: 'B', slug: 'b' },
       },
     ]);
     expect(rows[0].clubName).toBe('A');

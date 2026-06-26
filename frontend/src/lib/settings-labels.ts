@@ -1,6 +1,7 @@
 export const SETTINGS_LABELS: Record<string, string> = {
   'club.name': 'Naziv kluba',
   'club.tagline': 'Slogan kluba',
+  'club.crestUrl': 'Grb kluba (PNG) — logo i favicon',
   'contact.email': 'Kontakt email',
   'contact.phone': 'Kontakt telefon',
   'contact.address': 'Adresa kluba',

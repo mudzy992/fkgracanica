@@ -15,7 +15,10 @@ export class ClubStatsService {
 
     const matches = await this.prisma.match.findMany({
       where: { seasonId: season.id, status: MatchStatus.FINISHED },
-      include: { homeClub: { select: { id: true, name: true } }, awayClub: { select: { id: true, name: true } } },
+      include: {
+        homeClub: { select: { id: true, name: true, slug: true } },
+        awayClub: { select: { id: true, name: true, slug: true } },
+      },
     });
     const standing = computeStandings(matches).find((r) => r.clubId === clubId) ?? null;
 

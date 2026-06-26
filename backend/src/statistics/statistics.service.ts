@@ -74,8 +74,8 @@ export class StatisticsService {
     const matches = await this.prisma.match.findMany({
       where: { seasonId, status: MatchStatus.FINISHED },
       include: {
-        homeClub: { select: { name: true } },
-        awayClub: { select: { name: true } },
+        homeClub: { select: { name: true, slug: true } },
+        awayClub: { select: { name: true, slug: true } },
       },
     });
     return computeStandings(matches);

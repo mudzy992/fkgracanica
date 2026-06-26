@@ -2,7 +2,7 @@ import { groupPlayersByPosition } from '../../lib/player-utils';
 import { useClubSquad, useClubStats } from '../../hooks/use-club-hub';
 import { useOwnClub } from '../../hooks';
 import { ClubProfileHero } from '../../components/public/clubs/ClubProfileHero';
-import { FormationPitch } from '../../components/public/clubs/FormationPitch';
+import { ResponsiveFormationPitch } from '../../components/public/clubs/ResponsiveFormationPitch';
 import { PlayerCard } from '../../components/public/players/PlayerCard';
 import { ClubStatsSummary, PlayerStatsTable } from '../../components/club/ClubStatsPanels';
 import { Seo } from '../../components/seo/Seo';
@@ -40,17 +40,12 @@ export function FirstTeamPage() {
         subtitle="Formacija, klupa i statistike prvog tima."
       />
 
-      <div className="mx-auto max-w-6xl space-y-12 px-4 pt-12">
+      <div className="mx-auto max-w-6xl space-y-12 px-4 pt-12 sm:px-6">
         {isLoading ? (
           <Skeleton className="h-[420px] w-full rounded-2xl" />
         ) : squad?.slots.length ? (
           <>
-            <div className="hidden lg:block">
-              <FormationPitch slots={squad.slots} horizontal />
-            </div>
-            <div className="lg:hidden">
-              <FormationPitch slots={squad.slots} horizontal={false} />
-            </div>
+            <ResponsiveFormationPitch slots={squad.slots} />
 
             {bench.length > 0 && (
               <section>

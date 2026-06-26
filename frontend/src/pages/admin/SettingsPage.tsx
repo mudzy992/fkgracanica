@@ -5,13 +5,41 @@ import {
   useUpdatePrivateSettings,
   useUpdatePublicSettings,
 } from '../../hooks';
+import { SettingMediaField } from '../../components/admin/SettingMediaField';
 import { Seo } from '../../components/seo/Seo';
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
 import { Switch } from '../../components/ui/switch';
 import { Skeleton } from '../../components/ui/skeleton';
 import { cn } from '../../lib/utils';
+import { isMediaSettingKey } from '../../lib/setting-field-utils';
 import { settingLabel } from '../../lib/settings-labels';
+
+function SettingField({
+  keyName,
+  value,
+  draftValue,
+  onDraft,
+}: {
+  keyName: string;
+  value: string;
+  draftValue?: string;
+  onDraft: (v: string) => void;
+}) {
+  const current = draftValue ?? value;
+
+  if (value === 'true' || value === 'false') {
+    return (
+      <Switch checked={current === 'true'} onCheckedChange={(checked) => onDraft(String(checked))} />
+    );
+  }
+
+  if (isMediaSettingKey(keyName)) {
+    return <SettingMediaField settingKey={keyName} value={current} onChange={onDraft} />;
+  }
+
+  return <Input value={current} onChange={(e) => onDraft(e.target.value)} />;
+}
 
 export function SettingsPage() {
   const [tab, setTab] = useState<'public' | 'private'>('public');
@@ -23,7 +51,6 @@ export function SettingsPage() {
 
   const data = tab === 'public' ? publicData : privateData;
   const isLoading = tab === 'public' ? pl : prl;
-
   const values = { ...data, ...draft };
 
   const handleSave = async () => {
@@ -61,20 +88,15 @@ export function SettingsPage() {
         <div className="max-w-xl space-y-4">
           {Object.entries(values ?? {}).map(([key, value]) => (
             <div key={key} className="flex flex-col gap-2">
-              <label className="text-sm font-medium text-text">{settingLabel(key)}</label>
-              {value === 'true' || value === 'false' ? (
-                <Switch
-                  checked={(draft[key] ?? value) === 'true'}
-                  onCheckedChange={(checked) =>
-                    setDraft((d) => ({ ...d, [key]: String(checked) }))
-                  }
-                />
-              ) : (
-                <Input
-                  value={draft[key] ?? value}
-                  onChange={(e) => setDraft((d) => ({ ...d, [key]: e.target.value }))}
-                />
+              {!isMediaSettingKey(key) && (
+                <label className="text-sm font-medium text-text">{settingLabel(key)}</label>
               )}
+              <SettingField
+                keyName={key}
+                value={value}
+                draftValue={draft[key]}
+                onDraft={(v) => setDraft((d) => ({ ...d, [key]: v }))}
+              />
             </div>
           ))}
           {Object.keys(draft).length > 0 && (

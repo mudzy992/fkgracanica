@@ -36,7 +36,7 @@ export function MatchCenterPage() {
   const isLive = data.status === 'LIVE' || data.status === 'HALFTIME';
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-12">
+    <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6">
       <Seo title={`${data.homeClub?.name} vs ${data.awayClub?.name}`} />
       {canApprove && <MatchReportApproval matchId={data.id} reportStatus={data.reportStatus} />}
       <div className="mb-4 flex items-center justify-between">
@@ -48,21 +48,21 @@ export function MatchCenterPage() {
         )}
       </div>
       <Card>
-        <CardContent className="p-8 text-center">
+        <CardContent className="p-4 sm:p-8 text-center">
           <p className="text-sm text-text-muted">{formatDateTime(data.scheduledAt)}</p>
-          <div className="mt-6 flex items-center justify-center gap-4 md:gap-6">
-            <div className="flex flex-1 flex-col items-end gap-2">
+          <div className="mt-6 flex flex-col items-center gap-4 sm:flex-row sm:justify-center sm:gap-6">
+            <div className="flex w-full flex-col items-center gap-2 sm:flex-1 sm:items-end">
               <ClubCrest club={data.homeClub} size="md" />
               {data.homeClub?.slug ? (
-                <ClubLink slug={data.homeClub.slug} name={data.homeClub.name} className="text-lg" />
+                <ClubLink slug={data.homeClub.slug} name={data.homeClub.name} className="text-center text-lg sm:text-right" />
               ) : (
-                <p className="text-lg font-bold">{data.homeClub?.name}</p>
+                <p className="text-center text-lg font-bold sm:text-right">{data.homeClub?.name}</p>
               )}
             </div>
-            <p className="text-4xl font-bold text-primary">
+            <p className="text-4xl font-bold text-primary sm:shrink-0">
               {data.homeScore} : {data.awayScore}
             </p>
-            <div className="flex flex-1 flex-col items-start gap-2">
+            <div className="flex w-full flex-col items-center gap-2 sm:flex-1 sm:items-start">
               <ClubCrest club={data.awayClub} size="md" />
               {data.awayClub?.slug ? (
                 <ClubLink slug={data.awayClub.slug} name={data.awayClub.name} className="text-lg" />

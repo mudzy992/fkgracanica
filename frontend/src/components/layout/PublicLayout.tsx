@@ -2,11 +2,14 @@ import { Link, NavLink, Outlet } from 'react-router-dom';
 import { Menu, Search } from 'lucide-react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { usePublicSettings } from '../../hooks';
+import { useDynamicFavicon } from '../../hooks/use-dynamic-favicon';
 import { useCmsMenu, useCmsPage } from '../../hooks/use-cms-pages';
 import { cn } from '../../lib/utils';
 import { Button } from '../ui/button';
 import { ThemeToggle } from '../ui/ThemeToggle';
 import { Sheet, SheetContent, SheetHeader } from '../ui/sheet';
+import { PublicSiteLogo } from './PublicSiteLogo';
 import type { CmsMenuItem } from '../../cms/types';
 
 const fallbackNav = [
@@ -67,6 +70,10 @@ function NavItems({ items, onNavigate }: { items: Array<{ to: string; label: str
 export function PublicLayout() {
   const [open, setOpen] = useState(false);
   const { t } = useTranslation();
+  const { data: settings } = usePublicSettings();
+  const crestUrl = settings?.['club.crestUrl'];
+  const clubName = settings?.['club.name'] ?? 'FK Gračanica';
+  useDynamicFavicon(crestUrl || undefined);
   const { data: menu } = useCmsMenu('main');
   const { data: sitePage } = useCmsPage('site');
 
@@ -86,11 +93,9 @@ export function PublicLayout() {
 
   return (
     <div className="flex min-h-dvh flex-col bg-background">
-      <header className="sticky top-0 z-40 border-b border-slate-200 bg-background/95 backdrop-blur">
-        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4">
-          <Link to="/" className="text-lg font-bold text-primary">
-            FK Gračanica
-          </Link>
+      <header className="sticky top-0 z-40 border-b border-slate-200/60 bg-background/80 shadow-sm backdrop-blur-xl supports-[backdrop-filter]:bg-background/70">
+        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
+          <PublicSiteLogo crestUrl={crestUrl} clubName={clubName} />
           <nav className="hidden items-center gap-1 lg:flex">
             <NavItems items={navItems} />
           </nav>
@@ -121,10 +126,10 @@ export function PublicLayout() {
         <Outlet />
       </main>
 
-      <footer className="border-t border-slate-200 bg-surface">
-        <div className="mx-auto flex max-w-6xl flex-col gap-4 px-4 py-8 text-sm text-text-muted md:flex-row md:items-center md:justify-between">
+      <footer className="border-t border-slate-200/60 bg-surface/80 backdrop-blur-sm">
+        <div className="mx-auto flex max-w-6xl flex-col gap-4 px-4 py-8 text-sm text-text-muted sm:px-6 md:flex-row md:items-center md:justify-between">
           <div className="space-y-1">
-            <p>© {new Date().getFullYear()} FK Gračanica</p>
+            <p>© {new Date().getFullYear()} {clubName}</p>
             {footerText && <p className="max-w-md text-xs">{footerText}</p>}
           </div>
           <div className="flex flex-wrap gap-4">

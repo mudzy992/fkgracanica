@@ -17,7 +17,7 @@ export function LiveMatchPage() {
   const isLive = data.status === 'LIVE';
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-12">
+    <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6">
       <Seo title="Live" />
       <div className="mb-6 flex items-center justify-between">
         <h1 className="text-2xl font-bold">Live</h1>
@@ -26,9 +26,11 @@ export function LiveMatchPage() {
           <Badge variant="muted">{data.minute}&apos;</Badge>
         </div>
       </div>
-      <div className="rounded-xl bg-primary p-6 text-center text-white">
-        <p className="text-lg">
-          {data.homeClub?.name} {data.homeScore} : {data.awayScore} {data.awayClub?.name}
+      <div className="rounded-xl bg-primary p-4 text-center text-white sm:p-6">
+        <p className="text-base font-medium sm:text-lg">
+          <span className="block sm:inline">{data.homeClub?.name}</span>
+          <span className="mx-2 text-2xl font-bold sm:text-lg">{data.homeScore} : {data.awayScore}</span>
+          <span className="block sm:inline">{data.awayClub?.name}</span>
         </p>
         <p className="mt-2 text-sm text-white/70">{data.status}</p>
       </div>

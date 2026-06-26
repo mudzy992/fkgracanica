@@ -41,8 +41,10 @@ export function useUpdateClubFormation(clubId: string) {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (body: { def: number; mid: number; fwd: number }) =>
-      (await api.put(`/clubs/${clubId}/formation`, body)).data,
-    onSuccess: () => void qc.invalidateQueries({ queryKey: ['clubs', clubId, 'squad'] }),
+      (await api.put<ClubSquadResponse>(`/clubs/${clubId}/formation`, body)).data,
+    onSuccess: (data) => {
+      qc.setQueryData(['clubs', clubId, 'squad'], data);
+    },
   });
 }
 
@@ -50,8 +52,10 @@ export function useAssignClubSquad(clubId: string) {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (assignments: { slotIndex: number; isBench: boolean; playerId?: string | null }[]) =>
-      (await api.put(`/clubs/${clubId}/squad`, { assignments })).data,
-    onSuccess: () => void qc.invalidateQueries({ queryKey: ['clubs', clubId, 'squad'] }),
+      (await api.put<ClubSquadResponse>(`/clubs/${clubId}/squad`, { assignments })).data,
+    onSuccess: (data) => {
+      qc.setQueryData(['clubs', clubId, 'squad'], data);
+    },
   });
 }
 
