@@ -19,7 +19,7 @@ export function TrophiesWidget({ config }: Props) {
   const viewAll = config.viewAllUrl ?? '/trofeji';
 
   return (
-    <section className="border-y border-slate-200/60 bg-gradient-to-b from-background via-surface/40 to-background py-14 dark:border-slate-800">
+    <section className="border-y border-[var(--border-subtle)] bg-gradient-to-b from-background via-surface/40 to-background py-14">
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
         <Reveal className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>

@@ -9,7 +9,7 @@ interface Props {
 export function PublicSiteLogo({ crestUrl, clubName = 'FK Gračanica' }: Props) {
   if (crestUrl) {
     return (
-      <Link to="/" className="flex items-center gap-2">
+      <Link to="/" className="font-display flex items-center gap-2">
         <img
           src={mediaUrl(crestUrl, 'thumb')}
           alt={clubName}
@@ -21,7 +21,7 @@ export function PublicSiteLogo({ crestUrl, clubName = 'FK Gračanica' }: Props) 
   }
 
   return (
-    <Link to="/" className="text-lg font-bold text-primary">
+    <Link to="/" className="font-display text-lg font-bold text-primary">
       {clubName}
     </Link>
   );

@@ -48,7 +48,7 @@ export function Dialog({ open, onOpenChange, children, preventClose, className }
         role="dialog"
         aria-modal="true"
         className={cn(
-          'relative z-10 flex max-h-[min(90vh,720px)] w-full flex-col rounded-xl border border-slate-200 bg-background shadow-xl',
+          'relative z-10 flex max-h-[min(90vh,720px)] w-full flex-col rounded-xl border border-[var(--border-subtle)] bg-background shadow-xl',
           className,
         )}
       >
@@ -68,7 +68,7 @@ export function DialogHeader({
   preventClose?: boolean;
 }) {
   return (
-    <div className="flex shrink-0 items-center justify-between border-b border-slate-200 px-4 py-3">
+    <div className="flex shrink-0 items-center justify-between border-b border-[var(--border-subtle)] px-4 py-3">
       <div className="text-base font-semibold text-text">{children}</div>
       <Button
         variant="ghost"
@@ -90,6 +90,6 @@ export function DialogBody({ children, className }: { children: ReactNode; class
 
 export function DialogFooter({ children }: { children: ReactNode }) {
   return (
-    <div className="flex shrink-0 justify-end gap-2 border-t border-slate-200 px-4 py-3">{children}</div>
+    <div className="flex shrink-0 justify-end gap-2 border-t border-[var(--border-subtle)] px-4 py-3">{children}</div>
   );
 }

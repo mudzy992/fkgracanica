@@ -3,6 +3,8 @@ import { api } from '../lib/api';
 import { asArray } from '../lib/as-array';
 import type { NewsItem } from '../types';
 
+import type { MatchStatisticsOverview } from '../types/match-stats';
+
 export interface LeaderRow {
   playerId: string;
   firstName: string;
@@ -36,6 +38,15 @@ export function useTopAssists(seasonId?: string) {
     queryFn: async () =>
       (await api.get<LeaderRow[]>('/statistics/top-assists', { params: { seasonId } })).data,
     enabled: !!seasonId,
+  });
+}
+
+export function useMatchStatistics(matchId?: string) {
+  return useQuery({
+    queryKey: ['statistics', 'match-overview', matchId],
+    queryFn: async () =>
+      (await api.get<MatchStatisticsOverview>(`/statistics/matches/${matchId}/overview`)).data,
+    enabled: !!matchId,
   });
 }
 

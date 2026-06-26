@@ -1,21 +1,23 @@
-import { Link } from 'react-router-dom';
+import { useEffect, useMemo, useState } from 'react';
 import { ClubLink } from '../../components/public/clubs/ClubLink';
 import { ClubCrest } from '../../components/public/clubs/ClubCrest';
 import { LeagueStandingsMobile } from '../../components/public/league/LeagueStandingsMobile';
 import { LeagueFormDots } from '../../components/public/league/LeagueFormDots';
+import { LeagueSeasonPicker } from '../../components/public/league/LeagueSeasonPicker';
+import { LeagueRoundPicker } from '../../components/public/league/LeagueRoundPicker';
+import { LeagueResultsByRound } from '../../components/public/league/LeagueResultsByRound';
 import { PlayerLink } from '../../components/public/players/PlayerLink';
 import { useMatches, useSeasons, useStandings, useTopAssists, useTopScorers } from '../../hooks';
-import { formatDateTime } from '../../lib/utils';
+import { useRounds } from '../../hooks/use-rounds';
+import { pickDefaultSeasonId, type SeasonOption } from '../../lib/season-utils';
 import { Seo } from '../../components/seo/Seo';
-import { Card, CardContent } from '../../components/ui/card';
-import { Badge } from '../../components/ui/badge';
+import { PremiumCard } from '../../components/public/shell/PremiumCard';
 import { Skeleton } from '../../components/ui/skeleton';
-import type { Club, StandingRow } from '../../types';
+import { Card, CardContent } from '../../components/ui/card';
+import type { StandingRow } from '../../types';
 
 function ClubCell({ row }: { row: StandingRow }) {
-  if (row.clubSlug) {
-    return <ClubLink slug={row.clubSlug} name={row.clubName} />;
-  }
+  if (row.clubSlug) return <ClubLink slug={row.clubSlug} name={row.clubName} />;
   return <span className="font-medium">{row.clubName}</span>;
 }
 
@@ -34,7 +36,7 @@ function LeadersTable({
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b bg-surface/50 text-left text-text-muted">
-                <th className="px-4 py-3 w-12">#</th>
+                <th className="w-12 px-4 py-3">#</th>
                 <th className="px-4 py-3">Igrač</th>
                 <th className="px-4 py-3 text-right">Ukupno</th>
               </tr>
@@ -57,46 +59,59 @@ function LeadersTable({
   );
 }
 
-function MatchClubName({ club }: { club?: Club }) {
-  if (!club) return <span>—</span>;
-  if (club.slug) return <ClubLink slug={club.slug} name={club.name} className="text-base" />;
-  return <span className="font-medium">{club.name}</span>;
-}
-
 export function LeaguePage() {
   const { data: seasons, isLoading: sl } = useSeasons();
-  const seasonId = (seasons as { id: string }[] | undefined)?.[0]?.id;
-  const { data: standings, isLoading: stl } = useStandings(seasonId);
+  const seasonOptions = useMemo(() => (seasons as SeasonOption[] | undefined) ?? [], [seasons]);
+  const [seasonId, setSeasonId] = useState<string | undefined>();
+  const [upToRound, setUpToRound] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (!seasonOptions.length) return;
+    setSeasonId((prev) =>
+      prev && seasonOptions.some((s) => s.id === prev) ? prev : pickDefaultSeasonId(seasonOptions),
+    );
+  }, [seasonOptions]);
+
+  useEffect(() => setUpToRound(null), [seasonId]);
+
+  const activeSeason = seasonOptions.find((s) => s.id === seasonId);
+  const { data: rounds } = useRounds(seasonId);
+  const { data: standings, isLoading: stl } = useStandings(seasonId, upToRound);
   const { data: scorers, isLoading: scl } = useTopScorers(seasonId);
   const { data: assists, isLoading: acl } = useTopAssists(seasonId);
   const { data: matches, isLoading: ml } = useMatches(seasonId);
-  const results = matches
-    ?.filter((m) => m.status === 'FINISHED')
-    .sort((a, b) => new Date(b.scheduledAt).getTime() - new Date(a.scheduledAt).getTime())
-    .slice(0, 10);
+
+  const tableTitle = upToRound ? `Tabela do ${upToRound}. kola` : 'Ukupna tabela';
 
   return (
     <div className="mx-auto max-w-6xl space-y-10 px-4 py-10 sm:px-6 md:py-14">
       <Seo title="Liga" />
-      <header className="space-y-2">
-        <h1 className="text-3xl font-bold tracking-tight md:text-4xl">Liga</h1>
-        <p className="text-text-muted">Tabela, rezultati i statistike sezone.</p>
+      <header className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+        <div className="space-y-2">
+          <h1 className="font-display text-3xl font-bold tracking-tight md:text-4xl">Liga</h1>
+          <p className="text-text-muted">
+            {activeSeason ? `${activeSeason.name} — ${tableTitle.toLowerCase()}` : 'Tabela, rezultati i statistike sezone.'}
+          </p>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          {!sl && <LeagueSeasonPicker seasons={seasonOptions} value={seasonId} onChange={setSeasonId} />}
+          <LeagueRoundPicker rounds={rounds ?? []} value={upToRound} onChange={setUpToRound} />
+        </div>
       </header>
 
       <div className="grid gap-8 xl:grid-cols-5">
         <section className="space-y-4 xl:col-span-3">
-          <h2 className="text-xl font-semibold tracking-tight">Tabela</h2>
+          <h2 className="text-xl font-semibold tracking-tight">{tableTitle}</h2>
           {sl || stl ? (
             <Skeleton className="h-64" />
           ) : (
             <>
               <LeagueStandingsMobile rows={standings ?? []} />
-              <Card className="hidden lg:block">
-                <CardContent className="overflow-x-auto p-0">
-                  <table className="w-full min-w-[520px] text-sm">
+              <PremiumCard className="hidden overflow-x-auto p-0 lg:block" hover={false}>
+                <table className="w-full min-w-[520px] text-sm">
                   <thead>
                     <tr className="border-b bg-surface/50 text-left text-text-muted">
-                      <th className="px-4 py-3 w-10">#</th>
+                      <th className="w-10 px-4 py-3">#</th>
                       <th className="px-4 py-3">Klub</th>
                       <th className="px-4 py-3 text-center">O</th>
                       <th className="px-4 py-3 text-center font-bold">Bod</th>
@@ -122,49 +137,20 @@ export function LeaguePage() {
                     ))}
                   </tbody>
                 </table>
-              </CardContent>
-            </Card>
+              </PremiumCard>
             </>
           )}
         </section>
 
         <section className="space-y-4 xl:col-span-2">
-          <h2 className="text-xl font-semibold tracking-tight">Posljednji rezultati</h2>
-          <div className="space-y-3">
-            {ml
-              ? Array.from({ length: 5 }).map((_, i) => <Skeleton key={i} className="h-20" />)
-              : results?.map((m) => (
-                  <Link key={m.id} to={`/utakmice/${m.id}`} className="block">
-                    <Card className="transition-shadow hover:shadow-md">
-                      <CardContent className="space-y-3 p-4">
-                        <div className="flex items-center justify-between gap-3">
-                          <div className="flex min-w-0 flex-1 items-center justify-end gap-2 text-right">
-                            <MatchClubName club={m.homeClub} />
-                            <ClubCrest club={m.homeClub} size="sm" />
-                          </div>
-                          <p className="shrink-0 text-lg font-bold tabular-nums">
-                            {m.homeScore}:{m.awayScore}
-                          </p>
-                          <div className="flex min-w-0 flex-1 items-center gap-2">
-                            <ClubCrest club={m.awayClub} size="sm" />
-                            <MatchClubName club={m.awayClub} />
-                          </div>
-                        </div>
-                        <div className="flex items-center justify-between text-xs text-text-muted">
-                          <span>{formatDateTime(m.scheduledAt)}</span>
-                          <Badge variant="muted">Kraj</Badge>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </Link>
-                ))}
-          </div>
+          <h2 className="text-xl font-semibold tracking-tight">Rezultati po kolima</h2>
+          <LeagueResultsByRound matches={matches ?? []} loading={ml} />
         </section>
       </div>
 
       <div className="grid gap-8 md:grid-cols-2">
-        {scl ? <Skeleton className="h-48" /> : <LeadersTable title="Najbolji strijelci" rows={scorers} />}
-        {acl ? <Skeleton className="h-48" /> : <LeadersTable title="Najbolji asistenti" rows={assists} />}
+        {scl ? <Skeleton className="h-48" /> : <LeadersTable title="Najbolji strijelci (sezona)" rows={scorers} />}
+        {acl ? <Skeleton className="h-48" /> : <LeadersTable title="Najbolji asistenti (sezona)" rows={assists} />}
       </div>
     </div>
   );

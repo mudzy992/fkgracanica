@@ -13,6 +13,54 @@
     "hallOfFame": "Hall of Fame",
     "museum": "Museum"
   },
+  "actions": {
+    "readMore": "Read more",
+    "viewAll": "View all",
+    "subscribe": "Subscribe",
+    "send": "Send",
+    "login": "Login",
+    "logout": "Logout",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "create": "Create",
+    "back": "Back"
+  },
+  "home": {
+    "heroTitle": "FK Gračanica",
+    "heroSubtitle": "Pride of the city. Heart on the pitch.",
+    "nextMatch": "Next match",
+    "lastResult": "Last result",
+    "latestNews": "Latest news",
+    "featuredPlayers": "Featured players",
+    "leagueTable": "Standings",
+    "gallery": "Gallery",
+    "sponsors": "Sponsors",
+    "membership": "Become a member",
+    "membershipDesc": "Join the FK Gračanica family and enjoy exclusive benefits.",
+    "tickets": "Tickets",
+    "ticketsDesc": "Secure your seat at the stadium.",
+    "trophies": "Trophies",
+    "newsletter": "Newsletter",
+    "newsletterDesc": "Get the latest news in your inbox."
+  },
+  "common": {
+    "loading": "Loading...",
+    "noResults": "No results",
+    "error": "Something went wrong",
+    "email": "Email",
+    "password": "Password",
+    "name": "Name",
+    "message": "Message",
+    "subject": "Subject"
+  },
+  "footer": {
+    "menu": "Menu",
+    "quickLinks": "Quick links",
+    "contact": "Contact",
+    "admin": "Admin"
+  },
   "notifications": {
     "title": "Notifications",
     "empty": "No new notifications",

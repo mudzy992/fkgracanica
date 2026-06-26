@@ -127,11 +127,16 @@ export function useOwnClub() {
   });
 }
 
-export function useMatches(seasonId?: string) {
+export function useMatches(seasonId?: string, roundId?: string) {
   return useQuery({
-    queryKey: ['matches', seasonId],
+    queryKey: ['matches', seasonId, roundId ?? 'all'],
     queryFn: async () =>
-      asArray<Match>((await api.get('/matches', { params: seasonId ? { seasonId } : undefined })).data),
+      asArray<Match>((await api.get('/matches', {
+        params: {
+          ...(seasonId ? { seasonId } : {}),
+          ...(roundId ? { roundId } : {}),
+        },
+      })).data),
   });
 }
 

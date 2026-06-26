@@ -11,7 +11,7 @@ export function SponsorMarqueeItem({ sponsor, className }: Props) {
   const content = (
     <div
       className={cn(
-        'flex h-20 w-44 shrink-0 items-center justify-center rounded-xl border border-slate-200/80 bg-background px-6 shadow-sm transition hover:border-accent/30 hover:shadow-md dark:border-slate-700',
+        'flex h-20 w-44 shrink-0 items-center justify-center rounded-xl border border-[var(--border-subtle)] bg-background px-6 shadow-sm transition hover:border-accent/30 hover:shadow-md',
         className,
       )}
     >

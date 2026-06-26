@@ -39,7 +39,7 @@ import { TimelineAdminPage } from './pages/admin/TimelineAdminPage';
 import { ClubsListPage } from './pages/admin/club-hub/ClubsListPage';
 import { ClubHubPage } from './pages/admin/club-hub/ClubHubPage';
 import { CompetitionsAdminPage } from './pages/admin/CompetitionsAdminPage';
-import { MatchesAdminPage } from './pages/admin/MatchesAdminPage';
+import { SeasonHubPage } from './pages/admin/competition-hub/SeasonHubPage';
 import { CommentatorPage } from './pages/admin/CommentatorPage';
 import { MembershipAdminPage } from './pages/admin/MembershipAdminPage';
 import { TicketingAdminPage } from './pages/admin/TicketingAdminPage';
@@ -100,7 +100,9 @@ export default function App() {
             <Route path="clubs/:id" element={<ClubHubPage />} />
             <Route path="players" element={<Navigate to="/admin/clubs" replace />} />
             <Route path="competitions" element={<CompetitionsAdminPage />} />
-            <Route path="matches" element={<MatchesAdminPage />} />
+            <Route path="competitions/seasons/:seasonId" element={<SeasonHubPage />} />
+            <Route path="rounds" element={<Navigate to="/admin/competitions" replace />} />
+            <Route path="matches" element={<Navigate to="/admin/competitions" replace />} />
             <Route path="live/:id" element={<CommentatorPage />} />
             <Route path="membership" element={<MembershipAdminPage />} />
             <Route path="ticketing" element={<TicketingAdminPage />} />

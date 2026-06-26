@@ -10,6 +10,7 @@ import { AdminFormSheet } from '../../components/admin/AdminFormSheet';
 import { EntitySelect } from '../../components/admin/EntitySelect';
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
+import { Switch } from '../../components/ui/switch';
 
 interface Competition {
   id: string;
@@ -53,6 +54,7 @@ export function CompetitionsAdminFormSheet({
   const [yearEnd, setYearEnd] = useState(new Date().getFullYear());
   const [competitionId, setCompetitionId] = useState('');
   const [isActive, setIsActive] = useState(true);
+  const [error, setError] = useState('');
 
   const compOptions = ((competitions as Competition[] | undefined) ?? []).map((c) => ({
     id: c.id,
@@ -61,6 +63,7 @@ export function CompetitionsAdminFormSheet({
 
   useEffect(() => {
     if (!open) return;
+    setError('');
     if (mode === 'competition') {
       setName(editCompetition?.name ?? '');
     } else if (mode === 'season') {
@@ -73,15 +76,21 @@ export function CompetitionsAdminFormSheet({
   }, [open, mode, editCompetition, editSeason, compOptions]);
 
   const save = async () => {
-    if (mode === 'competition') {
-      if (editCompetition) await updateComp.mutateAsync({ id: editCompetition.id, name });
-      else await createComp.mutateAsync({ name });
-    } else if (mode === 'season') {
-      const body = { name, yearStart, yearEnd, competitionId, isActive };
-      if (editSeason) await updateSeason.mutateAsync({ id: editSeason.id, ...body });
-      else await createSeason.mutateAsync(body);
+    try {
+      setError('');
+      if (mode === 'competition') {
+        if (editCompetition) await updateComp.mutateAsync({ id: editCompetition.id, name });
+        else await createComp.mutateAsync({ name });
+      } else if (mode === 'season') {
+        const body = { name, yearStart, yearEnd, competitionId, isActive };
+        if (editSeason) await updateSeason.mutateAsync({ id: editSeason.id, ...body });
+        else await createSeason.mutateAsync(body);
+      }
+      onOpenChange(false);
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Spremanje nije uspjelo.';
+      setError(msg);
     }
-    onOpenChange(false);
   };
 
   const title =
@@ -107,12 +116,13 @@ export function CompetitionsAdminFormSheet({
             />
             <Input type="number" value={yearStart} onChange={(e) => setYearStart(Number(e.target.value))} placeholder="Godina početka" />
             <Input type="number" value={yearEnd} onChange={(e) => setYearEnd(Number(e.target.value))} placeholder="Godina kraja" />
-            <label className="flex items-center gap-2 text-sm">
-              <input type="checkbox" checked={isActive} onChange={(e) => setIsActive(e.target.checked)} />
-              Aktivna sezona
-            </label>
+            <div className="flex items-center justify-between gap-3">
+              <span className="text-sm font-medium">Aktivna sezona</span>
+              <Switch checked={isActive} onCheckedChange={setIsActive} />
+            </div>
           </>
         )}
+        {error && <p className="text-sm text-danger">{error}</p>}
         <Button onClick={() => void save()} disabled={!name || createComp.isPending || createSeason.isPending}>
           {editCompetition || editSeason ? 'Spremi' : 'Kreiraj'}
         </Button>

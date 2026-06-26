@@ -42,7 +42,7 @@ export function Sheet({ open, onOpenChange, children, side = 'left' }: SheetProp
 
 export function SheetHeader({ children, onClose }: { children: ReactNode; onClose: () => void }) {
   return (
-    <div className="flex items-center justify-between border-b border-slate-200 p-4">
+    <div className="flex items-center justify-between border-b border-[var(--border-subtle)] p-4">
       <div className="font-semibold text-text">{children}</div>
       <Button variant="ghost" size="icon" onClick={onClose} aria-label="Zatvori">
         <X className="h-5 w-5" />

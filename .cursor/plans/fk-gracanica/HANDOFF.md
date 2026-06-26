@@ -10,10 +10,10 @@
 |-------|------------|
 | **Branch** | `main` (lokalno mnogo uncommitted promjena) |
 | **Zadnji commit (origin)** | `48b119c` — production roadmap P1–P8 |
-| **Aktivna faza** | **Responsive + Premium Web** (Track 23) |
-| **Plan folder** | `.cursor/plans/fk-gracanica/23_responsive-premium-web/` |
-| **Session handoff** | [23_responsive-premium-web/HANDOFF.md](./23_responsive-premium-web/HANDOFF.md) |
-| **Paralelno** | Web Complete Track 3 — [21_web-complete/HANDOFF.md](./21_web-complete/HANDOFF.md) |
+| **Aktivna faza** | **Public Identity Refactor** (Track 24) |
+| **Plan folder** | `.cursor/plans/fk-gracanica/24_public-identity-refactor/` |
+| **Session handoff** | [24_public-identity-refactor/HANDOFF.md](./24_public-identity-refactor/HANDOFF.md) |
+| **Paralelno** | Responsive Premium Web [23_responsive-premium-web/HANDOFF.md](./23_responsive-premium-web/HANDOFF.md) |
 
 ---
 

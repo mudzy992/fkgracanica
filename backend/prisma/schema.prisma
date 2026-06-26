@@ -455,6 +455,7 @@ model Club {
   players       Player[]
   stadiumRel    Stadium?
   squadSlots    ClubSquadSlot[]
+  matchLineups  MatchLineup[]
 }
 
 model Stadium {
@@ -493,8 +494,25 @@ model Season {
   updatedAt     DateTime    @updatedAt
   competition   Competition @relation(fields: [competitionId], references: [id], onDelete: Cascade)
   matches       Match[]
+  rounds        Round[]
 
   @@index([competitionId])
+}
+
+model Round {
+  id        String    @id @default(cuid())
+  seasonId  String
+  number    Int
+  name      String?
+  startsAt  DateTime?
+  endsAt    DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  season    Season    @relation(fields: [seasonId], references: [id], onDelete: Cascade)
+  matches   Match[]
+
+  @@unique([seasonId, number])
+  @@index([seasonId])
 }
 
 enum PlayerPosition {
@@ -583,6 +601,7 @@ model Match {
   homeScore       Int               @default(0)
   awayScore       Int               @default(0)
   round           Int?
+  roundId         String?
   scheduledAt     DateTime
   venue           String?
   status          MatchStatus       @default(SCHEDULED)
@@ -592,6 +611,7 @@ model Match {
   createdAt       DateTime          @default(now())
   updatedAt       DateTime          @updatedAt
   season          Season            @relation(fields: [seasonId], references: [id], onDelete: Cascade)
+  roundRel        Round?            @relation(fields: [roundId], references: [id], onDelete: SetNull)
   homeClub        Club              @relation("HomeClub", fields: [homeClubId], references: [id])
   awayClub        Club              @relation("AwayClub", fields: [awayClubId], references: [id])
   events          MatchEvent[]
@@ -602,6 +622,7 @@ model Match {
   newsLinks       NewsMatch[]
 
   @@index([seasonId])
+  @@index([roundId])
   @@index([status])
   @@index([scheduledAt])
 }
@@ -650,16 +671,20 @@ model MatchEvent {
 }
 
 model MatchLineup {
-  id        String @id @default(cuid())
+  id        String  @id @default(cuid())
   matchId   String
+  clubId    String
   playerId  String
   positionX Float?
   positionY Float?
   isStarter Boolean @default(true)
-  match     Match  @relation(fields: [matchId], references: [id], onDelete: Cascade)
-  player    Player @relation(fields: [playerId], references: [id], onDelete: Cascade)
+  match     Match   @relation(fields: [matchId], references: [id], onDelete: Cascade)
+  club      Club    @relation(fields: [clubId], references: [id], onDelete: Cascade)
+  player    Player  @relation(fields: [playerId], references: [id], onDelete: Cascade)
 
+  @@unique([matchId, playerId])
   @@index([matchId])
+  @@index([matchId, clubId])
 }
 
 model LiveComment {

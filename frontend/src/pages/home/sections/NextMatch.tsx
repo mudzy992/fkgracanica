@@ -5,6 +5,7 @@ import { formatDateTime } from '../../../lib/utils';
 import { Card, CardContent, CardHeader, CardTitle } from '../../../components/ui/card';
 import { Skeleton } from '../../../components/ui/skeleton';
 import { Badge } from '../../../components/ui/badge';
+import { matchRoundLabel } from '../../../lib/round-utils';
 
 export function NextMatch() {
   const { t } = useTranslation();
@@ -26,7 +27,7 @@ export function NextMatch() {
                 <CardTitle>
                   {next.homeClub?.name ?? 'Domaćin'} vs {next.awayClub?.name ?? 'Gost'}
                 </CardTitle>
-                <Badge>{next.round ? `Kolo ${next.round}` : 'Utakmica'}</Badge>
+                <Badge>{matchRoundLabel(next) ?? 'Utakmica'}</Badge>
               </div>
             </CardHeader>
             <CardContent className="text-text-muted">

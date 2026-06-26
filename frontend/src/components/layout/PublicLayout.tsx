@@ -1,28 +1,18 @@
-import { Link, NavLink, Outlet } from 'react-router-dom';
+import { Link } from 'react-router-dom';
+import { Outlet } from 'react-router-dom';
 import { Menu, Search } from 'lucide-react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { usePublicSettings } from '../../hooks';
 import { useDynamicFavicon } from '../../hooks/use-dynamic-favicon';
 import { useCmsMenu, useCmsPage } from '../../hooks/use-cms-pages';
-import { cn } from '../../lib/utils';
 import { Button } from '../ui/button';
 import { ThemeToggle } from '../ui/ThemeToggle';
 import { Sheet, SheetContent, SheetHeader } from '../ui/sheet';
+import { PublicFooter } from './PublicFooter';
+import { PublicNavItems, useFallbackNavItems } from './PublicNavItems';
 import { PublicSiteLogo } from './PublicSiteLogo';
 import type { CmsMenuItem } from '../../cms/types';
-
-const fallbackNav = [
-  { to: '/', label: 'Početna' },
-  { to: '/o-klubu', label: 'O klubu' },
-  { to: '/vijesti', label: 'Vijesti' },
-  { to: '/galerija', label: 'Galerija' },
-  { to: '/tim', label: 'Tim' },
-  { to: '/liga', label: 'Liga' },
-  { to: '/sponzori', label: 'Sponzori' },
-  { to: '/trofeji', label: 'Trofeji' },
-  { to: '/kontakt', label: 'Kontakt' },
-] as const;
 
 function menuHref(item: CmsMenuItem): string {
   if (item.externalUrl) return item.externalUrl;
@@ -31,51 +21,17 @@ function menuHref(item: CmsMenuItem): string {
   return '/';
 }
 
-function NavItems({ items, onNavigate }: { items: Array<{ to: string; label: string; external?: boolean }>; onNavigate?: () => void }) {
-  return (
-    <>
-      {items.map((item) =>
-        item.external ? (
-          <a
-            key={item.to + item.label}
-            href={item.to}
-            target="_blank"
-            rel="noreferrer"
-            onClick={onNavigate}
-            className="rounded-lg px-3 py-2 text-sm font-medium text-text hover:bg-surface"
-          >
-            {item.label}
-          </a>
-        ) : (
-          <NavLink
-            key={item.to + item.label}
-            to={item.to}
-            end={item.to === '/'}
-            onClick={onNavigate}
-            className={({ isActive }) =>
-              cn(
-                'rounded-lg px-3 py-2 text-sm font-medium transition-colors',
-                isActive ? 'bg-primary text-white' : 'text-text hover:bg-surface',
-              )
-            }
-          >
-            {item.label}
-          </NavLink>
-        ),
-      )}
-    </>
-  );
-}
-
 export function PublicLayout() {
   const [open, setOpen] = useState(false);
   const { t } = useTranslation();
   const { data: settings } = usePublicSettings();
   const crestUrl = settings?.['club.crestUrl'];
   const clubName = settings?.['club.name'] ?? 'FK Gračanica';
+  const tagline = settings?.['club.tagline'];
   useDynamicFavicon(crestUrl || undefined);
   const { data: menu } = useCmsMenu('main');
   const { data: sitePage } = useCmsPage('site');
+  const fallbackNav = useFallbackNavItems();
 
   const footerSection = sitePage?.sections?.find((s) => s.widgetType === 'footer-about');
   const footerText = String((footerSection?.config as { text?: string } | undefined)?.text ?? '');
@@ -84,20 +40,16 @@ export function PublicLayout() {
     menu?.items && menu.items.length > 0
       ? menu.items
           .filter((it) => it.enabled !== false)
-          .map((it) => ({
-          to: menuHref(it),
-          label: it.label,
-          external: !!it.externalUrl,
-        }))
-      : fallbackNav.map((it) => ({ ...it, external: false }));
+          .map((it) => ({ to: menuHref(it), label: it.label, external: !!it.externalUrl }))
+      : fallbackNav;
 
   return (
     <div className="flex min-h-dvh flex-col bg-background">
-      <header className="sticky top-0 z-40 border-b border-slate-200/60 bg-background/80 shadow-sm backdrop-blur-xl supports-[backdrop-filter]:bg-background/70">
+      <header className="sticky top-0 z-40 border-b border-[var(--border-subtle)] bg-background/80 shadow-sm backdrop-blur-xl">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
           <PublicSiteLogo crestUrl={crestUrl} clubName={clubName} />
           <nav className="hidden items-center gap-1 lg:flex">
-            <NavItems items={navItems} />
+            <PublicNavItems items={navItems} />
           </nav>
           <div className="flex items-center gap-2">
             <ThemeToggle />
@@ -114,10 +66,14 @@ export function PublicLayout() {
       </header>
 
       <Sheet open={open} onOpenChange={setOpen} side="right">
-        <SheetHeader onClose={() => setOpen(false)}>Meni</SheetHeader>
+        <SheetHeader onClose={() => setOpen(false)}>{t('footer.menu')}</SheetHeader>
         <SheetContent>
+          <div className="mb-6 flex items-center gap-3 border-b border-[var(--border-subtle)] pb-4">
+            <PublicSiteLogo crestUrl={crestUrl} clubName={clubName} />
+            {tagline && <p className="text-xs text-text-muted">{tagline}</p>}
+          </div>
           <nav className="flex flex-col gap-1">
-            <NavItems items={navItems} onNavigate={() => setOpen(false)} />
+            <PublicNavItems items={navItems} onNavigate={() => setOpen(false)} mobile />
           </nav>
         </SheetContent>
       </Sheet>
@@ -126,25 +82,7 @@ export function PublicLayout() {
         <Outlet />
       </main>
 
-      <footer className="border-t border-slate-200/60 bg-surface/80 backdrop-blur-sm">
-        <div className="mx-auto flex max-w-6xl flex-col gap-4 px-4 py-8 text-sm text-text-muted sm:px-6 md:flex-row md:items-center md:justify-between">
-          <div className="space-y-1">
-            <p>© {new Date().getFullYear()} {clubName}</p>
-            {footerText && <p className="max-w-md text-xs">{footerText}</p>}
-          </div>
-          <div className="flex flex-wrap gap-4">
-            <Link to="/hall-of-fame" className="hover:text-primary">
-              {t('nav.hallOfFame')}
-            </Link>
-            <Link to="/muzej" className="hover:text-primary">
-              {t('nav.museum')}
-            </Link>
-            <Link to="/admin/login" className="hover:text-primary">
-              Admin
-            </Link>
-          </div>
-        </div>
-      </footer>
+      <PublicFooter clubName={clubName} crestUrl={crestUrl} footerText={footerText} navItems={navItems} />
     </div>
   );
 }

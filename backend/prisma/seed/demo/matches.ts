@@ -2,6 +2,10 @@ import { MatchStatus } from '@prisma/client';
 import type { SeedPrisma } from '../prisma-client';
 import type { DemoCompetitionContext } from './clubs-competition';
 
+function roundName(number: number) {
+  return `${number}. kolo`;
+}
+
 function lastWeekend(): Date {
   const d = new Date();
   const day = d.getDay();
@@ -18,6 +22,14 @@ function nextWeek(): Date {
   return d;
 }
 
+async function ensureRound(prisma: SeedPrisma, seasonId: string, number: number) {
+  return prisma.round.upsert({
+    where: { seasonId_number: { seasonId, number } },
+    create: { seasonId, number, name: roundName(number) },
+    update: {},
+  });
+}
+
 async function createMatchIfMissing(
   prisma: SeedPrisma,
   ctx: DemoCompetitionContext,
@@ -30,6 +42,7 @@ async function createMatchIfMissing(
     venue?: string;
   },
 ) {
+  const round = await ensureRound(prisma, ctx.seasonId, data.round);
   const existing = await prisma.match.findFirst({
     where: {
       seasonId: ctx.seasonId,
@@ -38,7 +51,12 @@ async function createMatchIfMissing(
       round: data.round,
     },
   });
-  if (existing) return;
+  if (existing) {
+    if (!existing.roundId) {
+      await prisma.match.update({ where: { id: existing.id }, data: { roundId: round.id } });
+    }
+    return;
+  }
 
   await prisma.match.create({
     data: {
@@ -46,6 +64,7 @@ async function createMatchIfMissing(
       homeClubId: ctx.ownClubId,
       awayClubId: ctx.opponentClubId,
       round: data.round,
+      roundId: round.id,
       scheduledAt: data.scheduledAt,
       status: data.status,
       homeScore: data.homeScore ?? 0,

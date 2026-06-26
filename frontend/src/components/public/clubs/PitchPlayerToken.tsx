@@ -10,6 +10,12 @@ interface Props {
   onClick?: () => void;
 }
 
+const avatarClass =
+  'h-9 w-9 rounded-full border-2 border-white object-cover md:h-11 md:w-11';
+
+const placeholderClass =
+  'flex h-9 w-9 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-white md:h-11 md:w-11 md:text-xs';
+
 export function PitchPlayerToken({ slot, vertical, editable, onClick }: Props) {
   const label = slot.player
     ? `${slot.player.firstName[0]}. ${slot.player.lastName}`
@@ -20,24 +26,25 @@ export function PitchPlayerToken({ slot, vertical, editable, onClick }: Props) {
       type="button"
       disabled={!editable && !onClick}
       onClick={onClick}
-      className={cn(
-        'flex flex-col items-center',
-        vertical && '-rotate-90',
-        editable && 'cursor-pointer',
-      )}
+      className={cn('flex flex-col items-center gap-0.5', editable && 'cursor-pointer')}
     >
-      {slot.player?.photoPath ? (
-        <img
-          src={mediaUrl(slot.player.photoPath, 'thumb')}
-          alt=""
-          className="h-9 w-9 rounded-full border-2 border-white object-cover md:h-11 md:w-11"
-        />
-      ) : (
-        <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-white md:h-11 md:w-11 md:text-xs">
-          {slot.player?.number ?? POSITION_LABELS[slot.lineRole as keyof typeof POSITION_LABELS]?.slice(0, 2) ?? '?'}
-        </div>
-      )}
-      <span className="mt-0.5 max-w-16 truncate text-center text-[9px] font-medium text-white md:max-w-20 md:text-[10px]">
+      <div className={cn('shrink-0', vertical && '-rotate-90')}>
+        {slot.player?.photoPath ? (
+          <img src={mediaUrl(slot.player.photoPath, 'thumb')} alt="" className={avatarClass} />
+        ) : (
+          <div className={placeholderClass}>
+            {slot.player?.number ??
+              POSITION_LABELS[slot.lineRole as keyof typeof POSITION_LABELS]?.slice(0, 2) ??
+              '?'}
+          </div>
+        )}
+      </div>
+      <span
+        className={cn(
+          'max-w-[4.5rem] truncate text-center text-[9px] font-medium leading-tight text-white md:max-w-20 md:text-[10px]',
+          vertical && 'mt-1',
+        )}
+      >
         {label}
       </span>
     </button>

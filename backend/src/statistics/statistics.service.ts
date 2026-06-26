@@ -1,6 +1,12 @@
-import { Injectable } from '@nestjs/common';
-import { MatchEventType, MatchReportStatus, MatchStatus } from '@prisma/client';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { MatchEventType, MatchReportStatus, MatchStatus, type TeamStatistics } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
+import { matchWithinRoundLimit } from '../rounds/round.util';
+import {
+  computePlayerMatchStats,
+  computeTeamStatsFromEvents,
+  teamStatsToPersistence,
+} from './match-stats.util';
 import { computeStandings } from './standings.util';
 import { getSeasonLeaders } from './leaders.util';
 
@@ -11,7 +17,7 @@ export class StatisticsService {
   async recalculateForMatch(matchId: string) {
     const match = await this.prisma.match.findUnique({
       where: { id: matchId },
-      include: { events: true, season: true },
+      include: { events: true, season: true, lineup: true, teamStats: true },
     });
     if (!match || match.reportStatus !== MatchReportStatus.APPROVED) {
       return { skipped: true, reason: 'Match not approved' };
@@ -57,7 +63,85 @@ export class StatisticsService {
       });
     }
 
+    await this.syncTeamStatistics(matchId, match);
+
     return { success: true, playersUpdated: playerIds.length };
+  }
+
+  private async syncTeamStatistics(
+    matchId: string,
+    match: {
+      homeClubId: string;
+      awayClubId: string;
+      homeScore: number;
+      awayScore: number;
+      events: { type: MatchEventType; teamSide: string | null; playerId: string | null }[];
+      lineup?: { playerId: string; clubId: string }[];
+      teamStats?: TeamStatistics[];
+    },
+  ) {
+    const playerClubById = new Map(
+      (match.lineup ?? []).map((l) => [l.playerId, l.clubId] as const),
+    );
+    const { home, away } = computeTeamStatsFromEvents(
+      match.events,
+      match.homeClubId,
+      match.awayClubId,
+      { home: match.homeScore, away: match.awayScore },
+      playerClubById,
+      match.teamStats,
+    );
+
+    for (const stats of [home, away]) {
+      const data = teamStatsToPersistence(stats);
+      const existing = await this.prisma.teamStatistics.findFirst({
+        where: { matchId, clubId: stats.clubId },
+      });
+      if (existing) {
+        await this.prisma.teamStatistics.update({ where: { id: existing.id }, data });
+      } else {
+        await this.prisma.teamStatistics.create({
+          data: { matchId, clubId: stats.clubId, ...data },
+        });
+      }
+    }
+  }
+
+  async getMatchStatistics(matchId: string) {
+    const match = await this.prisma.match.findUnique({
+      where: { id: matchId },
+      include: {
+        events: { include: { player: { select: { id: true, clubId: true } } } },
+        lineup: { include: { player: { select: { id: true, firstName: true, lastName: true, clubId: true } } } },
+        teamStats: true,
+      },
+    });
+    if (!match) throw new NotFoundException('Utakmica nije pronađena');
+
+    const playerClubById = new Map<string, string>();
+    for (const row of match.lineup) playerClubById.set(row.playerId, row.clubId);
+    for (const event of match.events) {
+      if (event.playerId && event.player?.clubId) {
+        playerClubById.set(event.playerId, event.player.clubId);
+      }
+    }
+
+    const team = computeTeamStatsFromEvents(
+      match.events,
+      match.homeClubId,
+      match.awayClubId,
+      { home: match.homeScore, away: match.awayScore },
+      playerClubById,
+      match.teamStats,
+    );
+    const players = computePlayerMatchStats(
+      match.events,
+      match.lineup,
+      match.homeClubId,
+      match.awayClubId,
+    );
+
+    return { team, players };
   }
 
   getPlayerStats(playerId: string, seasonId?: string) {
@@ -70,15 +154,20 @@ export class StatisticsService {
     return this.prisma.teamStatistics.findMany({ where: { matchId } });
   }
 
-  async getStandings(seasonId: string) {
+  async getStandings(seasonId: string, upToRound?: number) {
     const matches = await this.prisma.match.findMany({
       where: { seasonId, status: MatchStatus.FINISHED },
       include: {
         homeClub: { select: { name: true, slug: true } },
         awayClub: { select: { name: true, slug: true } },
+        roundRel: { select: { number: true } },
       },
     });
-    return computeStandings(matches);
+    const filtered =
+      upToRound == null
+        ? matches
+        : matches.filter((m) => matchWithinRoundLimit(m, upToRound));
+    return computeStandings(filtered);
   }
 
   getTopScorers(seasonId: string) {

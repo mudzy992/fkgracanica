@@ -25,9 +25,14 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const next = resolveTheme(theme);
     setResolved(next);
-    document.documentElement.classList.toggle('dark', next === 'dark');
     localStorage.setItem('fk-theme', theme);
   }, [theme]);
+
+  useEffect(() => {
+    const el = document.documentElement;
+    el.classList.toggle('dark', resolved === 'dark');
+    el.classList.toggle('light', theme === 'light');
+  }, [resolved, theme]);
 
   useEffect(() => {
     if (theme !== 'system') return;

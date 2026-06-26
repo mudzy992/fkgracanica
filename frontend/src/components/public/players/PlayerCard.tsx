@@ -44,7 +44,7 @@ export function PlayerCard({ player, compact, linkable = true }: Props) {
   );
 
   const className = cn(
-    'flex items-center gap-3 rounded-xl border border-slate-200/80 bg-background p-3 shadow-sm transition hover:border-primary/30 hover:shadow-md dark:border-slate-700',
+    'flex items-center gap-3 rounded-xl border border-[var(--border-subtle)] bg-background p-3 shadow-sm transition hover:border-primary/30 hover:shadow-md',
     compact && 'p-2',
   );
 

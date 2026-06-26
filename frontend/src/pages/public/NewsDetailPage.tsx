@@ -2,6 +2,8 @@ import { Link, useParams } from 'react-router-dom';
 import { useNewsItem } from '../../hooks';
 import { mediaUrl } from '../../lib/media';
 import { formatDate } from '../../lib/utils';
+import { PageContainer } from '../../components/public/PageContainer';
+import { PremiumCard } from '../../components/public/shell/PremiumCard';
 import { Seo } from '../../components/seo/Seo';
 import { RichContent } from '../../components/public/RichContent';
 import { VideoEmbed } from '../../components/public/VideoEmbed';
@@ -24,35 +26,37 @@ export function NewsDetailPage() {
     return <p className="p-12 text-center text-text-muted">Vijest nije pronađena.</p>;
   }
 
-  const seoTitle = data.seoTitle ?? data.title;
-  const seoDesc = data.seoDesc ?? data.excerpt ?? undefined;
-
   return (
-    <article className="mx-auto max-w-3xl px-4 py-12">
-      <Seo title={seoTitle} description={seoDesc} image={mediaUrl(data.coverPath)} />
-      <Link to="/vijesti">
-        <Button variant="ghost" className="mb-4">
-          ← Nazad
-        </Button>
-      </Link>
-      {data.category && <Badge className="mb-3">{data.category.name}</Badge>}
+    <article className="pb-16">
+      <Seo title={data.seoTitle ?? data.title} description={data.seoDesc ?? data.excerpt ?? undefined} image={mediaUrl(data.coverPath)} />
       {data.coverPath && (
-        <img src={mediaUrl(data.coverPath)} alt="" className="mb-6 w-full rounded-xl object-cover" />
-      )}
-      <h1 className="text-3xl font-bold">{data.title}</h1>
-      <p className="mt-2 text-sm text-text-muted">
-        {data.publishedAt ? formatDate(data.publishedAt) : ''}
-      </p>
-      {data.videoUrl && (
-        <div className="mt-8">
-          <VideoEmbed url={data.videoUrl} title={data.title} />
+        <div className="relative h-48 sm:h-64 md:h-80">
+          <img src={mediaUrl(data.coverPath, 'medium')} alt="" className="h-full w-full object-cover" />
+          <div className="absolute inset-0 bg-gradient-to-t from-background/90 to-transparent" />
         </div>
       )}
-      <RichContent html={data.content} className="mt-8" />
-      <NewsGalleryPhotos photos={data.gallery?.photos} />
-      <NewsRelatedMatches matches={data.relatedMatches} />
-      <NewsRelatedPlayers players={data.relatedPlayers} />
-      <NewsCommentsSection newsId={data.id} />
+      <PageContainer size="md" className="py-8 sm:py-10">
+        <Link to="/vijesti">
+          <Button variant="ghost" className="mb-4">
+            ← Nazad
+          </Button>
+        </Link>
+        {data.category && <Badge className="mb-3">{data.category.name}</Badge>}
+        <h1 className="font-display text-3xl font-bold sm:text-4xl">{data.title}</h1>
+        <p className="mt-2 text-sm text-text-muted">{data.publishedAt ? formatDate(data.publishedAt) : ''}</p>
+        {data.videoUrl && (
+          <div className="mt-8">
+            <VideoEmbed url={data.videoUrl} title={data.title} />
+          </div>
+        )}
+        <PremiumCard className="mt-8 p-6 sm:p-8" hover={false}>
+          <RichContent html={data.content} />
+        </PremiumCard>
+        <NewsGalleryPhotos photos={data.gallery?.photos} />
+        <NewsRelatedMatches matches={data.relatedMatches} />
+        <NewsRelatedPlayers players={data.relatedPlayers} />
+        <NewsCommentsSection newsId={data.id} />
+      </PageContainer>
     </article>
   );
 }

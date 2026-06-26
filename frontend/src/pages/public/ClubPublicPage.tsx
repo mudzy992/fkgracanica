@@ -11,6 +11,7 @@ import {
 } from '../../components/public/clubs/ClubPublicSections';
 import { Seo } from '../../components/seo/Seo';
 import { Badge } from '../../components/ui/badge';
+import { PremiumCard } from '../../components/public/shell/PremiumCard';
 import { Skeleton } from '../../components/ui/skeleton';
 
 export function ClubPublicPage() {
@@ -43,7 +44,7 @@ export function ClubPublicPage() {
       <Seo title={club.name} description={club.description ?? `Profil kluba ${club.name}`} />
       <ClubProfileHero club={heroClub} eyebrow="Klub" title={club.name} />
       <div className="mx-auto max-w-6xl space-y-12 px-4 pt-10 sm:px-6 sm:pt-12">
-        <section className="rounded-2xl border border-slate-200/80 bg-surface/60 p-6 md:p-8">
+        <PremiumCard className="p-6 md:p-8">
           <div className="flex flex-wrap items-start gap-6">
             {crest && (
               <img src={mediaUrl(crest, 'medium')} alt="" className="h-24 w-24 object-contain md:h-28 md:w-28" />
@@ -67,30 +68,30 @@ export function ClubPublicPage() {
               )}
             </div>
           </div>
-        </section>
+        </PremiumCard>
 
-        <section className="rounded-2xl border border-slate-200/80 bg-surface/60 p-6 md:p-8">
+        <PremiumCard className="p-6 md:p-8">
           <h2 className="mb-4 text-xl font-bold">Defaultna formacija</h2>
           <ResponsiveFormationPitch slots={squad.slots} />
-        </section>
+        </PremiumCard>
 
         {lastMatch && (
-          <div className="rounded-2xl border border-slate-200/80 bg-surface/60 p-6 md:p-8">
+          <PremiumCard className="p-6 md:p-8">
             <LastMatchLineupSection lastMatch={lastMatch} />
-          </div>
+          </PremiumCard>
         )}
 
-        <div className="rounded-2xl border border-slate-200/80 bg-surface/60 p-6 md:p-8">
+        <PremiumCard className="p-6 md:p-8">
           <ClubPlayersGrid players={players} />
-        </div>
+        </PremiumCard>
 
-        <section className="rounded-2xl border border-slate-200/80 bg-surface/60 p-6 md:p-8">
+        <PremiumCard className="p-6 md:p-8">
           <h2 className="mb-4 text-xl font-bold">Statistike</h2>
           <ClubStatsSummary stats={seasonStats} />
           <div className="mt-6">
             <PlayerStatsTable stats={seasonStats} />
           </div>
-        </section>
+        </PremiumCard>
       </div>
     </div>
   );

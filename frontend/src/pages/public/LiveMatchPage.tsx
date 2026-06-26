@@ -2,6 +2,10 @@ import { useParams, Link } from 'react-router-dom';
 import { useMatch } from '../../hooks';
 import { useMatchRealtime } from '../../hooks/use-match-realtime';
 import { matchEventLabel } from '../../lib/match-event-labels';
+import { formatDateTime } from '../../lib/utils';
+import { MatchScoreHero } from '../../components/match/MatchScoreHero';
+import { PageContainer } from '../../components/public/PageContainer';
+import { PremiumCard } from '../../components/public/shell/PremiumCard';
 import { Seo } from '../../components/seo/Seo';
 import { Badge } from '../../components/ui/badge';
 import { Skeleton } from '../../components/ui/skeleton';
@@ -17,41 +21,42 @@ export function LiveMatchPage() {
   const isLive = data.status === 'LIVE';
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6">
-      <Seo title="Live" />
-      <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Live</h1>
-        <div className="flex items-center gap-2">
-          {isLive && <Badge variant="danger">UŽIVO</Badge>}
-          <Badge variant="muted">{data.minute}&apos;</Badge>
-        </div>
-      </div>
-      <div className="rounded-xl bg-primary p-4 text-center text-white sm:p-6">
-        <p className="text-base font-medium sm:text-lg">
-          <span className="block sm:inline">{data.homeClub?.name}</span>
-          <span className="mx-2 text-2xl font-bold sm:text-lg">{data.homeScore} : {data.awayScore}</span>
-          <span className="block sm:inline">{data.awayClub?.name}</span>
-        </p>
-        <p className="mt-2 text-sm text-white/70">{data.status}</p>
-      </div>
-      <div className="mt-8 space-y-3">
-        {data.events?.map((ev) => (
-          <div key={ev.id} className="rounded-lg border border-slate-200 p-3 text-sm">
-            <span className="font-bold text-primary">{ev.minute}&apos;</span>{' '}
-            {matchEventLabel(ev.type)}
-            {ev.player && ` — ${ev.player.firstName} ${ev.player.lastName}`}
-            {ev.description && ` — ${ev.description}`}
+    <div className="pb-16">
+      <PageContainer size="md" className="py-10 sm:py-12">
+        <Seo title="Live" />
+        <div className="mb-6 flex items-center justify-between">
+          <h1 className="font-display text-2xl font-bold">Live centar</h1>
+          <div className="flex items-center gap-2">
+            {isLive && <Badge variant="danger">UŽIVO</Badge>}
+            <Badge variant="muted">{data.minute}&apos;</Badge>
           </div>
-        ))}
-        {(!data.events || data.events.length === 0) && (
-          <p className="text-center text-text-muted">Nema događaja za prikaz.</p>
-        )}
-      </div>
-      <p className="mt-8 text-center text-sm text-text-muted">
-        <Link to={`/utakmice/${data.id}`} className="text-accent hover:underline">
-          Detalji utakmice
-        </Link>
-      </p>
+        </div>
+        <MatchScoreHero
+          homeClub={data.homeClub}
+          awayClub={data.awayClub}
+          homeScore={data.homeScore}
+          awayScore={data.awayScore}
+          meta={`${formatDateTime(data.scheduledAt)} · ${data.status}`}
+          live={isLive}
+        />
+        <div className="mt-8 space-y-3">
+          {data.events?.map((ev) => (
+            <PremiumCard key={ev.id} className="p-3 text-sm" hover={false}>
+              <span className="font-bold text-primary">{ev.minute}&apos;</span> {matchEventLabel(ev.type)}
+              {ev.player && ` — ${ev.player.firstName} ${ev.player.lastName}`}
+              {ev.description && ` — ${ev.description}`}
+            </PremiumCard>
+          ))}
+          {(!data.events || data.events.length === 0) && (
+            <p className="text-center text-text-muted">Nema događaja za prikaz.</p>
+          )}
+        </div>
+        <p className="mt-8 text-center text-sm text-text-muted">
+          <Link to={`/utakmice/${data.id}`} className="text-accent hover:underline">
+            Detalji utakmice
+          </Link>
+        </p>
+      </PageContainer>
     </div>
   );
 }

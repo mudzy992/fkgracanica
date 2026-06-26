@@ -2,6 +2,10 @@ import { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useSearch } from '../../hooks/use-search';
 import { SearchResultSections } from '../../components/search/SearchResultSections';
+import { EmptyState } from '../../components/public/EmptyState';
+import { PageContainer } from '../../components/public/PageContainer';
+import { PageHeroHeader } from '../../components/public/shell/PageHeroHeader';
+import { PremiumCard } from '../../components/public/shell/PremiumCard';
 import { Seo } from '../../components/seo/Seo';
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
@@ -35,62 +39,70 @@ export function SearchPage() {
   const hasResults = data && SEARCH_FACETS.some((f) => (data[f]?.length ?? 0) > 0);
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-12">
+    <div className="pb-16">
       <Seo title="Pretraga" />
-      <h1 className="mb-6 text-3xl font-bold">Pretraga</h1>
-      <form onSubmit={handleSearch} className="mb-6">
-        <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Pretraži vijesti, igrače, utakmice..." />
-      </form>
-      {query.length < 2 ? (
-        <p className="text-text-muted">Unesite najmanje 2 karaktera.</p>
-      ) : isLoading ? (
-        <Skeleton className="h-32" />
-      ) : (
-        <>
-          {data?.facets && (
-            <div className="mb-6 flex flex-wrap gap-2">
-              <Button size="sm" variant={!type ? 'default' : 'outline'} onClick={() => setSearch({ type: null, page: 1 })}>
-                Sve
-              </Button>
-              {SEARCH_FACETS.map((facet) =>
-                data.facets[facet] > 0 ? (
-                  <Button
-                    key={facet}
-                    size="sm"
-                    variant={type === facet ? 'default' : 'outline'}
-                    onClick={() => setSearch({ type: facet, page: 1 })}
-                  >
-                    {SEARCH_FACET_LABELS[facet]} ({data.facets[facet]})
-                  </Button>
-                ) : null,
-              )}
-            </div>
-          )}
-          {hasResults && data ? (
-            <SearchResultSections data={data} type={type} />
-          ) : (
-            <p className="text-text-muted">Nema rezultata.</p>
-          )}
-          {type && data?.meta && data.meta.totalPages > 1 && (
-            <div className="mt-6 flex justify-center gap-2">
-              <Button variant="outline" size="sm" disabled={page <= 1} onClick={() => setSearch({ page: page - 1 })}>
-                Prethodna
-              </Button>
-              <span className="self-center text-sm text-text-muted">
-                {page} / {data.meta.totalPages}
-              </span>
-              <Button
-                variant="outline"
-                size="sm"
-                disabled={page >= data.meta.totalPages}
-                onClick={() => setSearch({ page: page + 1 })}
-              >
-                Sljedeća
-              </Button>
-            </div>
-          )}
-        </>
-      )}
+      <PageHeroHeader eyebrow="Portal" title="Pretraga" subtitle="Pronađite vijesti, igrače, klubove i utakmice." />
+      <PageContainer size="md" className="py-10 sm:py-12">
+        <PremiumCard className="mb-8 p-4" hover={false}>
+          <form onSubmit={handleSearch}>
+            <Input
+              value={q}
+              onChange={(e) => setQ(e.target.value)}
+              placeholder="Pretraži vijesti, igrače, utakmice..."
+            />
+          </form>
+        </PremiumCard>
+        {query.length < 2 ? (
+          <EmptyState message="Unesite najmanje 2 karaktera." />
+        ) : isLoading ? (
+          <Skeleton className="h-32 rounded-2xl" />
+        ) : (
+          <>
+            {data?.facets && (
+              <div className="mb-6 flex flex-wrap gap-2">
+                <Button size="sm" variant={!type ? 'default' : 'outline'} onClick={() => setSearch({ type: null, page: 1 })}>
+                  Sve
+                </Button>
+                {SEARCH_FACETS.map((facet) =>
+                  data.facets[facet] > 0 ? (
+                    <Button
+                      key={facet}
+                      size="sm"
+                      variant={type === facet ? 'default' : 'outline'}
+                      onClick={() => setSearch({ type: facet, page: 1 })}
+                    >
+                      {SEARCH_FACET_LABELS[facet]} ({data.facets[facet]})
+                    </Button>
+                  ) : null,
+                )}
+              </div>
+            )}
+            {hasResults && data ? (
+              <SearchResultSections data={data} type={type} />
+            ) : (
+              <EmptyState message="Nema rezultata." />
+            )}
+            {type && data?.meta && data.meta.totalPages > 1 && (
+              <div className="mt-6 flex justify-center gap-2">
+                <Button variant="outline" size="sm" disabled={page <= 1} onClick={() => setSearch({ page: page - 1 })}>
+                  Prethodna
+                </Button>
+                <span className="self-center text-sm text-text-muted">
+                  {page} / {data.meta.totalPages}
+                </span>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={page >= data.meta.totalPages}
+                  onClick={() => setSearch({ page: page + 1 })}
+                >
+                  Sljedeća
+                </Button>
+              </div>
+            )}
+          </>
+        )}
+      </PageContainer>
     </div>
   );
 }

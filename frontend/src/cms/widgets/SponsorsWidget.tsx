@@ -19,8 +19,8 @@ export function SponsorsWidget({ config }: Props) {
   const rest = items.filter((s) => s.id !== general?.id);
 
   return (
-    <section className="overflow-hidden border-y border-slate-200/60 bg-gradient-to-b from-surface via-background to-surface py-14 dark:border-slate-800">
-      <div className="mx-auto max-w-6xl px-4">
+    <section className="overflow-hidden border-y border-[var(--border-subtle)] bg-gradient-to-b from-surface via-background to-surface py-12 md:py-16">
+      <div className="mx-auto max-w-6xl px-4 sm:px-6">
         <div className="mb-10 flex items-end justify-between gap-4">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-accent">Partneri</p>

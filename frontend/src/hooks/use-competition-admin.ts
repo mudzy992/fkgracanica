@@ -3,12 +3,16 @@ import { api } from '../lib/api';
 import type { StandingRow } from '../types';
 import { useQuery } from '@tanstack/react-query';
 
-export function useStandings(seasonId?: string) {
+export function useStandings(seasonId?: string, upToRound?: number | null) {
   return useQuery({
-    queryKey: ['standings', seasonId],
+    queryKey: ['standings', seasonId, upToRound ?? 'all'],
     queryFn: async () =>
-      (await api.get<StandingRow[]>('/statistics/standings', { params: seasonId ? { seasonId } : undefined }))
-        .data,
+      (await api.get<StandingRow[]>('/statistics/standings', {
+        params: {
+          ...(seasonId ? { seasonId } : {}),
+          ...(upToRound != null ? { upToRound } : {}),
+        },
+      })).data,
     enabled: !!seasonId,
   });
 }
@@ -161,7 +165,7 @@ export function useSetMatchLineup() {
       slots,
     }: {
       matchId: string;
-      slots: { playerId: string; positionX: number; positionY: number; isStarter?: boolean }[];
+      slots: { playerId: string; clubId: string; positionX: number; positionY: number; isStarter?: boolean }[];
     }) => (await api.put(`/matches/${matchId}/lineup`, { slots })).data,
     onSuccess: (_data, { matchId }) => {
       void qc.invalidateQueries({ queryKey: ['matches'] });

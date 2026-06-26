@@ -5,17 +5,15 @@ import { clubPath } from '../../lib/public-routes';
 import { POSITION_LABELS } from '../../lib/player-utils';
 import { ClubCrest } from '../../components/public/clubs/ClubCrest';
 import { Seo } from '../../components/seo/Seo';
-import { Card, CardContent } from '../../components/ui/card';
+import { PremiumCard } from '../../components/public/shell/PremiumCard';
 import { Skeleton } from '../../components/ui/skeleton';
 
 function StatBox({ label, value }: { label: string; value: number | null | undefined }) {
   return (
-    <Card>
-      <CardContent className="p-4 text-center">
-        <p className="text-xs text-text-muted">{label}</p>
-        <p className="text-2xl font-bold text-text">{value ?? 0}</p>
-      </CardContent>
-    </Card>
+    <PremiumCard className="p-4 text-center" hover={false}>
+      <p className="text-xs text-text-muted">{label}</p>
+      <p className="text-2xl font-bold text-text">{value ?? 0}</p>
+    </PremiumCard>
   );
 }
 
@@ -35,7 +33,7 @@ export function PlayerDetailPage() {
   return (
     <div className="pb-20">
       <Seo title={`${data.firstName} ${data.lastName}`} description={data.bio ?? undefined} />
-      <header className="border-b border-slate-200/80 bg-surface/60">
+      <header className="border-b border-[var(--border-subtle)] bg-[image:var(--gradient-page-hero)]">
         <div className="mx-auto flex max-w-4xl flex-col items-center gap-6 px-4 py-10 text-center sm:px-6 sm:py-14 md:flex-row md:text-left">
           {data.photoPath ? (
             <img
@@ -69,10 +67,10 @@ export function PlayerDetailPage() {
 
       <div className="mx-auto max-w-4xl space-y-10 px-4 pt-10 sm:px-6">
         {data.bio && (
-          <section className="rounded-2xl border border-slate-200/80 bg-surface/60 p-6">
+          <PremiumCard className="p-6">
             <h2 className="mb-3 text-lg font-semibold">O igraču</h2>
             <p className="text-text-muted leading-relaxed">{data.bio}</p>
-          </section>
+          </PremiumCard>
         )}
 
         {data.season && (

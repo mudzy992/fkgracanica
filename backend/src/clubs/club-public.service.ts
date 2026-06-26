@@ -53,7 +53,9 @@ export class ClubPublicService {
 
     const isHome = match.homeClubId === clubId;
     const opponent = isHome ? match.awayClub : match.homeClub;
-    const clubLineup = match.lineup.filter((l) => l.player?.clubId === clubId);
+    const clubLineup = match.lineup.filter(
+      (l) => l.clubId === clubId || l.player?.clubId === clubId,
+    );
 
     return {
       matchId: match.id,

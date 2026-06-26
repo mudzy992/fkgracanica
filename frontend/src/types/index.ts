@@ -138,6 +138,16 @@ export interface Club {
   stadiumRel?: import('./club-hub').Stadium | null;
 }
 
+export interface CompetitionRound {
+  id: string;
+  seasonId: string;
+  number: number;
+  name?: string | null;
+  startsAt?: string | null;
+  endsAt?: string | null;
+  _count?: { matches: number };
+}
+
 export interface Match {
   id: string;
   seasonId: string;
@@ -146,6 +156,8 @@ export interface Match {
   homeScore: number;
   awayScore: number;
   round?: number | null;
+  roundId?: string | null;
+  roundRel?: Pick<CompetitionRound, 'id' | 'number' | 'name'> | null;
   scheduledAt: string;
   venue?: string | null;
   status: MatchStatus;
@@ -170,6 +182,7 @@ export interface MatchEvent {
 
 export interface MatchLineup {
   id: string;
+  clubId: string;
   playerId: string;
   positionX?: number | null;
   positionY?: number | null;

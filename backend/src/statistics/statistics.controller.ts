@@ -28,9 +28,15 @@ export class StatisticsController {
     return this.service.getTeamStats(matchId);
   }
 
+  @Get('matches/:matchId/overview')
+  getMatchStatistics(@Param('matchId') matchId: string) {
+    return this.service.getMatchStatistics(matchId);
+  }
+
   @Get('standings')
-  getStandings(@Query('seasonId') seasonId: string) {
-    return this.service.getStandings(seasonId);
+  getStandings(@Query('seasonId') seasonId: string, @Query('upToRound') upToRound?: string) {
+    const round = upToRound ? Number(upToRound) : undefined;
+    return this.service.getStandings(seasonId, Number.isFinite(round) ? round : undefined);
   }
 
   @Get('top-scorers')

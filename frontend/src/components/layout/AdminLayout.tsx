@@ -26,7 +26,6 @@ const adminNav = [
   { to: '/admin/club-timeline', labelKey: 'admin.timeline' },
   { to: '/admin/clubs', labelKey: 'admin.clubSquad' },
   { to: '/admin/competitions', labelKey: 'admin.competitions' },
-  { to: '/admin/matches', labelKey: 'admin.matches' },
   { to: '/admin/membership', labelKey: 'admin.membership' },
   { to: '/admin/ticketing', labelKey: 'admin.ticketing' },
   { to: '/admin/contact', labelKey: 'admin.contact' },

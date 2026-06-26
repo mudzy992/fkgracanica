@@ -12,7 +12,7 @@ globs: "frontend/src/**/*.{tsx,ts,css}"
 - `lg` (1024px): desktop nav, horizontalna skica
 
 ## Skica (FormationPitch)
-- `< lg`: vertikalna (`aspect-[3/4]`), koordinate remap via `mapPitchPosition()`, token `-rotate-90`
+- `< lg`: vertikalna (`aspect-[3/4]`), koordinate remap via `mapPitchPosition()`; avatar `-rotate-90`, natpis ispod slike
 - `≥ lg`: horizontalna (`aspect-[16/9]`)
 - Koristiti `ResponsiveFormationPitch` wrapper na svim stranicama sa skicom
 
@@ -28,6 +28,11 @@ globs: "frontend/src/**/*.{tsx,ts,css}"
 - Drawer/sheet umjesto modala na malim ekranima
 - Container: `mx-auto max-w-6xl px-4 sm:px-6`
 - Test: 375px, 768px, 1280px — bez horizontalnog overflowa
+
+## Primitives (identitet)
+- `PageHeroHeader`, `PublicSection`, `PremiumCard`, `FormShell`, `EmptyState`
+- Font: Inter (body) + Plus Jakarta Sans (display)
+- `PublicFooter` CMS/settings-driven
 
 ## Premium landing
 - CMS widgeti u `AnimatedSection` shellu

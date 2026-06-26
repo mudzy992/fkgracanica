@@ -11,8 +11,8 @@ export class MatchesController {
   constructor(private readonly service: MatchesService) {}
 
   @Get()
-  findAll(@Query('seasonId') seasonId?: string) {
-    return this.service.findAll(seasonId);
+  findAll(@Query('seasonId') seasonId?: string, @Query('roundId') roundId?: string) {
+    return this.service.findAll(seasonId, roundId);
   }
 
   @Get(':id')
@@ -50,7 +50,7 @@ export class MatchesController {
   @ApiBearerAuth()
   setLineup(
     @Param('id') id: string,
-    @Body() body: { slots: { playerId: string; isStarter?: boolean; positionX?: number; positionY?: number }[] },
+    @Body() body: { slots: { playerId: string; clubId: string; isStarter?: boolean; positionX?: number; positionY?: number }[] },
   ) {
     return this.service.setLineup(id, body.slots);
   }

@@ -6,6 +6,7 @@ import { Reveal } from '../../lib/motion/Reveal';
 import { Card, CardContent } from '../../components/ui/card';
 import { Skeleton } from '../../components/ui/skeleton';
 import { Badge } from '../../components/ui/badge';
+import { matchRoundLabel } from '../../lib/round-utils';
 import type { WidgetConfigMap } from './schemas';
 
 type Props = { config: WidgetConfigMap['next-match'] };
@@ -30,7 +31,7 @@ export function NextMatchWidget({ config }: Props) {
             <Card className="glass-card overflow-hidden border-primary/20 transition-all duration-300 group-hover:-translate-y-1 group-hover:shadow-premium">
               <CardContent className="p-6 sm:p-8">
                 <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
-                  <Badge className="animate-pulse-soft">{next.round ? `Kolo ${next.round}` : 'Sljedeća utakmica'}</Badge>
+                  <Badge className="animate-pulse-soft">{matchRoundLabel(next) ?? 'Sljedeća utakmica'}</Badge>
                 </div>
                 <p className="text-center text-2xl font-bold text-text sm:text-3xl">
                   {next.homeClub?.name ?? 'Domaćin'}

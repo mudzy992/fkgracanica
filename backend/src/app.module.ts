@@ -26,6 +26,7 @@ import { SearchModule } from './search/search.module';
 import { ClubsModule } from './clubs/clubs.module';
 import { PlayersModule } from './players/players.module';
 import { CompetitionsModule } from './competitions/competitions.module';
+import { RoundsModule } from './rounds/rounds.module';
 import { MatchesModule } from './matches/matches.module';
 import { StatisticsModule } from './statistics/statistics.module';
 import { LiveModule } from './live/live.module';
@@ -72,6 +73,7 @@ import { HttpExceptionFilter } from './common/filters/http-exception.filter';
     ClubsModule,
     PlayersModule,
     CompetitionsModule,
+    RoundsModule,
     MatchesModule,
     StatisticsModule,
     LiveModule,

@@ -62,6 +62,7 @@
     "players": "Igrači",
     "clubs": "Klubovi",
     "competitions": "Takmičenja",
+    "rounds": "Kola",
     "matches": "Utakmice",
     "membership": "Članstvo",
     "ticketing": "Ulaznice",
@@ -79,6 +80,12 @@
     "name": "Ime",
     "message": "Poruka",
     "subject": "Naslov"
+  },
+  "footer": {
+    "menu": "Meni",
+    "quickLinks": "Brzi linkovi",
+    "contact": "Kontakt",
+    "admin": "Admin"
   },
   "notifications": {
     "title": "Notifikacije",
