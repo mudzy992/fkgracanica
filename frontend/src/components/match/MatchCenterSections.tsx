@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { PlayerLink } from '../public/players/PlayerLink';
 import type { Match, MatchLineup } from '../../types';
 import { Card, CardContent } from '../ui/card';
 import { Skeleton } from '../ui/skeleton';
@@ -11,8 +12,12 @@ function LineupList({ title, rows }: { title: string; rows: MatchLineup[] }) {
       <ul className="space-y-1 text-sm">
         {rows.map((row) => (
           <li key={row.id}>
-            {row.player?.number != null && <span className="mr-2 text-primary">{row.player.number}</span>}
-            {row.player?.firstName} {row.player?.lastName}
+            {row.player && (
+              <PlayerLink
+                id={row.player.id}
+                name={`${row.player.firstName} ${row.player.lastName}`}
+              />
+            )}
           </li>
         ))}
       </ul>

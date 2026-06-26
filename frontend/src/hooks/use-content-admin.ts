@@ -78,6 +78,15 @@ export function useRemoveGalleryPhoto() {
   });
 }
 
+export function useReorderGalleryPhotos() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ galleryId, photoIds }: { galleryId: string; photoIds: string[] }) =>
+      (await api.post(`/gallery/${galleryId}/photos/reorder`, { photoIds })).data,
+    onSuccess: () => void qc.invalidateQueries({ queryKey: ['gallery'] }),
+  });
+}
+
 export function useCreateSponsor() {
   const qc = useQueryClient();
   return useMutation({
@@ -112,6 +121,14 @@ export function useDeleteSponsor() {
   });
 }
 
+export function useReorderSponsors() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (ids: string[]) => (await api.post('/sponsors/reorder', { ids })).data,
+    onSuccess: () => void qc.invalidateQueries({ queryKey: ['sponsors'] }),
+  });
+}
+
 export function useCreateTrophy() {
   const qc = useQueryClient();
   return useMutation({
@@ -121,6 +138,7 @@ export function useCreateTrophy() {
       competition?: string;
       description?: string;
       imagePath?: string;
+      featured?: boolean;
     }) => (await api.post('/trophies', body)).data,
     onSuccess: () => void qc.invalidateQueries({ queryKey: ['trophies'] }),
   });
@@ -139,6 +157,7 @@ export function useUpdateTrophy() {
       competition?: string;
       description?: string;
       imagePath?: string;
+      featured?: boolean;
     }) => (await api.patch(`/trophies/${id}`, body)).data,
     onSuccess: () => void qc.invalidateQueries({ queryKey: ['trophies'] }),
   });

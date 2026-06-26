@@ -1,8 +1,8 @@
 # HANDOFF — Web Complete (nova sesija)
 
 > **Datum:** 2026-06-25  
-> **Završeno:** Gate moduli 1–3 APPROVED (Vijesti, Media, CMS)  
-> **Sljedeći fokus:** Modul **#4 Galerija**  
+> **Završeno:** Gate moduli 1–7 APPROVED  
+> **Sljedeći fokus:** Gate review **#8 Igrači + #9 Klubovi** (zajedno)  
 > **Mobile:** na pauzi — samo web + backend.
 
 ---
@@ -23,64 +23,83 @@
 | 1 | Vijesti | **APPROVED** |
 | 2 | Media | **APPROVED** |
 | 3 | CMS | **APPROVED** |
-| 4 | **Galerija** | **Sljedeći** — gate review |
-| 5+ | Sponzori → Dashboard | nije gate-ovan |
+| 4 | Galerija | **APPROVED** |
+| 5 | Sponzori | **APPROVED** |
+| 6 | Trofeji | **APPROVED** |
+| 7 | Club Timeline | **APPROVED** |
+| 8 | **Igrači** | **READY_FOR_REVIEW** |
+| 9 | **Klubovi** | **READY_FOR_REVIEW** |
+| 10+ | Takmičenja → Dashboard | nije gate-ovan |
 
 ---
 
-## 3. CMS — šta je isporučeno (APPROVED)
+## 3. Zadnji fix (Igrači + Klubovi)
 
-- **Page builder** — widgeti, drag reorder, live preview, dijalog za uređivanje sekcije
-- **15+ widgeta** — hero (CTA label+url), vijesti, galerija, custom HTML, moduli…
-- **Stranice** — `/p/:slug`, meta, objava; **brisanje samo DRAFT** (ne sistemska)
-- **Meni** — vizuelni editor, sistemske stavke zaključane (toggle + reorder), prilagođene CRUD
-- **Legacy `CmsBlock`** — uklonjen
-- Plan: [22_cms-page-builder/](../22_cms-page-builder/)
+- `GET /clubs/own` — javni endpoint za naš klub
+- `useOwnClub()` hook
+- `ClubProfileHero` — `/o-klubu` i `/tim` (grb, opis, grad, stadion)
+- `ClubCrest` — grbovi na match centru
+- Igrači filtrirani po `ownClub.id` na `/tim` i CMS widgetu
+- Admin igrači: odabir kluba (`EntitySelect`), kolona Klub
+- Admin klubovi: RBAC, opis, grb preview, jedan `isOwnClub`
+- Backend: auto `clubId` na create igrača ako nije zadan
+
+---
+
+## 4. Igrači (#8) — READY_FOR_REVIEW
+
+Checklist (gate):
+
+- [x] Admin CRUD + Media picker + bio + `isActive` + **clubId**
+- [x] RBAC (`players.manage`)
+- [x] Javno `/tim` — formacija + kadar po pozicijama (GK/DEF/MID/FWD), **filter own club**
+- [x] CMS `featured-players` widget + `viewAllUrl`, **own club filter**
+- [x] API `GET /players?activeOnly=true&clubId=`
+- [x] Demo seed (13 igrača, FK Gračanica)
+
+| Resurs | Putanja |
+|--------|---------|
+| Admin | `/admin/players` |
+| Javno | `/tim` |
+
+---
+
+## 5. Klubovi (#9) — READY_FOR_REVIEW
+
+Checklist (gate):
+
+- [x] Admin CRUD (`/admin/clubs`) — grb, opis, `isOwnClub` (jedan aktivan)
+- [x] RBAC (`clubs.manage`) na admin akcijama
+- [x] Javni prikaz: `ClubProfileHero` na `/o-klubu`, grbovi na utakmicama
+- [x] API `GET /clubs/own`
+- [x] Demo seed (FK Gračanica + FK Slavija u `clubs-competition`)
+
+| Resurs | Putanja |
+|--------|---------|
+| Admin | `/admin/clubs` |
+| Javno | `/o-klubu` (hero), `/tim` (hero), utakmice (grb) |
 
 ### Ključni fajlovi
 
 | Područje | Putanja |
 |----------|---------|
-| Admin hub | `frontend/src/pages/admin/cms/CmsHubPage.tsx` |
-| Page builder | `CmsPageBuilderPage.tsx`, `CmsSectionEditDialog.tsx` |
-| Meni | `CmsMenuEditor.tsx`, `CmsMenuSortableList.tsx` |
-| Javno | `frontend/src/cms/PageRenderer.tsx`, `widgets/*` |
-| API | `backend/src/cms/cms-pages.*`, `cms-menus.*` |
+| Admin | `ClubsAdminPage.tsx`, `ClubsAdminFormSheet.tsx` |
+| Javno | `ClubProfileHero.tsx`, `ClubCrest.tsx` |
+| API | `backend/src/clubs/*` |
+| Utils | `lib/club-utils.ts` |
 
 ---
 
-## 4. Sljedeća sesija — Galerija (#4)
-
-Checklist (gate):
-
-- [ ] Admin CRUD albuma + fotografija
-- [ ] Media picker / upload
-- [ ] Javno `/galerija`, `/galerija/:slug` — lightbox, renditions
-- [ ] RBAC, paginacija ako ima
-- [ ] Usklađenost s CMS `gallery` widgetom
-
-Admin: `/admin/gallery`  
-Javno: `/galerija`
-
----
-
-## 5. Deploy
+## 6. Deploy
 
 ```bash
 ./scripts/docker-prod-build.sh && docker compose up -d
 cd backend && npx prisma migrate deploy
 ```
 
-Migracije uključuju: `cms_page_builder`, `drop_cms_block`, `menu_system_enabled`.
-
-| Resurs | URL |
-|--------|-----|
-| Admin CMS | `/admin/cms` |
-| Admin Galerija | `/admin/gallery` |
-
 ---
 
-## 6. Prompt za korisnika (copy-paste)
+## 7. Prompt za korisnika (copy-paste)
 
 ```
 Nastavi Web Complete plan iz HANDOFF-a:
@@ -90,14 +109,19 @@ Gate status:
 - Vijesti: APPROVED
 - Media: APPROVED
 - CMS: APPROVED
-- Galerija: [APPROVED / REVISE / nisam testirao]
+- Galerija: APPROVED
+- Sponzori: APPROVED
+- Trofeji: APPROVED
+- Club Timeline: APPROVED
+- Igrači: [APPROVED / REVISE / nisam testirao]
+- Klubovi: [APPROVED / REVISE / nisam testirao]
 
 Nastavi po planu od modula koji nije APPROVED.
 ```
 
 ---
 
-## 7. Pravila
+## 8. Pravila
 
 - Max ~200 linija po fajlu
 - Gate APPROVED samo uz korisnikovu potvrdu

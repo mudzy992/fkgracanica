@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import type { Match, Player } from '../../types';
-import { mediaUrl } from '../../lib/media';
 import { PhotoGridWithLightbox } from '../public/PhotoGridWithLightbox';
+import { PlayerCard } from '../public/players/PlayerCard';
 import { Card, CardContent } from '../ui/card';
 
 export function NewsRelatedMatches({ matches }: { matches?: { match?: Match }[] }) {
@@ -37,26 +37,7 @@ export function NewsRelatedPlayers({ players }: { players?: { player?: Player }[
         {players.map((rp) => {
           const p = rp.player;
           if (!p) return null;
-          return (
-            <Card key={p.id}>
-              <CardContent className="flex items-center gap-3 p-4">
-                {p.photoPath ? (
-                  <img src={mediaUrl(p.photoPath, 'thumb')} alt="" className="h-12 w-12 rounded-full object-cover" />
-                ) : (
-                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 font-bold text-primary">
-                    {p.firstName[0]}
-                  </div>
-                )}
-                <div>
-                  <p className="font-medium">
-                    {p.number != null && <span className="mr-1 text-primary">{p.number}</span>}
-                    {p.firstName} {p.lastName}
-                  </p>
-                  {p.position && <p className="text-xs text-text-muted">{p.position}</p>}
-                </div>
-              </CardContent>
-            </Card>
-          );
+          return <PlayerCard key={p.id} player={p} />;
         })}
       </div>
     </section>

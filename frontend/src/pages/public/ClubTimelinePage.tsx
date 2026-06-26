@@ -1,33 +1,37 @@
-import { useClubTimeline } from '../../hooks';
-import { RichContent } from '../../components/public/RichContent';
-import { mediaUrl } from '../../lib/media';
+import { useClubTimeline, useOwnClub } from '../../hooks';
 import { Seo } from '../../components/seo/Seo';
+import { ClubProfileHero } from '../../components/public/clubs/ClubProfileHero';
+import { ClubTimelineRail } from '../../components/public/timeline/ClubTimelineRail';
 import { Skeleton } from '../../components/ui/skeleton';
 
 export function ClubTimelinePage() {
+  const { data: ownClub, isLoading: clubLoading } = useOwnClub();
   const { data, isLoading } = useClubTimeline();
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-12">
-      <Seo title="O klubu" />
-      <h1 className="mb-8 text-3xl font-bold">O klubu</h1>
-      {isLoading ? (
-        <Skeleton className="h-64 w-full" />
-      ) : (
-        <div className="space-y-8 border-l-2 border-primary pl-6">
-          {data?.map((event) => (
-            <article key={event.id} className="relative">
-              <span className="absolute -left-[1.65rem] top-1 flex h-4 w-4 rounded-full bg-primary" />
-              <p className="text-sm font-bold text-primary">{event.year}</p>
-              <h2 className="text-xl font-semibold">{event.title}</h2>
-              {event.description && <RichContent html={event.description} className="mt-2 text-text-muted" />}
-              {event.imagePath && (
-                <img src={mediaUrl(event.imagePath)} alt="" className="mt-4 rounded-lg" />
-              )}
-            </article>
-          ))}
-        </div>
-      )}
+    <div className="pb-20">
+      <Seo title="O klubu" description={ownClub?.description ?? 'Historija i razvoj FK Gračanica'} />
+      <ClubProfileHero
+        club={ownClub}
+        isLoading={clubLoading}
+        eyebrow="Naša priča"
+        title="O klubu"
+        subtitle="Od osnivanja do današnjih dana — ključni trenuci u historiji kluba."
+      />
+
+      <div className="mx-auto max-w-6xl px-4 pt-12">
+        {isLoading ? (
+          <div className="space-y-6">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <Skeleton key={i} className="h-36 rounded-2xl" />
+            ))}
+          </div>
+        ) : data?.length ? (
+          <ClubTimelineRail events={data} />
+        ) : (
+          <p className="py-16 text-center text-text-muted">Historija kluba još nije objavljena.</p>
+        )}
+      </div>
     </div>
   );
 }

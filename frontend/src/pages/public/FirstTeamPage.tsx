@@ -1,86 +1,89 @@
-import { usePlayers } from '../../hooks';
-import { mediaUrl } from '../../lib/media';
-import { cn } from '../../lib/utils';
+import { groupPlayersByPosition } from '../../lib/player-utils';
+import { useClubSquad, useClubStats } from '../../hooks/use-club-hub';
+import { useOwnClub } from '../../hooks';
+import { ClubProfileHero } from '../../components/public/clubs/ClubProfileHero';
+import { FormationPitch } from '../../components/public/clubs/FormationPitch';
+import { PlayerCard } from '../../components/public/players/PlayerCard';
+import { ClubStatsSummary, PlayerStatsTable } from '../../components/club/ClubStatsPanels';
 import { Seo } from '../../components/seo/Seo';
 import { Skeleton } from '../../components/ui/skeleton';
-
-const defaultFormation = [
-  { x: 50, y: 90, label: 'GK' },
-  { x: 20, y: 70, label: 'LB' },
-  { x: 40, y: 72, label: 'CB' },
-  { x: 60, y: 72, label: 'CB' },
-  { x: 80, y: 70, label: 'RB' },
-  { x: 30, y: 50, label: 'CM' },
-  { x: 50, y: 48, label: 'CM' },
-  { x: 70, y: 50, label: 'CM' },
-  { x: 25, y: 28, label: 'LW' },
-  { x: 50, y: 22, label: 'ST' },
-  { x: 75, y: 28, label: 'RW' },
-];
+import type { Stadium } from '../../types/club-hub';
 
 export function FirstTeamPage() {
-  const { data: players, isLoading } = usePlayers();
-  const starters = players?.filter((p) => p.isActive).slice(0, 11) ?? [];
+  const { data: ownClub, isLoading: clubLoading } = useOwnClub();
+  const { data: squad, isLoading: squadLoading } = useClubSquad(ownClub?.id ?? '');
+  const { data: stats, isLoading: statsLoading } = useClubStats(ownClub?.id ?? '');
+  const bench = squad?.slots.filter((s) => s.isBench && s.player) ?? [];
+  const squadPlayers = squad?.slots.filter((s) => !s.isBench && s.player).map((s) => s.player!) ?? [];
+  const groups = groupPlayersByPosition(squadPlayers);
+  const isLoading = clubLoading || squadLoading;
+
+  const clubWithStadium = ownClub
+    ? {
+        ...ownClub,
+        stadium: (ownClub as { stadiumRel?: Stadium | null }).stadiumRel?.name ?? ownClub.stadium,
+        city: (ownClub as { stadiumRel?: Stadium | null }).stadiumRel?.city ?? ownClub.city,
+      }
+    : null;
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-12">
-      <Seo title="Prvi tim" />
-      <h1 className="mb-8 text-3xl font-bold">Prvi tim</h1>
-      {isLoading ? (
-        <Skeleton className="h-[500px] w-full" />
-      ) : (
-        <>
-          <div
-            className={cn(
-              'relative mx-auto overflow-hidden rounded-2xl border border-slate-200 bg-green-700',
-              'aspect-[3/4] max-w-md md:aspect-[16/10] md:max-w-4xl',
-            )}
-          >
-            <div className="absolute inset-4 rounded-lg border-2 border-white/30" />
-            <div className="absolute left-1/2 top-1/2 h-24 w-24 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white/30 md:h-32 md:w-32" />
-            {defaultFormation.map((pos, i) => {
-              const player = starters[i];
-              return (
-                <div
-                  key={i}
-                  className="absolute flex -translate-x-1/2 -translate-y-1/2 flex-col items-center"
-                  style={{
-                    left: `${pos.x}%`,
-                    top: `${pos.y}%`,
-                  }}
-                >
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-xs font-bold text-white md:h-12 md:w-12">
-                    {player?.number ?? i + 1}
-                  </div>
-                  <span className="mt-1 max-w-16 truncate text-center text-[10px] font-medium text-white md:text-xs">
-                    {player ? `${player.firstName[0]}. ${player.lastName}` : pos.label}
-                  </span>
-                </div>
-              );
-            })}
-          </div>
+    <div className="pb-20">
+      <Seo
+        title={ownClub ? `Prvi tim — ${ownClub.name}` : 'Prvi tim'}
+        description={ownClub?.description ?? 'Kadrovi prvog tima'}
+      />
+      <ClubProfileHero
+        club={clubWithStadium}
+        isLoading={clubLoading}
+        eyebrow="Kadrovi"
+        title="Prvi tim"
+        subtitle="Formacija, klupa i statistike prvog tima."
+      />
 
-          <div className="mt-10 grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-            {starters.map((p) => (
-              <div key={p.id} className="flex items-center gap-3 rounded-lg border border-slate-200 p-3">
-                {p.photoPath ? (
-                  <img src={mediaUrl(p.photoPath)} alt="" className="h-12 w-12 rounded-full object-cover" />
-                ) : (
-                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 font-bold text-primary">
-                    {p.number}
-                  </div>
-                )}
-                <div>
-                  <p className="font-medium">
-                    {p.firstName} {p.lastName}
-                  </p>
-                  <p className="text-sm text-text-muted">{p.position}</p>
+      <div className="mx-auto max-w-6xl space-y-12 px-4 pt-12">
+        {isLoading ? (
+          <Skeleton className="h-[420px] w-full rounded-2xl" />
+        ) : squad?.slots.length ? (
+          <>
+            <div className="hidden lg:block">
+              <FormationPitch slots={squad.slots} horizontal />
+            </div>
+            <div className="lg:hidden">
+              <FormationPitch slots={squad.slots} horizontal={false} />
+            </div>
+
+            {bench.length > 0 && (
+              <section>
+                <h2 className="mb-4 text-xl font-bold text-text">Klupa</h2>
+                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                  {bench.map((slot) => (
+                    <PlayerCard key={slot.id} player={slot.player!} />
+                  ))}
                 </div>
-              </div>
+              </section>
+            )}
+
+            {groups.map((group) => (
+              <section key={group.position}>
+                <h2 className="mb-4 text-xl font-bold text-text">{group.label}</h2>
+                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                  {group.players.map((p) => (
+                    <PlayerCard key={p.id} player={p} />
+                  ))}
+                </div>
+              </section>
             ))}
-          </div>
-        </>
-      )}
+          </>
+        ) : (
+          <p className="py-16 text-center text-text-muted">Kadar trenutno nije objavljen.</p>
+        )}
+
+        <section className="space-y-6">
+          <h2 className="text-xl font-bold text-text">Statistike sezone</h2>
+          {statsLoading ? <Skeleton className="h-32" /> : <ClubStatsSummary stats={stats} />}
+          {!statsLoading && stats && <PlayerStatsTable stats={stats} />}
+        </section>
+      </div>
     </div>
   );
 }

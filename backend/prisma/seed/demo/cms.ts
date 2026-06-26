@@ -20,7 +20,7 @@ const HOME_SECTIONS = [
     widgetType: 'news-feed',
     config: { limit: 3, mode: 'latest', viewAllUrl: '/vijesti', viewAllLabel: 'Sve vijesti' },
   },
-  { widgetType: 'featured-players', config: { limit: 4 } },
+  { widgetType: 'featured-players', config: { limit: 4, viewAllUrl: '/tim' } },
   { widgetType: 'league-table', config: {} },
   {
     widgetType: 'gallery',

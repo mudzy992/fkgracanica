@@ -42,7 +42,10 @@ export function useCreateClub() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (body: Record<string, unknown>) => (await api.post('/clubs', body)).data,
-    onSuccess: () => void qc.invalidateQueries({ queryKey: ['clubs'] }),
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: ['clubs'] });
+      void qc.invalidateQueries({ queryKey: ['clubs', 'own'] });
+    },
   });
 }
 
@@ -51,7 +54,10 @@ export function useUpdateClub() {
   return useMutation({
     mutationFn: async ({ id, ...body }: { id: string } & Record<string, unknown>) =>
       (await api.patch(`/clubs/${id}`, body)).data,
-    onSuccess: () => void qc.invalidateQueries({ queryKey: ['clubs'] }),
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: ['clubs'] });
+      void qc.invalidateQueries({ queryKey: ['clubs', 'own'] });
+    },
   });
 }
 
@@ -59,7 +65,10 @@ export function useDeleteClub() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (id: string) => (await api.delete(`/clubs/${id}`)).data,
-    onSuccess: () => void qc.invalidateQueries({ queryKey: ['clubs'] }),
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: ['clubs'] });
+      void qc.invalidateQueries({ queryKey: ['clubs', 'own'] });
+    },
   });
 }
 

@@ -5,6 +5,9 @@ import { hasPermission } from '../../lib/permissions';
 import { formatDateTime } from '../../lib/utils';
 import { matchEventLabel } from '../../lib/match-event-labels';
 import { Seo } from '../../components/seo/Seo';
+import { ClubCrest } from '../../components/public/clubs/ClubCrest';
+import { ClubLink } from '../../components/public/clubs/ClubLink';
+import { PlayerLink } from '../../components/public/players/PlayerLink';
 import { VideoEmbed } from '../../components/public/VideoEmbed';
 import { MatchReportApproval } from '../../components/match/MatchReportApproval';
 import {
@@ -47,15 +50,25 @@ export function MatchCenterPage() {
       <Card>
         <CardContent className="p-8 text-center">
           <p className="text-sm text-text-muted">{formatDateTime(data.scheduledAt)}</p>
-          <div className="mt-6 flex items-center justify-center gap-6">
-            <div className="flex-1 text-right">
-              <p className="text-lg font-bold">{data.homeClub?.name}</p>
+          <div className="mt-6 flex items-center justify-center gap-4 md:gap-6">
+            <div className="flex flex-1 flex-col items-end gap-2">
+              <ClubCrest club={data.homeClub} size="md" />
+              {data.homeClub?.slug ? (
+                <ClubLink slug={data.homeClub.slug} name={data.homeClub.name} className="text-lg" />
+              ) : (
+                <p className="text-lg font-bold">{data.homeClub?.name}</p>
+              )}
             </div>
             <p className="text-4xl font-bold text-primary">
               {data.homeScore} : {data.awayScore}
             </p>
-            <div className="flex-1 text-left">
-              <p className="text-lg font-bold">{data.awayClub?.name}</p>
+            <div className="flex flex-1 flex-col items-start gap-2">
+              <ClubCrest club={data.awayClub} size="md" />
+              {data.awayClub?.slug ? (
+                <ClubLink slug={data.awayClub.slug} name={data.awayClub.name} className="text-lg" />
+              ) : (
+                <p className="text-lg font-bold">{data.awayClub?.name}</p>
+              )}
             </div>
           </div>
           {data.venue && <p className="mt-4 text-sm text-text-muted">{data.venue}</p>}
@@ -80,7 +93,15 @@ export function MatchCenterPage() {
                 <span className="font-bold text-primary">{ev.minute}&apos;</span>
                 <span>
                   {matchEventLabel(ev.type)}
-                  {ev.player && ` — ${ev.player.firstName} ${ev.player.lastName}`}
+                  {ev.player && (
+                    <>
+                      {' — '}
+                      <PlayerLink
+                        id={ev.player.id}
+                        name={`${ev.player.firstName} ${ev.player.lastName}`}
+                      />
+                    </>
+                  )}
                 </span>
               </div>
             ))}

@@ -19,9 +19,13 @@ export function TimelineAdminFormSheet({ open, onOpenChange, edit }: Props) {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [imagePath, setImagePath] = useState('');
+  const [feedback, setFeedback] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!open) return;
+    if (!open) {
+      setFeedback(null);
+      return;
+    }
     setYear(edit ? String(edit.year) : '');
     setTitle(edit?.title ?? '');
     setDescription(edit?.description ?? '');
@@ -29,15 +33,20 @@ export function TimelineAdminFormSheet({ open, onOpenChange, edit }: Props) {
   }, [open, edit]);
 
   const save = async () => {
-    const body = {
-      year: Number(year),
-      title,
-      description: description || undefined,
-      imagePath: imagePath || undefined,
-    };
-    if (edit) await update.mutateAsync({ id: edit.id, ...body });
-    else await create.mutateAsync(body);
-    onOpenChange(false);
+    setFeedback(null);
+    try {
+      const body = {
+        year: Number(year),
+        title,
+        description: description || undefined,
+        imagePath: imagePath || undefined,
+      };
+      if (edit) await update.mutateAsync({ id: edit.id, ...body });
+      else await create.mutateAsync(body);
+      onOpenChange(false);
+    } catch {
+      setFeedback('Spremanje nije uspjelo. Pokušajte ponovo.');
+    }
   };
 
   return (
@@ -52,7 +61,8 @@ export function TimelineAdminFormSheet({ open, onOpenChange, edit }: Props) {
           className="w-full rounded-lg border border-slate-200 p-2 text-sm"
           placeholder="Opis"
         />
-        <MediaPicker value={imagePath} onChange={setImagePath} />
+        <MediaPicker value={imagePath} onChange={setImagePath} label="Slika" />
+        {feedback && <p className="text-sm text-danger">{feedback}</p>}
         <Button onClick={() => void save()} disabled={!year || !title || create.isPending || update.isPending}>
           {edit ? 'Spremi' : 'Kreiraj'}
         </Button>

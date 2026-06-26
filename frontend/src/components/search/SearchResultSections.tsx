@@ -1,5 +1,7 @@
 import type { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
+import { clubPath } from '../../lib/public-routes';
+import { playerPath } from '../../lib/public-routes';
 import type { SearchFacet, SearchResponse } from '../../types/search';
 import { Card, CardContent } from '../ui/card';
 
@@ -25,11 +27,13 @@ export function SearchResultSections({ data, type }: { data: SearchResponse; typ
       items: (data.players ?? []).map((p) => ({
         id: p.id,
         node: (
-          <Card>
-            <CardContent className="p-4">
-              {p.firstName} {p.lastName}
-            </CardContent>
-          </Card>
+          <Link to={playerPath(p.id)}>
+            <Card className="hover:shadow-sm">
+              <CardContent className="p-4">
+                {p.firstName} {p.lastName}
+              </CardContent>
+            </Card>
+          </Link>
         ),
       })),
     },
@@ -38,10 +42,14 @@ export function SearchResultSections({ data, type }: { data: SearchResponse; typ
       title: 'Klubovi',
       items: (data.clubs ?? []).map((c) => ({
         id: c.id,
-        node: (
-          <Card>
-            <CardContent className="p-4">{c.name}</CardContent>
-          </Card>
+        node: c.slug ? (
+          <Link to={clubPath(c.slug)}>
+            <Card className="hover:shadow-sm">
+              <CardContent className="p-4">{c.name}</CardContent>
+            </Card>
+          </Link>
+        ) : (
+          <Card><CardContent className="p-4">{c.name}</CardContent></Card>
         ),
       })),
     },

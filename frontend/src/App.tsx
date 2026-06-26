@@ -11,6 +11,8 @@ import { GalleryDetailPage } from './pages/public/GalleryDetailPage';
 import { SponsorsPage } from './pages/public/SponsorsPage';
 import { TrophiesPage } from './pages/public/TrophiesPage';
 import { FirstTeamPage } from './pages/public/FirstTeamPage';
+import { ClubPublicPage } from './pages/public/ClubPublicPage';
+import { PlayerDetailPage } from './pages/public/PlayerDetailPage';
 import { LeaguePage } from './pages/public/LeaguePage';
 import { MatchCenterPage } from './pages/public/MatchCenterPage';
 import { LiveMatchPage } from './pages/public/LiveMatchPage';
@@ -34,8 +36,8 @@ import { GalleryAdminPage } from './pages/admin/GalleryAdminPage';
 import { SponsorsAdminPage } from './pages/admin/SponsorsAdminPage';
 import { TrophiesAdminPage } from './pages/admin/TrophiesAdminPage';
 import { TimelineAdminPage } from './pages/admin/TimelineAdminPage';
-import { PlayersAdminPage } from './pages/admin/PlayersAdminPage';
-import { ClubsAdminPage } from './pages/admin/ClubsAdminPage';
+import { ClubsListPage } from './pages/admin/club-hub/ClubsListPage';
+import { ClubHubPage } from './pages/admin/club-hub/ClubHubPage';
 import { CompetitionsAdminPage } from './pages/admin/CompetitionsAdminPage';
 import { MatchesAdminPage } from './pages/admin/MatchesAdminPage';
 import { CommentatorPage } from './pages/admin/CommentatorPage';
@@ -62,6 +64,8 @@ export default function App() {
           <Route path="sponzori" element={<SponsorsPage />} />
           <Route path="trofeji" element={<TrophiesPage />} />
           <Route path="tim" element={<FirstTeamPage />} />
+          <Route path="klub/:slug" element={<ClubPublicPage />} />
+          <Route path="igrac/:id" element={<PlayerDetailPage />} />
           <Route path="liga" element={<LeaguePage />} />
           <Route path="utakmice/:id" element={<MatchCenterPage />} />
           <Route path="live/:id" element={<LiveMatchPage />} />
@@ -92,8 +96,9 @@ export default function App() {
             <Route path="sponsors" element={<SponsorsAdminPage />} />
             <Route path="trophies" element={<TrophiesAdminPage />} />
             <Route path="club-timeline" element={<TimelineAdminPage />} />
-            <Route path="players" element={<PlayersAdminPage />} />
-            <Route path="clubs" element={<ClubsAdminPage />} />
+            <Route path="clubs" element={<ClubsListPage />} />
+            <Route path="clubs/:id" element={<ClubHubPage />} />
+            <Route path="players" element={<Navigate to="/admin/clubs" replace />} />
             <Route path="competitions" element={<CompetitionsAdminPage />} />
             <Route path="matches" element={<MatchesAdminPage />} />
             <Route path="live/:id" element={<CommentatorPage />} />

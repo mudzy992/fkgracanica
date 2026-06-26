@@ -69,15 +69,8 @@ export function useGalleryList(status?: string) {
 
 export function useGalleryItem(slug: string) {
   return useQuery({
-    queryKey: ['gallery', slug],
-    queryFn: async () => {
-      const list = asArray<GalleryItem>(
-        (await api.get('/gallery', { params: { status: 'PUBLISHED' } })).data,
-      );
-      const item = list.find((g) => g.slug === slug);
-      if (!item) throw new Error('Not found');
-      return (await api.get<GalleryItem>(`/gallery/${item.id}`)).data;
-    },
+    queryKey: ['gallery', 'slug', slug],
+    queryFn: async () => (await api.get<GalleryItem>(`/gallery/slug/${slug}`)).data,
     enabled: !!slug,
   });
 }
@@ -103,10 +96,20 @@ export function useClubTimeline() {
   });
 }
 
-export function usePlayers() {
+export function usePlayers(options?: { clubId?: string; activeOnly?: boolean }) {
   return useQuery({
-    queryKey: ['players'],
-    queryFn: async () => asArray<Player>((await api.get('/players')).data),
+    queryKey: ['players', options?.clubId, options?.activeOnly],
+    queryFn: async () =>
+      asArray<Player>(
+        (
+          await api.get('/players', {
+            params: {
+              clubId: options?.clubId,
+              activeOnly: options?.activeOnly ? 'true' : undefined,
+            },
+          })
+        ).data,
+      ),
   });
 }
 
@@ -114,6 +117,13 @@ export function useClubs() {
   return useQuery({
     queryKey: ['clubs'],
     queryFn: async () => asArray<Club>((await api.get('/clubs')).data),
+  });
+}
+
+export function useOwnClub() {
+  return useQuery({
+    queryKey: ['clubs', 'own'],
+    queryFn: async () => (await api.get<Club | null>('/clubs/own')).data,
   });
 }
 

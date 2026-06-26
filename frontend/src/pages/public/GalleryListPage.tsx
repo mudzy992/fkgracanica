@@ -15,7 +15,8 @@ export function GalleryListPage() {
       <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3">
         {isLoading
           ? Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)
-          : data?.map((g) => {
+          : data?.length
+            ? data.map((g) => {
               const cover = g.photos?.[0]?.path;
               return (
                 <Link key={g.id} to={`/galerija/${g.slug}`}>
@@ -31,7 +32,8 @@ export function GalleryListPage() {
                   </Card>
                 </Link>
               );
-            })}
+            })
+            : <p className="col-span-full text-center text-text-muted">Nema objavljenih galerija.</p>}
       </div>
     </div>
   );

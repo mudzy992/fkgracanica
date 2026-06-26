@@ -42,6 +42,7 @@ export const widgetSchemas = {
   'featured-players': z.object({
     title: z.string().optional(),
     limit: z.number().int().min(1).max(12).default(4),
+    viewAllUrl: z.string().optional(),
   }),
   'membership-cta': z.object({
     title: z.string().optional(),

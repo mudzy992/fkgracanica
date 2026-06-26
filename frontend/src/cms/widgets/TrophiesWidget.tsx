@@ -1,7 +1,9 @@
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useTrophies } from '../../hooks';
-import { Card, CardContent } from '../../components/ui/card';
+import { splitFeaturedTrophy } from '../../lib/trophy-utils';
+import { TrophyCard } from '../../components/public/trophies/TrophyCard';
+import { TrophyFeaturedShowcase } from '../../components/public/trophies/TrophyFeaturedShowcase';
 import { Skeleton } from '../../components/ui/skeleton';
 import type { WidgetConfigMap } from './schemas';
 
@@ -10,30 +12,47 @@ type Props = { config: WidgetConfigMap['trophies'] };
 export function TrophiesWidget({ config }: Props) {
   const { t } = useTranslation();
   const { data, isLoading } = useTrophies();
-  const items = (data ?? []).slice(0, config.limit);
+  const { featured, rest } = splitFeaturedTrophy(data ?? []);
+  const items = rest.slice(0, Math.max(0, config.limit - 1));
   const title = config.title ?? t('home.trophies');
   const viewAll = config.viewAllUrl ?? '/trofeji';
 
   return (
-    <section className="mx-auto max-w-6xl px-4 py-12">
-      <div className="mb-6 flex items-center justify-between">
-        <h2 className="text-2xl font-bold text-text">{title}</h2>
-        <Link to={viewAll} className="text-sm text-accent hover:underline">
-          {t('actions.viewAll')}
-        </Link>
-      </div>
-      <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-4">
-        {isLoading
-          ? Array.from({ length: config.limit }).map((_, i) => <Skeleton key={i} className="h-24" />)
-          : items.map((tr) => (
-              <Card key={tr.id}>
-                <CardContent className="p-4">
-                  <p className="text-2xl font-bold text-primary">{tr.year}</p>
-                  <p className="font-medium">{tr.name}</p>
-                  {tr.competition && <p className="text-sm text-text-muted">{tr.competition}</p>}
-                </CardContent>
-              </Card>
-            ))}
+    <section className="border-y border-slate-200/60 bg-gradient-to-b from-background via-surface/40 to-background py-14 dark:border-slate-800">
+      <div className="mx-auto max-w-6xl px-4">
+        <div className="mb-8 flex items-end justify-between gap-4">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-accent">Ponos kluba</p>
+            <h2 className="mt-2 text-2xl font-bold tracking-tight text-text md:text-3xl">{title}</h2>
+          </div>
+          <Link to={viewAll} className="shrink-0 text-sm font-medium text-accent hover:underline">
+            {t('actions.viewAll')}
+          </Link>
+        </div>
+
+        {isLoading ? (
+          <div className="space-y-4">
+            <Skeleton className="h-56 rounded-3xl" />
+            <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3">
+              {Array.from({ length: 3 }).map((_, i) => (
+                <Skeleton key={i} className="h-24 rounded-xl" />
+              ))}
+            </div>
+          </div>
+        ) : featured ? (
+          <div className="space-y-8">
+            <TrophyFeaturedShowcase trophy={featured} compact />
+            {items.length > 0 && (
+              <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3">
+                {items.map((tr) => (
+                  <TrophyCard key={tr.id} trophy={tr} />
+                ))}
+              </div>
+            )}
+          </div>
+        ) : (
+          <p className="text-center text-sm text-text-muted">Nema trofeja.</p>
+        )}
       </div>
     </section>
   );

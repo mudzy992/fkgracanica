@@ -11,8 +11,13 @@ export class PlayersController {
   constructor(private readonly service: PlayersService) {}
 
   @Get()
-  findAll(@Query('clubId') clubId?: string) {
-    return this.service.findAll(clubId);
+  findAll(@Query('clubId') clubId?: string, @Query('activeOnly') activeOnly?: string) {
+    return this.service.findAll(clubId, activeOnly === 'true');
+  }
+
+  @Get(':id/public')
+  getPublicProfile(@Param('id') id: string, @Query('seasonId') seasonId?: string) {
+    return this.service.getPublicProfile(id, seasonId);
   }
 
   @Get(':id')

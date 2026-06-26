@@ -26,6 +26,11 @@ export class GalleryController {
     return this.galleryService.findAll(status);
   }
 
+  @Get('slug/:slug')
+  findBySlug(@Param('slug') slug: string) {
+    return this.galleryService.findBySlug(slug);
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.galleryService.findOne(id);

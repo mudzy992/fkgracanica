@@ -1,8 +1,11 @@
 import { useState } from 'react';
-import { Pencil, Plus, Trash2 } from 'lucide-react';
+import { Pencil, Plus, Star, Trash2 } from 'lucide-react';
 import { useTrophies } from '../../hooks';
 import { useDeleteTrophy } from '../../hooks/use-content-admin';
+import { useAuth } from '../../lib/auth';
+import { hasPermission } from '../../lib/permissions';
 import { useConfirm } from '../../hooks/use-confirm';
+import { Badge } from '../../components/ui/badge';
 import { Seo } from '../../components/seo/Seo';
 import { Button } from '../../components/ui/button';
 import { AdminDataTable, AdminPageShell } from '../../components/admin/AdminPageShell';
@@ -10,6 +13,8 @@ import { TrophiesAdminFormSheet } from './TrophiesAdminFormSheet';
 import type { Trophy } from '../../types';
 
 export function TrophiesAdminPage() {
+  const { user } = useAuth();
+  const canManage = hasPermission(user?.permissions, 'trophies.manage');
   const { data, isLoading } = useTrophies();
   const remove = useDeleteTrophy();
   const { confirm, dialog } = useConfirm();
@@ -34,30 +39,38 @@ export function TrophiesAdminPage() {
         title="Trofeji"
         isLoading={isLoading}
         actions={
-          <Button size="sm" onClick={() => { setEdit(null); setOpen(true); }}>
-            <Plus className="mr-1 h-4 w-4" />
-            Novi
-          </Button>
+          canManage ? (
+            <Button size="sm" onClick={() => { setEdit(null); setOpen(true); }}>
+              <Plus className="mr-1 h-4 w-4" />
+              Novi
+            </Button>
+          ) : undefined
         }
       >
         <AdminDataTable
           rows={data ?? []}
           columns={[
-            { key: 'name', header: 'Naziv', render: (r) => r.name },
+            { key: 'name', header: 'Naziv', render: (r) => (
+              <span className="flex items-center gap-2">
+                {r.name}
+                {r.featured && <Badge variant="success"><Star className="mr-1 h-3 w-3" />Istaknut</Badge>}
+              </span>
+            )},
             { key: 'year', header: 'Godina', render: (r) => r.year },
             {
               key: 'actions',
               header: 'Akcije',
-              render: (r) => (
-                <div className="flex gap-1">
-                  <Button variant="ghost" size="icon" onClick={() => { setEdit(r); setOpen(true); }}>
-                    <Pencil className="h-4 w-4" />
-                  </Button>
-                  <Button variant="ghost" size="icon" onClick={() => void onDelete(r)}>
-                    <Trash2 className="h-4 w-4 text-danger" />
-                  </Button>
-                </div>
-              ),
+              render: (r) =>
+                canManage ? (
+                  <div className="flex gap-1">
+                    <Button variant="ghost" size="icon" onClick={() => { setEdit(r); setOpen(true); }}>
+                      <Pencil className="h-4 w-4" />
+                    </Button>
+                    <Button variant="ghost" size="icon" onClick={() => void onDelete(r)}>
+                      <Trash2 className="h-4 w-4 text-danger" />
+                    </Button>
+                  </div>
+                ) : null,
             },
           ]}
         />

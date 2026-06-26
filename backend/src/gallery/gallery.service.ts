@@ -24,22 +24,42 @@ export class GalleryService {
     return item;
   }
 
-  create(data: { title: string; description?: string }) {
+  async findBySlug(slug: string) {
+    const item = await this.prisma.gallery.findFirst({
+      where: { slug, status: ContentStatus.PUBLISHED },
+      include: { photos: { orderBy: { sortOrder: 'asc' } } },
+    });
+    if (!item) throw new NotFoundException('Galerija nije pronađena');
+    return item;
+  }
+
+  async create(data: { title: string; description?: string }) {
+    const slug = await this.uniqueSlug(slugify(data.title));
     return this.prisma.gallery.create({
-      data: { ...data, slug: slugify(data.title), status: ContentStatus.DRAFT },
+      data: { ...data, slug, status: ContentStatus.DRAFT },
     });
   }
 
-  update(id: string, data: Record<string, unknown>) {
-    return this.prisma.gallery.update({ where: { id }, data });
+  async update(id: string, data: Record<string, unknown>) {
+    const update: Record<string, unknown> = { ...data };
+    if (typeof data.title === 'string') {
+      update.slug = await this.uniqueSlug(slugify(data.title), id);
+    }
+    return this.prisma.gallery.update({ where: { id }, data: update });
   }
 
   updateStatus(id: string, status: ContentStatus) {
     return this.prisma.gallery.update({ where: { id }, data: { status } });
   }
 
-  addPhoto(galleryId: string, data: { path: string; caption?: string; sortOrder?: number }) {
-    return this.prisma.galleryPhoto.create({ data: { ...data, galleryId } });
+  async addPhoto(galleryId: string, data: { path: string; caption?: string; sortOrder?: number }) {
+    const sortOrder =
+      data.sortOrder ??
+      ((await this.prisma.galleryPhoto.aggregate({
+        where: { galleryId },
+        _max: { sortOrder: true },
+      }))._max.sortOrder ?? -1) + 1;
+    return this.prisma.galleryPhoto.create({ data: { ...data, sortOrder, galleryId } });
   }
 
   removePhoto(photoId: string) {
@@ -59,5 +79,15 @@ export class GalleryService {
 
   remove(id: string) {
     return this.prisma.gallery.delete({ where: { id } });
+  }
+
+  private async uniqueSlug(base: string, excludeId?: string) {
+    let slug = base;
+    let n = 2;
+    for (;;) {
+      const existing = await this.prisma.gallery.findUnique({ where: { slug } });
+      if (!existing || existing.id === excludeId) return slug;
+      slug = `${base}-${n++}`;
+    }
   }
 }

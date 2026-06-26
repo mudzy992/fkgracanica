@@ -21,9 +21,13 @@ export function SponsorsAdminFormSheet({ open, onOpenChange, edit }: Props) {
   const [tier, setTier] = useState('PARTNER');
   const [url, setUrl] = useState('');
   const [logoPath, setLogoPath] = useState('');
+  const [feedback, setFeedback] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
   useEffect(() => {
-    if (!open) return;
+    if (!open) {
+      setFeedback(null);
+      return;
+    }
     setName(edit?.name ?? '');
     setTier(edit?.tier ?? 'PARTNER');
     setUrl(edit?.url ?? '');
@@ -31,10 +35,15 @@ export function SponsorsAdminFormSheet({ open, onOpenChange, edit }: Props) {
   }, [open, edit]);
 
   const save = async () => {
-    const body = { name, tier, url: url || undefined, logoPath: logoPath || undefined };
-    if (edit) await update.mutateAsync({ id: edit.id, ...body });
-    else await create.mutateAsync(body);
-    onOpenChange(false);
+    setFeedback(null);
+    try {
+      const body = { name, tier, url: url || undefined, logoPath: logoPath || undefined };
+      if (edit) await update.mutateAsync({ id: edit.id, ...body });
+      else await create.mutateAsync(body);
+      onOpenChange(false);
+    } catch {
+      setFeedback({ type: 'error', text: 'Spremanje nije uspjelo. Pokušajte ponovo.' });
+    }
   };
 
   return (
@@ -52,6 +61,7 @@ export function SponsorsAdminFormSheet({ open, onOpenChange, edit }: Props) {
         </select>
         <Input value={url} onChange={(e) => setUrl(e.target.value)} placeholder="URL (opcionalno)" />
         <MediaPicker value={logoPath} onChange={setLogoPath} label="Logo" />
+        {feedback && <p className="text-sm text-danger">{feedback.text}</p>}
         <Button onClick={() => void save()} disabled={!name || create.isPending || update.isPending}>
           {edit ? 'Spremi' : 'Kreiraj'}
         </Button>

@@ -9,12 +9,22 @@ export class ClubTimelineService {
     return this.prisma.clubTimelineEvent.findMany({ orderBy: [{ year: 'desc' }, { sortOrder: 'asc' }] });
   }
 
-  create(data: Record<string, unknown>) {
-    return this.prisma.clubTimelineEvent.create({ data: data as never });
+  async create(data: Record<string, unknown>) {
+    const max = await this.prisma.clubTimelineEvent.aggregate({ _max: { sortOrder: true } });
+    const sortOrder = (max._max.sortOrder ?? -1) + 1;
+    return this.prisma.clubTimelineEvent.create({ data: { ...data, sortOrder } as never });
   }
 
   update(id: string, data: Record<string, unknown>) {
     return this.prisma.clubTimelineEvent.update({ where: { id }, data });
+  }
+
+  reorder(ids: string[]) {
+    return this.prisma.$transaction(
+      ids.map((id, sortOrder) =>
+        this.prisma.clubTimelineEvent.update({ where: { id }, data: { sortOrder } }),
+      ),
+    );
   }
 
   remove(id: string) {

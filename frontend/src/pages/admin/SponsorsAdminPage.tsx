@@ -1,7 +1,9 @@
 import { useState } from 'react';
-import { Pencil, Plus, Trash2 } from 'lucide-react';
+import { ArrowDown, ArrowUp, Pencil, Plus, Trash2 } from 'lucide-react';
 import { useSponsors } from '../../hooks';
-import { useDeleteSponsor } from '../../hooks/use-content-admin';
+import { useDeleteSponsor, useReorderSponsors } from '../../hooks/use-content-admin';
+import { useAuth } from '../../lib/auth';
+import { hasPermission } from '../../lib/permissions';
 import { useConfirm } from '../../hooks/use-confirm';
 import { Seo } from '../../components/seo/Seo';
 import { Button } from '../../components/ui/button';
@@ -10,11 +12,23 @@ import { SponsorsAdminFormSheet } from './SponsorsAdminFormSheet';
 import type { Sponsor } from '../../types';
 
 export function SponsorsAdminPage() {
+  const { user } = useAuth();
+  const canManage = hasPermission(user?.permissions, 'sponsors.manage');
   const { data, isLoading } = useSponsors();
   const remove = useDeleteSponsor();
+  const reorder = useReorderSponsors();
   const { confirm, dialog } = useConfirm();
   const [open, setOpen] = useState(false);
   const [edit, setEdit] = useState<Sponsor | null>(null);
+  const rows = data ?? [];
+
+  const move = (index: number, dir: -1 | 1) => {
+    const next = index + dir;
+    if (next < 0 || next >= rows.length) return;
+    const ids = rows.map((r) => r.id);
+    [ids[index], ids[next]] = [ids[next], ids[index]];
+    void reorder.mutateAsync(ids);
+  };
 
   const onDelete = async (item: Sponsor) => {
     const ok = await confirm({
@@ -34,30 +48,50 @@ export function SponsorsAdminPage() {
         title="Sponzori"
         isLoading={isLoading}
         actions={
-          <Button size="sm" onClick={() => { setEdit(null); setOpen(true); }}>
-            <Plus className="mr-1 h-4 w-4" />
-            Novi
-          </Button>
+          canManage ? (
+            <Button size="sm" onClick={() => { setEdit(null); setOpen(true); }}>
+              <Plus className="mr-1 h-4 w-4" />
+              Novi
+            </Button>
+          ) : undefined
         }
       >
         <AdminDataTable
-          rows={data ?? []}
+          rows={rows}
           columns={[
             { key: 'name', header: 'Naziv', render: (r) => r.name },
             { key: 'tier', header: 'Kategorija', render: (r) => r.tier },
             {
               key: 'actions',
               header: 'Akcije',
-              render: (r) => (
-                <div className="flex gap-1">
-                  <Button variant="ghost" size="icon" onClick={() => { setEdit(r); setOpen(true); }}>
-                    <Pencil className="h-4 w-4" />
-                  </Button>
-                  <Button variant="ghost" size="icon" onClick={() => void onDelete(r)}>
-                    <Trash2 className="h-4 w-4 text-danger" />
-                  </Button>
-                </div>
-              ),
+              render: (r) => {
+                const index = rows.findIndex((row) => row.id === r.id);
+                return (
+                  <div className="flex gap-1">
+                    {canManage && (
+                      <>
+                        <Button variant="ghost" size="icon" disabled={index === 0} onClick={() => move(index, -1)}>
+                          <ArrowUp className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          disabled={index === rows.length - 1}
+                          onClick={() => move(index, 1)}
+                        >
+                          <ArrowDown className="h-4 w-4" />
+                        </Button>
+                        <Button variant="ghost" size="icon" onClick={() => { setEdit(r); setOpen(true); }}>
+                          <Pencil className="h-4 w-4" />
+                        </Button>
+                        <Button variant="ghost" size="icon" onClick={() => void onDelete(r)}>
+                          <Trash2 className="h-4 w-4 text-danger" />
+                        </Button>
+                      </>
+                    )}
+                  </div>
+                );
+              },
             },
           ]}
         />

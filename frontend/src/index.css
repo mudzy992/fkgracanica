@@ -114,4 +114,118 @@
   .rich-content strong {
     @apply font-semibold;
   }
+
+  .sponsors-widget-enter {
+    animation: sponsors-fade-up 0.7s ease-out both;
+  }
+
+  .sponsors-hero-glow {
+    animation: sponsors-hero-pulse 4s ease-in-out infinite;
+  }
+
+  .trophy-featured-glow {
+    animation: trophy-featured-pulse 5s ease-in-out infinite;
+  }
+
+  .sponsors-marquee-mask {
+    mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent);
+  }
+
+  .sponsors-marquee-track {
+    animation: sponsors-marquee 36s linear infinite;
+  }
+
+  .sponsors-marquee-reverse {
+    animation-direction: reverse;
+  }
+
+  .sponsors-marquee-mask:hover .sponsors-marquee-track {
+    animation-play-state: paused;
+  }
+
+  @keyframes sponsors-fade-up {
+    from {
+      opacity: 0;
+      transform: translateY(16px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes sponsors-hero-pulse {
+    0%,
+    100% {
+      box-shadow: 0 0 0 0 rgb(37 99 235 / 0.08);
+    }
+    50% {
+      box-shadow: 0 0 32px 4px rgb(37 99 235 / 0.12);
+    }
+  }
+
+  @keyframes trophy-featured-pulse {
+    0%,
+    100% {
+      box-shadow: 0 0 0 0 rgb(217 119 6 / 0.08);
+    }
+    50% {
+      box-shadow: 0 0 40px 6px rgb(217 119 6 / 0.14);
+    }
+  }
+
+  @keyframes sponsors-marquee {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-50%);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .sponsors-widget-enter,
+    .sponsors-hero-glow,
+    .trophy-featured-glow,
+    .sponsors-marquee-track {
+      animation: none;
+    }
+
+    .sponsors-marquee-mask {
+      mask-image: none;
+      overflow-x: auto;
+    }
+
+    .sponsors-marquee-track {
+      flex-wrap: wrap;
+      width: 100%;
+      justify-content: center;
+    }
+  }
+
+  .timeline-reveal {
+    opacity: 0;
+    transition: opacity 0.65s ease, transform 0.65s ease;
+  }
+
+  .timeline-reveal-left {
+    transform: translateY(28px) translateX(-20px);
+  }
+
+  .timeline-reveal-right {
+    transform: translateY(28px) translateX(20px);
+  }
+
+  .timeline-reveal-visible {
+    opacity: 1;
+    transform: translateY(0) translateX(0) scale(1);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .timeline-reveal {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+  }
 }

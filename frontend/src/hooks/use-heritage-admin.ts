@@ -79,3 +79,11 @@ export function useDeleteTimelineEvent() {
     onSuccess: () => invalidate(qc, 'club-timeline'),
   });
 }
+
+export function useReorderTimelineEvents() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (ids: string[]) => (await api.post('/club-timeline/reorder', { ids })).data,
+    onSuccess: () => invalidate(qc, 'club-timeline'),
+  });
+}

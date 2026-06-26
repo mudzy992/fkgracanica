@@ -387,8 +387,11 @@ model Trophy {
   description String?  @db.Text
   imagePath   String?
   competition String?
+  featured    Boolean  @default(false)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+
+  @@index([featured])
 }
 
 // ─── Club History ────────────────────────────────────────────
@@ -434,19 +437,40 @@ model MuseumItem {
 // ─── Competition ─────────────────────────────────────────────
 
 model Club {
+  id            String          @id @default(cuid())
+  name          String
+  slug          String          @unique
+  crestPath     String?
+  stadium       String?
+  city          String?
+  description   String?         @db.Text
+  isOwnClub     Boolean         @default(false)
+  formationDef  Int             @default(4)
+  formationMid  Int             @default(3)
+  formationFwd  Int             @default(3)
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  homeMatches   Match[]         @relation("HomeClub")
+  awayMatches   Match[]         @relation("AwayClub")
+  players       Player[]
+  stadiumRel    Stadium?
+  squadSlots    ClubSquadSlot[]
+}
+
+model Stadium {
   id          String   @id @default(cuid())
+  clubId      String   @unique
   name        String
-  slug        String   @unique
-  crestPath   String?
-  stadium     String?
+  address     String?
   city        String?
+  latitude    Float?
+  longitude   Float?
+  imagePath   String?
+  capacity    Int?
   description String?  @db.Text
-  isOwnClub   Boolean  @default(false)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-  homeMatches Match[]  @relation("HomeClub")
-  awayMatches Match[]  @relation("AwayClub")
-  players     Player[]
+  club        Club     @relation(fields: [clubId], references: [id], onDelete: Cascade)
 }
 
 model Competition {
@@ -501,9 +525,30 @@ model Player {
   statistics    PlayerStatistics[]
   matchEvents   MatchEvent[]
   lineupSlots   MatchLineup[]
+  squadSlots    ClubSquadSlot[]
   newsLinks     NewsPlayer[]
 
   @@index([clubId])
+}
+
+model ClubSquadSlot {
+  id         String         @id @default(cuid())
+  clubId     String
+  slotIndex  Int
+  lineRole   PlayerPosition
+  positionX  Float          @default(0)
+  positionY  Float          @default(0)
+  isBench    Boolean        @default(false)
+  benchOrder Int?
+  playerId   String?
+  createdAt  DateTime       @default(now())
+  updatedAt  DateTime       @updatedAt
+  club       Club           @relation(fields: [clubId], references: [id], onDelete: Cascade)
+  player     Player?        @relation(fields: [playerId], references: [id], onDelete: SetNull)
+
+  @@unique([clubId, slotIndex, isBench])
+  @@index([clubId])
+  @@index([playerId])
 }
 
 model Team {

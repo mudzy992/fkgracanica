@@ -93,6 +93,7 @@ export interface Trophy {
   competition?: string | null;
   imagePath?: string | null;
   description?: string | null;
+  featured?: boolean;
 }
 
 export interface ClubTimelineEvent {
@@ -101,7 +102,10 @@ export interface ClubTimelineEvent {
   title: string;
   description?: string | null;
   imagePath?: string | null;
+  sortOrder?: number;
 }
+
+export type PlayerPosition = 'GK' | 'DEF' | 'MID' | 'FWD';
 
 export interface Player {
   id: string;
@@ -112,17 +116,25 @@ export interface Player {
   photoPath?: string | null;
   bio?: string | null;
   isActive: boolean;
+  clubId?: string | null;
+  club?: { id: string; name: string } | null;
 }
 
 export interface Club {
   id: string;
   name: string;
+  slug?: string;
   shortName?: string | null;
   logoPath?: string | null;
   crestPath?: string | null;
   city?: string | null;
   stadium?: string | null;
+  description?: string | null;
   isOwnClub?: boolean;
+  formationDef?: number;
+  formationMid?: number;
+  formationFwd?: number;
+  stadiumRel?: import('./club-hub').Stadium | null;
 }
 
 export interface Match {

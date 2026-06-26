@@ -23,6 +23,14 @@ export class ClubTimelineController {
     return this.service.create(body);
   }
 
+  @Post('reorder')
+  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @RequirePermissions('club-timeline.manage')
+  @ApiBearerAuth()
+  reorder(@Body('ids') ids: string[]) {
+    return this.service.reorder(ids);
+  }
+
   @Patch(':id')
   @UseGuards(JwtAuthGuard, PermissionsGuard)
   @RequirePermissions('club-timeline.manage')

@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { PlayerLink } from '../../components/public/players/PlayerLink';
 import { useMatches, useSeasons, useStandings, useTopAssists, useTopScorers } from '../../hooks';
 import { formatDateTime } from '../../lib/utils';
 import { Seo } from '../../components/seo/Seo';
@@ -6,7 +7,13 @@ import { Card, CardContent } from '../../components/ui/card';
 import { Badge } from '../../components/ui/badge';
 import { Skeleton } from '../../components/ui/skeleton';
 
-function LeadersTable({ title, rows }: { title: string; rows?: { firstName: string; lastName: string; value: number }[] }) {
+function LeadersTable({
+  title,
+  rows,
+}: {
+  title: string;
+  rows?: { playerId: string; firstName: string; lastName: string; value: number }[];
+}) {
   return (
     <section>
       <h2 className="mb-4 text-xl font-semibold">{title}</h2>
@@ -22,10 +29,10 @@ function LeadersTable({ title, rows }: { title: string; rows?: { firstName: stri
             </thead>
             <tbody>
               {(rows ?? []).map((row, i) => (
-                <tr key={`${row.firstName}-${row.lastName}`} className="border-b border-slate-100">
+                <tr key={row.playerId} className="border-b border-slate-100">
                   <td className="p-3">{i + 1}</td>
                   <td className="p-3 font-medium">
-                    {row.firstName} {row.lastName}
+                    <PlayerLink id={row.playerId} name={`${row.firstName} ${row.lastName}`} />
                   </td>
                   <td className="p-3 text-right font-bold">{row.value}</td>
                 </tr>
