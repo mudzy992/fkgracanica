@@ -14,5 +14,6 @@
 | 2026-06-26 | Kola | READY_FOR_REVIEW | Round entitet, admin CRUD, /liga filter i rezultati po kolima |
 | 2026-06-26 | Utakmice | READY_FOR_REVIEW | Kolo, sezona, RBAC, status/rezultat u formi |
 | 2026-06-26 | Takmičenja (unified hub) | READY_FOR_REVIEW | Jedan meni: takmičenje→sezona→kolo→utakmice; postava domaći+gosti; MatchLineup.clubId |
+| 2026-06-26 | Live | READY_FOR_REVIEW | Sat, 2-kolone komentator, stoppage, YouTube broadcast overlay, pending odobrenje |
 
 Statusi: `IN_PROGRESS` | `READY_FOR_REVIEW` | `APPROVED` | `REVISE`

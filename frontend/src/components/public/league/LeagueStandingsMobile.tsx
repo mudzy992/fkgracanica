@@ -1,6 +1,7 @@
 import { ClubLink } from '../clubs/ClubLink';
 import { ClubCrest } from '../clubs/ClubCrest';
 import { LeagueFormDots } from './LeagueFormDots';
+import { formatGoalDifference } from '../../../lib/standings-format';
 import { Card, CardContent } from '../../ui/card';
 import type { StandingRow } from '../../../types';
 
@@ -26,7 +27,9 @@ export function LeagueStandingsMobile({ rows }: Props) {
             </div>
             <div className="shrink-0 text-right">
               <p className="text-lg font-bold">{row.points}</p>
-              <p className="text-xs text-text-muted">bod</p>
+              <p className="text-xs text-text-muted">
+                GR {formatGoalDifference(row.goalDifference)} · {row.goalsFor}:{row.goalsAgainst}
+              </p>
             </div>
             <LeagueFormDots form={row.form} />
           </CardContent>

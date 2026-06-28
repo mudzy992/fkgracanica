@@ -1,12 +1,15 @@
 import { useEffect } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { getRealtimeSocket } from '../lib/realtime';
-import type { Match, MatchEvent } from '../types';
+import type { LiveClockState } from '../lib/live-clock';
+import type { LiveComment, Match, MatchEvent } from '../types';
 
 interface MatchScore {
   homeScore: number;
   awayScore: number;
   minute: number;
+  penaltyHomeScore?: number;
+  penaltyAwayScore?: number;
 }
 
 export function useMatchRealtime(matchId: string | undefined) {
@@ -30,16 +33,32 @@ export function useMatchRealtime(matchId: string | undefined) {
       );
     };
 
+    const onComment = (comment: LiveComment) => {
+      qc.setQueryData<Match>(['matches', matchId], (old) =>
+        old ? { ...old, liveComments: [...(old.liveComments ?? []), comment] } : old,
+      );
+    };
+
+    const onClock = (clock: LiveClockState) => {
+      qc.setQueryData<Match>(['matches', matchId], (old) =>
+        old ? { ...old, minute: clock.displayMinute } : old,
+      );
+    };
+
     const onScore = (score: MatchScore) => patch(score);
     const onStatus = (status: Partial<Match>) => patch(status);
 
     socket.on('match:event', onEvent);
+    socket.on('match:comment', onComment);
+    socket.on('match:clock', onClock);
     socket.on('match:score', onScore);
     socket.on('match:status', onStatus);
 
     return () => {
       socket.off('connect', join);
       socket.off('match:event', onEvent);
+      socket.off('match:comment', onComment);
+      socket.off('match:clock', onClock);
       socket.off('match:score', onScore);
       socket.off('match:status', onStatus);
       socket.emit('match:leave', { matchId });

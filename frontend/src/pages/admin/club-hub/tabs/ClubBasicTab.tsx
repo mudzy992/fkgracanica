@@ -13,6 +13,7 @@ export function ClubBasicTab({ club }: { club: Club }) {
   const canManage = hasPermission(user?.permissions, 'clubs.manage');
   const update = useUpdateClub();
   const [name, setName] = useState(club.name);
+  const [shortName, setShortName] = useState(club.shortName ?? '');
   const [city, setCity] = useState(club.city ?? '');
   const [description, setDescription] = useState(club.description ?? '');
   const [crestPath, setCrestPath] = useState(club.crestPath ?? club.logoPath ?? '');
@@ -20,6 +21,7 @@ export function ClubBasicTab({ club }: { club: Club }) {
 
   useEffect(() => {
     setName(club.name);
+    setShortName(club.shortName ?? '');
     setCity(club.city ?? '');
     setDescription(club.description ?? '');
     setCrestPath(club.crestPath ?? club.logoPath ?? '');
@@ -30,6 +32,7 @@ export function ClubBasicTab({ club }: { club: Club }) {
     await update.mutateAsync({
       id: club.id,
       name,
+      shortName: shortName.trim() || null,
       city: city || undefined,
       description: description || undefined,
       crestPath: crestPath || undefined,
@@ -40,6 +43,7 @@ export function ClubBasicTab({ club }: { club: Club }) {
   if (!canManage) {
     return (
       <dl className="grid gap-3 text-sm md:grid-cols-2">
+        <div><dt className="text-text-muted">Kratko ime</dt><dd>{club.shortName ?? '—'}</dd></div>
         <div><dt className="text-text-muted">Grad</dt><dd>{club.city ?? '—'}</dd></div>
         <div className="md:col-span-2"><dt className="text-text-muted">Opis</dt><dd>{club.description ?? '—'}</dd></div>
       </dl>
@@ -49,6 +53,13 @@ export function ClubBasicTab({ club }: { club: Club }) {
   return (
     <div className="max-w-xl space-y-4">
       <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Naziv *" />
+      <Input
+        value={shortName}
+        onChange={(e) => setShortName(e.target.value)}
+        placeholder="Kratko ime (npr. FKG, SLO)"
+        maxLength={8}
+      />
+      <p className="-mt-2 text-xs text-text-muted">Prikazuje se na TV semaforu i rezultatima. Max 8 znakova.</p>
       <Input value={city} onChange={(e) => setCity(e.target.value)} placeholder="Grad" />
       <textarea
         value={description}

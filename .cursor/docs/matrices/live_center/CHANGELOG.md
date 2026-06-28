@@ -1,5 +1,18 @@
 # Changelog — Live Center
 
+## 2026-06-26 (live clock & broadcast)
+
+- Automatski sat utakmice od kickoffa; sudijska nadoknada (+N) nakon 45/90
+- Komentator: dvije kolone po timu, izmjene out/in, YouTube live stream
+- Javno: fullscreen stream + scoreboard overlay + event toast (~12s)
+
+## 2026-06-26
+
+- Komentator panel: halftime/resume, više događaja, odabir igrača, live komentari
+- RBAC: `live.manage` na `/admin/live/:id`, `live.approve` na `/admin/live/pending`
+- Javno: live komentari preko socket `match:comment`
+- Live dugme u competition hubu; pending approval lista
+
 ## 2026-06-24 (QA)
 
 - Produkcijski QA skripte: `qa-live-reset.sh`, `qa-live-commentator.mjs` — PASSED

@@ -24,6 +24,7 @@ export interface PlayerMatchStat {
   lastName: string;
   isStarter: boolean;
   goals: number;
+  ownGoals: number;
   assists: number;
   yellowCards: number;
   redCards: number;
@@ -31,7 +32,7 @@ export interface PlayerMatchStat {
   shotsOn: number;
 }
 
-type EventRow = Pick<MatchEvent, 'type' | 'teamSide' | 'playerId'>;
+type EventRow = Pick<MatchEvent, 'type' | 'teamSide' | 'playerId' | 'relatedPlayerId'>;
 type LineupRow = MatchLineup & {
   player?: { id: string; firstName: string; lastName: string; clubId: string | null } | null;
 };
@@ -149,6 +150,9 @@ function bumpPlayerStat(stat: PlayerMatchStat, type: MatchEventType) {
     case MatchEventType.PENALTY_SCORED:
       stat.goals++;
       break;
+    case MatchEventType.OWN_GOAL:
+      stat.ownGoals++;
+      break;
     case MatchEventType.YELLOW_CARD:
       stat.yellowCards++;
       break;
@@ -186,6 +190,7 @@ function buildPlayerStatsForClub(
       lastName: slot.player.lastName,
       isStarter: slot.isStarter,
       goals: 0,
+      ownGoals: 0,
       assists: 0,
       yellowCards: 0,
       redCards: 0,
@@ -199,6 +204,13 @@ function buildPlayerStatsForClub(
     const stat = map.get(event.playerId);
     if (!stat) continue;
     bumpPlayerStat(stat, event.type);
+  }
+
+  for (const event of events) {
+    if (!event.relatedPlayerId) continue;
+    if (event.type !== MatchEventType.GOAL && event.type !== MatchEventType.PENALTY_SCORED) continue;
+    const stat = map.get(event.relatedPlayerId);
+    if (stat) stat.assists++;
   }
 
   return [...map.values()].sort(

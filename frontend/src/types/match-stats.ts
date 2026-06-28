@@ -20,6 +20,7 @@ export interface PlayerMatchStat {
   lastName: string;
   isStarter: boolean;
   goals: number;
+  ownGoals: number;
   assists: number;
   yellowCards: number;
   redCards: number;

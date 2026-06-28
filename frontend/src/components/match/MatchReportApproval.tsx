@@ -1,4 +1,4 @@
-import { useApproveMatchReport } from '../../hooks/use-competition-admin';
+import { useApproveMatchReport } from '../../hooks/use-live-admin';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
 

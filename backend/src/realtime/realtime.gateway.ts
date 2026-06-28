@@ -89,23 +89,41 @@ export class RealtimeGateway
     this.server.emit('settings:changed', { scope, settings });
   }
 
+  private emitRoom(matchId: string, event: string, payload: unknown) {
+    if (!this.server) {
+      this.logger.warn(`Socket nije spreman — preskačem ${event}`);
+      return;
+    }
+    this.server.to(`match:${matchId}`).emit(event, payload);
+  }
+
   emitMatchEvent(matchId: string, event: unknown) {
-    this.server.to(`match:${matchId}`).emit('match:event', event);
+    this.emitRoom(matchId, 'match:event', event);
   }
 
   emitLiveComment(matchId: string, comment: unknown) {
-    this.server.to(`match:${matchId}`).emit('match:comment', comment);
+    this.emitRoom(matchId, 'match:comment', comment);
   }
 
   emitMatchStatus(matchId: string, status: unknown) {
-    this.server.to(`match:${matchId}`).emit('match:status', status);
+    this.emitRoom(matchId, 'match:status', status);
   }
 
   emitMatchScore(
     matchId: string,
-    score: { homeScore: number; awayScore: number; minute: number },
+    score: {
+      homeScore: number;
+      awayScore: number;
+      minute: number;
+      penaltyHomeScore?: number;
+      penaltyAwayScore?: number;
+    },
   ) {
-    this.server.to(`match:${matchId}`).emit('match:score', score);
+    this.emitRoom(matchId, 'match:score', score);
+  }
+
+  emitMatchClock(matchId: string, clock: unknown) {
+    this.emitRoom(matchId, 'match:clock', clock);
   }
 
   emitNotificationNew(userId: string, notification: unknown) {

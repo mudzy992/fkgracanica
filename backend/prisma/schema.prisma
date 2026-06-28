@@ -439,6 +439,7 @@ model MuseumItem {
 model Club {
   id            String          @id @default(cuid())
   name          String
+  shortName     String?
   slug          String          @unique
   crestPath     String?
   stadium       String?
@@ -541,7 +542,8 @@ model Player {
   updatedAt     DateTime       @updatedAt
   club          Club?          @relation(fields: [clubId], references: [id], onDelete: SetNull)
   statistics    PlayerStatistics[]
-  matchEvents   MatchEvent[]
+  matchEvents        MatchEvent[] @relation("MatchEventPrimaryPlayer")
+  relatedMatchEvents MatchEvent[] @relation("MatchEventRelatedPlayer")
   lineupSlots   MatchLineup[]
   squadSlots    ClubSquadSlot[]
   newsLinks     NewsPlayer[]
@@ -593,6 +595,22 @@ enum MatchReportStatus {
   APPROVED
 }
 
+enum MatchPeriod {
+  FIRST_HALF
+  SECOND_HALF
+  EXTRA_FIRST
+  EXTRA_SECOND
+  PENALTIES
+}
+
+enum LiveBreak {
+  NONE
+  REGULAR_HT
+  ET_HT
+  POST_REGULATION
+  POST_EXTRA
+}
+
 model Match {
   id              String            @id @default(cuid())
   seasonId        String
@@ -607,7 +625,17 @@ model Match {
   status          MatchStatus       @default(SCHEDULED)
   reportStatus    MatchReportStatus @default(DRAFT)
   youtubeUrl      String?
+  liveStreamUrl   String?
   minute          Int               @default(0)
+  clockStartedAt  DateTime?
+  matchPeriod     MatchPeriod?
+  liveBreak       LiveBreak         @default(NONE)
+  stoppageFirstHalf  Int            @default(0)
+  stoppageSecondHalf Int            @default(0)
+  stoppageExtraFirst  Int           @default(0)
+  stoppageExtraSecond Int           @default(0)
+  penaltyHomeScore    Int           @default(0)
+  penaltyAwayScore    Int           @default(0)
   createdAt       DateTime          @default(now())
   updatedAt       DateTime          @updatedAt
   season          Season            @relation(fields: [seasonId], references: [id], onDelete: Cascade)
@@ -658,13 +686,15 @@ model MatchEvent {
   matchId     String
   type        MatchEventType
   minute      Int
-  playerId    String?
-  teamSide    String?
+  playerId          String?
+  relatedPlayerId   String?
+  teamSide          String?
   description String?        @db.Text
   createdById String?
   createdAt   DateTime       @default(now())
   match       Match          @relation(fields: [matchId], references: [id], onDelete: Cascade)
-  player      Player?        @relation(fields: [playerId], references: [id], onDelete: SetNull)
+  player      Player?        @relation("MatchEventPrimaryPlayer", fields: [playerId], references: [id], onDelete: SetNull)
+  relatedPlayer Player?      @relation("MatchEventRelatedPlayer", fields: [relatedPlayerId], references: [id], onDelete: SetNull)
   createdBy   User?          @relation("EventCreator", fields: [createdById], references: [id], onDelete: SetNull)
 
   @@index([matchId])
@@ -706,6 +736,7 @@ model PlayerStatistics {
   seasonId   String
   appearances Int   @default(0)
   goals      Int    @default(0)
+  ownGoals   Int    @default(0)
   assists    Int    @default(0)
   yellowCards Int   @default(0)
   redCards   Int    @default(0)

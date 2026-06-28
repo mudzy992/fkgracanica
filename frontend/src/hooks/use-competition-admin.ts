@@ -174,13 +174,7 @@ export function useSetMatchLineup() {
   });
 }
 
-export function useApproveMatchReport() {
-  const qc = useQueryClient();
-  return useMutation({
-    mutationFn: async (matchId: string) => (await api.post(`/live/matches/${matchId}/approve`)).data,
-    onSuccess: () => void qc.invalidateQueries({ queryKey: ['matches'] }),
-  });
-}
+export { useApproveMatchReport } from './use-live-admin';
 
 export function useActivateMembership() {
   const qc = useQueryClient();

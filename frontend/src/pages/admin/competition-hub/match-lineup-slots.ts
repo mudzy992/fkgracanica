@@ -1,16 +1,4 @@
-import { buildFormationSlots, type FormationSlot } from '../../../lib/formation-slots';
-import type { MatchLineup } from '../../../types';
-
-export function buildClubMatchLineup(lineup: MatchLineup[] | undefined, clubId: string): FormationSlot[] {
-  const rows = (lineup ?? []).filter((l) => l.clubId === clubId || l.player?.clubId === clubId);
-  return buildFormationSlots(
-    rows.map((r) => ({
-      playerId: r.playerId,
-      positionX: r.positionX,
-      positionY: r.positionY,
-    })),
-  );
-}
+import type { FormationSlot } from '../../../lib/formation-slots';
 
 export function slotsToLineupPayload(
   slots: FormationSlot[],
@@ -26,3 +14,5 @@ export function slotsToLineupPayload(
       isStarter: true,
     }));
 }
+
+export { buildClubMatchLineup, hasSquadDefaults } from '../../../lib/match-lineup-from-squad';

@@ -51,6 +51,6 @@ export function SheetHeader({ children, onClose }: { children: ReactNode; onClos
   );
 }
 
-export function SheetContent({ children }: { children: ReactNode }) {
-  return <div className="overflow-y-auto p-4">{children}</div>;
+export function SheetContent({ children, className }: { children: ReactNode; className?: string }) {
+  return <div className={cn('overflow-y-auto p-4', className)}>{children}</div>;
 }

@@ -5,7 +5,7 @@ import { Seo } from '../../components/seo/Seo';
 import { Card, CardContent } from '../../components/ui/card';
 import { Skeleton } from '../../components/ui/skeleton';
 import { Button } from '../../components/ui/button';
-import { CommentatorControls } from './CommentatorControls';
+import { CommentatorControls } from './commentator/CommentatorControls';
 
 export function CommentatorPage() {
   const { id } = useParams<{ id: string }>();

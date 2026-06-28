@@ -24,6 +24,7 @@ export function MatchCenterPage() {
   const { data: matchStats, isLoading: msl } = useMatchStatistics(id);
   const { data: relatedNews, isLoading: rnl } = useNewsForMatch(id);
   const canApprove = hasPermission(user?.permissions, 'live.approve');
+  const canCommentate = hasPermission(user?.permissions, 'live.manage');
 
   if (isLoading) return <Skeleton className="mx-auto mt-12 h-96 max-w-3xl" />;
   if (isError || !data) {
@@ -37,13 +38,28 @@ export function MatchCenterPage() {
       <PageContainer size="md" className="py-10 sm:py-12">
         <Seo title={`${data.homeClub?.name} vs ${data.awayClub?.name}`} />
         {canApprove && <MatchReportApproval matchId={data.id} reportStatus={data.reportStatus} />}
-        <div className="mb-4 flex items-center justify-between">
-          <Badge variant={isLive ? 'danger' : 'muted'}>{data.status}</Badge>
-          {isLive && (
-            <Link to={`/live/${data.id}`}>
-              <Button size="sm">Live centar</Button>
+        {canCommentate && data.status === 'FINISHED' && (data.reportStatus === 'DRAFT' || data.reportStatus === 'PENDING_APPROVAL' || !data.reportStatus) && (
+          <div className="mb-4 rounded-lg border border-primary/30 bg-primary/5 px-4 py-3 text-sm">
+            <span className="text-text-muted">Izvještaj utakmice — </span>
+            <Link to={`/admin/matches/${data.id}/report`} className="font-medium text-primary hover:underline">
+              {data.reportStatus === 'PENDING_APPROVAL' ? 'Uredi izvještaj' : 'Kreiraj / uredi izvještaj'}
             </Link>
-          )}
+          </div>
+        )}
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
+          <Badge variant={isLive ? 'danger' : 'muted'}>{data.status}</Badge>
+          <div className="flex flex-wrap gap-2">
+            <Link to={`/live/${data.id}`}>
+              <Button size="sm" variant={isLive ? 'default' : 'outline'}>
+                {isLive ? 'Live centar' : 'Live prikaz'}
+              </Button>
+            </Link>
+            {canCommentate && (
+              <Link to={`/admin/live/${data.id}`}>
+                <Button size="sm" variant="outline">Komentator</Button>
+              </Link>
+            )}
+          </div>
         </div>
         <MatchScoreHero
           homeClub={data.homeClub}

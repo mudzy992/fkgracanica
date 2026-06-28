@@ -24,7 +24,10 @@ export class StatisticsService {
     }
 
     const playerIds = [
-      ...new Set(match.events.filter((e) => e.playerId).map((e) => e.playerId!)),
+      ...new Set([
+        ...match.events.filter((e) => e.playerId).map((e) => e.playerId!),
+        ...match.events.filter((e) => e.relatedPlayerId).map((e) => e.relatedPlayerId!),
+      ]),
     ];
 
     for (const playerId of playerIds) {
@@ -32,7 +35,12 @@ export class StatisticsService {
       const goals = events.filter((e) =>
         (['GOAL', 'PENALTY_SCORED'] as const).includes(e.type as 'GOAL' | 'PENALTY_SCORED'),
       ).length;
-      const assists = 0;
+      const ownGoals = events.filter((e) => e.type === MatchEventType.OWN_GOAL).length;
+      const assists = match.events.filter(
+        (e) =>
+          e.relatedPlayerId === playerId &&
+          (e.type === MatchEventType.GOAL || e.type === MatchEventType.PENALTY_SCORED),
+      ).length;
       const yellowCards = events.filter((e) => e.type === MatchEventType.YELLOW_CARD).length;
       const redCards = events.filter((e) =>
         (['RED_CARD', 'SECOND_YELLOW'] as const).includes(e.type as 'RED_CARD' | 'SECOND_YELLOW'),
@@ -47,6 +55,7 @@ export class StatisticsService {
           seasonId: match.seasonId,
           appearances: 1,
           goals,
+          ownGoals,
           assists,
           yellowCards,
           redCards,
@@ -55,6 +64,7 @@ export class StatisticsService {
         update: {
           appearances: { increment: 1 },
           goals: { increment: goals },
+          ownGoals: { increment: ownGoals },
           assists: { increment: assists },
           yellowCards: { increment: yellowCards },
           redCards: { increment: redCards },
@@ -75,7 +85,7 @@ export class StatisticsService {
       awayClubId: string;
       homeScore: number;
       awayScore: number;
-      events: { type: MatchEventType; teamSide: string | null; playerId: string | null }[];
+      events: { type: MatchEventType; teamSide: string | null; playerId: string | null; relatedPlayerId: string | null }[];
       lineup?: { playerId: string; clubId: string }[];
       teamStats?: TeamStatistics[];
     },

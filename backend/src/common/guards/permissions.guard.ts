@@ -25,7 +25,7 @@ export class PermissionsGuard implements CanActivate {
     if (!user) {
       throw new ForbiddenException('Nedostaju dozvole');
     }
-    const hasAll = required.every((p) => user.permissions.includes(p));
+    const hasAll = required.every((p) => user.permissions?.includes(p) ?? false);
     if (!hasAll) {
       throw new ForbiddenException('Nedostaju dozvole');
     }

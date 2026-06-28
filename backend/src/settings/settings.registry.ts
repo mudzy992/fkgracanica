@@ -115,6 +115,13 @@ export const SETTINGS_REGISTRY: SettingDefinition[] = [
     description: 'Omogući članstvo',
   },
   {
+    key: 'live.prematchAudioUrl',
+    value: '',
+    type: SettingType.STRING,
+    scope: SettingScope.PUBLIC,
+    description: 'YouTube URL pozadinske muzike prije početka live utakmice',
+  },
+  {
     key: 'upload.maxSizeMb',
     value: '10',
     type: SettingType.NUMBER,

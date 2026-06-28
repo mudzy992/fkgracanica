@@ -1,11 +1,11 @@
 import { useEffect, useMemo, useState } from 'react';
-import { ClubLink } from '../../components/public/clubs/ClubLink';
-import { ClubCrest } from '../../components/public/clubs/ClubCrest';
 import { LeagueStandingsMobile } from '../../components/public/league/LeagueStandingsMobile';
-import { LeagueFormDots } from '../../components/public/league/LeagueFormDots';
+import { LeagueStandingsTable } from '../../components/public/league/LeagueStandingsTable';
 import { LeagueSeasonPicker } from '../../components/public/league/LeagueSeasonPicker';
 import { LeagueRoundPicker } from '../../components/public/league/LeagueRoundPicker';
 import { LeagueResultsByRound } from '../../components/public/league/LeagueResultsByRound';
+import { LeagueLiveMatches } from '../../components/public/league/LeagueLiveMatches';
+import { LeagueNextMatch } from '../../components/public/league/LeagueNextMatch';
 import { PlayerLink } from '../../components/public/players/PlayerLink';
 import { useMatches, useSeasons, useStandings, useTopAssists, useTopScorers } from '../../hooks';
 import { useRounds } from '../../hooks/use-rounds';
@@ -14,12 +14,6 @@ import { Seo } from '../../components/seo/Seo';
 import { PremiumCard } from '../../components/public/shell/PremiumCard';
 import { Skeleton } from '../../components/ui/skeleton';
 import { Card, CardContent } from '../../components/ui/card';
-import type { StandingRow } from '../../types';
-
-function ClubCell({ row }: { row: StandingRow }) {
-  if (row.clubSlug) return <ClubLink slug={row.clubSlug} name={row.clubName} />;
-  return <span className="font-medium">{row.clubName}</span>;
-}
 
 function LeadersTable({
   title,
@@ -99,6 +93,9 @@ export function LeaguePage() {
         </div>
       </header>
 
+      <LeagueNextMatch matches={matches ?? []} />
+      <LeagueLiveMatches matches={matches ?? []} />
+
       <div className="grid gap-8 xl:grid-cols-5">
         <section className="space-y-4 xl:col-span-3">
           <h2 className="text-xl font-semibold tracking-tight">{tableTitle}</h2>
@@ -108,35 +105,7 @@ export function LeaguePage() {
             <>
               <LeagueStandingsMobile rows={standings ?? []} />
               <PremiumCard className="hidden overflow-x-auto p-0 lg:block" hover={false}>
-                <table className="w-full min-w-[520px] text-sm">
-                  <thead>
-                    <tr className="border-b bg-surface/50 text-left text-text-muted">
-                      <th className="w-10 px-4 py-3">#</th>
-                      <th className="px-4 py-3">Klub</th>
-                      <th className="px-4 py-3 text-center">O</th>
-                      <th className="px-4 py-3 text-center font-bold">Bod</th>
-                      <th className="px-4 py-3">Forma</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {(standings ?? []).map((row, i) => (
-                      <tr key={row.clubId} className="border-b border-slate-100 last:border-0">
-                        <td className="px-4 py-3.5 text-text-muted">{i + 1}</td>
-                        <td className="px-4 py-3.5">
-                          <div className="flex items-center gap-3">
-                            <ClubCrest club={{ name: row.clubName }} size="sm" />
-                            <ClubCell row={row} />
-                          </div>
-                        </td>
-                        <td className="px-4 py-3.5 text-center">{row.played}</td>
-                        <td className="px-4 py-3.5 text-center text-base font-bold">{row.points}</td>
-                        <td className="px-4 py-3.5">
-                          <LeagueFormDots form={row.form} />
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+                <LeagueStandingsTable rows={standings ?? []} />
               </PremiumCard>
             </>
           )}

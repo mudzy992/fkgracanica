@@ -13,10 +13,20 @@ export const SETTINGS_LABELS: Record<string, string> = {
   'smtp.host': 'SMTP host',
   'smtp.port': 'SMTP port',
   'feature.live': 'Live centar',
+  'live.prematchAudioUrl': 'YouTube URL — pre-match audio (live centar)',
   'feature.membership': 'Članstvo',
   'upload.maxSizeMb': 'Maks. upload (MB)',
 };
 
+export const SETTINGS_DESCRIPTIONS: Record<string, string> = {
+  'live.prematchAudioUrl':
+    'Pozadinska muzika na /live/:id dok je utakmica zakazana (SCHEDULED). Unesite YouTube link — audio se pušta automatski.',
+};
+
 export function settingLabel(key: string): string {
   return SETTINGS_LABELS[key] ?? key;
+}
+
+export function settingDescription(key: string): string | undefined {
+  return SETTINGS_DESCRIPTIONS[key];
 }

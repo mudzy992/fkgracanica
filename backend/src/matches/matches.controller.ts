@@ -1,6 +1,7 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Put, Query, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { MatchesService } from './matches.service';
+import { UpdateMatchDto } from './update-match.dto';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { PermissionsGuard } from '../common/guards/permissions.guard';
 import { RequirePermissions } from '../common/decorators/permissions.decorator';
@@ -32,7 +33,7 @@ export class MatchesController {
   @UseGuards(JwtAuthGuard, PermissionsGuard)
   @RequirePermissions('matches.manage')
   @ApiBearerAuth()
-  update(@Param('id') id: string, @Body() body: Record<string, unknown>) {
+  update(@Param('id') id: string, @Body() body: UpdateMatchDto) {
     return this.service.update(id, body);
   }
 

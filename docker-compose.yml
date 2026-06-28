@@ -78,6 +78,12 @@ services:
       - traefik.http.routers.fkgracanica-web.entrypoints=websecure
       - traefik.http.routers.fkgracanica-web.tls=true
       - traefik.http.routers.fkgracanica-web.tls.certresolver=le
+      - traefik.http.routers.fkgracanica-web-http.rule=Host(`fkgracanica.ba101.top`)
+      - traefik.http.routers.fkgracanica-web-http.entrypoints=web
+      - traefik.http.routers.fkgracanica-web-http.middlewares=fkgracanica-redirect-https
+      - traefik.http.routers.fkgracanica-web-http.service=fkgracanica-web
+      - traefik.http.middlewares.fkgracanica-redirect-https.redirectscheme.scheme=https
+      - traefik.http.middlewares.fkgracanica-redirect-https.redirectscheme.permanent=true
       - traefik.http.services.fkgracanica-web.loadbalancer.server.port=3000
       - traefik.http.services.fkgracanica-web.loadbalancer.healthcheck.path=/
       - traefik.http.services.fkgracanica-web.loadbalancer.healthcheck.interval=30s

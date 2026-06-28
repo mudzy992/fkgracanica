@@ -48,6 +48,15 @@ export class AuthService {
     return this.issueTokens(stored.userId, stored.user.email);
   }
 
+  async me(userId: string) {
+    const user = await this.prisma.user.findFirst({
+      where: { id: userId, isActive: true, deletedAt: null },
+    });
+    if (!user) throw new UnauthorizedException('Korisnik nije pronađen');
+    const permissions = await this.getUserPermissions(user.id);
+    return { ...this.sanitizeUser(user), permissions };
+  }
+
   async logout(refreshToken: string, userId?: string) {
     await this.prisma.refreshToken.deleteMany({ where: { token: refreshToken } });
     if (userId) {

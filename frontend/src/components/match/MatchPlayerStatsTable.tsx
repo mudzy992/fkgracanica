@@ -12,7 +12,7 @@ export function MatchPlayerStatsTable({
   if (!players.length) return null;
 
   const hasDetail = players.some(
-    (p) => p.goals || p.assists || p.yellowCards || p.redCards || p.shots || p.shotsOn,
+    (p) => p.goals || p.ownGoals || p.assists || p.yellowCards || p.redCards || p.shots || p.shotsOn,
   );
 
   return (
@@ -26,6 +26,7 @@ export function MatchPlayerStatsTable({
               {hasDetail && (
                 <>
                   <th className="p-3 text-center">G</th>
+                  <th className="p-3 text-center">AG</th>
                   <th className="p-3 text-center">A</th>
                   <th className="p-3 text-center">U</th>
                   <th className="p-3 text-center">U+</th>
@@ -46,6 +47,7 @@ export function MatchPlayerStatsTable({
                 {hasDetail && (
                   <>
                     <td className="p-3 text-center tabular-nums">{p.goals || '—'}</td>
+                    <td className="p-3 text-center tabular-nums">{p.ownGoals || '—'}</td>
                     <td className="p-3 text-center tabular-nums">{p.assists || '—'}</td>
                     <td className="p-3 text-center tabular-nums">{p.shots || '—'}</td>
                     <td className="p-3 text-center tabular-nums">{p.shotsOn || '—'}</td>

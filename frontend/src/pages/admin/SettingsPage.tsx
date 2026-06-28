@@ -12,8 +12,8 @@ import { Input } from '../../components/ui/input';
 import { Switch } from '../../components/ui/switch';
 import { Skeleton } from '../../components/ui/skeleton';
 import { cn } from '../../lib/utils';
-import { isMediaSettingKey } from '../../lib/setting-field-utils';
-import { settingLabel } from '../../lib/settings-labels';
+import { isMediaSettingKey, settingInputPlaceholder } from '../../lib/setting-field-utils';
+import { settingLabel, settingDescription } from '../../lib/settings-labels';
 
 function SettingField({
   keyName,
@@ -38,7 +38,13 @@ function SettingField({
     return <SettingMediaField settingKey={keyName} value={current} onChange={onDraft} />;
   }
 
-  return <Input value={current} onChange={(e) => onDraft(e.target.value)} />;
+  return (
+    <Input
+      value={current}
+      placeholder={settingInputPlaceholder(keyName)}
+      onChange={(e) => onDraft(e.target.value)}
+    />
+  );
 }
 
 export function SettingsPage() {
@@ -89,7 +95,12 @@ export function SettingsPage() {
           {Object.entries(values ?? {}).map(([key, value]) => (
             <div key={key} className="flex flex-col gap-2">
               {!isMediaSettingKey(key) && (
-                <label className="text-sm font-medium text-text">{settingLabel(key)}</label>
+                <div>
+                  <label className="text-sm font-medium text-text">{settingLabel(key)}</label>
+                  {settingDescription(key) && (
+                    <p className="mt-0.5 text-xs text-text-muted">{settingDescription(key)}</p>
+                  )}
+                </div>
               )}
               <SettingField
                 keyName={key}

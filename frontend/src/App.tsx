@@ -2,6 +2,7 @@ import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { PublicLayout } from './components/layout/PublicLayout';
 import { AdminLayout } from './components/layout/AdminLayout';
 import { ProtectedRoute } from './components/common/ProtectedRoute';
+import { PermissionRoute } from './components/common/PermissionRoute';
 import { HomePage } from './pages/home/HomePage';
 import { ClubTimelinePage } from './pages/public/ClubTimelinePage';
 import { NewsListPage } from './pages/public/NewsListPage';
@@ -40,7 +41,9 @@ import { ClubsListPage } from './pages/admin/club-hub/ClubsListPage';
 import { ClubHubPage } from './pages/admin/club-hub/ClubHubPage';
 import { CompetitionsAdminPage } from './pages/admin/CompetitionsAdminPage';
 import { SeasonHubPage } from './pages/admin/competition-hub/SeasonHubPage';
+import { MatchReportPage } from './pages/admin/MatchReportPage';
 import { CommentatorPage } from './pages/admin/CommentatorPage';
+import { LivePendingPage } from './pages/admin/LivePendingPage';
 import { MembershipAdminPage } from './pages/admin/MembershipAdminPage';
 import { TicketingAdminPage } from './pages/admin/TicketingAdminPage';
 import { ContactAdminPage } from './pages/admin/ContactAdminPage';
@@ -68,7 +71,6 @@ export default function App() {
           <Route path="igrac/:id" element={<PlayerDetailPage />} />
           <Route path="liga" element={<LeaguePage />} />
           <Route path="utakmice/:id" element={<MatchCenterPage />} />
-          <Route path="live/:id" element={<LiveMatchPage />} />
           <Route path="kontakt" element={<ContactPage />} />
           <Route path="pretraga" element={<SearchPage />} />
           <Route path="hall-of-fame" element={<HallOfFamePage />} />
@@ -77,6 +79,8 @@ export default function App() {
           <Route path="ulaznice" element={<TicketsPage />} />
           <Route path="p/:slug" element={<CmsDynamicPage />} />
         </Route>
+
+        <Route path="live/:id" element={<LiveMatchPage />} />
 
         <Route path="admin/login" element={<AdminLoginPage />} />
 
@@ -103,7 +107,13 @@ export default function App() {
             <Route path="competitions/seasons/:seasonId" element={<SeasonHubPage />} />
             <Route path="rounds" element={<Navigate to="/admin/competitions" replace />} />
             <Route path="matches" element={<Navigate to="/admin/competitions" replace />} />
-            <Route path="live/:id" element={<CommentatorPage />} />
+            <Route element={<PermissionRoute permission="live.approve" />}>
+              <Route path="live/pending" element={<LivePendingPage />} />
+            </Route>
+            <Route element={<PermissionRoute permission="live.manage" />}>
+              <Route path="live/:id" element={<CommentatorPage />} />
+              <Route path="matches/:id/report" element={<MatchReportPage />} />
+            </Route>
             <Route path="membership" element={<MembershipAdminPage />} />
             <Route path="ticketing" element={<TicketingAdminPage />} />
             <Route path="contact" element={<ContactAdminPage />} />

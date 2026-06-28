@@ -51,4 +51,19 @@ describe('match-stats.util', () => {
     const { home } = computePlayerMatchStats(events, lineup, homeClubId, awayClubId);
     expect(home[0]?.goals).toBe(1);
   });
+
+  it('counts own goals separately from goals', () => {
+    const lineup = [
+      {
+        clubId: homeClubId,
+        playerId: 'p1',
+        isStarter: true,
+        player: { id: 'p1', firstName: 'A', lastName: 'B', clubId: homeClubId },
+      },
+    ];
+    const events = [{ type: 'OWN_GOAL' as const, teamSide: 'home', playerId: 'p1' }];
+    const { home } = computePlayerMatchStats(events, lineup, homeClubId, awayClubId);
+    expect(home[0]?.goals).toBe(0);
+    expect(home[0]?.ownGoals).toBe(1);
+  });
 });

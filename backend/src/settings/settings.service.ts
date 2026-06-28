@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, OnModuleInit } from '@nestjs/common';
 import { SettingScope } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { SETTINGS_REGISTRY } from './settings.registry';
@@ -6,12 +6,16 @@ import { RealtimeGateway } from '../realtime/realtime.gateway';
 import { NotificationsService } from '../notifications/notifications.service';
 
 @Injectable()
-export class SettingsService {
+export class SettingsService implements OnModuleInit {
   constructor(
     private readonly prisma: PrismaService,
     private readonly realtime: RealtimeGateway,
     private readonly notifications: NotificationsService,
   ) {}
+
+  async onModuleInit() {
+    await this.ensureDefaults();
+  }
 
   async getPublic() {
     const settings = await this.prisma.setting.findMany({

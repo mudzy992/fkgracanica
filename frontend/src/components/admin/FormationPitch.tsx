@@ -14,6 +14,11 @@ interface FormationPitchProps {
   onSlotChange: (index: number, playerId: string) => void;
 }
 
+function playerLabel(p: Player) {
+  const num = p.number ? `${p.number} ` : '';
+  return `${num}${p.firstName} ${p.lastName}`;
+}
+
 export function FormationPitch({ slots, players, onSlotChange }: FormationPitchProps) {
   return (
     <div
@@ -26,10 +31,14 @@ export function FormationPitch({ slots, players, onSlotChange }: FormationPitchP
       <div className="absolute left-1/2 top-1/2 h-20 w-20 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white/30" />
       {slots.map((slot, i) => {
         const player = players.find((p) => p.id === slot.playerId);
+        const assignedElsewhere = new Set(
+          slots.filter((_, idx) => idx !== i && slots[idx].playerId).map((s) => s.playerId),
+        );
+        const available = players.filter((p) => !assignedElsewhere.has(p.id) || p.id === slot.playerId);
         return (
           <div
             key={i}
-            className="absolute flex w-20 -translate-x-1/2 -translate-y-1/2 flex-col items-center"
+            className="absolute flex w-24 -translate-x-1/2 -translate-y-1/2 flex-col items-center"
             style={{ left: `${slot.positionX}%`, top: `${slot.positionY}%` }}
           >
             <select
@@ -38,10 +47,9 @@ export function FormationPitch({ slots, players, onSlotChange }: FormationPitchP
               className="mb-1 max-w-full rounded bg-white/90 px-1 py-0.5 text-[10px]"
             >
               <option value="">{slot.label}</option>
-              {players.map((p) => (
+              {available.map((p) => (
                 <option key={p.id} value={p.id}>
-                  {p.number ? `${p.number} ` : ''}
-                  {p.lastName}
+                  {playerLabel(p)}
                 </option>
               ))}
             </select>

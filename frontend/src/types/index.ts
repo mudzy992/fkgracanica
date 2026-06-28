@@ -2,6 +2,20 @@ export type ContentStatus = 'DRAFT' | 'PENDING' | 'PUBLISHED' | 'ARCHIVED';
 export type MatchStatus = 'SCHEDULED' | 'LIVE' | 'HALFTIME' | 'FINISHED' | 'POSTPONED' | 'CANCELLED';
 export type MatchReportStatus = 'DRAFT' | 'PENDING_APPROVAL' | 'APPROVED';
 
+export type MatchPeriod =
+  | 'FIRST_HALF'
+  | 'SECOND_HALF'
+  | 'EXTRA_FIRST'
+  | 'EXTRA_SECOND'
+  | 'PENALTIES';
+
+export type LiveBreak =
+  | 'NONE'
+  | 'REGULAR_HT'
+  | 'ET_HT'
+  | 'POST_REGULATION'
+  | 'POST_EXTRA';
+
 export interface User {
   id: string;
   email: string;
@@ -163,12 +177,24 @@ export interface Match {
   status: MatchStatus;
   reportStatus?: MatchReportStatus;
   youtubeUrl?: string | null;
+  liveStreamUrl?: string | null;
   minute: number;
+  clockStartedAt?: string | null;
+  matchPeriod?: MatchPeriod | null;
+  liveBreak?: LiveBreak;
+  stoppageFirstHalf?: number;
+  stoppageSecondHalf?: number;
+  stoppageExtraFirst?: number;
+  stoppageExtraSecond?: number;
+  penaltyHomeScore?: number;
+  penaltyAwayScore?: number;
   homeClub?: Club;
   awayClub?: Club;
   events?: MatchEvent[];
   lineups?: MatchLineup[];
   lineup?: MatchLineup[];
+  liveComments?: LiveComment[];
+  season?: { name: string; competition?: { name: string } };
 }
 
 export interface MatchEvent {
@@ -176,8 +202,11 @@ export interface MatchEvent {
   type: string;
   minute: number;
   playerId?: string | null;
+  teamSide?: string | null;
   description?: string | null;
   player?: Player | null;
+  relatedPlayerId?: string | null;
+  relatedPlayer?: Player | null;
 }
 
 export interface MatchLineup {
@@ -192,9 +221,10 @@ export interface MatchLineup {
 
 export interface LiveComment {
   id: string;
-  content: string;
-  minute: number;
+  message: string;
+  minute?: number | null;
   createdAt: string;
+  userId?: string | null;
 }
 
 export interface HallOfFameEntry {

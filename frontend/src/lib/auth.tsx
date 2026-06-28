@@ -7,7 +7,7 @@ import {
   useState,
   type ReactNode,
 } from 'react';
-import { api, clearTokens, getAccessToken, getRefreshToken, setTokens } from './api';
+import { api, clearTokens, ensureAccessToken, getRefreshToken, setTokens } from './api';
 import type { User } from '../types';
 
 interface AuthState {
@@ -28,19 +28,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
 
   const bootstrap = useCallback(async () => {
-    const token = getAccessToken();
+    const token = await ensureAccessToken();
     if (!token) {
+      localStorage.removeItem('fk_user');
       setIsLoading(false);
       return;
     }
     try {
-      const { data } = await api.get<User[]>('/users');
-      const stored = localStorage.getItem('fk_user');
-      if (stored) {
-        setUser(JSON.parse(stored) as User);
-      } else if (data[0]) {
-        setUser(data[0]);
-      }
+      const { data } = await api.get<User>('/auth/me');
+      localStorage.setItem('fk_user', JSON.stringify(data));
+      setUser(data);
     } catch {
       clearTokens();
       localStorage.removeItem('fk_user');

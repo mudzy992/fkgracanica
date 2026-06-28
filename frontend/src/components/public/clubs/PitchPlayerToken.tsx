@@ -28,16 +28,23 @@ export function PitchPlayerToken({ slot, vertical, editable, onClick }: Props) {
       onClick={onClick}
       className={cn('flex flex-col items-center gap-0.5', editable && 'cursor-pointer')}
     >
-      <div className={cn('shrink-0', vertical && '-rotate-90')}>
-        {slot.player?.photoPath ? (
-          <img src={mediaUrl(slot.player.photoPath, 'thumb')} alt="" className={avatarClass} />
-        ) : (
-          <div className={placeholderClass}>
-            {slot.player?.number ??
-              POSITION_LABELS[slot.lineRole as keyof typeof POSITION_LABELS]?.slice(0, 2) ??
-              '?'}
-          </div>
+      <div
+        className={cn(
+          'flex shrink-0 items-center justify-center',
+          vertical && 'size-9 md:size-11',
         )}
+      >
+        <div className={cn(vertical && 'origin-center rotate-90')}>
+          {slot.player?.photoPath ? (
+            <img src={mediaUrl(slot.player.photoPath, 'thumb')} alt="" className={avatarClass} />
+          ) : (
+            <div className={placeholderClass}>
+              {slot.player?.number ??
+                POSITION_LABELS[slot.lineRole as keyof typeof POSITION_LABELS]?.slice(0, 2) ??
+                '?'}
+            </div>
+          )}
+        </div>
       </div>
       <span
         className={cn(

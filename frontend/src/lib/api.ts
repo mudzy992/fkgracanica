@@ -38,12 +38,24 @@ api.interceptors.request.use((config: InternalAxiosRequestConfig) => {
 
 let refreshPromise: Promise<string> | null = null;
 
-async function refreshAccessToken(): Promise<string> {
+export async function refreshAccessToken(): Promise<string> {
   const refreshToken = getRefreshToken();
   if (!refreshToken) throw new Error('No refresh token');
   const { data } = await axios.post(`${API_URL}/auth/refresh`, { refreshToken });
   setTokens(data.accessToken, data.refreshToken);
   return data.accessToken as string;
+}
+
+export async function ensureAccessToken(): Promise<string | null> {
+  const accessToken = getAccessToken();
+  if (accessToken) return accessToken;
+  if (!getRefreshToken()) return null;
+  try {
+    return await refreshAccessToken();
+  } catch {
+    clearTokens();
+    return null;
+  }
 }
 
 api.interceptors.response.use(

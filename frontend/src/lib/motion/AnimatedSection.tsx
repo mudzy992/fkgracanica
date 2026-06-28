@@ -19,8 +19,23 @@ const variants = {
 export function AnimatedSection({ children, className, variant = 'default', index = 0 }: Props) {
   const reduce = useReducedMotion();
   const base = cn('relative', variants[variant], className);
+  const immediate = variant === 'hero' || index === 0;
 
   if (reduce) return <section className={base}>{children}</section>;
+
+  if (immediate) {
+    return (
+      <motion.section
+        className={base}
+        initial="visible"
+        animate="visible"
+        variants={fadeUp}
+        transition={defaultTransition}
+      >
+        {children}
+      </motion.section>
+    );
+  }
 
   return (
     <motion.section
