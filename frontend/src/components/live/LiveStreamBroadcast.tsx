@@ -25,7 +25,7 @@ export function LiveStreamBroadcast({ match }: Props) {
       {isHalftime && <LiveHalftimePanel match={match} />}
       {!isHalftime && (
         <>
-          <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/40" />
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-2/5 bg-gradient-to-t from-black/50 to-transparent" />
           <LiveScoreboardOverlay match={match} clock={clock} />
           <LiveStatsCorner match={match} />
           {toast && (

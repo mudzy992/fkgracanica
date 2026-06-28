@@ -1,5 +1,5 @@
 import { cn } from '../../lib/utils';
-import { useYouTubeStreamPlayer } from '../../hooks/use-youtube-player';
+import { useYouTubeStreamPlayer } from '../../hooks/use-youtube-stream-player';
 
 interface Props {
   url: string;
@@ -16,15 +16,12 @@ export function LiveYouTubePlayer({ url, active = true, hidden = false, classNam
   return (
     <div
       className={cn(
-        className ?? 'pointer-events-none absolute inset-0 h-full w-full overflow-hidden',
+        className ?? 'pointer-events-none absolute inset-0 z-0 h-full w-full overflow-hidden bg-black',
         hidden && 'invisible',
       )}
       aria-hidden={hidden}
     >
-      <div
-        ref={containerRef}
-        className="absolute inset-0 h-full w-full [&_iframe]:absolute [&_iframe]:left-1/2 [&_iframe]:top-1/2 [&_iframe]:min-h-full [&_iframe]:min-w-full [&_iframe]:-translate-x-1/2 [&_iframe]:-translate-y-1/2"
-      />
+      <div ref={containerRef} className="absolute inset-0 h-full w-full [&_iframe]:block [&_iframe]:h-full [&_iframe]:w-full" />
     </div>
   );
 }

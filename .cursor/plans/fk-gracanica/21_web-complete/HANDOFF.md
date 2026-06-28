@@ -1,8 +1,9 @@
 # HANDOFF — Web Complete
 
 > **Datum:** 2026-06-26  
-> **Sesija:** Takmičenja hub + statistika utakmice + Live (sat, broadcast, komentator v2)  
-> **Sljedeći fokus:** Gate review ili **#13 Članstvo**  
+> **Sesija:** Live TV polish + autogol + statistike + YouTube safe player + komentator UX  
+> **Gate:** Segmenti **#1–#12 APPROVED** (korisnik potvrdio)  
+> **Sljedeći fokus:** **#13 Članstvo**  
 > **Mobile:** na pauzi — samo web + backend.
 
 ---
@@ -12,83 +13,64 @@
 1. [GATE_LOG.md](./GATE_LOG.md)
 2. [03_track-admin-modules.md](./03_track-admin-modules.md)
 3. [.cursor/docs/matrices/live_center/MATRIX.md](../../../docs/matrices/live_center/MATRIX.md)
-4. [../HANDOFF.md](../HANDOFF.md) — deploy, env
+4. [../HANDOFF.md](../HANDOFF.md) — deploy, env, produkcija
 
 ---
 
-## 2. Korisnička odluka (gate)
-
-**Ništa na čekanju ne ide na APPROVED** dok se ne završe zavisni segmenti.
-
-| Modul | Status | Napomena |
-|-------|--------|----------|
-| Takmičenja / Kola / Utakmice (unified hub) | `READY_FOR_REVIEW` | Čeka gate nakon Live stabilizacije |
-| Live | `READY_FOR_REVIEW` | Funkcionalno gotovo; smoke test na produkciji |
-| Sljedeći po planu | **#13 Članstvo** | Nakon gate-a ili paralelno po dogovoru |
-
----
-
-## 3. Gate status (ukupno)
+## 2. Gate status (ukupno)
 
 | # | Modul | Status |
 |---|-------|--------|
 | 1–7 | Vijesti → Club Timeline | **APPROVED** |
-| 8 | Klub & kadar (unified) | **APPROVED** |
-| 10–11 | Takmičenja + unified hub | **READY_FOR_REVIEW** |
-| 12 | Live | **READY_FOR_REVIEW** |
-| 13+ | Članstvo → Dashboard | nije gate-ovan |
+| 8 | Klub & kadar | **APPROVED** |
+| 9–11 | Klubovi / Takmičenja / Utakmice (hub) | **APPROVED** |
+| 12 | Live | **APPROVED** |
+| 13 | Članstvo | **nije gate-ovan** — sljedeći |
+| 14–21 | Ulaznice → Dashboard | nije gate-ovan |
 
 ---
 
-## 4. Šta je urađeno u ovoj sesiji
+## 3. Urađeno u zadnjim sesijama (Live #12 — final polish)
 
-### 4.1 Unified hub (Takmičenja → Sezona → Kolo → Utakmice)
+### 3.1 TV semafor (`/live/:id` broadcast)
 
-- Jedan admin meni: `/admin/competitions`
-- Season hub: `/admin/competitions/seasons/:seasonId`
-- Postava utakmice **domaći + gosti** (`MatchLineup.clubId`)
-- Redirect: `/admin/rounds`, `/admin/matches` → competitions
-- Javno: postave po klubovima na `/utakmice/:id`
+- Kompaktan semafor **gore lijevo**; puni nazivi klubova; minuta **ispod** rezultata; bijeli tekst
+- Klik na semafor → expand/collapse (bez dugmeta Detalji)
+- `Club.shortName` + admin polje (Kratko ime) — fallback na skraćeni naziv
+- Poluvrijeme: isti **pre-match audio** (`live.prematchAudioUrl`) u `LiveHalftimePanel`
 
-### 4.2 Statistika utakmice (javno)
+### 3.2 Premium statistike (povremeni popup)
 
-- `GET /statistics/matches/:id/overview` — timska + igračka statistika iz događaja
-- `MatchStatisticsSection` na `/utakmice/:id`
-- Sync `TeamStatistics` pri odobrenju izvještaja
+- `LiveStatsComparisonCard` — korneri, udarci u okvir, prekršaji, zaleđa, kartoni
+- `LiveStatsPlayerListCard` — golovi + žuti/crveni kartoni (igrač + minuta po klubu)
+- Rotacija: prvi prikaz 45–90s, vidljivo 8–12s, pauza 2–4 min
 
-### 4.3 Live modul (#12)
+### 3.3 Autogol (OWN_GOAL)
 
-**Backend**
+- Komentator: **Više događaja → Autogol** (obavezan igrač)
+- Rezultat protivniku (`live-score.util` — već postojalo)
+- Toast, TV statistike, `PlayerStatistics.ownGoals`, match player stats kolona **AG**
+- Migracija: `20260626220000_player_own_goals`
 
-- `live.service.ts` — start/end/halftime/resume, događaji, komentari, odobrenje
-- `live-clock.util.ts` — automatski sat, nadoknada `46 (+6)` format
-- Polja na `Match`: `clockStartedAt`, `matchPeriod`, `stoppageFirstHalf/SecondHalf`, `liveStreamUrl`
-- `MatchEvent.relatedPlayerId` — izmjene (out → in)
-- Endpoints: `POST .../stoppage`, `PATCH .../stream`, `GET /live/pending`
-- Socket: `match:clock`, `match:event`, `match:comment`, `match:score`, `match:status`
-- Safe realtime emit (ne ruši API ako socket nije spreman)
-- `live.manage` dodan Moderator roli u seedu
+### 3.4 YouTube stream
 
-**Admin komentator** (`/admin/live/:id`, RBAC `live.manage`)
+- Keep-alive kroz poluvrijeme (mute/pause, bez destroy)
+- Minimalan `useYouTubeStreamPlayer` — **bez** quality hackova (kvaliteta ovisi o YouTube stream postavkama)
+- Korisnik potvrdio: loša rezolucija bila **ograničenje izvora**, ne app bug
 
-- Automatski sat + unos sudijske nadoknade nakon 45′/90′
-- Dvije kolone po timu (gol, kartoni, penali, više događaja)
-- Izmjena: igrač izlazi / ulazi
-- YouTube live stream URL
-- Live dugme u competition hubu
-- `/admin/live/pending` — odobrenje izvještaja (`live.approve`)
+### 3.5 Komentator UX
 
-**Javno** (`/live/:id`)
+- **Završi** dugmad vidljiva na tamnoj traci (`danger` / bijeli outline)
 
-- Fullscreen broadcast kad ima `liveStreamUrl` + LIVE/HALFTIME
-- Scoreboard overlay (rezultat, minuta, grbovi)
-- Event toast ~12s (gol, karton, izmjena, nadoknada)
-- Sekcija „Uživo” na `/liga`
-- Link „Live prikaz” uvijek na `/utakmice/:id`
+### 3.6 Ranije u istom ciklusu (već APPROVED uz Live)
+
+- Lock FINISHED utakmice; report editor; asistencije (bez VAR)
+- Lineup iz klupske postave; pre-match shell; league GR; scheduled highlight
+- `roundId` fix u match update; pitch avatar rotate na vertikalnoj skici
 
 ---
 
-## 5. Migracije (obavezno na svakom env)
+## 4. Migracije (deploy obavezno)
 
 ```bash
 cd backend && npx prisma migrate deploy && npx prisma generate
@@ -97,66 +79,56 @@ cd backend && npx prisma migrate deploy && npx prisma generate
 | Migracija | Sadržaj |
 |-----------|---------|
 | `20260626140000_match_lineup_club` | `MatchLineup.clubId` |
-| `20260626180000_match_live_clock` | sat, nadoknada, `liveStreamUrl`, `relatedPlayerId` |
-
-RBAC refresh (ako stariji admin nema `live.manage`):
-
-```bash
-cd backend && npx prisma db seed
-```
+| `20260626180000_match_live_clock` | sat, nadoknada, `liveStreamUrl` |
+| `20260626210000_club_short_name` | `Club.shortName` |
+| `20260626220000_player_own_goals` | `PlayerStatistics.ownGoals` |
 
 ---
 
-## 6. Ključni fajlovi
+## 5. Ključni fajlovi (Live)
 
 | Područje | Putanja |
 |----------|---------|
+| Broadcast shell | `frontend/src/components/live/LiveStreamBroadcast.tsx` |
+| Semafor | `LiveScoreboardCompact.tsx`, `LiveScoreboardExpanded.tsx`, `LiveScoreboardOverlay.tsx` |
+| Statistike | `live-stats-feed.ts`, `LiveStatsCorner.tsx`, `LiveStats*Card.tsx` |
+| Stream player | `use-youtube-stream-player.ts`, `LiveYouTubePlayer.tsx` |
+| Komentator | `frontend/src/pages/admin/commentator/*` |
+| Autogol stats | `backend/src/statistics/match-stats.util.ts` |
 | Live backend | `backend/src/live/*` |
-| Live clock | `backend/src/live/live-clock.util.ts` |
-| Komentator UI | `frontend/src/pages/admin/commentator/*` |
-| Stream overlay | `frontend/src/components/live/*` |
-| Javni live | `frontend/src/pages/public/LiveMatchPage.tsx` |
-| Competition hub | `frontend/src/pages/admin/competition-hub/*` |
-| Match stats | `backend/src/statistics/match-stats.util.ts` |
-| Match stats UI | `frontend/src/components/match/MatchStatisticsSection.tsx` |
 
 ---
 
-## 7. Test plan (Live smoke)
+## 6. Opcionalni Live backlog (ne blokira #13)
 
-1. `/admin/competitions` → sezona → kolo → **Live** na utakmici
-2. **Započni** → sat teče; dodaj gol po timu (lijevo/desno)
-3. Na 45′+ → unesi nadoknadu (+N) → feed + prikaz `46 (+N)`
-4. Poluvrijeme → Nastavi 2. pol. → sat nastavlja od 46′
-5. Zalijepi YouTube URL → **Spremi stream** → `/live/:id` fullscreen overlay
-6. Završi → `/admin/live/pending` → Odobri → statistika se ažurira
-
-**Napomena:** LIVE/HALFTIME se **ne** postavljaju ručno u formi utakmice — samo preko komentatora.
+- [ ] Server-side `match:clock` tick svake minute
+- [ ] `live_center/MATRIX.md` — ažurirati state machine + CHANGELOG
+- [ ] E2E: stoppage, stream, autogol
+- [ ] Mobilni live (Expo) — na pauzi
 
 ---
 
-## 8. Poznato / mogući sljedeći polish (Live)
+## 7. Sljedeći segmenti (plan #13–#21)
 
-- [ ] Server-side tick emit `match:clock` svake minute (trenutno client-side iz `clockStartedAt`)
-- [ ] Zvuk / animacija na gol toastu
-- [ ] Mobilni live parity (Expo) — na pauzi
-- [ ] E2E proširiti za stoppage + stream
-- [ ] `live_center/MATRIX.md` — ažurirati state machine za novi sat
+Redoslijed iz [03_track-admin-modules.md](./03_track-admin-modules.md):
+
+| # | Segment | Stanje u kodu | Predloženi scope sljedeće sesije |
+|---|---------|---------------|----------------------------------|
+| **13** | **Članstvo** | Backend `membership/*` postoji; **nema admin UI** | Admin CRUD (PENDING/ACTIVE/…), javna `/clanstvo`, RBAC `membership.manage`, gate |
+| 14 | Ulaznice | Backend ticketing djelimično (P19 Done) | Admin narudžbe, QR, kapacitet — uskladiti s planom |
+| 15 | Kontakt | Provjeri postojeće | Forma + admin inbox ako nedostaje |
+| 16 | Newsletter | Provjeri postojeće | Pretplate admin + javni signup |
+| 17 | Hall of Fame | — | CRUD + javni prikaz |
+| 18 | Muzej | — | CRUD + galerija/eksponati |
+| 19 | Korisnici + Role | Admin djelimično | RBAC matrix, invite, reset |
+| 20 | Postavke | Settings contract postoji | Polish opisi, javne/privatne grupe |
+| 21 | Audit + Notifikacije + Dashboard | Djelimično | Dashboard widgeti, audit log UI |
+
+**Preporuka:** Krenuti **#13 Članstvo** end-to-end (admin + public + gate) prije Ulaznica jer dijele domen.
 
 ---
 
-## 9. Sljedeći segment: #13 Članstvo
-
-Po [03_track-admin-modules.md](./03_track-admin-modules.md):
-
-- Admin CRUD članstva, statusi (PENDING/ACTIVE/…)
-- Javna `/clanstvo` stranica
-- RBAC `membership.manage`
-- Gate tek kad korisnik potvrdi
-
----
-
-## 10. Deploy
+## 8. Deploy
 
 ```bash
 ./scripts/docker-prod-build.sh && docker compose up -d
@@ -165,17 +137,19 @@ cd backend && npx prisma migrate deploy
 
 ---
 
-## 11. Prompt za sljedeću sesiju (copy-paste)
+## 9. Prompt za sljedeću sesiju (copy-paste)
 
 ```
 Nastavi Web Complete iz HANDOFF-a:
 @.cursor/plans/fk-gracanica/21_web-complete/HANDOFF.md
 
-Gate: Takmičenja hub + Live su READY_FOR_REVIEW — ne APPROVE dok korisnik ne potvrdi.
-Zadnji rad: automatski sat, komentator 2 kolone, YouTube broadcast overlay.
+Gate: #1–#12 APPROVED. Sljedeći segment: #13 Članstvo.
 
-[Odaberi jedno:]
-A) Smoke test + gate review Live
-B) Nastavi #13 Članstvo
-C) Polish Live (toast animacije, server clock tick)
+Pročitaj GATE_LOG + 03_track-admin-modules.md.
+Backend membership modul već postoji — treba admin UI + javna stranica + gate.
+
+[Odaberi:]
+A) #13 Članstvo — full implementacija + gate checklist
+B) #14 Ulaznice — nastavak ticketing admina
+C) Live backlog (MATRIX, server clock tick)
 ```

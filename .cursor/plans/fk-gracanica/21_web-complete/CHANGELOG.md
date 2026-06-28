@@ -1,5 +1,12 @@
 # Changelog — Web Complete
 
+## 2026-06-26 (Gate #1–#12 APPROVED + Live TV polish)
+
+- GATE_LOG: Takmičenja hub, Kola, Utakmice, Live → APPROVED
+- Live: TV semafor, premium stat popup, OWN_GOAL, shortName, halftime audio, YouTube safe player
+- Komentator: vidljivo dugme Završi
+- HANDOFF ažuriran; sljedeći segment #13 Članstvo
+
 ## 2026-06-25 (CMS APPROVED)
 - Brisanje stranice samo u statusu DRAFT (backend + admin lista)
 - GATE_LOG: CMS → APPROVED; HANDOFF → Galerija #4

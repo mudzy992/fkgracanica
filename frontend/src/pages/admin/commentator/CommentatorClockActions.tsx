@@ -17,6 +17,11 @@ import { canExtraHalftime, canHalftime, isTied } from '../../../lib/match-live-p
 import type { Match } from '../../../types';
 import { Button } from '../../../components/ui/button';
 import { Badge } from '../../../components/ui/badge';
+import { cn } from '../../../lib/utils';
+
+const BTN = 'h-8 px-2.5 text-xs';
+const BTN_OUTLINE = cn(BTN, 'border-white/25 bg-white/10 text-white hover:bg-white/20');
+const BTN_END = cn(BTN, 'bg-red-600 text-white hover:bg-red-500');
 
 export function CommentatorClockActions({ match }: { match: Match }) {
   const [error, setError] = useState('');
@@ -57,22 +62,30 @@ export function CommentatorClockActions({ match }: { match: Match }) {
     }
   };
 
-  const actions: { key: string; label: string; variant?: 'default' | 'outline' | 'ghost'; onClick: () => void }[] = [];
+  const actions: {
+    key: string;
+    label: string;
+    className?: string;
+    variant?: 'default' | 'outline' | 'ghost' | 'danger';
+    onClick: () => void;
+  }[] = [];
 
   if (match.status === 'SCHEDULED') {
-    actions.push({ key: 'start', label: 'Započni', onClick: () => void run(() => start.mutateAsync(match.id)) });
+    actions.push({ key: 'start', label: 'Započni', className: BTN, onClick: () => void run(() => start.mutateAsync(match.id)) });
   }
   if (canHalftime(match)) {
     actions.push({
       key: 'ht',
       label: 'Poluvrijeme',
       variant: 'outline',
+      className: BTN_OUTLINE,
       onClick: () => void run(() => halftime.mutateAsync(match.id)),
     });
     actions.push({
       key: 'end1',
       label: 'Završi',
-      variant: 'ghost',
+      variant: 'danger',
+      className: BTN_END,
       onClick: () => void run(() => end.mutateAsync(match.id)),
     });
   }
@@ -80,6 +93,7 @@ export function CommentatorClockActions({ match }: { match: Match }) {
     actions.push({
       key: 'resume2',
       label: '2. poluvrijeme',
+      className: BTN,
       onClick: () => void run(() => resume.mutateAsync(match.id)),
     });
   }
@@ -89,13 +103,15 @@ export function CommentatorClockActions({ match }: { match: Match }) {
         key: 'ft',
         label: 'Kraj regularnog',
         variant: 'outline',
+        className: BTN_OUTLINE,
         onClick: () => void run(() => finishRegular.mutateAsync(match.id)),
       });
     } else {
       actions.push({
         key: 'end',
         label: 'Završi',
-        variant: 'ghost',
+        variant: 'danger',
+        className: BTN_END,
         onClick: () => void run(() => end.mutateAsync(match.id)),
       });
     }
@@ -104,6 +120,7 @@ export function CommentatorClockActions({ match }: { match: Match }) {
     actions.push({
       key: 'et',
       label: 'Produžeci',
+      className: BTN,
       onClick: () => void run(() => startExtra.mutateAsync(match.id)),
     });
   }
@@ -112,6 +129,7 @@ export function CommentatorClockActions({ match }: { match: Match }) {
       key: 'eth',
       label: 'Pauza ET',
       variant: 'outline',
+      className: BTN_OUTLINE,
       onClick: () => void run(() => etHalftime.mutateAsync(match.id)),
     });
   }
@@ -119,6 +137,7 @@ export function CommentatorClockActions({ match }: { match: Match }) {
     actions.push({
       key: 'et2',
       label: '2. produžetak',
+      className: BTN,
       onClick: () => void run(() => resumeExtra.mutateAsync(match.id)),
     });
   }
@@ -128,13 +147,15 @@ export function CommentatorClockActions({ match }: { match: Match }) {
         key: 'etend',
         label: 'Kraj produžetaka',
         variant: 'outline',
+        className: BTN_OUTLINE,
         onClick: () => void run(() => finishExtra.mutateAsync(match.id)),
       });
     } else {
       actions.push({
         key: 'end',
         label: 'Završi',
-        variant: 'ghost',
+        variant: 'danger',
+        className: BTN_END,
         onClick: () => void run(() => end.mutateAsync(match.id)),
       });
     }
@@ -143,6 +164,7 @@ export function CommentatorClockActions({ match }: { match: Match }) {
     actions.push({
       key: 'pen',
       label: 'Penali',
+      className: BTN,
       onClick: () => void run(() => startPenalties.mutateAsync(match.id)),
     });
   }
@@ -150,7 +172,8 @@ export function CommentatorClockActions({ match }: { match: Match }) {
     actions.push({
       key: 'penend',
       label: 'Završi penale',
-      variant: 'ghost',
+      variant: 'danger',
+      className: BTN_END,
       onClick: () => void run(() => endPenalties.mutateAsync(match.id)),
     });
   }
@@ -170,7 +193,7 @@ export function CommentatorClockActions({ match }: { match: Match }) {
             key={a.key}
             size="sm"
             variant={a.variant ?? 'default'}
-            className="h-8 px-2.5 text-xs"
+            className={a.className ?? BTN}
             disabled={busy}
             onClick={a.onClick}
           >
