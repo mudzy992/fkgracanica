@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { HomeNextMatchTicketsBanner } from '../../components/ticketing/HomeNextMatchTicketsBanner';
 import { Reveal } from '../../lib/motion/Reveal';
 import { Button } from '../../components/ui/button';
 import type { WidgetConfigMap } from './schemas';
@@ -8,6 +9,18 @@ type Props = { config: WidgetConfigMap['tickets-cta'] };
 
 export function TicketsCtaWidget({ config }: Props) {
   const { t } = useTranslation();
+  const mode = config.mode ?? 'manual';
+
+  if (mode === 'auto') {
+    return (
+      <HomeNextMatchTicketsBanner
+        title={config.title ?? t('home.tickets')}
+        text={config.text}
+        buttonLabel={config.buttonLabel ?? t('home.tickets')}
+      />
+    );
+  }
+
   const title = config.title ?? t('home.tickets');
   const text = config.text ?? t('home.ticketsDesc');
   const btnLabel = config.buttonLabel ?? t('home.tickets');

@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { usePublicSettings, useSponsors } from '../../hooks';
+import { useTicketingPublicConfig } from '../../hooks/use-ticketing';
 import { useClubSquad } from '../../hooks/use-club-hub';
 import { matchLineupToPitchSlots } from '../../lib/match-lineup-pitch';
 import { SponsorsMarquee } from '../public/sponsors/SponsorsMarquee';
@@ -32,6 +33,7 @@ function useCountdown(scheduledAt: string) {
 export function LivePreMatchShell({ match }: Props) {
   const { data: sponsors, isLoading: sponsorsLoading } = useSponsors();
   const { data: settings } = usePublicSettings();
+  const { data: ticketing } = useTicketingPublicConfig();
   const audioUrl = settings?.['live.prematchAudioUrl'] ?? '';
   const lineup = match.lineup ?? match.lineups ?? [];
   const { data: homeSquad } = useClubSquad(match.homeClubId);
@@ -52,6 +54,13 @@ export function LivePreMatchShell({ match }: Props) {
 
   const activeSlots = showAway && awaySlots.length ? awaySlots : homeSlots;
   const activeClub = showAway && awaySlots.length ? match.awayClub : match.homeClub;
+  const ticketingOn = settings?.['modules.ticketing'] !== 'false' && ticketing?.modulesTicketing !== false;
+  const sales = ticketing?.salesModes;
+  const showTicketsCta =
+    match.homeClub?.isOwnClub &&
+    match.status === 'SCHEDULED' &&
+    ticketingOn &&
+    (sales?.boxOffice || sales?.online);
 
   return (
     <div className="relative flex min-h-dvh flex-col overflow-y-auto bg-gradient-to-b from-slate-950 via-slate-900 to-black px-4 py-6 text-white sm:px-8 sm:py-10">
@@ -107,6 +116,14 @@ export function LivePreMatchShell({ match }: Props) {
       </section>
 
       <div className="mx-auto mt-8 flex flex-wrap justify-center gap-3">
+        {showTicketsCta && (
+          <Link
+            to={`/ulaznice?matchId=${match.id}`}
+            className="rounded-full bg-primary px-5 py-2 text-sm font-semibold text-white hover:bg-primary/90"
+          >
+            Kupi ulaznice
+          </Link>
+        )}
         <Link
           to={`/utakmice/${match.id}`}
           className="rounded-full bg-white/10 px-5 py-2 text-sm hover:bg-white/20"

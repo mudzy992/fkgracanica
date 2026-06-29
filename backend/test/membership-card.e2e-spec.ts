@@ -62,4 +62,12 @@ describe('Membership card (e2e)', () => {
     );
     expect(active?.card?.qrCode).toBe(activated.body.card.qrCode);
   });
+
+  it('rejects duplicate register while PENDING or ACTIVE', async () => {
+    const duplicate = await request(app.getHttpServer())
+      .post('/api/v1/membership/register')
+      .set('Authorization', `Bearer ${accessToken}`);
+
+    expect(duplicate.status).toBe(400);
+  });
 });

@@ -12,7 +12,7 @@ import { Input } from '../../components/ui/input';
 import { Switch } from '../../components/ui/switch';
 import { Skeleton } from '../../components/ui/skeleton';
 import { cn } from '../../lib/utils';
-import { isMediaSettingKey, settingInputPlaceholder } from '../../lib/setting-field-utils';
+import { isMediaSettingKey, isTicketingManagedSetting, settingInputPlaceholder } from '../../lib/setting-field-utils';
 import { settingLabel, settingDescription } from '../../lib/settings-labels';
 
 function SettingField({
@@ -92,7 +92,9 @@ export function SettingsPage() {
         <Skeleton className="h-64" />
       ) : (
         <div className="max-w-xl space-y-4">
-          {Object.entries(values ?? {}).map(([key, value]) => (
+          {Object.entries(values ?? {})
+            .filter(([key]) => !isTicketingManagedSetting(key))
+            .map(([key, value]) => (
             <div key={key} className="flex flex-col gap-2">
               {!isMediaSettingKey(key) && (
                 <div>

@@ -32,6 +32,7 @@ import { StatisticsModule } from './statistics/statistics.module';
 import { LiveModule } from './live/live.module';
 import { MembershipModule } from './membership/membership.module';
 import { TicketingModule } from './ticketing/ticketing.module';
+import { PaymentsModule } from './payments/payments.module';
 import { HallOfFameModule } from './hall-of-fame/hall-of-fame.module';
 import { MuseumModule } from './museum/museum.module';
 import { AnalyticsModule } from './analytics/analytics.module';
@@ -78,6 +79,7 @@ import { HttpExceptionFilter } from './common/filters/http-exception.filter';
     StatisticsModule,
     LiveModule,
     MembershipModule,
+    PaymentsModule,
     TicketingModule,
     HallOfFameModule,
     MuseumModule,

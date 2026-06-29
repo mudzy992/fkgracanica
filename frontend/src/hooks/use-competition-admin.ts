@@ -175,27 +175,3 @@ export function useSetMatchLineup() {
 }
 
 export { useApproveMatchReport } from './use-live-admin';
-
-export function useActivateMembership() {
-  const qc = useQueryClient();
-  return useMutation({
-    mutationFn: async (id: string) => (await api.patch(`/membership/${id}/activate`)).data,
-    onSuccess: () => void qc.invalidateQueries({ queryKey: ['membership'] }),
-  });
-}
-
-export function useSuspendMembership() {
-  const qc = useQueryClient();
-  return useMutation({
-    mutationFn: async (id: string) => (await api.patch(`/membership/${id}/suspend`)).data,
-    onSuccess: () => void qc.invalidateQueries({ queryKey: ['membership'] }),
-  });
-}
-
-export function useCancelMembership() {
-  const qc = useQueryClient();
-  return useMutation({
-    mutationFn: async (id: string) => (await api.patch(`/membership/${id}/cancel`)).data,
-    onSuccess: () => void qc.invalidateQueries({ queryKey: ['membership'] }),
-  });
-}

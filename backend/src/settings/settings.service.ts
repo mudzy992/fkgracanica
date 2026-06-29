@@ -1,7 +1,7 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { SettingScope } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
-import { SETTINGS_REGISTRY } from './settings.registry';
+import { SETTINGS_REGISTRY, settingDefToCreate } from './settings.registry';
 import { RealtimeGateway } from '../realtime/realtime.gateway';
 import { NotificationsService } from '../notifications/notifications.service';
 
@@ -43,7 +43,7 @@ export class SettingsService implements OnModuleInit {
     for (const def of SETTINGS_REGISTRY) {
       await this.prisma.setting.upsert({
         where: { key: def.key },
-        create: def,
+        create: settingDefToCreate(def),
         update: {},
       });
     }

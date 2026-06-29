@@ -65,6 +65,16 @@ export class AuthService {
     return { success: true };
   }
 
+  async createSession(userId: string) {
+    const user = await this.prisma.user.findFirst({
+      where: { id: userId, isActive: true, deletedAt: null },
+    });
+    if (!user) throw new UnauthorizedException('Korisnik nije pronađen');
+    const permissions = await this.getUserPermissions(user.id);
+    const tokens = await this.issueTokens(user.id, user.email);
+    return { user: { ...this.sanitizeUser(user), permissions }, ...tokens };
+  }
+
   private async issueTokens(userId: string, email: string) {
     const refreshExpires = this.config.get<string>('JWT_REFRESH_EXPIRES', '7d');
     const accessToken = await this.jwt.signAsync(

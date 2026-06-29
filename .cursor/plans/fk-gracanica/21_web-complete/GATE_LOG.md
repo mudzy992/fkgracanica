@@ -15,7 +15,10 @@
 | 2026-06-26 | Utakmice | APPROVED | Kolo, sezona, status/rezultat |
 | 2026-06-26 | Takmičenja (unified hub) | APPROVED | competitions→sezona→kolo→utakmice |
 | 2026-06-26 | Live | APPROVED | TV semafor, komentator v2, autogol, pending flow |
+| 2026-06-29 | Članstvo | APPROVED | Admin workflow, javna kartica+QR; bez hard delete (CANCELLED) |
+| 2026-06-29 | Ulaznice | **APPROVED** | Stripe online, unified auth, članstvo online; header user menu |
+| 2026-06-29 | Kontakt | READY_FOR_REVIEW | Forma + admin inbox + prefill + mailto |
 
 Statusi: `IN_PROGRESS` | `READY_FOR_REVIEW` | `APPROVED` | `REVISE`
 
-**Sljedeći gate:** #13 Članstvo (nije započet)
+**Sljedeći gate:** #15 Kontakt — korisnički APPROVED → #16 Newsletter

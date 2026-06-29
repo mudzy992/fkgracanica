@@ -23,6 +23,7 @@ import { HallOfFamePage } from './pages/public/HallOfFamePage';
 import { MuseumPage } from './pages/public/MuseumPage';
 import { MembershipPage } from './pages/public/MembershipPage';
 import { TicketsPage } from './pages/public/TicketsPage';
+import { LoginPage } from './pages/public/LoginPage';
 import { AdminLoginPage } from './pages/admin/AdminLoginPage';
 import { DashboardPage } from './pages/admin/DashboardPage';
 import { SettingsPage } from './pages/admin/SettingsPage';
@@ -80,6 +81,8 @@ export default function App() {
           <Route path="p/:slug" element={<CmsDynamicPage />} />
         </Route>
 
+        <Route path="prijava" element={<LoginPage />} />
+
         <Route path="live/:id" element={<LiveMatchPage />} />
 
         <Route path="admin/login" element={<AdminLoginPage />} />
@@ -114,8 +117,12 @@ export default function App() {
               <Route path="live/:id" element={<CommentatorPage />} />
               <Route path="matches/:id/report" element={<MatchReportPage />} />
             </Route>
-            <Route path="membership" element={<MembershipAdminPage />} />
-            <Route path="ticketing" element={<TicketingAdminPage />} />
+            <Route element={<PermissionRoute permission="membership.manage" />}>
+              <Route path="membership" element={<MembershipAdminPage />} />
+            </Route>
+            <Route element={<PermissionRoute permission="ticketing.manage" />}>
+              <Route path="ticketing" element={<TicketingAdminPage />} />
+            </Route>
             <Route path="contact" element={<ContactAdminPage />} />
             <Route path="newsletter" element={<NewsletterAdminPage />} />
             <Route path="hall-of-fame" element={<HallOfFameAdminPage />} />

@@ -10,7 +10,7 @@ export function MembershipCtaWidget({ config }: Props) {
   const { t } = useTranslation();
   const title = config.title ?? t('home.membership');
   const text = config.text ?? t('home.membershipDesc');
-  const btnLabel = config.buttonLabel ?? t('actions.readMore');
+  const btnLabel = config.buttonLabel ?? t('home.membership');
   const btnUrl = config.buttonUrl ?? '/clanstvo';
 
   return (

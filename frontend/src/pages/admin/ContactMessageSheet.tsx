@@ -30,7 +30,9 @@ export function ContactMessageSheet({
         <div>
           <dt className="text-text-muted">Od</dt>
           <dd className="font-medium">
-            {message.name} &lt;{message.email}&gt;
+            <a href={`mailto:${message.email}`} className="hover:text-primary">
+              {message.name} &lt;{message.email}&gt;
+            </a>
           </dd>
         </div>
         <div>

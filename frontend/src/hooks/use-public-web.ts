@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { api } from '../lib/api';
 import { asArray } from '../lib/as-array';
 import type { NewsItem } from '../types';
@@ -69,18 +69,5 @@ export function useNewsForMatch(matchId?: string) {
       );
     },
     enabled: !!matchId,
-  });
-}
-
-export function useRegisterMembership() {
-  return useMutation({
-    mutationFn: async () => (await api.post('/membership/register')).data,
-  });
-}
-
-export function useReserveTicket() {
-  return useMutation({
-    mutationFn: async (body: { matchId: string; category: string; price: number; quantity?: number }) =>
-      (await api.post('/ticketing/reserve', body)).data,
   });
 }

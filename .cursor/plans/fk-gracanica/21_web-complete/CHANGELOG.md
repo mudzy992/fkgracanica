@@ -1,5 +1,32 @@
 # Changelog — Web Complete
 
+## 2026-06-29 (b) — #14 proširenje + članstvo online + auth
+
+- Unified auth: `/prijava`, staff vs član routing, `PublicAuthButton`
+- Članstvo online: public join, Stripe aktivacija (webhook + confirm-session), Moj račun pending UX
+- Ticketing: postavke/plaćanja u admin ticketing (ne global settings), domaće utakmice, CTA, PaymentsModule
+- Fix: `managedIn` strip pri Prisma upsert (login crash)
+- HANDOFF + membership/payments matrice ažurirane; **sve uncommitted**
+
+## 2026-06-29 (Gate #14 Ulaznice)
+
+- Admin: QR validacija, filteri, admin cancel, detail sheet s QR
+- Javna `/ulaznice`: kategorije, dostupnost, moje narudžbe + QR
+- Backend: availability API, admin cancel endpoint, settings kapacitet/popust
+- GATE_LOG: Ulaznice → READY_FOR_REVIEW
+
+## 2026-06-29 (Gate #13 Članstvo APPROVED)
+
+- Korisnik potvrdio gate; bez admin manual-add / hard delete (v1: self-register + Otkaži)
+- Sljedeći segment: #14 Ulaznice
+
+## 2026-06-29 (Gate #13 Članstvo implementacija)
+
+- Admin: filteri po statusu, aktiviraj/obnovi/suspenduj/otkaži, detail sheet + QR
+- Javna `/clanstvo`: status flow, digitalna kartica (`MembershipCardPanel`)
+- Backend: duplicate register guard, `?status` filter, lazy EXPIRED
+- GATE_LOG: Članstvo → READY_FOR_REVIEW
+
 ## 2026-06-26 (Gate #1–#12 APPROVED + Live TV polish)
 
 - GATE_LOG: Takmičenja hub, Kola, Utakmice, Live → APPROVED

@@ -1,31 +1,117 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
-import { MembershipStatus } from '@prisma/client';
+import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import { MembershipStatus, Prisma } from '@prisma/client';
+import * as bcrypt from 'bcrypt';
 import { PrismaService } from '../prisma/prisma.service';
+import { AuthService } from '../auth/auth.service';
+import { PaymentsReadinessService } from '../payments/payments-readiness.service';
 import { generateQrCode } from '../common/utils/qr.util';
+import type { JoinMembershipDto } from './dto/join-membership.dto';
+
+const userSelect = { id: true, email: true, firstName: true, lastName: true } as const;
+const includeWithUser = { user: { select: userSelect }, card: true } as const;
 
 @Injectable()
 export class MembershipService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly auth: AuthService,
+    private readonly payments: PaymentsReadinessService,
+  ) {}
 
-  register(userId: string) {
+  async joinOnline(dto: JoinMembershipDto) {
+    await this.assertMembershipModuleEnabled();
+    const allowed = await this.payments.isMembershipOnlineAllowed();
+    if (!allowed) {
+      throw new BadRequestException('Online kupovina članstva trenutno nije omogućena');
+    }
+
+    const existing = await this.prisma.user.findUnique({ where: { email: dto.email } });
+    if (existing) {
+      throw new ConflictException(
+        'Račun s ovim emailom već postoji. Prijavite se i nastavite kupovinu članstva.',
+      );
+    }
+
+    const memberRole = await this.prisma.role.findUnique({ where: { name: 'Član' } });
+    if (!memberRole) throw new BadRequestException('Uloga člana nije konfigurisana');
+
+    const passwordHash = await bcrypt.hash(dto.password, 10);
+    const user = await this.prisma.user.create({
+      data: {
+        email: dto.email,
+        passwordHash,
+        firstName: dto.firstName ?? null,
+        lastName: dto.lastName ?? null,
+        roles: { create: [{ roleId: memberRole.id }] },
+      },
+    });
+
+    await this.assertNoPendingOrActive(user.id);
+    const membership = await this.prisma.membership.create({
+      data: { userId: user.id, status: MembershipStatus.PENDING },
+    });
+
+    const session = await this.auth.createSession(user.id);
+    return { membership, ...session };
+  }
+
+  async assertPayableMembership(membershipId: string, userId: string) {
+    const membership = await this.prisma.membership.findFirst({
+      where: { id: membershipId, userId },
+    });
+    if (!membership) throw new NotFoundException('Članstvo nije pronađeno');
+    const payable = (
+      [MembershipStatus.PENDING, MembershipStatus.ACTIVE, MembershipStatus.EXPIRED] as MembershipStatus[]
+    ).includes(membership.status);
+    if (!payable) {
+      throw new BadRequestException('Ovo članstvo nije dostupno za online uplatu');
+    }
+    return membership;
+  }
+
+  private async assertMembershipModuleEnabled() {
+    const row = await this.prisma.setting.findUnique({ where: { key: 'feature.membership' } });
+    if (row?.value === 'false') {
+      throw new BadRequestException('Modul članstva trenutno nije aktivan');
+    }
+  }
+
+  async register(userId: string) {
+    await this.assertMembershipModuleEnabled();
+    await this.assertNoPendingOrActive(userId, 'Već imate aktivno ili čekajuće članstvo');
     return this.prisma.membership.create({
       data: { userId, status: MembershipStatus.PENDING },
     });
   }
 
-  findForUser(userId: string) {
-    return this.prisma.membership.findMany({
+  async createForUser(email: string, activate = false) {
+    const user = await this.prisma.user.findUnique({ where: { email } });
+    if (!user) throw new NotFoundException('Korisnik nije pronađen');
+    await this.assertNoPendingOrActive(user.id);
+    const membership = await this.prisma.membership.create({
+      data: { userId: user.id, status: MembershipStatus.PENDING },
+    });
+    if (activate) await this.activate(membership.id);
+    return this.findOne(membership.id);
+  }
+
+  async findForUser(userId: string) {
+    const items = await this.prisma.membership.findMany({
       where: { userId },
       include: { card: true },
       orderBy: { createdAt: 'desc' },
     });
+    return this.resolveExpiredMany(items);
   }
 
-  findAll() {
-    return this.prisma.membership.findMany({
-      include: { user: { select: { id: true, email: true } }, card: true },
+  async findAll(status?: MembershipStatus) {
+    const where: Prisma.MembershipWhereInput = status ? { status } : {};
+    const items = await this.prisma.membership.findMany({
+      where,
+      include: includeWithUser,
       orderBy: { createdAt: 'desc' },
     });
+    return this.resolveExpiredMany(items);
   }
 
   async activate(id: string) {
@@ -68,10 +154,10 @@ export class MembershipService {
   async findOne(id: string) {
     const item = await this.prisma.membership.findUnique({
       where: { id },
-      include: { user: { select: { id: true, email: true } }, card: true },
+      include: includeWithUser,
     });
     if (!item) throw new NotFoundException('Članstvo nije pronađeno');
-    return item;
+    return this.resolveExpiredOne(item);
   }
 
   suspend(id: string) {
@@ -88,5 +174,42 @@ export class MembershipService {
       data: { status: MembershipStatus.CANCELLED },
       include: { card: true },
     });
+  }
+
+  private async assertNoPendingOrActive(
+    userId: string,
+    message = 'Korisnik već ima aktivno ili čekajuće članstvo',
+  ) {
+    const existing = await this.prisma.membership.findFirst({
+      where: {
+        userId,
+        status: { in: [MembershipStatus.PENDING, MembershipStatus.ACTIVE] },
+      },
+    });
+    if (existing) throw new BadRequestException(message);
+  }
+
+  private async resolveExpiredMany<T extends { id: string; status: MembershipStatus; endDate: Date | null }>(
+    items: T[],
+  ): Promise<T[]> {
+    const now = new Date();
+    const expiredIds = items
+      .filter((m) => m.status === MembershipStatus.ACTIVE && m.endDate && m.endDate < now)
+      .map((m) => m.id);
+    if (!expiredIds.length) return items;
+    await this.prisma.membership.updateMany({
+      where: { id: { in: expiredIds } },
+      data: { status: MembershipStatus.EXPIRED },
+    });
+    return items.map((m) =>
+      expiredIds.includes(m.id) ? { ...m, status: MembershipStatus.EXPIRED } : m,
+    );
+  }
+
+  private async resolveExpiredOne<T extends { id: string; status: MembershipStatus; endDate: Date | null }>(
+    item: T,
+  ): Promise<T> {
+    const [resolved] = await this.resolveExpiredMany([item]);
+    return resolved;
   }
 }

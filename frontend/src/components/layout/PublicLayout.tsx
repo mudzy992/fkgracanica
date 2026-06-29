@@ -10,6 +10,7 @@ import { Button } from '../ui/button';
 import { ThemeToggle } from '../ui/ThemeToggle';
 import { Sheet, SheetContent, SheetHeader } from '../ui/sheet';
 import { PublicFooter } from './PublicFooter';
+import { PublicAuthButton } from './PublicAuthButton';
 import { PublicNavItems, useFallbackNavItems } from './PublicNavItems';
 import { PublicSiteLogo } from './PublicSiteLogo';
 import type { CmsMenuItem } from '../../cms/types';
@@ -52,6 +53,9 @@ export function PublicLayout() {
             <PublicNavItems items={navItems} />
           </nav>
           <div className="flex items-center gap-2">
+            <div className="hidden lg:block">
+              <PublicAuthButton />
+            </div>
             <ThemeToggle />
             <Link to="/pretraga" aria-label={t('nav.search')}>
               <Button variant="ghost" size="icon">
@@ -75,6 +79,9 @@ export function PublicLayout() {
           <nav className="flex flex-col gap-1">
             <PublicNavItems items={navItems} onNavigate={() => setOpen(false)} mobile />
           </nav>
+          <div className="mt-6 border-t border-[var(--border-subtle)] pt-4 lg:hidden">
+            <PublicAuthButton mobile onNavigate={() => setOpen(false)} />
+          </div>
         </SheetContent>
       </Sheet>
 

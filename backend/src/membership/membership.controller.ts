@@ -1,6 +1,8 @@
-import { Body, Controller, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
+import { MembershipStatus } from '@prisma/client';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { MembershipService } from './membership.service';
+import { CreateMembershipDto } from './dto/create-membership.dto';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { PermissionsGuard } from '../common/guards/permissions.guard';
 import { RequirePermissions } from '../common/decorators/permissions.decorator';
@@ -19,6 +21,13 @@ export class MembershipController {
     return this.service.register(user.id);
   }
 
+  @Post('admin')
+  @UseGuards(PermissionsGuard)
+  @RequirePermissions('membership.manage')
+  createForUser(@Body() dto: CreateMembershipDto) {
+    return this.service.createForUser(dto.email, dto.activate ?? false);
+  }
+
   @Get('me')
   findMine(@CurrentUser() user: AuthUser) {
     return this.service.findForUser(user.id);
@@ -27,8 +36,8 @@ export class MembershipController {
   @Get()
   @UseGuards(PermissionsGuard)
   @RequirePermissions('membership.manage')
-  findAll() {
-    return this.service.findAll();
+  findAll(@Query('status') status?: MembershipStatus) {
+    return this.service.findAll(status);
   }
 
   @Get(':id')

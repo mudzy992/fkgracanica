@@ -836,21 +836,26 @@ model TicketOrder {
 
 enum PaymentStatus {
   PENDING_BOX_OFFICE
+  PENDING_ONLINE
   CONFIRMED
   REFUNDED
   CANCELLED
 }
 
 model Payment {
-  id        String        @id @default(cuid())
-  orderId   String        @unique
-  amount    Decimal       @db.Decimal(10, 2)
-  status    PaymentStatus @default(PENDING_BOX_OFFICE)
-  method    String        @default("box_office")
-  confirmedAt DateTime?
-  createdAt DateTime      @default(now())
-  updatedAt DateTime      @updatedAt
-  order     TicketOrder   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  id            String        @id @default(cuid())
+  orderId       String        @unique
+  amount        Decimal       @db.Decimal(10, 2)
+  status        PaymentStatus @default(PENDING_BOX_OFFICE)
+  method        String        @default("box_office")
+  provider      String        @default("box_office")
+  externalId    String?
+  confirmedAt   DateTime?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  order         TicketOrder   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([externalId])
 }
 
 // ─── Contact & Newsletter ──────────────────────────────────────

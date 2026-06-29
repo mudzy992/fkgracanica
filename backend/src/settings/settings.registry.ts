@@ -6,6 +6,13 @@ export interface SettingDefinition {
   type: SettingType;
   scope: SettingScope;
   description: string;
+  /** Skriveno u globalnom /admin/settings — uređuje se u modulu (npr. Ulaznice). */
+  managedIn?: 'ticketing';
+}
+
+export function settingDefToCreate(def: SettingDefinition) {
+  const { managedIn: _managedIn, ...data } = def;
+  return data;
 }
 
 export const SETTINGS_REGISTRY: SettingDefinition[] = [
@@ -120,6 +127,159 @@ export const SETTINGS_REGISTRY: SettingDefinition[] = [
     type: SettingType.STRING,
     scope: SettingScope.PUBLIC,
     description: 'YouTube URL pozadinske muzike prije početka live utakmice',
+  },
+  {
+    key: 'ticketing.stadiumCapacity',
+    value: '5000',
+    type: SettingType.NUMBER,
+    scope: SettingScope.PUBLIC,
+    description: 'Kapacitet stadiona za ulaznice',
+    managedIn: 'ticketing',
+  },
+  {
+    key: 'ticketing.memberDiscountPercent',
+    value: '10',
+    type: SettingType.NUMBER,
+    scope: SettingScope.PUBLIC,
+    description: 'Popust za članove kluba (%)',
+    managedIn: 'ticketing',
+  },
+  {
+    key: 'ticketing.maxBoxOfficeTicketsPerUser',
+    value: '4',
+    type: SettingType.NUMBER,
+    scope: SettingScope.PUBLIC,
+    description: 'Maks. ulaznica po korisniku po utakmici (blagajna); online bez limita',
+    managedIn: 'ticketing',
+  },
+  {
+    key: 'ticketing.categories',
+    value:
+      '[{"id":"tribina","label":"Tribina","price":5,"isActive":true},{"id":"sjever","label":"Sjever","price":7,"isActive":true},{"id":"jug","label":"Jug","price":7,"isActive":true},{"id":"vip","label":"VIP","price":15,"isActive":true}]',
+    type: SettingType.STRING,
+    scope: SettingScope.PUBLIC,
+    description: 'Kategorije ulaznica (JSON)',
+    managedIn: 'ticketing',
+  },
+  {
+    key: 'ticketing.onlineEnabled',
+    value: 'false',
+    type: SettingType.BOOLEAN,
+    scope: SettingScope.PRIVATE,
+    description: 'Online kupovina ulaznica',
+    managedIn: 'ticketing',
+  },
+  {
+    key: 'ticketing.boxOfficeEnabled',
+    value: 'true',
+    type: SettingType.BOOLEAN,
+    scope: SettingScope.PRIVATE,
+    description: 'Kupovina ulaznica na blagajni',
+    managedIn: 'ticketing',
+  },
+  {
+    key: 'membership.onlineEnabled',
+    value: 'false',
+    type: SettingType.BOOLEAN,
+    scope: SettingScope.PRIVATE,
+    description: 'Online kupovina članstva',
+    managedIn: 'ticketing',
+  },
+  {
+    key: 'membership.annualPrice',
+    value: '50',
+    type: SettingType.NUMBER,
+    scope: SettingScope.PUBLIC,
+    description: 'Godišnja članarina (KM)',
+    managedIn: 'ticketing',
+  },
+  {
+    key: 'payments.stripe.enabled',
+    value: 'false',
+    type: SettingType.BOOLEAN,
+    scope: SettingScope.PRIVATE,
+    description: 'Stripe omogućen',
+    managedIn: 'ticketing',
+  },
+  {
+    key: 'payments.stripe.secretKey',
+    value: '',
+    type: SettingType.STRING,
+    scope: SettingScope.PRIVATE,
+    description: 'Stripe secret key',
+    managedIn: 'ticketing',
+  },
+  {
+    key: 'payments.stripe.webhookSecret',
+    value: '',
+    type: SettingType.STRING,
+    scope: SettingScope.PRIVATE,
+    description: 'Stripe webhook secret',
+    managedIn: 'ticketing',
+  },
+  {
+    key: 'payments.stripe.publishableKey',
+    value: '',
+    type: SettingType.STRING,
+    scope: SettingScope.PUBLIC,
+    description: 'Stripe publishable key',
+    managedIn: 'ticketing',
+  },
+  {
+    key: 'payments.paypal.enabled',
+    value: 'false',
+    type: SettingType.BOOLEAN,
+    scope: SettingScope.PRIVATE,
+    description: 'PayPal omogućen',
+    managedIn: 'ticketing',
+  },
+  {
+    key: 'payments.paypal.clientId',
+    value: '',
+    type: SettingType.STRING,
+    scope: SettingScope.PRIVATE,
+    description: 'PayPal client ID',
+    managedIn: 'ticketing',
+  },
+  {
+    key: 'payments.paypal.clientSecret',
+    value: '',
+    type: SettingType.STRING,
+    scope: SettingScope.PRIVATE,
+    description: 'PayPal client secret',
+    managedIn: 'ticketing',
+  },
+  {
+    key: 'payments.monri.enabled',
+    value: 'false',
+    type: SettingType.BOOLEAN,
+    scope: SettingScope.PRIVATE,
+    description: 'Monri omogućen',
+    managedIn: 'ticketing',
+  },
+  {
+    key: 'payments.monri.merchantKey',
+    value: '',
+    type: SettingType.STRING,
+    scope: SettingScope.PRIVATE,
+    description: 'Monri merchant key',
+    managedIn: 'ticketing',
+  },
+  {
+    key: 'payments.monri.authenticationKey',
+    value: '',
+    type: SettingType.STRING,
+    scope: SettingScope.PRIVATE,
+    description: 'Monri authentication key',
+    managedIn: 'ticketing',
+  },
+  {
+    key: 'payments.defaultProvider',
+    value: 'stripe',
+    type: SettingType.STRING,
+    scope: SettingScope.PRIVATE,
+    description: 'Default payment provider',
+    managedIn: 'ticketing',
   },
   {
     key: 'upload.maxSizeMb',

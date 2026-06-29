@@ -1,6 +1,8 @@
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { usePublicSettings } from '../../hooks';
+import { useAuth } from '../../lib/auth';
+import { hasStaffAccess } from '../../lib/staff-access';
 import { PublicSiteLogo } from './PublicSiteLogo';
 
 interface NavItem {
@@ -19,11 +21,13 @@ interface Props {
 export function PublicFooter({ clubName, crestUrl, footerText, navItems }: Props) {
   const { t } = useTranslation();
   const { data: settings } = usePublicSettings();
+  const { isAuthenticated, user } = useAuth();
   const email = settings?.['contact.email'];
   const phone = settings?.['contact.phone'];
   const address = settings?.['contact.address'];
   const tagline = settings?.['club.tagline'];
   const quickLinks = navItems.filter((i) => !i.external).slice(0, 6);
+  const showDashboard = isAuthenticated && hasStaffAccess(user?.permissions);
 
   return (
     <footer className="border-t border-[var(--border-subtle)] bg-[image:var(--gradient-surface)]">
@@ -63,9 +67,11 @@ export function PublicFooter({ clubName, crestUrl, footerText, navItems }: Props
         </div>
         <div className="mt-8 flex flex-col gap-3 border-t border-[var(--border-subtle)] pt-6 text-xs text-text-muted sm:flex-row sm:items-center sm:justify-between">
           <p>© {new Date().getFullYear()} {clubName}</p>
-          <Link to="/admin/login" className="hover:text-primary">
-            {t('footer.admin')}
-          </Link>
+          {showDashboard && (
+            <Link to="/admin" className="hover:text-primary">
+              {t('footer.dashboard')}
+            </Link>
+          )}
         </div>
       </div>
     </footer>

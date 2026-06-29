@@ -13,8 +13,8 @@ export function MembershipCTA() {
             <h2 className="text-2xl font-bold">{t('home.membership')}</h2>
             <p className="mt-2 text-white/80">{t('home.membershipDesc')}</p>
           </div>
-          <Link to="/kontakt">
-            <Button className="bg-white text-primary hover:bg-white/90">{t('actions.readMore')}</Button>
+          <Link to="/clanstvo">
+            <Button className="bg-white text-primary hover:bg-white/90">{t('home.membership')}</Button>
           </Link>
         </CardContent>
       </Card>

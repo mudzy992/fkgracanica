@@ -205,19 +205,26 @@ export function usePermissions() {
   });
 }
 
-export function useMemberships() {
-  return useQuery({
-    queryKey: ['membership'],
-    queryFn: async () => asArray((await api.get('/membership')).data),
-  });
-}
+export {
+  useMyMembership,
+  useMemberships,
+  useMembershipDetail,
+  useRegisterMembership,
+  useActivateMembership,
+  useRenewMembership,
+  useSuspendMembership,
+  useCancelMembership,
+  useCreateMembershipAdmin,
+} from './use-membership';
 
-export function useTicketingOrders() {
-  return useQuery({
-    queryKey: ['ticketing', 'orders'],
-    queryFn: async () => asArray((await api.get('/ticketing/orders')).data),
-  });
-}
+export {
+  useMyTicketOrders,
+  useMyTicketOrders as useTicketingOrders,
+  useMatchAvailability,
+  useReserveTicket,
+  useRequestTicketRefund,
+  useCancelMyTicketOrder,
+} from './use-ticketing';
 
 export function useAuditLog(params: Record<string, string | number | undefined> = {}) {
   return useQuery({
@@ -287,6 +294,7 @@ export * from './use-users-admin';
 export * from './use-notifications';
 export * from './use-content-admin';
 export * from './use-competition-admin';
+export * from './use-ticketing';
 export * from './use-ticketing-admin';
 export * from './use-contact-admin';
 export * from './use-newsletter-admin';

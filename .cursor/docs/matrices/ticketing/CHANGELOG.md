@@ -1,15 +1,26 @@
-# Changelog — Ticketing
+# Ticketing Changelog
 
-## 2026-06-24 (c)
+## 2026-06-29 (sales modes UX)
 
-- Admin UI: `GET /ticketing/admin/orders`, confirm payment, refund lista + `POST …/confirm-refund`
-- E2E harness: `setup-e2e-env.ts`, Redis na `127.0.0.1:6379`
+- `paymentIntent` na reserve: `box_office` | `online`
+- Online + blagajna: dva dugmeta (Plati online / Rezerviši za blagajnu)
+- Samo online ili samo blagajna prema postavkama
+- Limit blagajne ne vrijedi za online kupovinu
 
-## 2026-06-24 (b)
+## 2026-06-29 (settings + payments)
 
-- `validateTicket` marks `PAID_AT_BOX_OFFICE` → `USED`; rejects unpaid `RESERVED`
-- E2E: `ticketing-qr.e2e-spec.ts`, unit: `ticketing.service.spec.ts`
+- Dinamičke kategorije iz `ticketing.categories` settinga
+- Samo domaće utakmice (`homeClub.isOwnClub`) — API + reserve validacija
+- `GET /ticketing/config`, `/ticketing/matches/ticketable`, `/public/next-home-match`
+- Admin tabovi: Narudžbe | Postavke | Online plaćanje
+- Prematch + home CTA → `/ulaznice?matchId=`
+- `TicketsCtaWidget` mode `auto` (sljedeća domaća utakmica)
+- Online checkout integracija (Stripe) uz postojeću blagajnu
+
+## 2026-06-29 (gate #14)
+
+- Availability API, admin cancel, QR validate panel, javne narudžbe
 
 ## 2026-06-24
 
-- QR validation and box office payment flow defined
+- Reservation + box office model

@@ -1,57 +1,62 @@
-import { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { useRegisterMembership } from '../../hooks';
-import { useAuth } from '../../lib/auth';
+import { useSearchParams } from 'react-router-dom';
+import { useMyMembership } from '../../hooks/use-membership';
+import { useTicketingPublicConfig } from '../../hooks/use-ticketing';
+import { useMembershipPaymentReturn } from '../../hooks/use-membership-payment-return';
+import { MembershipPurchasePanel } from '../../components/membership/MembershipPurchasePanel';
 import { FormShell } from '../../components/public/forms/FormShell';
 import { PageHeroHeader } from '../../components/public/shell/PageHeroHeader';
 import { Seo } from '../../components/seo/Seo';
-import { Button } from '../../components/ui/button';
 import { Skeleton } from '../../components/ui/skeleton';
+import { useAuth } from '../../lib/auth';
 
 export function MembershipPage() {
-  const { isAuthenticated, isLoading, user } = useAuth();
-  const location = useLocation();
-  const register = useRegisterMembership();
-  const [done, setDone] = useState(false);
+  const { isAuthenticated, isLoading: authLoading } = useAuth();
+  const [searchParams] = useSearchParams();
+  const paidReturn = searchParams.get('paid') === '1';
+  const sessionId = searchParams.get('session_id');
+  const paymentCancelled = searchParams.get('cancelled') === '1';
+  const { data: config, isLoading: configLoading } = useTicketingPublicConfig();
+  const { data: memberships, isLoading: membershipLoading } = useMyMembership();
 
-  if (isLoading) return <Skeleton className="mx-auto mt-12 h-64 max-w-xl" />;
+  const { confirming, activated } = useMembershipPaymentReturn({
+    paid: paidReturn,
+    sessionId,
+    enabled: isAuthenticated && !authLoading,
+  });
 
-  const onRegister = async () => {
-    await register.mutateAsync();
-    setDone(true);
-  };
+  if (authLoading || configLoading || (isAuthenticated && membershipLoading) || confirming) {
+    return <Skeleton className="mx-auto mt-12 h-64 max-w-xl" />;
+  }
+
+  const accountMode = isAuthenticated;
 
   return (
     <div className="pb-16">
-      <Seo title="Članstvo" description="Postanite član FK Gračanica" />
+      <Seo title={accountMode ? 'Moj račun' : 'Članstvo'} />
       <PageHeroHeader
         eyebrow="Zajednica"
-        title="Članstvo"
-        subtitle="Pridružite se klubu i podržite FK Gračanica kao registrirani član."
+        title={accountMode ? 'Moj račun' : 'Članstvo'}
+        subtitle={
+          accountMode
+            ? 'Status članstva i digitalna članska kartica.'
+            : 'Pridružite se klubu i podržite FK Gračanica kao registrirani član.'
+        }
       />
-      <FormShell title="Postani član" description="Ekskluzivne pogodnosti za članove kluba.">
-        {!isAuthenticated ? (
-          <div className="space-y-3">
-            <p className="text-sm text-text-muted">Za prijavu članstva potrebna je prijava na račun.</p>
-            <Link to="/admin/login" state={{ from: location }}>
-              <Button className="w-full">Prijavite se</Button>
-            </Link>
-          </div>
-        ) : done ? (
-          <p className="text-success">Zahtjev za članstvo je uspješno poslan.</p>
-        ) : (
-          <div className="space-y-3">
-            <p className="text-sm">
-              Prijavljeni ste kao <strong>{user?.email}</strong>
-            </p>
-            <Button className="w-full" disabled={register.isPending} onClick={() => void onRegister()}>
-              {register.isPending ? 'Slanje...' : 'Prijavi se za članstvo'}
-            </Button>
-            {register.isError && (
-              <p className="text-sm text-danger">Registracija nije uspjela. Možda već imate aktivno članstvo.</p>
-            )}
-          </div>
-        )}
+      <FormShell
+        title={accountMode ? 'Moj račun' : 'Postani član'}
+        description={
+          accountMode
+            ? 'Pregledajte status prijave ili aktivnog članstva.'
+            : 'Ekskluzivne pogodnosti za članove kluba.'
+        }
+      >
+        <MembershipPurchasePanel
+          config={config}
+          memberships={memberships}
+          confirmingPayment={confirming}
+          paymentCancelled={paymentCancelled}
+          paymentSuccess={paidReturn && activated}
+        />
       </FormShell>
     </div>
   );

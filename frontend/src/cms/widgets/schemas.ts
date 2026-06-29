@@ -51,6 +51,7 @@ export const widgetSchemas = {
     buttonUrl: z.string().optional(),
   }),
   'tickets-cta': z.object({
+    mode: z.enum(['auto', 'manual']).default('auto'),
     title: z.string().optional(),
     text: z.string().optional(),
     buttonLabel: z.string().optional(),

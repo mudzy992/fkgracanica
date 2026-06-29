@@ -11,7 +11,9 @@
     "contact": "Kontakt",
     "search": "Pretraga",
     "hallOfFame": "Hall of Fame",
-    "museum": "Muzej"
+    "museum": "Muzej",
+    "login": "Prijavi se",
+    "myAccount": "Moj račun"
   },
   "actions": {
     "readMore": "Pročitaj više",
@@ -86,7 +88,12 @@
     "menu": "Meni",
     "quickLinks": "Brzi linkovi",
     "contact": "Kontakt",
-    "admin": "Admin"
+    "dashboard": "Dashboard"
+  },
+  "login": {
+    "title": "Prijava",
+    "subtitle": "Za članove, ulaznice i osoblje kluba — jedna prijava za sve.",
+    "error": "Neispravni podaci za prijavu"
   },
   "notifications": {
     "title": "Notifikacije",

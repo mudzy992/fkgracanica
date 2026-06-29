@@ -1,0 +1,22 @@
+import { Module, forwardRef } from '@nestjs/common';
+import { PaymentsReadinessService } from './payments-readiness.service';
+import { PaymentsService } from './payments.service';
+import { PaymentsController } from './payments.controller';
+import { MembershipModule } from '../membership/membership.module';
+import { StripeProvider } from './providers/stripe.provider';
+import { PaypalProvider } from './providers/paypal.provider';
+import { MonriProvider } from './providers/monri.provider';
+
+@Module({
+  imports: [forwardRef(() => MembershipModule)],
+  controllers: [PaymentsController],
+  providers: [
+    PaymentsReadinessService,
+    PaymentsService,
+    StripeProvider,
+    PaypalProvider,
+    MonriProvider,
+  ],
+  exports: [PaymentsReadinessService, PaymentsService],
+})
+export class PaymentsModule {}

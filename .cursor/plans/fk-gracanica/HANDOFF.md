@@ -1,6 +1,6 @@
 # HANDOFF — FK Gračanica
 
-> Ažurirano: **2026-06-26** (Web Complete gate #1–#12 APPROVED)
+> Ažurirano: **2026-06-29** (Web Complete #1–#13 APPROVED, #14 READY_FOR_REVIEW)
 
 ---
 
@@ -8,17 +8,17 @@
 
 | Polje | Vrijednost |
 |-------|------------|
-| **Aktivna faza** | **Web Complete** — Track 3 admin moduli |
+| **Aktivna faza** | Web Complete — Track 3 admin moduli |
 | **Plan folder** | `.cursor/plans/fk-gracanica/21_web-complete/` |
 | **Session handoff** | [21_web-complete/HANDOFF.md](./21_web-complete/HANDOFF.md) |
 | **Gate log** | [21_web-complete/GATE_LOG.md](./21_web-complete/GATE_LOG.md) |
-| **Paralelno (završeno / APPROVED)** | [24_public-identity-refactor/](./24_public-identity-refactor/), [23_responsive-premium-web/](./23_responsive-premium-web/) |
+| **Branch** | `main` @ `be03774` (uncommitted work — vidi session HANDOFF §11) |
 
 ---
 
 ## 2. Status u jednoj rečenici
 
-Admin moduli **#1–#12 su APPROVED** (uključujući unified competition hub i Live TV). Sljedeći segment po planu: **#13 Članstvo**.
+**#1–#13 APPROVED**; **#14 Ulaznice READY_FOR_REVIEW** (postavke, Stripe online, unified auth, članstvo online + auto-aktivacija). Sljedeće: smoke test → APPROVED → **#15 Kontakt**.
 
 ---
 
@@ -26,10 +26,10 @@ Admin moduli **#1–#12 su APPROVED** (uključujući unified competition hub i L
 
 | Modul | Status |
 |-------|--------|
-| 1–8 | APPROVED |
-| 9–11 | APPROVED (Takmičenja hub) |
-| 12 Live | APPROVED |
-| 13+ | Nije gate-ovan |
+| 1–12 | APPROVED |
+| 13 Članstvo | APPROVED (+ online join/pending UX u kodu) |
+| 14 Ulaznice | READY_FOR_REVIEW |
+| 15+ | Nije gate-ovan |
 
 **Izvor istine:** [21_web-complete/GATE_LOG.md](./21_web-complete/GATE_LOG.md)
 
@@ -53,9 +53,9 @@ cd backend && npx prisma migrate deploy && npx prisma generate
 
 ## 5. Nova sesija — start ovdje
 
-1. Pročitaj [21_web-complete/HANDOFF.md](./21_web-complete/HANDOFF.md)
-2. Korisnik bira: **#13 Članstvo** (preporučeno) ili #14 Ulaznice
-3. Po završetku modula → `READY_FOR_REVIEW` u GATE_LOG → korisnik **APPROVED**
+1. Pročitaj [21_web-complete/HANDOFF.md](./21_web-complete/HANDOFF.md) (§12 copy-paste prompt)
+2. Smoke #14 (ulaznice + članstvo Stripe + auth)
+3. Korisnik **APPROVED** u GATE_LOG → **#15 Kontakt**
 
 ---
 

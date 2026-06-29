@@ -80,7 +80,7 @@ export function NewsCommentsSection({ newsId }: Props) {
         </div>
       ) : (
         <p className="mt-6 text-sm text-text-muted">
-          <Link to="/admin/login" className="text-primary underline">
+          <Link to="/prijava" className="text-primary underline">
             Prijavite se
           </Link>{' '}
           kao član da biste komentirali.

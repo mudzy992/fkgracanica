@@ -11,7 +11,9 @@
     "contact": "Contact",
     "search": "Search",
     "hallOfFame": "Hall of Fame",
-    "museum": "Museum"
+    "museum": "Museum",
+    "login": "Sign in",
+    "myAccount": "My account"
   },
   "actions": {
     "readMore": "Read more",
@@ -59,7 +61,12 @@
     "menu": "Menu",
     "quickLinks": "Quick links",
     "contact": "Contact",
-    "admin": "Admin"
+    "dashboard": "Dashboard"
+  },
+  "login": {
+    "title": "Sign in",
+    "subtitle": "One login for members, tickets, and club staff.",
+    "error": "Invalid login credentials"
   },
   "notifications": {
     "title": "Notifications",

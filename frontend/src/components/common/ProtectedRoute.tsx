@@ -1,9 +1,10 @@
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import { useAuth } from '../../lib/auth';
+import { hasStaffAccess } from '../../lib/staff-access';
 import { Skeleton } from '../ui/skeleton';
 
 export function ProtectedRoute() {
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated, isLoading, user } = useAuth();
   const location = useLocation();
 
   if (isLoading) {
@@ -15,7 +16,11 @@ export function ProtectedRoute() {
   }
 
   if (!isAuthenticated) {
-    return <Navigate to="/admin/login" state={{ from: location }} replace />;
+    return <Navigate to="/prijava" state={{ from: location }} replace />;
+  }
+
+  if (!hasStaffAccess(user?.permissions)) {
+    return <Navigate to="/clanstvo" replace />;
   }
 
   return <Outlet />;

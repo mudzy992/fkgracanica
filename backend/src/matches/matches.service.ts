@@ -2,6 +2,7 @@ import { BadRequestException, Injectable, NotFoundException } from '@nestjs/comm
 import { MatchStatus, Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { assertDistinctClubs, isResolvedRound, resolveMatchRoundFields, roundToMatchCreateInput, roundToMatchUpdateInput } from './match-round.util';
+import { assertSingleScheduledHomeMatch } from './match-scheduling.util';
 import { validateMatchLineup, type LineupSlotInput } from './match-lineup.util';
 import { resolveEffectiveMatchLineup } from './match-squad-lineup.util';
 import { assertManualMatchStatus } from './update-match.dto';
@@ -70,6 +71,10 @@ export class MatchesService {
         throw new BadRequestException('Kolo ne pripada odabranoj sezoni.');
       }
     }
+    const status = data.status ?? MatchStatus.SCHEDULED;
+    if (status === MatchStatus.SCHEDULED) {
+      await assertSingleScheduledHomeMatch(this.prisma, data.homeClubId);
+    }
     return this.prisma.match.create({
       data: {
         seasonId: data.seasonId,
@@ -77,7 +82,7 @@ export class MatchesService {
         awayClubId: data.awayClubId,
         scheduledAt: new Date(data.scheduledAt),
         venue: data.venue ?? null,
-        status: data.status ?? MatchStatus.SCHEDULED,
+        status,
         homeScore: data.homeScore ?? 0,
         awayScore: data.awayScore ?? 0,
         ...roundToMatchCreateInput(round),
@@ -130,6 +135,11 @@ export class MatchesService {
       ...(data.awayScore !== undefined ? { awayScore: data.awayScore } : {}),
       ...roundToMatchUpdateInput(round),
     };
+
+    const nextStatus = data.status ?? existing.status;
+    if (nextStatus === MatchStatus.SCHEDULED) {
+      await assertSingleScheduledHomeMatch(this.prisma, homeClubId, id);
+    }
 
     return this.prisma.match.update({ where: { id }, data: patch, include: matchInclude });
   }

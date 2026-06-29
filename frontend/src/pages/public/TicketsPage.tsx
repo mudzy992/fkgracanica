@@ -1,102 +1,95 @@
 import { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useMatches, useReserveTicket } from '../../hooks';
+import { Link, useLocation, useSearchParams } from 'react-router-dom';
+import { useMyTicketOrders, useTicketingPublicConfig } from '../../hooks/use-ticketing';
+import { useTicketPaymentReturn } from '../../hooks/use-ticket-payment-return';
 import { useAuth } from '../../lib/auth';
-import { formatDateTime } from '../../lib/utils';
+import { TicketOrderCard } from '../../components/ticketing/TicketOrderCard';
+import { TicketsReserveForm } from '../../components/ticketing/TicketsReserveForm';
 import { FormShell } from '../../components/public/forms/FormShell';
 import { PageHeroHeader } from '../../components/public/shell/PageHeroHeader';
 import { Seo } from '../../components/seo/Seo';
-import { Input } from '../../components/ui/input';
 import { Button } from '../../components/ui/button';
 import { Skeleton } from '../../components/ui/skeleton';
 
-const schema = z.object({
-  matchId: z.string().min(1, 'Odaberite utakmicu'),
-  category: z.string().min(1, 'Unesite kategoriju'),
-  price: z.number().positive('Cijena mora biti pozitivna'),
-  quantity: z.number().int().min(1).max(10).optional(),
-});
-
-type FormData = z.infer<typeof schema>;
+type Tab = 'reserve' | 'orders';
 
 export function TicketsPage() {
   const { isAuthenticated, isLoading, user } = useAuth();
   const location = useLocation();
-  const { data: matches, isLoading: ml } = useMatches();
-  const reserve = useReserveTicket();
-  const [done, setDone] = useState(false);
-  const { register, handleSubmit, formState: { errors }, reset } = useForm<FormData>({
-    resolver: zodResolver(schema),
-    defaultValues: { quantity: 1 },
+  const [searchParams] = useSearchParams();
+  const paidReturn = searchParams.get('paid') === '1';
+  const sessionId = searchParams.get('session_id');
+  const { data: orders, isLoading: ol } = useMyTicketOrders();
+  const { data: config } = useTicketingPublicConfig();
+  const [tab, setTab] = useState<Tab>(paidReturn ? 'orders' : 'reserve');
+
+  const { confirming, activated } = useTicketPaymentReturn({
+    paid: paidReturn,
+    sessionId,
+    enabled: isAuthenticated && !isLoading,
   });
 
-  if (isLoading) return <Skeleton className="mx-auto mt-12 h-64 max-w-xl" />;
+  if (isLoading || confirming) return <Skeleton className="mx-auto mt-12 h-64 max-w-xl" />;
 
-  const upcoming = matches?.filter((m) => m.status === 'SCHEDULED').slice(0, 20);
-
-  const onSubmit = async (data: FormData) => {
-    await reserve.mutateAsync(data);
-    setDone(true);
-    reset();
-  };
+  const sales = config?.salesModes;
+  const showPaymentSuccess = paidReturn && activated;
 
   return (
     <div className="pb-16">
       <Seo title="Ulaznice" description="Rezervacija ulaznica za utakmice FK Gračanica" />
       <PageHeroHeader eyebrow="Stadion" title="Ulaznice" subtitle="Osigurajte svoje mjesto na utakmici." />
-      <FormShell title="Rezervacija" description="Odaberite utakmicu i kategoriju ulaznica.">
+      <FormShell title="Ulaznice" description="Rezervacija i pregled vaših narudžbi.">
         {!isAuthenticated ? (
           <div className="space-y-3">
-            <p className="text-text-muted">Za rezervaciju ulaznica potrebna je prijava na račun.</p>
-            <Link to="/admin/login" state={{ from: location }}>
+            <p className="text-text-muted">
+              Članovi i gosti mogu kupiti ulaznice online ili rezervisati za blagajnu — potrebna je prijava.
+            </p>
+            <Link to="/prijava" state={{ from: location }}>
               <Button className="w-full">Prijavite se</Button>
             </Link>
           </div>
-        ) : done ? (
-          <div className="space-y-3">
-            <p className="text-success">Ulaznice su uspješno rezervisane.</p>
-            <Button variant="ghost" onClick={() => setDone(false)}>
-              Nova rezervacija
-            </Button>
-          </div>
+        ) : !config?.modulesTicketing ? (
+          <p className="text-sm text-text-muted">Modul ulaznica trenutno nije aktivan.</p>
         ) : (
-          <form onSubmit={(e) => void handleSubmit(onSubmit)(e)} className="space-y-4">
+          <div className="space-y-4">
             <p className="text-sm text-text-muted">Prijavljeni: {user?.email}</p>
-            <div>
-              <select
-                className="flex h-10 w-full rounded-lg border border-[var(--border-subtle)] bg-background px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring-focus)]"
-                {...register('matchId')}
-                disabled={ml}
-              >
-                <option value="">Odaberite utakmicu</option>
-                {upcoming?.map((m) => (
-                  <option key={m.id} value={m.id}>
-                    {m.homeClub?.name} vs {m.awayClub?.name} — {formatDateTime(m.scheduledAt)}
-                  </option>
+            <div className="flex gap-2">
+              <Button size="sm" variant={tab === 'reserve' ? 'default' : 'outline'} onClick={() => setTab('reserve')}>
+                Rezervacija
+              </Button>
+              <Button size="sm" variant={tab === 'orders' ? 'default' : 'outline'} onClick={() => setTab('orders')}>
+                Moje narudžbe
+              </Button>
+            </div>
+
+            {tab === 'reserve' ? (
+              <TicketsReserveForm onSuccess={() => setTab('orders')} />
+            ) : ol ? (
+              <Skeleton className="h-32 w-full" />
+            ) : orders?.length ? (
+              <div className="space-y-6">
+                {showPaymentSuccess && (
+                  <p className="rounded-lg border border-success/30 bg-success/10 px-4 py-3 text-sm text-success">
+                    Uplata je uspješna. Vaše ulaznice su aktivirane — pokažite QR kod na ulazu.
+                  </p>
+                )}
+                {orders.map((o) => (
+                  <TicketOrderCard key={o.id} order={o} />
                 ))}
-              </select>
-              {errors.matchId && <p className="text-xs text-danger">{errors.matchId.message}</p>}
-            </div>
-            <div>
-              <Input placeholder="Kategorija (npr. tribina)" {...register('category')} />
-              {errors.category && <p className="text-xs text-danger">{errors.category.message}</p>}
-            </div>
-            <div>
-              <Input type="number" step="0.01" placeholder="Cijena (KM)" {...register('price', { valueAsNumber: true })} />
-              {errors.price && <p className="text-xs text-danger">{errors.price.message}</p>}
-            </div>
-            <div>
-              <Input type="number" placeholder="Količina" {...register('quantity', { valueAsNumber: true })} />
-              {errors.quantity && <p className="text-xs text-danger">{errors.quantity.message}</p>}
-            </div>
-            {reserve.isError && <p className="text-sm text-danger">Rezervacija nije uspjela.</p>}
-            <Button type="submit" className="w-full" disabled={reserve.isPending}>
-              {reserve.isPending ? 'Rezervacija...' : 'Rezerviši ulaznice'}
-            </Button>
-          </form>
+              </div>
+            ) : (
+              <p className="text-sm text-text-muted">Nemate narudžbi ulaznica.</p>
+            )}
+
+            {tab === 'reserve' && sales?.boxOffice && !sales?.online && (
+              <p className="text-xs text-text-muted">Samo rezervacija — plaćanje na blagajni stadiona.</p>
+            )}
+            {tab === 'reserve' && sales?.online && sales?.boxOffice && (
+              <p className="text-xs text-text-muted">
+                Plaćanje online ili rezervacija za blagajnu — po izboru.
+              </p>
+            )}
+          </div>
         )}
       </FormShell>
     </div>

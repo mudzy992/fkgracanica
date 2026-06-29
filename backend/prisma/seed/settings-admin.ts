@@ -1,5 +1,5 @@
 import * as bcrypt from 'bcrypt';
-import { SETTINGS_REGISTRY } from '../../src/settings/settings.registry';
+import { SETTINGS_REGISTRY, settingDefToCreate } from '../../src/settings/settings.registry';
 import type { SeedPrisma } from './prisma-client';
 
 const DEMO_SETTINGS: Record<string, string> = {
@@ -12,7 +12,7 @@ export async function seedSettingsAndAdmin(prisma: SeedPrisma): Promise<string |
   for (const setting of SETTINGS_REGISTRY) {
     await prisma.setting.upsert({
       where: { key: setting.key },
-      create: setting,
+      create: settingDefToCreate(setting),
       update: {},
     });
   }

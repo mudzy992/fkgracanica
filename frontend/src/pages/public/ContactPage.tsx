@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { usePublicSettings, useContactSubmit } from '../../hooks';
+import { useAuth } from '../../lib/auth';
 import { FormShell } from '../../components/public/forms/FormShell';
 import { PageHeroHeader } from '../../components/public/shell/PageHeroHeader';
 import { Seo } from '../../components/seo/Seo';
@@ -22,9 +23,17 @@ export function ContactPage() {
   const [sent, setSent] = useState(false);
   const submit = useContactSubmit();
   const { data: settings } = usePublicSettings();
-  const { register, handleSubmit, formState: { errors }, reset } = useForm<FormData>({
+  const { user, isAuthenticated } = useAuth();
+  const { register, handleSubmit, formState: { errors }, reset, setValue } = useForm<FormData>({
     resolver: zodResolver(schema),
   });
+
+  useEffect(() => {
+    if (!isAuthenticated || !user) return;
+    if (user.email) setValue('email', user.email);
+    const name = [user.firstName, user.lastName].filter(Boolean).join(' ').trim();
+    if (name) setValue('name', name);
+  }, [isAuthenticated, user, setValue]);
 
   const onSubmit = async (data: FormData) => {
     await submit.mutateAsync(data);
