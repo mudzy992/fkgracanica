@@ -1,12 +1,13 @@
 import { Badge } from '../ui/badge';
-import { Button } from '../ui/button';
+import { OnlinePaymentChoice } from '../payments/OnlinePaymentChoice';
+import type { PaymentProviderId } from '../../types/payment-provider';
 
 interface Props {
   onlineAllowed: boolean;
   userEmail?: string;
   showPayButton?: boolean;
-  annualPrice?: number;
-  onPayOnline?: () => void;
+  providers?: PaymentProviderId[];
+  onPayOnline?: (provider: PaymentProviderId) => void;
   payLoading?: boolean;
 }
 
@@ -14,7 +15,7 @@ export function MembershipPendingStatus({
   onlineAllowed,
   userEmail,
   showPayButton = false,
-  annualPrice = 0,
+  providers = [],
   onPayOnline,
   payLoading,
 }: Props) {
@@ -37,10 +38,13 @@ export function MembershipPendingStatus({
         </p>
       )}
 
-      {showPayButton && onPayOnline && (
-        <Button className="w-full" disabled={payLoading} onClick={onPayOnline}>
-          {payLoading ? 'Preusmjeravanje...' : `Plati online · ${annualPrice} KM`}
-        </Button>
+      {showPayButton && onPayOnline && providers.length > 0 && (
+        <OnlinePaymentChoice
+          providers={providers}
+          fullWidth
+          loading={payLoading}
+          onSelect={onPayOnline}
+        />
       )}
 
       {userEmail && (

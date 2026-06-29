@@ -1,5 +1,17 @@
 # Changelog — Web Complete
 
+## 2026-06-29 (c) — payments polish, Moj račun ulaznice, multi-provider
+
+- Gate #14 Ulaznice → **APPROVED**; #15 Kontakt → READY_FOR_REVIEW (prefill, mailto, matrix)
+- Sales modes ulaznica: online + blagajna / samo jedno; `paymentIntent` na reserve
+- Auto-aktivacija: `tickets/confirm-session`, `TicketPassCard`, success banneri
+- Fix: infinite confirm-session loop (`usePaymentSessionReturn`, sessionStorage dedup)
+- `MyTicketsPanel` na `/clanstvo` — filteri kupljene/rezervisane/otkazane
+- `PublicUserMenu` (inicijali dropdown); PENDING članstvo bez pay dugmeta
+- `OnlinePaymentChoice`: 1 provajder = dugme+logo; 2+ = samo logotipi
+- Backend: `getReadyProviders()`, checkout `provider` param
+- **Sve uncommitted**
+
 ## 2026-06-29 (b) — #14 proširenje + članstvo online + auth
 
 - Unified auth: `/prijava`, staff vs član routing, `PublicAuthButton`

@@ -46,6 +46,14 @@ export class PaymentsReadinessService {
     return this.isTruthy(enabled) && !!merchantKey.trim() && !!authKey.trim();
   }
 
+  async getReadyProviders(): Promise<PaymentProviderId[]> {
+    const ids: PaymentProviderId[] = ['stripe', 'paypal', 'monri'];
+    const ready = await Promise.all(
+      ids.map(async (id) => ((await this.isProviderReady(id)) ? id : null)),
+    );
+    return ready.filter((id): id is PaymentProviderId => id !== null);
+  }
+
   async getDefaultProvider(): Promise<PaymentProviderId> {
     const raw = await this.getPrivate('payments.defaultProvider');
     if (raw === 'paypal' || raw === 'monri') return raw;
@@ -53,19 +61,25 @@ export class PaymentsReadinessService {
   }
 
   async isOnlinePaymentsReady(): Promise<boolean> {
-    const provider = await this.getDefaultProvider();
-    return this.isProviderReady(provider);
+    const ready = await this.getReadyProviders();
+    return ready.length > 0;
   }
 
-  async getSalesModes(): Promise<{ boxOffice: boolean; online: boolean; onlineReady: boolean }> {
-    const [boxOffice, onlineEnabled, onlineReady] = await Promise.all([
+  async getSalesModes(): Promise<{
+    boxOffice: boolean;
+    online: boolean;
+    onlineReady: boolean;
+    readyProviders: PaymentProviderId[];
+  }> {
+    const [boxOffice, onlineEnabled, readyProviders] = await Promise.all([
       this.getPrivate('ticketing.boxOfficeEnabled'),
       this.getPrivate('ticketing.onlineEnabled'),
-      this.isOnlinePaymentsReady(),
+      this.getReadyProviders(),
     ]);
     const boxOfficeOn = boxOffice !== 'false';
+    const onlineReady = readyProviders.length > 0;
     const onlineOn = this.isTruthy(onlineEnabled) && onlineReady;
-    return { boxOffice: boxOfficeOn, online: onlineOn, onlineReady };
+    return { boxOffice: boxOfficeOn, online: onlineOn, onlineReady, readyProviders };
   }
 
   async isMembershipOnlineAllowed(): Promise<boolean> {

@@ -50,6 +50,24 @@ export function canRequestRefund(orderStatus: OrderStatus | string) {
   return orderStatus === 'paid';
 }
 
+export type TicketOrderFilter = 'all' | 'active' | 'reserved' | 'closed';
+
+export function filterTicketOrders(orders: TicketOrderRow[], filter: TicketOrderFilter): TicketOrderRow[] {
+  if (filter === 'all') return orders;
+  if (filter === 'reserved') return orders.filter((o) => o.status === 'pending');
+  if (filter === 'closed') {
+    return orders.filter((o) => ['cancelled', 'refunded', 'refund_requested'].includes(o.status));
+  }
+  return orders.filter((o) => o.status === 'paid');
+}
+
+export const ticketOrderFilterLabels: Record<TicketOrderFilter, string> = {
+  all: 'Sve',
+  active: 'Kupljene',
+  reserved: 'Rezervisane',
+  closed: 'Otkazane',
+};
+
 /** Online plaćanje samo za neplaćenu rezervaciju (blagajna), ne za već plaćene ulaznice. */
 export function canPayOrderOnline(order: TicketOrderRow, onlineEnabled: boolean): boolean {
   if (!onlineEnabled || order.status !== 'pending') return false;

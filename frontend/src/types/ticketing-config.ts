@@ -9,6 +9,7 @@ export interface TicketingSalesModes {
   boxOffice: boolean;
   online: boolean;
   onlineReady: boolean;
+  readyProviders?: import('./payment-provider').PaymentProviderId[];
 }
 
 export interface TicketingPublicConfig {
@@ -20,6 +21,7 @@ export interface TicketingPublicConfig {
   activeTicketMatch: import('../types').Match | null;
   salesModes: TicketingSalesModes;
   onlineReady: boolean;
+  readyProviders: import('./payment-provider').PaymentProviderId[];
   membershipOnlineEnabled: boolean;
   modulesTicketing: boolean;
   modulesMembership: boolean;

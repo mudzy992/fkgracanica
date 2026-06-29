@@ -1,6 +1,8 @@
-import { useEffect, useState } from 'react';
-import { useQueryClient } from '@tanstack/react-query';
+import { useCallback } from 'react';
 import { useConfirmMembershipSession } from './use-confirm-membership-session';
+import { usePaymentSessionReturn } from './use-payment-session-return';
+
+const MEMBERSHIP_ME_KEY = ['membership', 'me'] as const;
 
 interface Options {
   paid: boolean;
@@ -9,32 +11,17 @@ interface Options {
 }
 
 export function useMembershipPaymentReturn({ paid, sessionId, enabled }: Options) {
-  const qc = useQueryClient();
-  const confirm = useConfirmMembershipSession();
-  const [done, setDone] = useState(!paid);
-  const [activated, setActivated] = useState(false);
+  const { mutateAsync } = useConfirmMembershipSession();
+  const confirm = useCallback((id: string) => mutateAsync(id), [mutateAsync]);
+  const isActivated = useCallback((res: { status: string }) => res.status === 'ACTIVE', []);
 
-  useEffect(() => {
-    if (!enabled || !paid || done) return;
-
-    const run = async () => {
-      try {
-        if (sessionId) {
-          const res = await confirm.mutateAsync(sessionId);
-          if (res.status === 'ACTIVE') setActivated(true);
-        }
-      } finally {
-        await qc.invalidateQueries({ queryKey: ['membership', 'me'] });
-        setDone(true);
-      }
-    };
-
-    void run();
-  }, [enabled, paid, sessionId, done, qc, confirm]);
-
-  return {
-    confirming: paid && !done,
-    activated,
-    confirmError: confirm.isError,
-  };
+  return usePaymentSessionReturn({
+    kind: 'membership',
+    paid,
+    sessionId,
+    enabled,
+    invalidateKey: MEMBERSHIP_ME_KEY,
+    isActivated,
+    confirm,
+  });
 }

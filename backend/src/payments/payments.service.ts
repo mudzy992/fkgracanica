@@ -1,5 +1,5 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
-import { PaymentsReadinessService } from './payments-readiness.service';
+import { PaymentsReadinessService, type PaymentProviderId } from './payments-readiness.service';
 import { MembershipService } from '../membership/membership.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { StripeProvider } from './providers/stripe.provider';
@@ -17,9 +17,18 @@ export class PaymentsService {
     private readonly monri: MonriProvider,
   ) {}
 
-  private async resolveProvider() {
-    const id = await this.readiness.getDefaultProvider();
+  private async resolveProvider(explicit?: PaymentProviderId) {
     const map = { stripe: this.stripe, paypal: this.paypal, monri: this.monri } as const;
+    if (explicit) {
+      const provider = map[explicit];
+      if (!(await provider.isReady())) {
+        throw new BadRequestException('Odabrani način plaćanja nije dostupan');
+      }
+      return provider;
+    }
+    const ready = await this.readiness.getReadyProviders();
+    if (ready.length === 1) return map[ready[0]];
+    const id = await this.readiness.getDefaultProvider();
     const provider = map[id];
     if (!(await provider.isReady())) {
       throw new BadRequestException('Online plaćanje nije konfigurisano');
@@ -27,7 +36,13 @@ export class PaymentsService {
     return provider;
   }
 
-  async checkoutTickets(orderId: string, successUrl: string, cancelUrl: string, userId: string) {
+  async checkoutTickets(
+    orderId: string,
+    successUrl: string,
+    cancelUrl: string,
+    userId: string,
+    providerId?: PaymentProviderId,
+  ) {
     const sales = await this.readiness.getSalesModes();
     if (!sales.online) throw new BadRequestException('Online kupovina ulaznica nije omogućena');
     const order = await this.prisma.ticketOrder.findFirst({ where: { id: orderId, userId } });
@@ -35,7 +50,7 @@ export class PaymentsService {
     if (order.status !== 'pending') {
       throw new BadRequestException('Narudžba nije dostupna za online plaćanje');
     }
-    const provider = await this.resolveProvider();
+    const provider = await this.resolveProvider(providerId);
     return provider.createTicketCheckout(orderId, successUrl, cancelUrl);
   }
 
@@ -45,11 +60,12 @@ export class PaymentsService {
     successUrl: string,
     cancelUrl: string,
     userId: string,
+    providerId?: PaymentProviderId,
   ) {
     const allowed = await this.readiness.isMembershipOnlineAllowed();
     if (!allowed) throw new BadRequestException('Online članstvo nije omogućeno');
     await this.membership.assertPayableMembership(membershipId, userId);
-    const provider = await this.resolveProvider();
+    const provider = await this.resolveProvider(providerId);
     return provider.createMembershipCheckout(membershipId, amount, successUrl, cancelUrl);
   }
 

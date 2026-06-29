@@ -4,6 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useMatchAvailability, useTicketingPublicConfig } from '../../hooks/use-ticketing';
 import { formatDateTime } from '../../lib/utils';
 import { matchLabel } from '../../lib/ticketing-status';
+import { getReadyPaymentProviders } from '../../lib/payment-providers';
 import { Input } from '../ui/input';
 import { TicketsReserveActions } from './TicketsReserveActions';
 
@@ -37,6 +38,7 @@ export function TicketsReserveForm({ onSuccess }: Props) {
   const sales = config?.salesModes;
   const boxOffice = !!sales?.boxOffice;
   const online = !!sales?.online;
+  const providers = getReadyPaymentProviders(config);
 
   const boxOfficeMax = Math.min(
     availability?.userRemainingQuota ?? config?.maxBoxOfficeTicketsPerUser ?? 4,
@@ -112,9 +114,9 @@ export function TicketsReserveForm({ onSuccess }: Props) {
         </p>
       )}
 
-      {online && (
-        <p className="text-xs text-success">
-          Online plaćanje: Stripe / PayPal / Monri (prema aktivnom provajderu u postavkama).
+      {online && providers.length > 0 && (
+        <p className="text-xs text-text-muted">
+          Online plaćanje putem: {providers.map((p) => p.charAt(0).toUpperCase() + p.slice(1)).join(', ')}.
         </p>
       )}
       {boxOffice && (

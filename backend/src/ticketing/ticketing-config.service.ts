@@ -46,15 +46,15 @@ export class TicketingConfigService {
   }
 
   async getPublicConfig() {
-    const [publicSettings, salesModes, onlineReady] = await Promise.all([
+    const [publicSettings, salesModes] = await Promise.all([
       this.settings.getPublic(),
       this.payments.getSalesModes(),
-      this.payments.isOnlinePaymentsReady(),
     ]);
     const categories = activeTicketCategories(
       parseTicketCategories(publicSettings['ticketing.categories']),
     );
-    const membershipOnline = await this.payments.isMembershipOnlineAllowed();
+    const membershipOnline =
+      (await this.payments.isMembershipOnlineAllowed()) && salesModes.onlineReady;
     const priv = await this.settings.getPrivate();
     const activeTicketMatch = await this.findActiveScheduledHomeMatch();
     return {
@@ -66,7 +66,8 @@ export class TicketingConfigService {
       membershipAnnualPrice: Number(publicSettings['membership.annualPrice']) || 0,
       activeTicketMatch,
       salesModes,
-      onlineReady,
+      onlineReady: salesModes.onlineReady,
+      readyProviders: salesModes.readyProviders,
       membershipOnlineEnabled: membershipOnline,
       modulesTicketing: publicSettings['modules.ticketing'] !== 'false',
       modulesMembership: priv['feature.membership'] !== 'false',

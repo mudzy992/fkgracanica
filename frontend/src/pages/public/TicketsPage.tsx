@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import { Link, useLocation, useSearchParams } from 'react-router-dom';
-import { useMyTicketOrders, useTicketingPublicConfig } from '../../hooks/use-ticketing';
+import { useTicketingPublicConfig } from '../../hooks/use-ticketing';
 import { useTicketPaymentReturn } from '../../hooks/use-ticket-payment-return';
+import { useClearPaymentParams } from '../../hooks/use-clear-payment-params';
 import { useAuth } from '../../lib/auth';
-import { TicketOrderCard } from '../../components/ticketing/TicketOrderCard';
+import { MyTicketsPanel } from '../../components/ticketing/MyTicketsPanel';
 import { TicketsReserveForm } from '../../components/ticketing/TicketsReserveForm';
 import { FormShell } from '../../components/public/forms/FormShell';
 import { PageHeroHeader } from '../../components/public/shell/PageHeroHeader';
@@ -19,7 +20,6 @@ export function TicketsPage() {
   const [searchParams] = useSearchParams();
   const paidReturn = searchParams.get('paid') === '1';
   const sessionId = searchParams.get('session_id');
-  const { data: orders, isLoading: ol } = useMyTicketOrders();
   const { data: config } = useTicketingPublicConfig();
   const [tab, setTab] = useState<Tab>(paidReturn ? 'orders' : 'reserve');
 
@@ -28,11 +28,11 @@ export function TicketsPage() {
     sessionId,
     enabled: isAuthenticated && !isLoading,
   });
+  useClearPaymentParams(!confirming && (activated || !paidReturn || !sessionId));
 
   if (isLoading || confirming) return <Skeleton className="mx-auto mt-12 h-64 max-w-xl" />;
 
   const sales = config?.salesModes;
-  const showPaymentSuccess = paidReturn && activated;
 
   return (
     <div className="pb-16">
@@ -64,21 +64,8 @@ export function TicketsPage() {
 
             {tab === 'reserve' ? (
               <TicketsReserveForm onSuccess={() => setTab('orders')} />
-            ) : ol ? (
-              <Skeleton className="h-32 w-full" />
-            ) : orders?.length ? (
-              <div className="space-y-6">
-                {showPaymentSuccess && (
-                  <p className="rounded-lg border border-success/30 bg-success/10 px-4 py-3 text-sm text-success">
-                    Uplata je uspješna. Vaše ulaznice su aktivirane — pokažite QR kod na ulazu.
-                  </p>
-                )}
-                {orders.map((o) => (
-                  <TicketOrderCard key={o.id} order={o} />
-                ))}
-              </div>
             ) : (
-              <p className="text-sm text-text-muted">Nemate narudžbi ulaznica.</p>
+              <MyTicketsPanel paymentSuccess={paidReturn && activated} />
             )}
 
             {tab === 'reserve' && sales?.boxOffice && !sales?.online && (

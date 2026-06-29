@@ -6,8 +6,10 @@ import {
   orderStatusLabel,
   orderStatusVariant,
 } from '../../lib/ticketing-status';
+import { getReadyPaymentProviders } from '../../lib/payment-providers';
 import { useCancelMyTicketOrder, useRequestTicketRefund, useTicketingPublicConfig } from '../../hooks/use-ticketing';
 import { useOnlineTicketCheckout } from '../../hooks/use-online-checkout';
+import { OnlinePaymentChoice } from '../payments/OnlinePaymentChoice';
 import { TicketPassCard } from './TicketPassCard';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
@@ -22,24 +24,27 @@ export function TicketOrderCard({ order }: Props) {
   const cancel = useCancelMyTicketOrder();
   const checkout = useOnlineTicketCheckout();
   const { data: config } = useTicketingPublicConfig();
+  const providers = getReadyPaymentProviders(config);
   const isPaid = order.status === 'paid';
   const canCancel = order.status === 'pending' && !order.tickets?.some((t) => canShowTicketQr(t.status));
-  const canPayOnline = canPayOrderOnline(
-    order,
-    !!(config?.salesModes?.online && config?.onlineReady),
-  );
+  const canPayOnline = canPayOrderOnline(order, providers.length > 0);
 
-  const payOnline = async () => {
-    const res = await checkout.mutateAsync(order.id);
+  const payOnline = async (provider: typeof providers[number]) => {
+    const res = await checkout.mutateAsync({ orderId: order.id, provider });
     if (res.url) window.location.href = res.url;
   };
 
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-2 px-1">
-        <p className="text-sm font-medium text-text-muted">
-          Narudžba · {order.createdAt ? formatDateTime(order.createdAt) : '—'} · {String(order.total)} KM
-        </p>
+        <div>
+          <p className="text-sm font-medium text-text-muted">
+            Narudžba · {order.createdAt ? formatDateTime(order.createdAt) : '—'} · {String(order.total)} KM
+          </p>
+          {order.status === 'pending' && order.payment?.status === 'PENDING_ONLINE' && (
+            <p className="text-xs text-text-muted">Online uplata u toku ili nije završena</p>
+          )}
+        </div>
         <Badge variant={orderStatusVariant(order.status)}>{orderStatusLabel(order.status)}</Badge>
       </div>
 
@@ -47,11 +52,14 @@ export function TicketOrderCard({ order }: Props) {
         <TicketPassCard key={ticket.id} ticket={ticket} />
       ))}
 
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap items-center gap-2">
         {canPayOnline && (
-          <Button size="sm" disabled={checkout.isPending} onClick={() => void payOnline()}>
-            {checkout.isPending ? 'Preusmjeravanje...' : 'Plati online'}
-          </Button>
+          <OnlinePaymentChoice
+            providers={providers}
+            size="sm"
+            loading={checkout.isPending}
+            onSelect={(provider) => void payOnline(provider)}
+          />
         )}
         {canCancel && (
           <Button

@@ -17,9 +17,21 @@ export class PaymentsController {
   @ApiBearerAuth()
   checkoutTickets(
     @CurrentUser() user: AuthUser,
-    @Body() body: { orderId: string; successUrl: string; cancelUrl: string },
+    @Body()
+    body: {
+      orderId: string;
+      successUrl: string;
+      cancelUrl: string;
+      provider?: 'stripe' | 'paypal' | 'monri';
+    },
   ) {
-    return this.service.checkoutTickets(body.orderId, body.successUrl, body.cancelUrl, user.id);
+    return this.service.checkoutTickets(
+      body.orderId,
+      body.successUrl,
+      body.cancelUrl,
+      user.id,
+      body.provider,
+    );
   }
 
   @Post('checkout/membership')
@@ -27,7 +39,14 @@ export class PaymentsController {
   @ApiBearerAuth()
   checkoutMembership(
     @CurrentUser() user: AuthUser,
-    @Body() body: { membershipId: string; amount: number; successUrl: string; cancelUrl: string },
+    @Body()
+    body: {
+      membershipId: string;
+      amount: number;
+      successUrl: string;
+      cancelUrl: string;
+      provider?: 'stripe' | 'paypal' | 'monri';
+    },
   ) {
     return this.service.checkoutMembership(
       body.membershipId,
@@ -35,6 +54,7 @@ export class PaymentsController {
       body.successUrl,
       body.cancelUrl,
       user.id,
+      body.provider,
     );
   }
 

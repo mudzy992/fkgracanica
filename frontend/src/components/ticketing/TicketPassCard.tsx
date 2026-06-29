@@ -1,5 +1,10 @@
 import { formatDateTime } from '../../lib/utils';
-import { canShowTicketQr, matchLabel } from '../../lib/ticketing-status';
+import {
+  canShowTicketQr,
+  matchLabel,
+  ticketStatusLabel,
+  ticketStatusVariant,
+} from '../../lib/ticketing-status';
 import type { TicketRow } from '../../types/ticketing';
 import { MembershipQrCode } from '../membership/MembershipQrCode';
 import { Badge } from '../ui/badge';
@@ -9,11 +14,20 @@ interface Props {
 }
 
 export function TicketPassCard({ ticket }: Props) {
-  const paid = canShowTicketQr(ticket.status);
+  const showQr = canShowTicketQr(ticket.status);
+  const isCancelled = ticket.status === 'CANCELLED' || ticket.status === 'REFUND_REQUESTED';
 
   return (
-    <div className="overflow-hidden rounded-xl border border-[var(--border-subtle)] bg-background shadow-sm">
-      <div className="border-b border-[var(--border-subtle)] bg-primary/10 px-4 py-3 sm:px-5">
+    <div
+      className={`overflow-hidden rounded-xl border bg-background shadow-sm ${
+        isCancelled ? 'border-danger/30 opacity-75' : 'border-[var(--border-subtle)]'
+      }`}
+    >
+      <div
+        className={`border-b px-4 py-3 sm:px-5 ${
+          isCancelled ? 'border-danger/20 bg-danger/5' : 'border-[var(--border-subtle)] bg-primary/10'
+        }`}
+      >
         <p className="text-xs font-medium uppercase tracking-wide text-primary">Ulaznica</p>
         <p className="mt-1 font-display text-lg font-bold text-text">{matchLabel(ticket.match)}</p>
         {ticket.match?.scheduledAt && (
@@ -25,13 +39,19 @@ export function TicketPassCard({ ticket }: Props) {
           <p className="text-sm text-text-muted">
             {ticket.category} · <strong className="text-text">{String(ticket.price)} KM</strong>
           </p>
-          <Badge variant={paid ? 'success' : 'default'}>{paid ? 'Plaćeno' : 'Rezervisano'}</Badge>
+          <Badge variant={ticketStatusVariant(ticket.status)}>{ticketStatusLabel(ticket.status)}</Badge>
         </div>
-        {paid && (
+        {showQr && (
           <div className="flex flex-col items-center gap-2 rounded-lg bg-surface/60 py-4">
             <MembershipQrCode value={ticket.qrCode} size={160} />
             <p className="text-center text-xs text-text-muted">Pokažite QR kod na ulazu u stadion</p>
           </div>
+        )}
+        {ticket.status === 'RESERVED' && (
+          <p className="text-xs text-text-muted">Rezervacija — platite na blagajni ili online iz narudžbe.</p>
+        )}
+        {ticket.status === 'USED' && (
+          <p className="text-xs text-text-muted">Ulaznica je već iskorištena na utakmici.</p>
         )}
       </div>
     </div>

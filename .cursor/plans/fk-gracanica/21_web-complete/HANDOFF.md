@@ -1,10 +1,10 @@
 # HANDOFF — Web Complete
 
 > **Datum:** 2026-06-29  
-> **Sesija:** Gate #14 Ulaznice + članstvo online + unified auth + Stripe aktivacija  
-> **Gate:** #1–#14 APPROVED; **#15 Kontakt READY_FOR_REVIEW**  
-> **Sljedeći fokus:** #15 Kontakt smoke → APPROVED → **#16 Newsletter**  
-> **Git:** `main` @ `be03774` — **veliki uncommitted diff** (vidi §11)
+> **Sesija:** #14 Ulaznice APPROVED + payments polish + Moj račun ulaznice + multi-provider UI  
+> **Gate:** #1–#14 **APPROVED**; **#15 Kontakt READY_FOR_REVIEW**  
+> **Sljedeći fokus:** #15 Kontakt → korisnički APPROVED → **#16 Newsletter**  
+> **Git:** `main` @ `be03774` — **veliki uncommitted diff** (vidi §12)
 
 ---
 
@@ -14,7 +14,8 @@
 2. [.cursor/docs/matrices/ticketing/MATRIX.md](../../../docs/matrices/ticketing/MATRIX.md)
 3. [.cursor/docs/matrices/payments/MATRIX.md](../../../docs/matrices/payments/MATRIX.md)
 4. [.cursor/docs/matrices/membership/MATRIX.md](../../../docs/matrices/membership/MATRIX.md)
-5. [../HANDOFF.md](../HANDOFF.md) — deploy, env, produkcija
+5. [.cursor/docs/matrices/contact/MATRIX.md](../../../docs/matrices/contact/MATRIX.md)
+6. [../HANDOFF.md](../HANDOFF.md) — deploy, env, produkcija
 
 ---
 
@@ -23,48 +24,71 @@
 | # | Modul | Status |
 |---|-------|--------|
 | 1–12 | Vijesti → Live | **APPROVED** |
-| 13 | Članstvo | **APPROVED** (prošireno online join + pending UX) |
-| 14 | Ulaznice | **READY_FOR_REVIEW** |
-| 15–21 | Kontakt → Dashboard | nije gate-ovan |
+| 13 | Članstvo | **APPROVED** |
+| 14 | Ulaznice | **APPROVED** |
+| 15 | Kontakt | **READY_FOR_REVIEW** |
+| 16–21 | Newsletter → Dashboard | nije gate-ovan |
 
 ---
 
-## 3. Urađeno u zadnjoj sesiji
+## 3. Urađeno (akumulirano, uncommitted)
 
-### 3.1 Unified auth (javni web)
+### 3.1 Unified auth + header
 
-- Jedna prijava: `/prijava` (`LoginPage.tsx`) — članovi + staff
-- `/admin/login` → redirect na `/prijava`
-- `hasStaffAccess()` — staff = bilo koja permission; uloga Član = `[]`
-- `ProtectedRoute` — ne-staff → `/clanstvo` (ne admin)
-- Header: `PublicAuthButton` — „Prijavi se“ / „Moj račun“ / Dashboard (samo staff)
-- Footer: Dashboard link samo za staff
+- Jedna prijava: `/prijava` — članovi + staff
+- `PublicUserMenu` — inicijali, dropdown: Moj račun / Dashboard (staff) / Odjava
+- `hasStaffAccess()`, `ProtectedRoute` — ne-staff → `/clanstvo`
 
-### 3.2 Članstvo — online kupovina + aktivacija
+### 3.2 Članstvo online
 
-- `POST /membership/public/join` — gost kreira nalog (Član) + PENDING članstvo + JWT
-- Stripe: `POST /payments/checkout/membership` → redirect
-- **Aktivacija:** webhook `checkout.session.completed` **ili** povratak s `session_id`:
-  - `POST /payments/membership/confirm-session` (JWT)
-  - `confirmMembership()` → ACTIVE + `MembershipCard` + QR
-- Success URL: `/clanstvo?paid=1&session_id={CHECKOUT_SESSION_ID}`
-- **Moj račun** (`/clanstvo`, prijavljen):
-  - `ACTIVE` → digitalna kartica + opcija obnove
-  - `PENDING` → `MembershipPendingStatus` (amber banner „čeka odobrenje“)
-  - online uključen → dugme „Plati online“; samo blagajna → poruka o uplati na stadionu
-- Otkazana uplata: `?cancelled=1` → ponovni pokušaj
+- Gost: `POST /membership/public/join` → Stripe → auto **ACTIVE** + kartica + QR
+- Aktivacija: webhook **ili** `POST /payments/membership/confirm-session`
+- PENDING (box office): banner „čeka odobrenje“, **bez** pay dugmeta
+- Otkazana uplata: `?cancelled=1` → `OnlinePaymentChoice` retry
 
-### 3.3 Gate #14 Ulaznice (akumulirano, još nije APPROVED)
+### 3.3 Ulaznice — sales modes
 
-**Backend:** ticketing settings, `TicketingConfigService`, domaće utakmice only, `PaymentsModule` (Stripe), migracija `20260629120000_payment_online_fields`, max box-office limit po korisniku, jedna SCHEDULED domaća utakmica.
+| Online | Blagajna | Ponašanje |
+|--------|----------|-----------|
+| ✓ | ✓ | Plati online **ili** rezerviši za blagajnu |
+| ✓ | ✗ | Samo online |
+| ✗ | ✓ | Samo rezervacija |
+| ✗ | ✗ | Kupovina off |
 
-**Frontend:** admin tabovi Narudžbe | Postavke | Online plaćanje; `/ulaznice` bez dropdowna (auto match); prematch + home CTA; online checkout; ticketing keys **ne** u globalnom `/admin/settings` (`managedIn: 'ticketing'`, strip u `settingDefToCreate` — fix Prisma crash).
+- `paymentIntent: 'box_office' | 'online'` na reserve
+- Limit blagajne samo za box-office rezervacije
+- **Plati online** samo za neplaćene rezervacije (`RESERVED`, ne `CONFIRMED`)
 
-**Fix:** `managedIn` metadata se ne šalje u Prisma upsert (login crash).
+### 3.4 Online plaćanje — auto-odobrenje
+
+- Ulaznice: `POST /payments/tickets/confirm-session` + webhook → order `paid`, QR
+- Članstvo: `confirm-session` + webhook → `ACTIVE` + kartica
+- `usePaymentSessionReturn` — **jedan** confirm poziv (fix infinite loop)
+- `sessionStorage` dedup + `useClearPaymentParams` (briše `?paid&session_id`)
+
+### 3.5 Multi-provider UI (`OnlinePaymentChoice`)
+
+- **1 spreman provajder** → dugme „Plati online“ + logo (Stripe/PayPal/Monri)
+- **2+ spremna** → samo logotipi; klik → checkout tog provajdera
+- Backend: `getReadyProviders()`, checkout prima `provider`
+- Javno: `readyProviders` u `/ticketing/config`
+- PayPal/Monri: još **stub 501** (samo Stripe live)
+
+### 3.6 Moj račun — ulaznice
+
+- `/clanstvo`: sekcija **Moje ulaznice** (`MyTicketsPanel`)
+- Filteri: Kupljene | Rezervisane | Otkazane | Sve
+- `TicketPassCard` — status badge, QR za plaćene, muted za otkazane
+
+### 3.7 Gate #15 Kontakt (READY_FOR_REVIEW)
+
+- Forma + admin inbox već postoje
+- Polish: prefill imena/emaila, admin mailto link
+- Matrica: `.cursor/docs/matrices/contact/MATRIX.md`
 
 ---
 
-## 4. Stripe / env (test)
+## 4. Stripe / env
 
 ```bash
 # Admin → Ulaznice → Online plaćanje
@@ -74,52 +98,48 @@ payments.stripe.publishableKey = pk_test_...
 payments.stripe.webhookSecret = whsec_...
 
 ticketing.onlineEnabled = true
+ticketing.boxOfficeEnabled = true   # default true
 membership.onlineEnabled = true
 membership.annualPrice = <KM>
 ```
 
-Webhook URL: `POST /backend/api/v1/payments/webhooks/stripe`  
+Webhook: `POST /api/v1/payments/webhooks/stripe`  
 Lokalno: `stripe listen --forward-to localhost:3000/api/v1/payments/webhooks/stripe`
 
 ---
 
-## 5. Smoke checklist (#14 + članstvo online)
+## 5. Smoke checklist (#15 + regresija)
 
-### Ulaznice
-- [ ] Admin: kategorije CRUD, cijene
-- [ ] Online disabled bez Stripe secrets
-- [ ] Javno: samo domaća SCHEDULED utakmica
-- [ ] Prematch/home CTA → `/ulaznice`
-- [ ] Box office rezervacija
-- [ ] Stripe test → narudžba `paid`
+### Kontakt (#15)
+- [ ] Javno `/kontakt` — submit poruke
+- [ ] Admin `/admin/contact` — lista, filter, sheet, mailto
+- [ ] Prefill za prijavljenog korisnika
 
-### Članstvo online
-- [ ] Gost: join forma → Stripe → povratak → ACTIVE + kartica
-- [ ] Registracija bez plaćanja → prijava → Moj račun → PENDING banner
-- [ ] Box-office-only (online off) → PENDING bez pay dugmeta
-- [ ] Webhook + confirm-session (oba idempotentna)
-
-### Auth
-- [ ] Član vidi Moj račun, ne admin
-- [ ] Staff vidi Dashboard u headeru/footeru
+### Regresija payments
+- [ ] 1 provajder (Stripe): dugme + ikona → paid + QR
+- [ ] confirm-session: **1 request** u Network tabu (ne loop)
+- [ ] Rezervacija blagajna → bez „Plati online“ nakon uplate
+- [ ] Moj račun: filteri ulaznica
 
 ---
 
-## 6. Ključni fajlovi (nova sesija)
+## 6. Ključni fajlovi
 
 | Područje | Putanja |
 |----------|---------|
-| Public join | `backend/src/membership/membership-public.controller.ts` |
-| Stripe confirm | `backend/src/payments/providers/stripe.provider.ts` |
-| Payments API | `backend/src/payments/payments.controller.ts` |
-| Login unified | `frontend/src/pages/public/LoginPage.tsx` |
-| Moj račun | `frontend/src/pages/public/MembershipPage.tsx` |
-| Pending UX | `frontend/src/components/membership/MembershipPendingStatus.tsx` |
-| Purchase flow | `frontend/src/components/membership/MembershipPurchasePanel.tsx` |
-| Payment return | `frontend/src/hooks/use-membership-payment-return.ts` |
-| Staff gate | `frontend/src/lib/staff-access.ts` |
-| Settings filter | `frontend/src/lib/setting-field-utils.ts` |
-| Ticketing admin | `frontend/src/pages/admin/TicketingAdminPage.tsx` |
+| Payments readiness | `backend/src/payments/payments-readiness.service.ts` |
+| Stripe confirm flow | `backend/src/payments/stripe-confirm.flow.ts` |
+| Checkout API | `backend/src/payments/payments.controller.ts` |
+| Ticketing config | `backend/src/ticketing/ticketing-config.service.ts` |
+| Payment choice UI | `frontend/src/components/payments/OnlinePaymentChoice.tsx` |
+| Provider logos | `frontend/src/components/payments/PaymentProviderLogo.tsx` |
+| Confirm hook (fix loop) | `frontend/src/hooks/use-payment-session-return.ts` |
+| Moj račun ulaznice | `frontend/src/components/ticketing/MyTicketsPanel.tsx` |
+| Ticket pass | `frontend/src/components/ticketing/TicketPassCard.tsx` |
+| User menu | `frontend/src/components/layout/PublicUserMenu.tsx` |
+| Membership flow | `frontend/src/components/membership/MembershipPurchasePanel.tsx` |
+| Kontakt javno | `frontend/src/pages/public/ContactPage.tsx` |
+| Kontakt admin | `frontend/src/pages/admin/ContactAdminPage.tsx` |
 
 ---
 
@@ -137,20 +157,19 @@ cd backend && npx prisma migrate deploy && npx prisma generate
 
 ## 8. Poznati gapovi / backlog
 
-- [ ] Success toast nakon uplate (opcionalno UX)
-- [ ] PayPal/Monri — stub 501
-- [ ] `live_center/MATRIX.md` — nije ažuriran za Live polish
-- [ ] E2E za membership Stripe confirm-session
+- [ ] PayPal/Monri — implementacija (trenutno stub)
+- [ ] E2E confirm-session (tickets + membership)
+- [ ] `live_center/MATRIX.md` — nije ažuriran
 - [ ] **Commit** cijelog diffa prije produkcijskog deploya
+- [ ] Docker rebuild nakon deploya (stari image nema `/ticketing/config`)
 
 ---
 
-## 9. Sljedeći segmenti (#15+)
+## 9. Sljedeći segmenti
 
-| # | Segment | Predloženi scope |
-|---|---------|------------------|
-| **14** | **Ulaznice** | Smoke → APPROVED |
-| 15 | Kontakt | Forma + admin inbox |
+| # | Segment | Scope |
+|---|---------|-------|
+| **15** | **Kontakt** | Smoke → APPROVED |
 | 16 | Newsletter | Pretplate |
 | 17–21 | HoF, Muzej, Users, Settings, Dashboard | po planu |
 
@@ -165,29 +184,48 @@ cd backend && npx prisma migrate deploy
 
 ---
 
-## 11. Uncommitted promjene (⚠️)
+## 11. Predloženi commit message (cijeli diff)
 
-Sve iz §3–§4 je u working tree, **nije commitano**. Prije deploya:
+```
+feat(web): payments, ulaznice, članstvo online, Moj račun
+
+- Payments modul (Stripe checkout, webhook, confirm-session)
+- Unified auth, PublicUserMenu, sales modes ulaznica
+- Auto-aktivacija nakon online uplate, MyTicketsPanel
+- OnlinePaymentChoice (multi-provider), confirm-session loop fix
+- Kontakt prefill + contact matrix
+- Gate #14 APPROVED, #15 Kontakt READY_FOR_REVIEW
+```
+
+---
+
+## 12. Uncommitted promjene (⚠️)
 
 ```bash
 git status
 git diff --stat
 ```
 
-Novi moduli/direktoriji: `backend/src/payments/`, `membership-public.controller`, `frontend/src/components/membership/`, `LoginPage`, hooks za checkout/confirm.
+**Novi direktoriji/moduli (izvan HEAD):**
+- `backend/src/payments/` (+ stripe-confirm.flow.ts)
+- `backend/src/membership/membership-public.controller.ts`
+- `frontend/src/components/membership/`, `ticketing/`, `payments/`
+- `frontend/src/components/layout/PublicUserMenu.tsx`
+- hooks: checkout, confirm-session, payment-return, clear-params
+- `.cursor/docs/matrices/payments/`, `contact/`
+
+**Zadnja sesija (na vrhu diffa):** multi-provider UI, confirm loop fix, MyTicketsPanel.
 
 ---
 
-## 12. Prompt za sljedeću sesiju (copy-paste)
+## 13. Prompt za sljedeću sesiju (copy-paste)
 
 ```
 Nastavi Web Complete iz HANDOFF-a:
 @.cursor/plans/fk-gracanica/21_web-complete/HANDOFF.md
 
-Gate #14 Ulaznice READY_FOR_REVIEW — smoke Stripe (ulaznice + članstvo), pa APPROVED.
-Unified auth i membership online aktivacija su implementirani ali uncommitted.
+Gate #15 Kontakt READY_FOR_REVIEW — smoke → APPROVED → #16 Newsletter.
+Cijeli payments/ulaznice/članstvo diff je uncommitted — commit prije deploya ako korisnik traži.
 
-Pročitaj ticketing/payments/membership MATRIX.
-Ako smoke prođe, predloži commit message za cijeli diff.
-Zatim #15 Kontakt.
+Pročitaj contact + payments MATRIX.
 ```

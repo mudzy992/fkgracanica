@@ -1,6 +1,9 @@
 import { useOnlineTicketCheckout } from '../../hooks/use-online-checkout';
-import { useReserveTicket } from '../../hooks/use-ticketing';
+import { useReserveTicket, useTicketingPublicConfig } from '../../hooks/use-ticketing';
+import { getReadyPaymentProviders } from '../../lib/payment-providers';
 import type { TicketPaymentIntent } from '../../types/ticketing';
+import type { PaymentProviderId } from '../../types/payment-provider';
+import { OnlinePaymentChoice } from '../payments/OnlinePaymentChoice';
 import { Button } from '../ui/button';
 
 interface Category {
@@ -34,8 +37,10 @@ export function TicketsReserveActions({
 }: Props) {
   const reserve = useReserveTicket();
   const checkout = useOnlineTicketCheckout();
+  const { data: config } = useTicketingPublicConfig();
+  const providers = getReadyPaymentProviders(config);
 
-  const submit = async (intent: TicketPaymentIntent) => {
+  const submit = async (intent: TicketPaymentIntent, provider?: PaymentProviderId) => {
     const max = intent === 'online' ? onlineMax : boxOfficeMax;
     if (quantity > max || remaining < 1) return;
     const order = await reserve.mutateAsync({
@@ -47,8 +52,8 @@ export function TicketsReserveActions({
       paymentIntent: intent,
     });
     const orderId = (order as { id?: string })?.id;
-    if (intent === 'online' && orderId) {
-      const res = await checkout.mutateAsync(orderId);
+    if (intent === 'online' && orderId && provider) {
+      const res = await checkout.mutateAsync({ orderId, provider });
       if (res.url) {
         window.location.href = res.url;
         return;
@@ -64,14 +69,13 @@ export function TicketsReserveActions({
   if (boxOffice && online) {
     return (
       <div className="space-y-2">
-        <Button
-          type="button"
-          className="w-full"
+        <OnlinePaymentChoice
+          providers={providers}
+          fullWidth
           disabled={onlineDisabled}
-          onClick={() => void submit('online')}
-        >
-          {busy ? 'Obrada...' : 'Plati online'}
-        </Button>
+          loading={busy}
+          onSelect={(provider) => void submit('online', provider)}
+        />
         <Button
           type="button"
           variant="outline"
@@ -87,14 +91,13 @@ export function TicketsReserveActions({
 
   if (online) {
     return (
-      <Button
-        type="button"
-        className="w-full"
+      <OnlinePaymentChoice
+        providers={providers}
+        fullWidth
         disabled={onlineDisabled}
-        onClick={() => void submit('online')}
-      >
-        {busy ? 'Preusmjeravanje...' : 'Plati online'}
-      </Button>
+        loading={busy}
+        onSelect={(provider) => void submit('online', provider)}
+      />
     );
   }
 

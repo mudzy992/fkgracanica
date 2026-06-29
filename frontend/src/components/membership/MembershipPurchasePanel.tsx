@@ -1,15 +1,18 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useRegisterMembership } from '../../hooks/use-membership';
 import { useOnlineMembershipCheckout } from '../../hooks/use-online-checkout';
 import { useAuth } from '../../lib/auth';
+import { getReadyPaymentProviders } from '../../lib/payment-providers';
+import { OnlinePaymentChoice } from '../payments/OnlinePaymentChoice';
 import { MembershipJoinForm } from './MembershipJoinForm';
 import { MembershipBoxOfficeInfo } from './MembershipBoxOfficeInfo';
 import { MembershipCardPanel } from './MembershipCardPanel';
 import { MembershipPendingStatus } from './MembershipPendingStatus';
 import { membershipStatusLabel } from '../../lib/membership-status';
-import { Button } from '../ui/button';
 import { Skeleton } from '../ui/skeleton';
 import type { MembershipRow } from '../../types/membership';
+import type { PaymentProviderId } from '../../types/payment-provider';
 import type { TicketingPublicConfig } from '../../types/ticketing-config';
 
 interface Props {
@@ -38,20 +41,28 @@ export function MembershipPurchasePanel({
   const { isAuthenticated, user } = useAuth();
   const register = useRegisterMembership();
   const checkout = useOnlineMembershipCheckout();
+  const [awaitingPayId, setAwaitingPayId] = useState<string | null>(null);
 
   const moduleOn = config?.modulesMembership !== false;
   const onlineAllowed = config?.membershipOnlineEnabled && config?.onlineReady;
+  const providers = getReadyPaymentProviders(config);
   const annualPrice = config?.membershipAnnualPrice ?? 0;
   const current = memberships?.length ? pickCurrent(memberships) : undefined;
+  const busy = register.isPending || checkout.isPending;
 
-  const payOnline = async (membershipId: string) => {
-    const res = await checkout.mutateAsync({ membershipId, amount: annualPrice });
+  const payOnline = async (membershipId: string, provider: PaymentProviderId) => {
+    const res = await checkout.mutateAsync({ membershipId, amount: annualPrice, provider });
     if (res.url) window.location.href = res.url;
   };
 
-  const startPurchase = async () => {
+  const afterJoin = async (membershipId: string) => {
+    if (providers.length === 1) await payOnline(membershipId, providers[0]);
+    else setAwaitingPayId(membershipId);
+  };
+
+  const startPurchase = async (provider: PaymentProviderId) => {
     const created = await register.mutateAsync();
-    if (onlineAllowed && created?.id) await payOnline(created.id);
+    if (onlineAllowed && created?.id) await payOnline(created.id, provider);
   };
 
   if (!moduleOn) {
@@ -67,6 +78,20 @@ export function MembershipPurchasePanel({
     );
   }
 
+  if (awaitingPayId) {
+    return (
+      <div className="space-y-3">
+        <p className="text-sm text-text-muted">Odaberite način online plaćanja:</p>
+        <OnlinePaymentChoice
+          providers={providers}
+          fullWidth
+          loading={checkout.isPending}
+          onSelect={(p) => void payOnline(awaitingPayId, p)}
+        />
+      </div>
+    );
+  }
+
   if (paymentCancelled) {
     return (
       <div className="space-y-3">
@@ -74,10 +99,10 @@ export function MembershipPurchasePanel({
         {current?.status === 'PENDING' && (
           <MembershipPendingStatus
             onlineAllowed={!!onlineAllowed}
-            annualPrice={annualPrice}
             userEmail={user?.email}
             showPayButton
-            onPayOnline={() => void payOnline(current.id)}
+            providers={providers}
+            onPayOnline={(p) => void payOnline(current.id, p)}
             payLoading={checkout.isPending}
           />
         )}
@@ -97,14 +122,12 @@ export function MembershipPurchasePanel({
         )}
         <MembershipCardPanel membership={current} />
         {onlineAllowed && annualPrice > 0 && (
-          <Button
-            variant="outline"
-            className="w-full"
-            disabled={checkout.isPending}
-            onClick={() => void payOnline(current.id)}
-          >
-            {checkout.isPending ? 'Preusmjeravanje...' : `Obnovi članstvo online · ${annualPrice} KM`}
-          </Button>
+          <OnlinePaymentChoice
+            providers={providers}
+            fullWidth
+            loading={checkout.isPending}
+            onSelect={(p) => void payOnline(current.id, p)}
+          />
         )}
       </div>
     );
@@ -112,10 +135,7 @@ export function MembershipPurchasePanel({
 
   if (isAuthenticated && current?.status === 'PENDING') {
     return (
-      <MembershipPendingStatus
-        onlineAllowed={!!onlineAllowed}
-        userEmail={user?.email}
-      />
+      <MembershipPendingStatus onlineAllowed={!!onlineAllowed} userEmail={user?.email} />
     );
   }
 
@@ -128,11 +148,13 @@ export function MembershipPurchasePanel({
         {onlineAllowed && current.status === 'EXPIRED' ? (
           <>
             <p className="text-sm text-text-muted">Možete obnoviti članstvo online.</p>
-            <Button className="w-full" disabled={register.isPending || checkout.isPending} onClick={() => void startPurchase()}>
-              {register.isPending || checkout.isPending
-                ? 'Obrada...'
-                : `Obnovi članstvo · ${annualPrice} KM`}
-            </Button>
+            <OnlinePaymentChoice
+              providers={providers}
+              fullWidth
+              disabled={busy}
+              loading={busy}
+              onSelect={(p) => void startPurchase(p)}
+            />
           </>
         ) : (
           <p className="text-sm text-text-muted">
@@ -149,7 +171,7 @@ export function MembershipPurchasePanel({
 
   if (onlineAllowed && annualPrice > 0) {
     if (!isAuthenticated) {
-      return <MembershipJoinForm annualPrice={annualPrice} onJoined={payOnline} />;
+      return <MembershipJoinForm annualPrice={annualPrice} onJoined={afterJoin} />;
     }
 
     return (
@@ -158,11 +180,13 @@ export function MembershipPurchasePanel({
           Prijavljeni ste kao <strong>{user?.email}</strong>
         </p>
         <p className="text-sm text-text-muted">Godišnja članarina: {annualPrice} KM</p>
-        <Button className="w-full" disabled={register.isPending || checkout.isPending} onClick={() => void startPurchase()}>
-          {register.isPending || checkout.isPending
-            ? 'Obrada...'
-            : `Kupi članstvo online · ${annualPrice} KM`}
-        </Button>
+        <OnlinePaymentChoice
+          providers={providers}
+          fullWidth
+          disabled={busy}
+          loading={busy}
+          onSelect={(p) => void startPurchase(p)}
+        />
         {register.isError && (
           <p className="text-sm text-danger">Kupovina nije uspjela. Možda već imate aktivno članstvo.</p>
         )}

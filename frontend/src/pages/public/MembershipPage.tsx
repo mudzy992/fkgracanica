@@ -2,7 +2,9 @@ import { useSearchParams } from 'react-router-dom';
 import { useMyMembership } from '../../hooks/use-membership';
 import { useTicketingPublicConfig } from '../../hooks/use-ticketing';
 import { useMembershipPaymentReturn } from '../../hooks/use-membership-payment-return';
+import { useClearPaymentParams } from '../../hooks/use-clear-payment-params';
 import { MembershipPurchasePanel } from '../../components/membership/MembershipPurchasePanel';
+import { MyTicketsPanel } from '../../components/ticketing/MyTicketsPanel';
 import { FormShell } from '../../components/public/forms/FormShell';
 import { PageHeroHeader } from '../../components/public/shell/PageHeroHeader';
 import { Seo } from '../../components/seo/Seo';
@@ -23,6 +25,7 @@ export function MembershipPage() {
     sessionId,
     enabled: isAuthenticated && !authLoading,
   });
+  useClearPaymentParams(!confirming && (activated || !paidReturn || !sessionId));
 
   if (authLoading || configLoading || (isAuthenticated && membershipLoading) || confirming) {
     return <Skeleton className="mx-auto mt-12 h-64 max-w-xl" />;
@@ -38,7 +41,7 @@ export function MembershipPage() {
         title={accountMode ? 'Moj račun' : 'Članstvo'}
         subtitle={
           accountMode
-            ? 'Status članstva i digitalna članska kartica.'
+            ? 'Članstvo, ulaznice i pregled vaših narudžbi.'
             : 'Pridružite se klubu i podržite FK Gračanica kao registrirani član.'
         }
       />
@@ -57,6 +60,9 @@ export function MembershipPage() {
           paymentCancelled={paymentCancelled}
           paymentSuccess={paidReturn && activated}
         />
+        {accountMode && config?.modulesTicketing !== false && (
+          <MyTicketsPanel paymentSuccess={false} />
+        )}
       </FormShell>
     </div>
   );
