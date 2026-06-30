@@ -162,6 +162,14 @@ export const SETTINGS_REGISTRY: SettingDefinition[] = [
     managedIn: 'ticketing',
   },
   {
+    key: 'ticketing.ticketCardBackground',
+    value: '',
+    type: SettingType.STRING,
+    scope: SettingScope.PUBLIC,
+    description: 'Pozadina digitalne ulaznice (putanja u media biblioteci)',
+    managedIn: 'ticketing',
+  },
+  {
     key: 'ticketing.onlineEnabled',
     value: 'false',
     type: SettingType.BOOLEAN,

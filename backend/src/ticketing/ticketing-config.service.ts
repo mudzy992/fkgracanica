@@ -15,6 +15,7 @@ const TICKETING_ADMIN_KEYS = [
   'ticketing.memberDiscountPercent',
   'ticketing.maxBoxOfficeTicketsPerUser',
   'ticketing.categories',
+  'ticketing.ticketCardBackground',
   'ticketing.onlineEnabled',
   'ticketing.boxOfficeEnabled',
   'membership.onlineEnabled',
@@ -64,6 +65,7 @@ export class TicketingConfigService {
       maxBoxOfficeTicketsPerUser:
         Number(publicSettings['ticketing.maxBoxOfficeTicketsPerUser']) || 4,
       membershipAnnualPrice: Number(publicSettings['membership.annualPrice']) || 0,
+      ticketCardBackground: publicSettings['ticketing.ticketCardBackground'] || null,
       activeTicketMatch,
       salesModes,
       onlineReady: salesModes.onlineReady,
@@ -115,6 +117,7 @@ export class TicketingConfigService {
       'ticketing.memberDiscountPercent',
       'ticketing.maxBoxOfficeTicketsPerUser',
       'ticketing.categories',
+      'ticketing.ticketCardBackground',
       'membership.annualPrice',
       'payments.stripe.publishableKey',
     ]);

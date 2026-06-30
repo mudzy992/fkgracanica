@@ -21,6 +21,7 @@ import { Seo } from '../../components/seo/Seo';
 import { Badge } from '../../components/ui/badge';
 import { Button } from '../../components/ui/button';
 import { AdminDataTable, AdminPageShell } from '../../components/admin/AdminPageShell';
+import { MembershipCardsBulkExport } from '../../components/membership/MembershipCardsBulkExport';
 import { MembershipDetailSheet } from './MembershipDetailSheet';
 import { MembershipAdminFormSheet } from './MembershipAdminFormSheet';
 import type { MembershipRow, MembershipStatus } from '../../types/membership';
@@ -79,6 +80,7 @@ export function MembershipAdminPage() {
                   <Settings className="mr-1 h-4 w-4" />
                   Online postavke
                 </Link>
+                <MembershipCardsBulkExport memberships={items} />
                 <Button size="sm" onClick={() => setCreateOpen(true)}>
                   <Plus className="mr-1 h-4 w-4" />
                   Novi član

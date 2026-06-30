@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useTicketingAdminConfig, useUpdateTicketingAdminConfig } from '../../../hooks/use-ticketing-admin';
 import { TicketingCategoriesEditor } from './TicketingCategoriesEditor';
+import { TicketingCardBackgroundField } from './TicketingCardBackgroundField';
 import { Button } from '../../../components/ui/button';
 import { Input } from '../../../components/ui/input';
 import { Switch } from '../../../components/ui/switch';
@@ -13,6 +14,7 @@ export function TicketingSettingsTab() {
   const [discount, setDiscount] = useState('10');
   const [maxPerUser, setMaxPerUser] = useState('4');
   const [boxOffice, setBoxOffice] = useState(true);
+  const [cardBackground, setCardBackground] = useState('');
   const [categories, setCategories] = useState<TicketCategory[]>([]);
 
   useEffect(() => {
@@ -21,6 +23,7 @@ export function TicketingSettingsTab() {
     setDiscount(data.settings['ticketing.memberDiscountPercent'] || '10');
     setMaxPerUser(data.settings['ticketing.maxBoxOfficeTicketsPerUser'] || '4');
     setBoxOffice(data.settings['ticketing.boxOfficeEnabled'] !== 'false');
+    setCardBackground(data.settings['ticketing.ticketCardBackground'] || '');
     setCategories(data.categories);
   }, [data]);
 
@@ -30,6 +33,7 @@ export function TicketingSettingsTab() {
       'ticketing.memberDiscountPercent': discount,
       'ticketing.maxBoxOfficeTicketsPerUser': maxPerUser,
       'ticketing.boxOfficeEnabled': String(boxOffice),
+      'ticketing.ticketCardBackground': cardBackground,
       'ticketing.categories': JSON.stringify(categories),
     });
   };
@@ -57,6 +61,7 @@ export function TicketingSettingsTab() {
         <Switch checked={boxOffice} onCheckedChange={setBoxOffice} />
         Kupovina na blagajni omogućena
       </label>
+      <TicketingCardBackgroundField value={cardBackground} onChange={setCardBackground} />
       <div>
         <h3 className="mb-2 text-sm font-semibold">Kategorije ulaznica</h3>
         <TicketingCategoriesEditor categories={categories} onChange={setCategories} />

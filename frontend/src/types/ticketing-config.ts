@@ -25,6 +25,7 @@ export interface TicketingPublicConfig {
   membershipOnlineEnabled: boolean;
   modulesTicketing: boolean;
   modulesMembership: boolean;
+  ticketCardBackground: string | null;
 }
 
 export interface TicketingAdminConfig {

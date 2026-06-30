@@ -98,7 +98,7 @@ export class MembershipService {
   async findForUser(userId: string) {
     const items = await this.prisma.membership.findMany({
       where: { userId },
-      include: { card: true },
+      include: includeWithUser,
       orderBy: { createdAt: 'desc' },
     });
     return this.resolveExpiredMany(items);

@@ -14,11 +14,20 @@ export type OrderStatus =
   | 'refund_requested'
   | 'refunded';
 
+export interface TicketMatchClub {
+  id?: string;
+  name: string;
+  crestPath?: string | null;
+}
+
 export interface TicketMatch {
   id: string;
   scheduledAt?: string;
-  homeClub?: { name: string };
-  awayClub?: { name: string };
+  round?: number | null;
+  roundRel?: { id?: string; number?: number; name?: string | null } | null;
+  season?: { name?: string; competition?: { name?: string } } | null;
+  homeClub?: TicketMatchClub;
+  awayClub?: TicketMatchClub;
 }
 
 export interface TicketRow {

@@ -23,7 +23,19 @@ const orderInclude = {
   user: { select: { id: true, email: true, firstName: true, lastName: true } },
   tickets: {
     include: {
-      match: { include: { homeClub: true, awayClub: true } },
+      match: {
+        include: {
+          homeClub: true,
+          awayClub: true,
+          roundRel: { select: { id: true, number: true, name: true } },
+          season: {
+            select: {
+              name: true,
+              competition: { select: { name: true } },
+            },
+          },
+        },
+      },
     },
   },
   payment: true,

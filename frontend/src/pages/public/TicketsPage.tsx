@@ -38,7 +38,11 @@ export function TicketsPage() {
     <div className="pb-16">
       <Seo title="Ulaznice" description="Rezervacija ulaznica za utakmice FK Gračanica" />
       <PageHeroHeader eyebrow="Stadion" title="Ulaznice" subtitle="Osigurajte svoje mjesto na utakmici." />
-      <FormShell title="Ulaznice" description="Rezervacija i pregled vaših narudžbi.">
+      <FormShell
+        title="Ulaznice"
+        description="Rezervacija i pregled vaših narudžbi."
+        layout={isAuthenticated ? 'full' : 'split'}
+      >
         {!isAuthenticated ? (
           <div className="space-y-3">
             <p className="text-text-muted">

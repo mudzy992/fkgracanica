@@ -1,57 +1,39 @@
-import { formatDateTime } from '../../lib/utils';
-import {
-  canShowTicketQr,
-  matchLabel,
-  ticketStatusLabel,
-  ticketStatusVariant,
-} from '../../lib/ticketing-status';
+import type { ReactNode } from 'react';
+import { useTicketingPublicConfig } from '../../hooks/use-ticketing';
+import { usePublicSettings } from '../../hooks';
+import { canShowTicketQr } from '../../lib/ticketing-status';
 import type { TicketRow } from '../../types/ticketing';
-import { MembershipQrCode } from '../membership/MembershipQrCode';
-import { Badge } from '../ui/badge';
+import { TicketDigitalPass, toTicketPassData } from './TicketDigitalPass';
+import { TicketPassDownloadActions } from './TicketPassDownloadActions';
 
 interface Props {
   ticket: TicketRow;
+  orderActions?: ReactNode;
 }
 
-export function TicketPassCard({ ticket }: Props) {
-  const showQr = canShowTicketQr(ticket.status);
+export function TicketPassCard({ ticket, orderActions }: Props) {
+  const { data: settings } = usePublicSettings();
+  const { data: config } = useTicketingPublicConfig();
+  const clubName = settings?.['club.name'] ?? 'FK Gračanica';
+  const data = toTicketPassData(ticket, {
+    clubName,
+    crestUrl: settings?.['club.crestUrl'],
+    backgroundUrl: config?.ticketCardBackground ?? undefined,
+  });
   const isCancelled = ticket.status === 'CANCELLED' || ticket.status === 'REFUND_REQUESTED';
+  const showDownload = canShowTicketQr(ticket.status);
 
   return (
-    <div
-      className={`overflow-hidden rounded-xl border bg-background shadow-sm ${
-        isCancelled ? 'border-danger/30 opacity-75' : 'border-[var(--border-subtle)]'
-      }`}
-    >
-      <div
-        className={`border-b px-4 py-3 sm:px-5 ${
-          isCancelled ? 'border-danger/20 bg-danger/5' : 'border-[var(--border-subtle)] bg-primary/10'
-        }`}
-      >
-        <p className="text-xs font-medium uppercase tracking-wide text-primary">Ulaznica</p>
-        <p className="mt-1 font-display text-lg font-bold text-text">{matchLabel(ticket.match)}</p>
-        {ticket.match?.scheduledAt && (
-          <p className="text-sm text-text-muted">{formatDateTime(ticket.match.scheduledAt)}</p>
-        )}
-      </div>
-      <div className="space-y-4 p-4 sm:p-5">
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          <p className="text-sm text-text-muted">
-            {ticket.category} · <strong className="text-text">{String(ticket.price)} KM</strong>
-          </p>
-          <Badge variant={ticketStatusVariant(ticket.status)}>{ticketStatusLabel(ticket.status)}</Badge>
-        </div>
-        {showQr && (
-          <div className="flex flex-col items-center gap-2 rounded-lg bg-surface/60 py-4">
-            <MembershipQrCode value={ticket.qrCode} size={160} />
-            <p className="text-center text-xs text-text-muted">Pokažite QR kod na ulazu u stadion</p>
-          </div>
-        )}
+    <div className="flex flex-col gap-4 rounded-xl border border-[var(--border-subtle)] bg-surface/20 p-4 lg:flex-row lg:items-start">
+      <TicketDigitalPass data={data} cancelled={isCancelled} />
+      <div className="flex min-w-[150px] flex-col gap-2 lg:pt-2">
+        {showDownload && <TicketPassDownloadActions data={data} />}
+        {orderActions}
         {ticket.status === 'RESERVED' && (
-          <p className="text-xs text-text-muted">Rezervacija — platite na blagajni ili online iz narudžbe.</p>
+          <p className="text-xs text-text-muted">Rezervacija — platite na blagajni ili online.</p>
         )}
         {ticket.status === 'USED' && (
-          <p className="text-xs text-text-muted">Ulaznica je već iskorištena na utakmici.</p>
+          <p className="text-xs text-text-muted">Ulaznica je već iskorištena.</p>
         )}
       </div>
     </div>

@@ -31,10 +31,10 @@ PENDING → ACTIVE → EXPIRED
 |------|--------|-----|
 | Gost | — | Join forma (online) ili box-office info |
 | Da | PENDING | `MembershipPendingStatus` — uplata zaprimljena, čeka odobrenje (bez pay dugmeta) |
-| Da | ACTIVE | `MembershipCardPanel` + opcija obnove |
-| Da | EXPIRED | Obnova (online ako spremno) |
+| Da | ACTIVE | `MembershipCardPanel` (digitalna kartica) — **bez** pay dugmeta |
+| Da | EXPIRED | Kartica + obnova (online ako spremno) |
 
-**Moj račun:** prijavljeni korisnik vidi naslov „Moj račun”.
+**Moj račun:** tabovi **Članstvo** | **Ulaznice**; ulaznice grupisane po utakmici → dijalog s detaljima.
 
 ## Online payment (kad `membership.onlineEnabled` + provider ready)
 
@@ -54,6 +54,6 @@ PENDING → ACTIVE → EXPIRED
 
 ## Changelog
 
-- 2026-06-29 (c): Online join, Stripe aktivacija, Moj račun pending UX, confirm-session
+- 2026-06-29 (e): Ime člana u `/membership/me`, ID kartica (1.586), QR zoom, HTML print/download, admin bulk export
 - 2026-06-29: Gate #13 — admin UI, javna kartica, lazy EXPIRED
 - 2026-06-24: Initial matrix, box office only

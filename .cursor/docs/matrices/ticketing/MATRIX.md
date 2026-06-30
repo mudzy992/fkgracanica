@@ -20,7 +20,14 @@ pending → paid → (refund_requested) → refunded
 - Global: `ticketing.stadiumCapacity` setting (default 5000)
 - `GET /ticketing/matches/:matchId/availability` — sold, remaining, member discount %
 
-## Categories
+## Settings (ulaznice)
+
+- `ticketing.ticketCardBackground` — putanja u media; backdrop (PNG transparent → crna podloga, `object-contain`)
+
+## Digitalna ulaznica (prikaz)
+
+- Širina ~520px; grbovi domaćin/gost, takmičenje · sezona · kolo
+- Podaci iz `match.season.competition`, `roundRel`, `homeClub/awayClub.crestPath` (API `/ticketing/orders`)
 
 - JSON setting `ticketing.categories`: `[{ id, label, price, isActive }]`
 - Admin CRUD na `/admin/ticketing` → Postavke

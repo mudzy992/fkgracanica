@@ -5,9 +5,10 @@ import {
   membershipUserName,
 } from '../../lib/membership-status';
 import { useMembershipDetail } from '../../hooks/use-membership';
+import { usePublicSettings } from '../../hooks';
 import { AdminFormSheet } from '../../components/admin/AdminFormSheet';
 import { Badge } from '../../components/ui/badge';
-import { MembershipQrCode } from '../../components/membership/MembershipQrCode';
+import { MembershipCardPanel } from '../../components/membership/MembershipCardPanel';
 import type { MembershipRow } from '../../types/membership';
 
 interface Props {
@@ -18,12 +19,21 @@ interface Props {
 
 export function MembershipDetailSheet({ membership, open, onOpenChange }: Props) {
   const { data: detail } = useMembershipDetail(membership?.id);
+  const { data: settings } = usePublicSettings();
   const m = detail ?? membership;
   if (!m) return null;
 
+  const withUser: MembershipRow = {
+    ...m,
+    user: m.user ?? membership?.user,
+  };
+
   return (
     <AdminFormSheet open={open} onOpenChange={onOpenChange} title="Detalj članstva" size="lg">
-      <dl className="space-y-4 text-sm">
+      {m.card ? (
+        <MembershipCardPanel membership={withUser} />
+      ) : null}
+      <dl className="mt-6 space-y-4 border-t border-[var(--border-subtle)] pt-4 text-sm">
         <div>
           <dt className="text-text-muted">Član</dt>
           <dd className="font-medium">{membershipUserName(m.user)}</dd>
@@ -50,22 +60,16 @@ export function MembershipDetailSheet({ membership, open, onOpenChange }: Props)
             <dd>{m.endDate ? formatDate(m.endDate) : '—'}</dd>
           </div>
         </div>
-        {m.card && (
-          <>
-            <div>
-              <dt className="text-text-muted">Broj kartice</dt>
-              <dd className="font-mono font-medium">{m.card.cardNumber}</dd>
-            </div>
-            <div className="flex flex-col items-center gap-2 pt-2">
-              <MembershipQrCode value={m.card.qrCode} />
-              <p className="text-xs text-text-muted">QR za validaciju na ulazu</p>
-            </div>
-          </>
-        )}
         {m.createdAt && (
           <div>
             <dt className="text-text-muted">Kreirano</dt>
             <dd>{formatDateTime(m.createdAt)}</dd>
+          </div>
+        )}
+        {settings?.['club.name'] && (
+          <div>
+            <dt className="text-text-muted">Klub</dt>
+            <dd>{settings['club.name']}</dd>
           </div>
         )}
       </dl>

@@ -113,22 +113,12 @@ export function MembershipPurchasePanel({
   if (isAuthenticated && current?.status === 'ACTIVE') {
     return (
       <div className="space-y-4">
-        {paymentSuccess ? (
+        {paymentSuccess && (
           <p className="rounded-lg border border-success/30 bg-success/10 px-4 py-3 text-sm text-success">
             Uplata je uspješna. Članstvo je aktivirano — ispod je vaša digitalna kartica.
           </p>
-        ) : (
-          <p className="text-sm text-success">Članstvo je aktivno.</p>
         )}
         <MembershipCardPanel membership={current} />
-        {onlineAllowed && annualPrice > 0 && (
-          <OnlinePaymentChoice
-            providers={providers}
-            fullWidth
-            loading={checkout.isPending}
-            onSelect={(p) => void payOnline(current.id, p)}
-          />
-        )}
       </div>
     );
   }
@@ -141,24 +131,22 @@ export function MembershipPurchasePanel({
 
   if (isAuthenticated && current && ['SUSPENDED', 'EXPIRED', 'CANCELLED'].includes(current.status)) {
     return (
-      <div className="space-y-3">
-        <p className="text-sm text-danger">
-          Vaše članstvo je {membershipStatusLabel(current.status).toLowerCase()}.
-        </p>
-        {onlineAllowed && current.status === 'EXPIRED' ? (
+      <div className="space-y-4">
+        {current.card && <MembershipCardPanel membership={current} />}
+        {current.status === 'EXPIRED' && onlineAllowed && annualPrice > 0 ? (
           <>
-            <p className="text-sm text-text-muted">Možete obnoviti članstvo online.</p>
+            <p className="text-sm text-text-muted">Članstvo je isteklo. Obnovite ga online.</p>
             <OnlinePaymentChoice
               providers={providers}
               fullWidth
               disabled={busy}
               loading={busy}
-              onSelect={(p) => void startPurchase(p)}
+              onSelect={(p) => void payOnline(current.id, p)}
             />
           </>
         ) : (
           <p className="text-sm text-text-muted">
-            Kontaktirajte klub putem{' '}
+            Vaše članstvo je {membershipStatusLabel(current.status).toLowerCase()}. Kontaktirajte klub putem{' '}
             <Link to="/kontakt" className="text-primary underline">
               kontakt forme
             </Link>

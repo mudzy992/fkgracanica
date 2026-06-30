@@ -1,4 +1,5 @@
 import { X } from 'lucide-react';
+import { createPortal } from 'react-dom';
 import { useEffect, type ReactNode } from 'react';
 import { cn } from '../../lib/utils';
 import { Button } from './button';
@@ -7,7 +8,6 @@ interface DialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   children: ReactNode;
-  /** Blokira zatvaranje backdrop-om i Escape tipkom */
   preventClose?: boolean;
   className?: string;
 }
@@ -36,8 +36,8 @@ export function Dialog({ open, onOpenChange, children, preventClose, className }
     onOpenChange(false);
   };
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+  return createPortal(
+    <div className="fixed inset-0 z-[200] flex items-center justify-center p-4">
       <button
         type="button"
         className="absolute inset-0 bg-black/40"
@@ -54,7 +54,8 @@ export function Dialog({ open, onOpenChange, children, preventClose, className }
       >
         {children}
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }
 
