@@ -10,7 +10,10 @@ interface Props {
 
 export function ClubLink({ slug, name, className }: Props) {
   return (
-    <Link to={clubPath(slug)} className={cn('font-medium text-primary hover:underline', className)}>
+    <Link
+      to={clubPath(slug)}
+      className={cn('font-medium text-primary-light hover:text-white hover:underline', className)}
+    >
       {name}
     </Link>
   );

@@ -8,13 +8,14 @@ interface AdminFormSheetProps {
   children: ReactNode;
   /** Kada true, backdrop/Escape/X ne zatvaraju dijalog */
   dirty?: boolean;
-  size?: 'sm' | 'md' | 'lg';
+  size?: 'sm' | 'md' | 'lg' | 'xl';
 }
 
 const sizeClass = {
   sm: 'max-w-md',
   md: 'max-w-lg',
   lg: 'max-w-2xl',
+  xl: 'max-w-[min(96vw,56rem)]',
 } as const;
 
 export function AdminFormSheet({

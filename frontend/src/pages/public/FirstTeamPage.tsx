@@ -1,10 +1,12 @@
-import { groupPlayersByPosition } from '../../lib/player-utils';
+import { useMemo } from 'react';
 import { useClubSquad, useClubStats } from '../../hooks/use-club-hub';
 import { useOwnClub } from '../../hooks';
-import { ClubProfileHero } from '../../components/public/clubs/ClubProfileHero';
-import { ResponsiveFormationPitch } from '../../components/public/clubs/ResponsiveFormationPitch';
-import { PlayerCard } from '../../components/public/players/PlayerCard';
-import { ClubStatsSummary, PlayerStatsTable } from '../../components/club/ClubStatsPanels';
+import { TeamCinematicHero } from '../../components/team/TeamCinematicHero';
+import { TeamFormationSection } from '../../components/team/TeamFormationSection';
+import { TeamSpotlight } from '../../components/team/TeamSpotlight';
+import { TeamRosterSections } from '../../components/team/TeamRosterSections';
+import { TeamSeasonStats } from '../../components/team/TeamSeasonStats';
+import { spotlightPlayers, statsByPlayerId } from '../../components/team/team-stats-utils';
 import { Seo } from '../../components/seo/Seo';
 import { Skeleton } from '../../components/ui/skeleton';
 import type { Stadium } from '../../types/club-hub';
@@ -13,18 +15,24 @@ export function FirstTeamPage() {
   const { data: ownClub, isLoading: clubLoading } = useOwnClub();
   const { data: squad, isLoading: squadLoading } = useClubSquad(ownClub?.id ?? '');
   const { data: stats, isLoading: statsLoading } = useClubStats(ownClub?.id ?? '');
-  const bench = squad?.slots.filter((s) => s.isBench && s.player) ?? [];
-  const squadPlayers = squad?.slots.filter((s) => !s.isBench && s.player).map((s) => s.player!) ?? [];
-  const groups = groupPlayersByPosition(squadPlayers);
-  const isLoading = clubLoading || squadLoading;
 
-  const clubWithStadium = ownClub
-    ? {
-        ...ownClub,
-        stadium: (ownClub as { stadiumRel?: Stadium | null }).stadiumRel?.name ?? ownClub.stadium,
-        city: (ownClub as { stadiumRel?: Stadium | null }).stadiumRel?.city ?? ownClub.city,
-      }
-    : null;
+  const bench = useMemo(
+    () => squad?.slots.filter((s) => s.isBench && s.player) ?? [],
+    [squad],
+  );
+  const squadPlayers = useMemo(
+    () => squad?.slots.filter((s) => !s.isBench && s.player).map((s) => s.player!) ?? [],
+    [squad],
+  );
+  const allPlayers = useMemo(
+    () => squad?.slots.filter((s) => s.player).map((s) => s.player!) ?? [],
+    [squad],
+  );
+  const statsMap = useMemo(() => statsByPlayerId(stats), [stats]);
+  const scorers = useMemo(() => spotlightPlayers(stats, allPlayers), [stats, allPlayers]);
+
+  const stadiumRel = (ownClub as { stadiumRel?: Stadium | null } | undefined)?.stadiumRel;
+  const isLoading = clubLoading || squadLoading;
 
   return (
     <div className="pb-20">
@@ -32,52 +40,33 @@ export function FirstTeamPage() {
         title={ownClub ? `Prvi tim — ${ownClub.name}` : 'Prvi tim'}
         description={ownClub?.description ?? 'Kadrovi prvog tima'}
       />
-      <ClubProfileHero
-        club={clubWithStadium}
-        isLoading={clubLoading}
-        eyebrow="Kadrovi"
-        title="Prvi tim"
-        subtitle="Formacija, klupa i statistike prvog tima."
+
+      <TeamCinematicHero
+        club={ownClub}
+        squad={squad}
+        stats={stats}
+        stadiumName={stadiumRel?.name ?? ownClub?.stadium}
+        city={stadiumRel?.city ?? ownClub?.city}
       />
 
-      <div className="mx-auto max-w-6xl space-y-12 px-4 pt-12 sm:px-6">
+      <div className="mx-auto max-w-6xl space-y-14 px-4 pt-12 sm:px-6 sm:space-y-16">
         {isLoading ? (
-          <Skeleton className="h-[420px] w-full rounded-2xl" />
+          <Skeleton className="h-[420px] w-full rounded-3xl" />
         ) : squad?.slots.length ? (
           <>
-            <ResponsiveFormationPitch slots={squad.slots} />
-
-            {bench.length > 0 && (
-              <section>
-                <h2 className="mb-4 text-xl font-bold text-text">Klupa</h2>
-                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                  {bench.map((slot) => (
-                    <PlayerCard key={slot.id} player={slot.player!} />
-                  ))}
-                </div>
-              </section>
-            )}
-
-            {groups.map((group) => (
-              <section key={group.position}>
-                <h2 className="mb-4 text-xl font-bold text-text">{group.label}</h2>
-                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                  {group.players.map((p) => (
-                    <PlayerCard key={p.id} player={p} />
-                  ))}
-                </div>
-              </section>
-            ))}
+            <TeamFormationSection squad={squad} />
+            {scorers.length > 0 && <TeamSpotlight players={scorers} statsMap={statsMap} />}
+            <TeamRosterSections bench={bench} squadPlayers={squadPlayers} statsMap={statsMap} />
           </>
         ) : (
-          <p className="py-16 text-center text-text-muted">Kadar trenutno nije objavljen.</p>
+          <p className="py-20 text-center text-text-muted">Kadar trenutno nije objavljen.</p>
         )}
 
-        <section className="space-y-6">
-          <h2 className="text-xl font-bold text-text">Statistike sezone</h2>
-          {statsLoading ? <Skeleton className="h-32" /> : <ClubStatsSummary stats={stats} />}
-          {!statsLoading && stats && <PlayerStatsTable stats={stats} />}
-        </section>
+        {statsLoading ? (
+          <Skeleton className="h-48 rounded-2xl" />
+        ) : (
+          <TeamSeasonStats stats={stats} />
+        )}
       </div>
     </div>
   );

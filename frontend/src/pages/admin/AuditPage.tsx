@@ -25,7 +25,7 @@ export function AuditPage() {
     <>
       <Seo title="Audit" />
       <AdminPageShell title="Audit log" isLoading={isLoading}>
-        <div className="grid gap-2 border-b border-slate-200 p-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-2 border-b border-[var(--border-subtle)] p-4 sm:grid-cols-2 lg:grid-cols-4">
           <Input placeholder="Akcija" value={action} onChange={(e) => setAction(e.target.value)} />
           <Input placeholder="Entitet" value={entity} onChange={(e) => setEntity(e.target.value)} />
           <Input type="date" value={from} onChange={(e) => setFrom(e.target.value)} />

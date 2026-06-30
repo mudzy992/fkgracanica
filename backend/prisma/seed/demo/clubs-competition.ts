@@ -62,5 +62,13 @@ export async function seedClubsAndCompetition(prisma: SeedPrisma): Promise<DemoC
     });
   }
 
+  await prisma.seasonClub.createMany({
+    data: [
+      { seasonId: season.id, clubId: ownClub.id },
+      { seasonId: season.id, clubId: opponent.id },
+    ],
+    skipDuplicates: true,
+  });
+
   return { ownClubId: ownClub.id, opponentClubId: opponent.id, seasonId: season.id };
 }

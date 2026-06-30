@@ -1,104 +1,95 @@
-import { Link, useParams } from 'react-router-dom';
+import { useMemo } from 'react';
+import { useParams } from 'react-router-dom';
 import { useClubPublic } from '../../hooks/use-club-public';
 import { useModuleFlags } from '../../hooks';
-import { mediaUrl } from '../../lib/media';
-import { clubCrestPath } from '../../lib/club-utils';
 import { isModuleEnabled } from '../../lib/module-settings-rules';
-import { ClubStatsSummary, PlayerStatsTable } from '../../components/club/ClubStatsPanels';
-import { ClubProfileHero } from '../../components/public/clubs/ClubProfileHero';
-import { ResponsiveFormationPitch } from '../../components/public/clubs/ResponsiveFormationPitch';
+import { ClubCinematicHero } from '../../components/public/clubs/ClubCinematicHero';
+import { ClubInfoSection } from '../../components/public/clubs/ClubInfoSection';
 import { ClubPlayersGrid } from '../../components/public/clubs/ClubPublicSections';
 import { ClubCompetitionTabs } from '../../components/public/clubs/ClubCompetitionTabs';
+import { TeamFormationSection } from '../../components/team/TeamFormationSection';
+import { TeamRosterSections } from '../../components/team/TeamRosterSections';
+import { TeamSpotlight } from '../../components/team/TeamSpotlight';
+import { TeamSeasonStats } from '../../components/team/TeamSeasonStats';
+import { spotlightPlayers, statsByPlayerId } from '../../components/team/team-stats-utils';
 import { Seo } from '../../components/seo/Seo';
-import { Badge } from '../../components/ui/badge';
-import { PremiumCard } from '../../components/public/shell/PremiumCard';
 import { Skeleton } from '../../components/ui/skeleton';
 
 export function ClubPublicPage() {
   const { slug = '' } = useParams();
   const { data, isLoading, isError } = useClubPublic(slug);
   const { data: moduleFlags } = useModuleFlags();
+
+  const squad = data?.squad;
+  const seasonStats = data?.seasonStats;
+  const players = data?.players ?? [];
+
+  const bench = useMemo(
+    () => squad?.slots.filter((s) => s.isBench && s.player) ?? [],
+    [squad],
+  );
+  const squadPlayers = useMemo(
+    () => squad?.slots.filter((s) => !s.isBench && s.player).map((s) => s.player!) ?? [],
+    [squad],
+  );
+  const statsMap = useMemo(() => statsByPlayerId(seasonStats), [seasonStats]);
+  const scorers = useMemo(
+    () => spotlightPlayers(seasonStats, players),
+    [seasonStats, players],
+  );
+
   const competitionsOn = isModuleEnabled(moduleFlags, 'modules.competitions');
+  const showCompetition = competitionsOn && !!seasonStats?.season?.id;
+  const hasSquad = (squad?.slots.length ?? 0) > 0;
 
   if (isLoading) {
     return (
-      <div className="mx-auto max-w-6xl space-y-6 px-4 py-12">
-        <Skeleton className="h-48 rounded-2xl" />
-        <Skeleton className="h-96 rounded-2xl" />
+      <div className="pb-20">
+        <Skeleton className="h-72 w-full rounded-none" />
+        <div className="mx-auto max-w-6xl space-y-8 px-4 pt-10 sm:px-6">
+          <Skeleton className="h-48 rounded-2xl" />
+          <Skeleton className="h-96 rounded-2xl" />
+        </div>
       </div>
     );
   }
+
   if (isError || !data) {
     return <p className="p-12 text-center text-text-muted">Klub nije pronađen.</p>;
   }
 
-  const { club, stadium, squad, seasonStats, players } = data;
-  const crest = clubCrestPath(club);
-  const heroClub = {
-    ...club,
-    stadium: stadium?.name ?? club.stadium,
-    city: stadium?.city ?? club.city,
-    description: club.description ?? stadium?.description,
-  };
-  const showCompetition = competitionsOn && !!seasonStats.season?.id;
+  const { club, stadium } = data;
 
   return (
     <div className="pb-20">
       <Seo title={club.name} description={club.description ?? `Profil kluba ${club.name}`} />
-      <ClubProfileHero club={heroClub} eyebrow="Klub" title={club.name} />
-      <div className="mx-auto max-w-6xl space-y-12 px-4 pt-10 sm:px-6 sm:pt-12">
-        <PremiumCard className="p-6 md:p-8">
-          <div className="flex flex-wrap items-start gap-6">
-            {crest && (
-              <img src={mediaUrl(crest, 'medium')} alt="" className="h-24 w-24 object-contain md:h-28 md:w-28" />
-            )}
-            <div className="min-w-0 flex-1 space-y-3">
-              <div className="flex flex-wrap gap-2">
-                {club.isOwnClub && <Badge variant="success">Naš klub</Badge>}
-                {stadium?.city && <Badge variant="muted">{stadium.city}</Badge>}
-              </div>
-              {stadium && (
-                <dl className="grid gap-2 text-sm sm:grid-cols-2">
-                  <div><dt className="text-text-muted">Stadion</dt><dd className="font-medium">{stadium.name}</dd></div>
-                  {stadium.address && <div><dt className="text-text-muted">Adresa</dt><dd>{stadium.address}</dd></div>}
-                  {stadium.capacity && <div><dt className="text-text-muted">Kapacitet</dt><dd>{stadium.capacity}</dd></div>}
-                </dl>
-              )}
-              {club.isOwnClub && (
-                <Link to="/tim" className="inline-block text-sm font-medium text-primary hover:underline">
-                  Pogledaj stranicu našeg tima →
-                </Link>
-              )}
-            </div>
-          </div>
-        </PremiumCard>
 
-        <PremiumCard className="p-6 md:p-8">
-          <h2 className="mb-4 text-xl font-bold">Defaultna formacija</h2>
-          <ResponsiveFormationPitch slots={squad.slots} />
-        </PremiumCard>
+      <ClubCinematicHero club={club} stadium={stadium} squad={squad} stats={seasonStats} />
 
-        <PremiumCard className="p-6 md:p-8">
-          <ClubPlayersGrid players={players} />
-        </PremiumCard>
+      <div className="mx-auto max-w-6xl space-y-14 px-4 pt-10 sm:px-6 sm:space-y-16">
+        {stadium && <ClubInfoSection stadium={stadium} />}
 
-        {showCompetition && (
-          <PremiumCard className="p-6 md:p-8">
-            <ClubCompetitionTabs
-              clubId={club.id}
-              seasonId={seasonStats.season?.id}
-              seasonName={seasonStats.season?.name}
-            />
-          </PremiumCard>
+        {hasSquad ? (
+          <>
+            <TeamFormationSection squad={squad!} />
+            {scorers.length > 0 && <TeamSpotlight players={scorers} statsMap={statsMap} />}
+            <TeamRosterSections bench={bench} squadPlayers={squadPlayers} statsMap={statsMap} />
+          </>
+        ) : players.length > 0 ? (
+          <ClubPlayersGrid players={players} stats={seasonStats} />
+        ) : (
+          <p className="py-12 text-center text-text-muted">Kadar trenutno nije objavljen.</p>
         )}
 
-        <PremiumCard className="p-6 md:p-8">
-          <h2 className="mb-4 text-xl font-bold">Statistike</h2>
-          <ClubStatsSummary stats={seasonStats} />
-          <div className="mt-6">
-            <PlayerStatsTable stats={seasonStats} />
-          </div>
-        </PremiumCard>
+        {showCompetition && (
+          <ClubCompetitionTabs
+            clubId={club.id}
+            seasonId={seasonStats.season?.id}
+            seasonName={seasonStats.season?.name}
+          />
+        )}
+
+        <TeamSeasonStats stats={seasonStats} />
       </div>
     </div>
   );

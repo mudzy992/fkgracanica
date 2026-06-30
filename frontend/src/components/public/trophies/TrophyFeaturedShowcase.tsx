@@ -12,11 +12,13 @@ export function TrophyFeaturedShowcase({ trophy, compact }: Props) {
   return (
     <article
       className={cn(
-        'trophy-featured-glow relative overflow-hidden rounded-3xl border border-amber-200/60 bg-gradient-to-br from-amber-50/90 via-background to-primary/5 dark:border-amber-500/20 dark:from-amber-950/40',
+        'border-gradient-club glass-premium glow-blue relative overflow-hidden rounded-3xl',
         compact ? 'p-6 md:p-8' : 'p-8 md:p-12',
       )}
     >
-      <div className={cn('grid items-center gap-8', compact ? 'md:grid-cols-[1fr_1.2fr]' : 'lg:grid-cols-2')}>
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-primary-light/5" />
+      <div className="pointer-events-none absolute -right-20 -top-20 h-56 w-56 rounded-full bg-primary-light/10 blur-3xl" />
+      <div className={cn('relative grid items-center gap-8', compact ? 'md:grid-cols-[1fr_1.2fr]' : 'lg:grid-cols-2')}>
         <div className="flex justify-center">
           {trophy.imagePath ? (
             <img
@@ -27,7 +29,7 @@ export function TrophyFeaturedShowcase({ trophy, compact }: Props) {
           ) : (
             <div
               className={cn(
-                'flex items-center justify-center rounded-full bg-gradient-to-br from-amber-300 to-amber-500 font-bold text-white shadow-xl',
+                'flex items-center justify-center rounded-full bg-gradient-to-br from-primary-light to-primary font-bold text-white shadow-xl',
                 compact ? 'h-36 w-36 text-4xl' : 'h-52 w-52 text-6xl',
               )}
             >
@@ -36,13 +38,13 @@ export function TrophyFeaturedShowcase({ trophy, compact }: Props) {
           )}
         </div>
         <div className="text-center md:text-left">
-          <p className="text-xs font-semibold uppercase tracking-[0.25em] text-amber-600 dark:text-amber-400">
-            Najveći uspjeh
+          <p className="text-xs font-semibold uppercase tracking-[0.25em] text-primary-light">Najveći uspjeh</p>
+          <p className="mt-2 font-display text-5xl font-bold tracking-tight text-gradient-club md:text-6xl">
+            {trophy.year}
           </p>
-          <p className="mt-2 text-5xl font-bold tracking-tight text-primary md:text-6xl">{trophy.year}</p>
-          <h2 className="mt-3 text-2xl font-bold text-text md:text-3xl">{trophy.name}</h2>
+          <h2 className="mt-3 text-2xl font-bold text-white md:text-3xl">{trophy.name}</h2>
           {trophy.competition && (
-            <p className="mt-2 text-lg font-medium text-accent">{trophy.competition}</p>
+            <p className="mt-2 text-lg font-medium text-primary-light">{trophy.competition}</p>
           )}
           {trophy.description && (
             <RichContent html={trophy.description} className="mt-5 text-base text-text-muted" />

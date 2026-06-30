@@ -12,6 +12,8 @@ export const widgetSchemas = {
     title: z.string().min(1),
     subtitle: z.string().optional(),
     backgroundImage: z.string().optional(),
+    showMatches: z.boolean().default(true),
+    showLastResult: z.boolean().default(true),
     buttons: z.array(ctaButton).default([]),
   }),
   'news-feed': z.object({
@@ -36,8 +38,12 @@ export const widgetSchemas = {
     viewAllUrl: z.string().optional(),
     viewAllLabel: z.string().optional(),
   }),
-  'next-match': z.object({ title: z.string().optional() }),
-  'last-result': z.object({ title: z.string().optional() }),
+  'next-match': z.object({
+    title: z.string().optional(),
+    backgroundImage: z.string().optional(),
+    showLastResult: z.boolean().default(true),
+  }),
+  'last-result': z.object({ title: z.string().optional(), deprecated: z.boolean().optional() }),
   'league-table': z.object({ title: z.string().optional() }),
   'featured-players': z.object({
     title: z.string().optional(),
@@ -87,14 +93,14 @@ export const widgetMeta: Record<WidgetType, { label: string; category: string }>
   'news-feed': { label: 'Vijesti', category: 'module' },
   gallery: { label: 'Galerija', category: 'module' },
   sponsors: { label: 'Sponzori', category: 'module' },
-  'next-match': { label: 'Sljedeća utakmica', category: 'module' },
-  'last-result': { label: 'Zadnji rezultat', category: 'module' },
+  'next-match': { label: 'Utakmice (u Hero — ukloniti)', category: 'module' },
+  'last-result': { label: 'Zadnji rezultat (ukloniti — spojeno)', category: 'module' },
   'league-table': { label: 'Tabela lige', category: 'module' },
   'featured-players': { label: 'Istaknuti igrači', category: 'module' },
-  'membership-cta': { label: 'Članstvo', category: 'module' },
-  'tickets-cta': { label: 'Ulaznice', category: 'module' },
+  'membership-cta': { label: 'Članstvo, ulaznice i newsletter', category: 'module' },
+  'tickets-cta': { label: 'Članstvo, ulaznice i newsletter', category: 'module' },
   trophies: { label: 'Trofeji', category: 'module' },
-  newsletter: { label: 'Newsletter', category: 'module' },
+  newsletter: { label: 'Članstvo, ulaznice i newsletter', category: 'module' },
   'footer-about': { label: 'Footer o klubu', category: 'global' },
 };
 

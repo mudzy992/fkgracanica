@@ -48,7 +48,7 @@ export class CompetitionsController {
   @UseGuards(JwtAuthGuard, PermissionsGuard)
   @RequirePermissions('competitions.manage')
   @ApiBearerAuth()
-  createSeason(@Body() body: { name: string; yearStart: number; yearEnd: number; competitionId: string; isActive?: boolean }) {
+  createSeason(@Body() body: { name: string; yearStart: number; yearEnd: number; competitionId: string; isActive?: boolean; clubIds?: string[] }) {
     return this.service.createSeason(body);
   }
 
@@ -56,7 +56,7 @@ export class CompetitionsController {
   @UseGuards(JwtAuthGuard, PermissionsGuard)
   @RequirePermissions('competitions.manage')
   @ApiBearerAuth()
-  updateSeason(@Param('id') id: string, @Body() body: Record<string, unknown>) {
+  updateSeason(@Param('id') id: string, @Body() body: Record<string, unknown> & { clubIds?: string[] }) {
     return this.service.updateSeason(id, body);
   }
 

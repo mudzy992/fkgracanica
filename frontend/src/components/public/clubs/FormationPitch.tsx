@@ -9,14 +9,18 @@ interface Props {
   horizontal?: boolean;
   onSlotClick?: (slot: ClubSquadSlot) => void;
   editable?: boolean;
+  premium?: boolean;
 }
 
-export function FormationPitch({ slots, horizontal = true, onSlotClick, editable }: Props) {
+export function FormationPitch({ slots, horizontal = true, onSlotClick, editable, premium }: Props) {
   const starters = slots.filter((s) => !s.isBench);
   return (
     <div
       className={cn(
-        'relative overflow-hidden rounded-2xl border border-slate-200 bg-green-700 shadow-lg',
+        'relative overflow-hidden rounded-2xl shadow-lg',
+        premium
+          ? 'border border-primary/20 bg-gradient-to-b from-emerald-900/95 via-emerald-800/85 to-emerald-950 shadow-[0_0_48px_rgba(0,102,255,0.12)]'
+          : 'border border-slate-200 bg-green-700',
         horizontal ? 'aspect-[16/9] w-full' : 'aspect-[3/4] max-w-md mx-auto',
       )}
     >

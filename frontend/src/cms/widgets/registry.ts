@@ -8,10 +8,8 @@ import { NextMatchWidget } from './NextMatchWidget';
 import { LastResultWidget } from './LastResultWidget';
 import { FeaturedPlayersWidget } from './FeaturedPlayersWidget';
 import { LeagueTableWidget } from './LeagueTableWidget';
-import { MembershipCtaWidget } from './MembershipCtaWidget';
-import { TicketsCtaWidget } from './TicketsCtaWidget';
+import { ClubActionsWidget } from './ClubActionsWidget';
 import { TrophiesWidget } from './TrophiesWidget';
-import { NewsletterWidget } from './NewsletterWidget';
 import { RichTextWidget } from './RichTextWidget';
 import { CustomHtmlWidget } from './CustomHtmlWidget';
 import { CtaBandWidget } from './CtaBandWidget';
@@ -27,10 +25,10 @@ export const widgetRegistry: Partial<Record<WidgetType, WidgetComponent>> = {
   'last-result': LastResultWidget as WidgetComponent,
   'featured-players': FeaturedPlayersWidget as WidgetComponent,
   'league-table': LeagueTableWidget as WidgetComponent,
-  'membership-cta': MembershipCtaWidget as WidgetComponent,
-  'tickets-cta': TicketsCtaWidget as WidgetComponent,
+  'membership-cta': ClubActionsWidget as WidgetComponent,
+  'tickets-cta': ClubActionsWidget as WidgetComponent,
   trophies: TrophiesWidget as WidgetComponent,
-  newsletter: NewsletterWidget as WidgetComponent,
+  newsletter: ClubActionsWidget as WidgetComponent,
   'rich-text': RichTextWidget as WidgetComponent,
   'custom-html': CustomHtmlWidget as WidgetComponent,
   'cta-band': CtaBandWidget as WidgetComponent,

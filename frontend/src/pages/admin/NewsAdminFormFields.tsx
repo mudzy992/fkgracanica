@@ -10,6 +10,7 @@ import type { NewsCategory } from '../../hooks/use-news-admin';
 import { Input } from '../../components/ui/input';
 import { Textarea } from '../../components/ui/textarea';
 import type { GalleryItem, Match, Player } from '../../types';
+import { formatDate } from '../../lib/utils';
 import type { NewsFormData } from './news-form-utils';
 
 interface Props {
@@ -117,7 +118,7 @@ export function NewsAdminFormFields({ register, control, watch, setValue, errors
               value={field.value}
               onChange={field.onChange}
               formatLabel={(m) =>
-                `${m.homeClub?.name ?? '?'} vs ${m.awayClub?.name ?? '?'} (${new Date(m.scheduledAt).toLocaleDateString()})`
+                `${m.homeClub?.name ?? '?'} vs ${m.awayClub?.name ?? '?'} (${formatDate(m.scheduledAt)})`
               }
             />
           )}

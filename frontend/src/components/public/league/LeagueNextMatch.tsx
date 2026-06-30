@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { formatDateTime } from '../../../lib/utils';
 import { matchRoundLabel } from '../../../lib/round-utils';
 import { ClubCrest } from '../clubs/ClubCrest';
+import { NewsSectionTitle } from '../../news/NewsSectionTitle';
 import { PremiumCard } from '../shell/PremiumCard';
 import { Badge } from '../../ui/badge';
 import { Button } from '../../ui/button';
@@ -20,8 +21,8 @@ export function LeagueNextMatch({ matches }: { matches: Match[] }) {
   if (!next) return null;
 
   return (
-    <section className="space-y-3">
-      <h2 className="text-xl font-semibold tracking-tight">Sljedeća utakmica</h2>
+    <section>
+      <NewsSectionTitle>Sljedeća utakmica</NewsSectionTitle>
       <PremiumCard
         className="border-l-4 border-primary bg-primary/5 p-4 sm:p-5"
         hover={false}

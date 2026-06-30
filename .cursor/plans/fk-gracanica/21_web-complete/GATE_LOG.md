@@ -22,9 +22,9 @@
 | 2026-06-30 | Hall of Fame | **APPROVED** | Korisnik potvrdio — CRUD, years, PermissionRoute |
 | 2026-06-30 | Muzej | **APPROVED** | Korisnik potvrdio — EmptyState, PermissionRoute, category labels |
 | 2026-06-30 | Korisnici + Role | **APPROVED** | Korisnik potvrdio — RBAC, audit, spojeni modul Korisnici i uloge |
-| 2026-06-29 | Postavke | **READY_FOR_REVIEW** | Moduli + ovisnosti, AdminPageShell UI, nav filter — čeka smoke + APPROVED |
-| 2026-06-29 | Dashboard / Audit / Notifikacije | **READY_FOR_REVIEW** | KPI, audit log, in-app |
+| 2026-06-30 | Postavke | **APPROVED** | Korisnik potvrdio — moduli, guard, sidebar hubovi, dark hero |
+| 2026-06-30 | Dashboard / Audit / Notifikacije | **READY_FOR_REVIEW** | KPI polish, audit RBAC, dark-only, notifikacije |
 
 Statusi: `IN_PROGRESS` | `READY_FOR_REVIEW` | `APPROVED` | `REVISE`
 
-**Sljedeći fokus:** **#20 Postavke** deploy + smoke → APPROVED · zatim **#21** · #14 frozen
+**Sljedeći fokus:** `/liga` dizajn polish → preostale javne → review **#14** + **#21** · #20 regresija

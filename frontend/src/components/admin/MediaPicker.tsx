@@ -1,9 +1,7 @@
 import { useState } from 'react';
-import { asArray } from '../../lib/as-array';
-import { useMediaAssets, type MediaAsset } from '../../hooks/use-media-admin';
 import { mediaUrl } from '../../lib/media';
 import { Button } from '../ui/button';
-import { Dialog, DialogBody, DialogHeader } from '../ui/dialog';
+import { MediaPickerDialog } from './MediaPickerDialog';
 
 interface Props {
   value?: string | null;
@@ -15,14 +13,7 @@ interface Props {
 
 export function MediaPicker({ value, onSelect, onChange, label = 'Naslovna slika', readOnly }: Props) {
   const [open, setOpen] = useState(false);
-  const { data, isLoading } = useMediaAssets({ limit: 100 });
-  const assets = asArray<MediaAsset>(data?.data ?? data);
   const pickPath = onSelect ?? onChange ?? (() => {});
-
-  const pick = (path: string) => {
-    pickPath(path);
-    setOpen(false);
-  };
 
   return (
     <div>
@@ -44,28 +35,14 @@ export function MediaPicker({ value, onSelect, onChange, label = 'Naslovna slika
           </div>
         )}
       </div>
-      <Dialog open={open} onOpenChange={setOpen} className="max-w-md">
-        <DialogHeader onClose={() => setOpen(false)}>Mediji</DialogHeader>
-        <DialogBody>
-          {isLoading && <p className="text-sm text-text-muted">Učitavanje...</p>}
-          <div className="grid grid-cols-3 gap-2">
-            {assets.map((a) => (
-              <button
-                key={a.id}
-                type="button"
-                onClick={() => pick(a.originalPath)}
-                className="overflow-hidden rounded-lg border border-slate-200 hover:border-primary"
-              >
-                <img
-                  src={mediaUrl(a.thumbPath ?? a.originalPath, 'thumb')}
-                  alt={a.filename}
-                  className="aspect-square w-full object-cover"
-                />
-              </button>
-            ))}
-          </div>
-        </DialogBody>
-      </Dialog>
+      <MediaPickerDialog
+        open={open}
+        onOpenChange={setOpen}
+        mode="single"
+        title="Odabir medija"
+        selectedPaths={value ? [value] : []}
+        onConfirm={(paths) => pickPath(paths[0] ?? '')}
+      />
     </div>
   );
 }

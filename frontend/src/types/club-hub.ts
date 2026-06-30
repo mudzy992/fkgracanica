@@ -40,6 +40,8 @@ export interface PlayerSeasonStats {
   minutes: number;
 }
 
+import type { FormMatchEntry } from '../lib/form-types';
+
 export interface ClubSeasonStats {
   season: { id: string; name: string } | null;
   standing: {
@@ -54,6 +56,7 @@ export interface ClubSeasonStats {
     goalDifference: number;
     points: number;
     form: string;
+    formMatches?: FormMatchEntry[];
   } | null;
   totals: PlayerSeasonStats;
   players: {

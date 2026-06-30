@@ -26,16 +26,24 @@ export function PublicNavItems({
   items,
   onNavigate,
   mobile,
+  premium,
 }: {
   items: NavItem[];
   onNavigate?: () => void;
   mobile?: boolean;
+  premium?: boolean;
 }) {
   const linkClass = ({ isActive }: { isActive: boolean }) =>
     cn(
-      'rounded-lg px-3 py-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring-focus)]',
-      isActive ? 'nav-link-active text-primary' : 'text-text hover:bg-surface',
-      mobile && 'w-full text-left',
+      premium
+        ? isActive
+          ? 'nav-link-premium nav-link-premium-active'
+          : 'nav-link-premium'
+        : cn(
+            'rounded-lg px-3 py-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring-focus)]',
+            isActive ? 'nav-link-active text-primary' : 'text-text hover:bg-surface',
+          ),
+      mobile && 'w-full text-left !text-base !normal-case !tracking-normal',
     );
 
   return (

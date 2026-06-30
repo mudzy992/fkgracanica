@@ -1,3 +1,5 @@
+import type { FormMatchEntry } from '../lib/form-types';
+
 export type ContentStatus = 'DRAFT' | 'PENDING' | 'PUBLISHED' | 'ARCHIVED';
 export type MatchStatus = 'SCHEDULED' | 'LIVE' | 'HALFTIME' | 'FINISHED' | 'POSTPONED' | 'CANCELLED';
 export type MatchReportStatus = 'DRAFT' | 'PENDING_APPROVAL' | 'APPROVED';
@@ -28,6 +30,7 @@ export interface StandingRow {
   clubId: string;
   clubName: string;
   clubSlug?: string;
+  crestPath?: string | null;
   played: number;
   won: number;
   drawn: number;
@@ -37,6 +40,7 @@ export interface StandingRow {
   goalDifference: number;
   points: number;
   form: string;
+  formMatches?: FormMatchEntry[];
 }
 
 export interface NewsComment {

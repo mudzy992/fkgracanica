@@ -1,15 +1,15 @@
 import { Link } from 'react-router-dom';
 import { Outlet } from 'react-router-dom';
 import { Menu, Search } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { usePublicSettings, useModuleFlags } from '../../hooks';
 import { useDynamicFavicon } from '../../hooks/use-dynamic-favicon';
 import { useCmsMenu, useCmsPage } from '../../hooks/use-cms-pages';
 import { filterPathsByModule } from '../../lib/route-module-map';
 import { isModuleEnabled } from '../../lib/module-settings-rules';
+import { cn } from '../../lib/utils';
 import { Button } from '../ui/button';
-import { ThemeToggle } from '../ui/ThemeToggle';
 import { Sheet, SheetContent, SheetHeader } from '../ui/sheet';
 import { PublicFooter } from './PublicFooter';
 import { PublicAuthButton } from './PublicAuthButton';
@@ -26,6 +26,7 @@ function menuHref(item: CmsMenuItem): string {
 
 export function PublicLayout() {
   const [open, setOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const { t } = useTranslation();
   const { data: settings } = usePublicSettings();
   const { data: moduleFlags } = useModuleFlags();
@@ -50,19 +51,32 @@ export function PublicLayout() {
     return filterPathsByModule(raw, moduleFlags, isModuleEnabled);
   }, [menu?.items, fallbackNav, moduleFlags]);
 
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 48);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
   return (
     <div className="flex min-h-dvh flex-col bg-background">
-      <header className="sticky top-0 z-40 border-b border-[var(--border-subtle)] bg-background/80 shadow-sm backdrop-blur-xl">
+      <header
+        className={cn(
+          'fixed top-0 z-40 w-full transition-all duration-500',
+          scrolled
+            ? 'border-b border-[var(--border-subtle)] bg-background/95 shadow-lg shadow-primary/5 backdrop-blur-xl'
+            : 'border-b border-transparent bg-transparent',
+        )}
+      >
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
-          <PublicSiteLogo crestUrl={crestUrl} clubName={clubName} />
-          <nav className="hidden items-center gap-1 lg:flex">
-            <PublicNavItems items={navItems} />
+          <PublicSiteLogo crestUrl={crestUrl} clubName={clubName} light />
+          <nav className="hidden items-center gap-1 xl:flex">
+            <PublicNavItems items={navItems} premium />
           </nav>
           <div className="flex items-center gap-2">
             <div className="hidden lg:block">
               <PublicAuthButton />
             </div>
-            <ThemeToggle />
             <Link to="/pretraga" aria-label={t('nav.search')}>
               <Button variant="ghost" size="icon">
                 <Search className="h-5 w-5" />
@@ -79,7 +93,7 @@ export function PublicLayout() {
         <SheetHeader onClose={() => setOpen(false)}>{t('footer.menu')}</SheetHeader>
         <SheetContent>
           <div className="mb-6 flex items-center gap-3 border-b border-[var(--border-subtle)] pb-4">
-            <PublicSiteLogo crestUrl={crestUrl} clubName={clubName} />
+            <PublicSiteLogo crestUrl={crestUrl} clubName={clubName} light />
             {tagline && <p className="text-xs text-text-muted">{tagline}</p>}
           </div>
           <nav className="flex flex-col gap-1">
@@ -91,7 +105,7 @@ export function PublicLayout() {
         </SheetContent>
       </Sheet>
 
-      <main className="flex-1">
+      <main className="flex-1 pt-16">
         <Outlet />
       </main>
 

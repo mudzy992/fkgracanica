@@ -1,86 +1,96 @@
 import { Link } from 'react-router-dom';
+import { ChevronRight } from 'lucide-react';
 import { motion, useReducedMotion } from 'framer-motion';
-import { Button } from '../../components/ui/button';
 import { PublicHeroShell } from '../../components/public/shell/PublicHeroShell';
 import { mediaUrl } from '../../lib/media';
 import { defaultTransition, fadeUp, staggerContainer } from '../../lib/motion/presets';
+import { HeroBackground } from './hero/HeroBackground';
+import { HeroMatchDock } from './hero/HeroMatchDock';
 import type { WidgetConfigMap } from './schemas';
 
 type Props = { config: WidgetConfigMap['hero'] };
 
 export function HeroWidget({ config }: Props) {
-  const bgUrl = mediaUrl(config.backgroundImage, 'medium');
+  const bgUrl = mediaUrl(config.backgroundImage, 'original');
   const reduce = useReducedMotion();
+  const showMatches = config.showMatches !== false;
+  const showLast = config.showLastResult !== false;
 
-  const content = (
-    <section className="relative min-h-[70dvh] overflow-hidden bg-primary text-white">
-      {bgUrl && (
-        <>
-          <img src={bgUrl} alt="" className="absolute inset-0 h-full w-full object-cover" aria-hidden />
-          <div className="absolute inset-0 bg-gradient-to-br from-primary/90 via-primary/75 to-accent/40 dark:to-accent/25" />
-        </>
-      )}
-      {!bgUrl && <div className="absolute inset-0 bg-gradient-hero" />}
-      <div className="relative mx-auto flex max-w-6xl flex-col gap-6 px-4 py-20 sm:px-6 md:min-h-[70dvh] md:justify-center md:py-28">
-        {config.foundedYear && (
-          <motion.p
-            className="text-sm font-medium uppercase tracking-[0.3em] text-white/70"
-            variants={fadeUp}
-            initial={reduce ? false : 'hidden'}
-            animate="visible"
-            transition={{ ...defaultTransition, delay: 0.1 }}
-          >
-            {config.foundedYear} —
-          </motion.p>
-        )}
-        <motion.h1
-          className="max-w-3xl text-4xl font-bold tracking-tight md:text-6xl lg:text-7xl"
-          variants={fadeUp}
-          initial={reduce ? false : 'hidden'}
-          animate="visible"
-          transition={{ ...defaultTransition, delay: 0.2 }}
-        >
-          {config.title}
-        </motion.h1>
-        {config.subtitle && (
-          <motion.p
-            className="max-w-xl text-lg text-white/85 md:text-xl"
-            variants={fadeUp}
-            initial={reduce ? false : 'hidden'}
-            animate="visible"
-            transition={{ ...defaultTransition, delay: 0.35 }}
-          >
-            {config.subtitle}
-          </motion.p>
-        )}
-        {config.buttons.length > 0 && (
-          <motion.div
-            className="flex flex-wrap gap-3"
-            variants={staggerContainer}
-            initial={reduce ? false : 'hidden'}
-            animate="visible"
-          >
-            {config.buttons.map((btn, i) => (
-              <motion.div key={i} variants={fadeUp}>
-                <Link to={btn.url}>
-                  <Button
-                    className={
-                      btn.variant === 'outline'
-                        ? 'border-white/40 text-white backdrop-blur-sm hover:bg-white/15'
-                        : 'bg-white text-primary shadow-premium hover:bg-white/90'
-                    }
-                    variant={btn.variant === 'outline' ? 'outline' : 'default'}
-                  >
-                    {btn.label}
-                  </Button>
-                </Link>
+  return (
+    <PublicHeroShell>
+      <section className="relative -mt-16 flex min-h-[100dvh] flex-col overflow-hidden pt-16 text-white">
+        <HeroBackground bgUrl={bgUrl || undefined} />
+
+        <div className="relative z-10 flex min-h-0 flex-1 flex-col">
+          <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col justify-center px-4 py-8 sm:px-6 sm:py-10">
+            {config.foundedYear && (
+              <motion.div
+                variants={fadeUp}
+                initial={reduce ? false : 'hidden'}
+                animate="visible"
+                transition={{ ...defaultTransition, delay: 0.2 }}
+                className="mb-3 inline-flex w-fit items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-1.5 sm:mb-4"
+              >
+                <span className="h-2 w-2 animate-pulse rounded-full bg-primary-light" />
+                <span className="text-xs font-semibold uppercase tracking-wider text-white/80">
+                  Osnovan {config.foundedYear}. godine
+                </span>
               </motion.div>
-            ))}
-          </motion.div>
-        )}
-      </div>
-    </section>
-  );
+            )}
 
-  return <PublicHeroShell>{content}</PublicHeroShell>;
+            <motion.h1
+              className="font-display max-w-4xl text-4xl font-bold uppercase leading-[0.95] tracking-tight sm:text-5xl md:text-6xl lg:text-7xl"
+              variants={fadeUp}
+              initial={reduce ? false : 'hidden'}
+              animate="visible"
+              transition={{ ...defaultTransition, delay: 0.35 }}
+            >
+              <span className="text-gradient-club">{config.title}</span>
+            </motion.h1>
+
+            {config.subtitle && (
+              <motion.p
+                className="mt-3 max-w-xl font-display text-sm uppercase tracking-[0.12em] text-white/70 sm:mt-4 sm:text-base md:text-lg"
+                variants={fadeUp}
+                initial={reduce ? false : 'hidden'}
+                animate="visible"
+                transition={{ ...defaultTransition, delay: 0.5 }}
+              >
+                {config.subtitle}
+              </motion.p>
+            )}
+
+            {config.buttons.length > 0 && (
+              <motion.div
+                className="mt-5 flex flex-wrap gap-3 sm:mt-6"
+                variants={staggerContainer}
+                initial={reduce ? false : 'hidden'}
+                animate="visible"
+              >
+                {config.buttons.map((btn, i) => (
+                  <motion.div key={i} variants={fadeUp}>
+                    <Link
+                      to={btn.url}
+                      className={
+                        btn.variant === 'outline'
+                          ? 'btn-hero-outline !px-5 !py-2.5 text-sm sm:!px-6 sm:!py-3'
+                          : 'btn-hero-primary group !px-5 !py-2.5 text-sm sm:!px-6 sm:!py-3'
+                      }
+                    >
+                      {btn.label}
+                      {btn.variant !== 'outline' && (
+                        <ChevronRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+                      )}
+                    </Link>
+                  </motion.div>
+                ))}
+              </motion.div>
+            )}
+          </div>
+
+          {showMatches && <HeroMatchDock showLast={showLast} />}
+        </div>
+      </section>
+    </PublicHeroShell>
+  );
 }

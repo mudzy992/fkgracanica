@@ -110,6 +110,7 @@ export function useCreateSeason() {
       yearEnd: number;
       competitionId: string;
       isActive?: boolean;
+      clubIds?: string[];
     }) => (await api.post('/competitions/seasons', body)).data,
     onSuccess: () => void qc.invalidateQueries({ queryKey: ['seasons'] }),
   });

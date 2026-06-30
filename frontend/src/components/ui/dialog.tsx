@@ -48,7 +48,7 @@ export function Dialog({ open, onOpenChange, children, preventClose, className }
         role="dialog"
         aria-modal="true"
         className={cn(
-          'relative z-10 flex max-h-[min(90vh,720px)] w-full flex-col rounded-xl border border-[var(--border-subtle)] bg-background shadow-xl',
+          'relative z-10 flex w-full flex-col rounded-xl border border-[var(--border-subtle)] bg-background shadow-xl max-h-[min(92dvh,720px)]',
           className,
         )}
       >

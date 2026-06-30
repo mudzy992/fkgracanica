@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { adminLinkClass } from '../../../lib/admin-styles';
 import { Plus, Trash2 } from 'lucide-react';
 import { useClubsWithCounts } from '../../../hooks/use-club-hub';
 import { useDeleteClub } from '../../../hooks/use-competition-admin';
@@ -57,7 +58,7 @@ export function ClubsListPage() {
               key: 'name',
               header: 'Klub',
               render: (r) => (
-                <Link to={`/admin/clubs/${r.id}`} className="font-medium text-primary hover:underline">
+                <Link to={`/admin/clubs/${r.id}`} className={adminLinkClass}>
                   {r.name}
                 </Link>
               ),

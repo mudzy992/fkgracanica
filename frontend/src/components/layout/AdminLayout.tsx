@@ -7,7 +7,6 @@ import { usePublicSettings, usePrivateSettings } from '../../hooks';
 import { isModuleEnabled } from '../../lib/module-settings-rules';
 import { resolveAdminModuleKey } from '../../lib/admin-module-map';
 import { Button } from '../ui/button';
-import { ThemeToggle } from '../ui/ThemeToggle';
 import { NotificationBell } from '../notifications/NotificationBell';
 import { ErrorBoundary } from '../common/ErrorBoundary';
 import { Sheet, SheetContent, SheetHeader } from '../ui/sheet';
@@ -78,7 +77,6 @@ export function AdminLayout() {
           </Link>
           <div className="flex items-center gap-1">
             <NotificationBell admin />
-            <ThemeToggle />
             <Button variant="ghost" size="icon" onClick={() => setOpen(true)}>
               <Menu className="h-5 w-5" />
             </Button>

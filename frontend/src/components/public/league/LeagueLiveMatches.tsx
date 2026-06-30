@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { formatDateTime } from '../../../lib/utils';
 import { ClubCrest } from '../clubs/ClubCrest';
+import { NewsSectionTitle } from '../../news/NewsSectionTitle';
 import { PremiumCard } from '../shell/PremiumCard';
 import { Badge } from '../../ui/badge';
 import { Button } from '../../ui/button';
@@ -11,8 +12,9 @@ export function LeagueLiveMatches({ matches }: { matches: Match[] }) {
   if (!live.length) return null;
 
   return (
-    <section className="space-y-3">
-      <h2 className="text-xl font-semibold tracking-tight">Uživo</h2>
+    <section>
+      <NewsSectionTitle>Uživo</NewsSectionTitle>
+      <div className="space-y-3">
       {live.map((m) => (
         <PremiumCard key={m.id} className="p-4" hover={false}>
           <div className="flex flex-wrap items-center justify-between gap-3">
@@ -33,6 +35,7 @@ export function LeagueLiveMatches({ matches }: { matches: Match[] }) {
           </div>
         </PremiumCard>
       ))}
+      </div>
     </section>
   );
 }

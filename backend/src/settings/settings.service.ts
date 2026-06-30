@@ -4,6 +4,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { SETTINGS_REGISTRY, settingDefToCreate } from './settings.registry';
 import { RealtimeGateway } from '../realtime/realtime.gateway';
 import { NotificationsService } from '../notifications/notifications.service';
+import { AuditService } from '../audit/audit.service';
 import { validateModuleSettingUpdates } from './module-settings.util';
 
 @Injectable()
@@ -12,6 +13,7 @@ export class SettingsService implements OnModuleInit {
     private readonly prisma: PrismaService,
     private readonly realtime: RealtimeGateway,
     private readonly notifications: NotificationsService,
+    private readonly audit: AuditService,
   ) {}
 
   async onModuleInit() {
@@ -83,6 +85,12 @@ export class SettingsService implements OnModuleInit {
         : await this.getPrivate();
     this.realtime.emitSettingsChanged(scope, result);
     if (actorId) {
+      await this.audit.log({
+        actorId,
+        action: 'settings.update',
+        entity: 'setting',
+        metadata: { scope, keys },
+      });
       await this.notifications.create({
         userId: actorId,
         title: 'Postavke ažurirane',

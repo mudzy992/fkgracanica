@@ -1,11 +1,13 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { MessageCircle } from 'lucide-react';
 import { useAddNewsComment, useDeleteNewsComment, useNewsComments } from '../../hooks/use-news-comments';
 import { useAuth } from '../../lib/auth';
 import { hasPermission } from '../../lib/permissions';
 import { formatDate } from '../../lib/utils';
 import { Button } from '../ui/button';
 import { Textarea } from '../ui/textarea';
+import { NewsSectionTitle } from './NewsSectionTitle';
 
 interface Props {
   newsId: string;
@@ -36,20 +38,27 @@ export function NewsCommentsSection({ newsId }: Props) {
   };
 
   return (
-    <section className="mt-12 border-t border-slate-200 pt-8">
-      <h2 className="mb-6 text-xl font-semibold">Komentari ({comments?.length ?? 0})</h2>
+    <section className="mt-14">
+      <NewsSectionTitle>
+        <span className="inline-flex items-center gap-2">
+          <MessageCircle size={16} />
+          Komentari ({comments?.length ?? 0})
+        </span>
+      </NewsSectionTitle>
 
       {isLoading ? (
         <p className="text-sm text-text-muted">Učitavanje…</p>
       ) : (
-        <div className="space-y-4">
+        <div className="space-y-3">
           {comments?.map((c) => {
             const canDelete = canModerate || c.userId === user?.id;
             return (
-              <div key={c.id} className="rounded-lg border border-slate-200 p-4">
+              <div key={c.id} className="glass-premium rounded-xl p-4 sm:p-5">
                 <div className="flex items-start justify-between gap-2">
                   <div>
-                    <p className="text-sm font-medium">{c.user ? displayName(c.user) : 'Korisnik'}</p>
+                    <p className="text-sm font-semibold text-white/90">
+                      {c.user ? displayName(c.user) : 'Korisnik'}
+                    </p>
                     <p className="text-xs text-text-muted">{formatDate(c.createdAt)}</p>
                   </div>
                   {canDelete && (
@@ -58,29 +67,34 @@ export function NewsCommentsSection({ newsId }: Props) {
                     </Button>
                   )}
                 </div>
-                <p className="mt-2 whitespace-pre-wrap text-sm">{c.content}</p>
+                <p className="mt-2 whitespace-pre-wrap text-sm leading-relaxed text-white/75">
+                  {c.content}
+                </p>
               </div>
             );
           })}
-          {!comments?.length && <p className="text-sm text-text-muted">Još nema komentara.</p>}
+          {!comments?.length && (
+            <p className="text-center text-sm text-text-muted">Još nema komentara. Budite prvi!</p>
+          )}
         </div>
       )}
 
       {isAuthenticated ? (
-        <div className="mt-6 space-y-3">
+        <div className="glass-premium mt-6 space-y-3 rounded-xl p-4 sm:p-5">
           <Textarea
             value={content}
             onChange={(e) => setContent(e.target.value)}
             placeholder="Napišite komentar…"
             rows={3}
+            className="border-white/10 bg-background/50"
           />
           <Button onClick={() => void onSubmit()} disabled={!content.trim() || addComment.isPending}>
             Objavi
           </Button>
         </div>
       ) : (
-        <p className="mt-6 text-sm text-text-muted">
-          <Link to="/prijava" className="text-primary underline">
+        <p className="mt-6 text-center text-sm text-text-muted">
+          <Link to="/prijava" className="font-medium text-primary-light hover:text-white">
             Prijavite se
           </Link>{' '}
           kao član da biste komentirali.

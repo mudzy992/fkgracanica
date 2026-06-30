@@ -1,18 +1,11 @@
+import { Link } from 'react-router-dom';
 import { useDashboardKpis } from '../../hooks';
 import { Seo } from '../../components/seo/Seo';
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/card';
-import { Skeleton } from '../../components/ui/skeleton';
 import { Button } from '../../components/ui/button';
-
-const kpiLabels: Record<string, string> = {
-  users: 'Korisnici',
-  members: 'Članovi',
-  activeMemberships: 'Aktivna članstva',
-  publishedNews: 'Objavljene vijesti',
-  matches: 'Utakmice',
-  goals: 'Golovi',
-  ticketsSold: 'Prodane ulaznice',
-};
+import { AdminPageShell } from '../../components/admin/AdminPageShell';
+import { adminLinkClass } from '../../lib/admin-styles';
+import { KPI_ICONS, KPI_LABELS, KPI_ROUTES } from './dashboard-kpi-config';
 
 export function DashboardPage() {
   const { data, isLoading, isError, refetch } = useDashboardKpis();
@@ -29,26 +22,40 @@ export function DashboardPage() {
   }
 
   return (
-    <div>
+    <>
       <Seo title="Dashboard" />
-      <h1 className="mb-6 text-2xl font-bold">Kontrolna tabla</h1>
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {isLoading
-          ? Array.from({ length: 7 }).map((_, i) => <Skeleton key={i} className="h-28" />)
-          : data &&
-            Object.entries(data).map(([key, value]) => (
-              <Card key={key}>
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-medium text-text-muted">
-                    {kpiLabels[key] ?? key}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-3xl font-bold text-primary">{value}</p>
-                </CardContent>
-              </Card>
-            ))}
-      </div>
-    </div>
+      <AdminPageShell title="Kontrolna tabla" isLoading={isLoading}>
+        <div className="grid gap-4 p-4 sm:grid-cols-2 lg:grid-cols-4">
+          {data &&
+            Object.entries(data).map(([key, value]) => {
+              const Icon = KPI_ICONS[key];
+              const href = KPI_ROUTES[key];
+              const inner = (
+                <Card className="h-full border-[var(--border-subtle)] bg-surface/50 transition-colors hover:border-primary/25 hover:bg-surface/80">
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium text-text-muted">
+                      {KPI_LABELS[key] ?? key}
+                    </CardTitle>
+                    {Icon && <Icon className="h-4 w-4 text-primary-light/70" aria-hidden />}
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-3xl font-bold tabular-nums text-primary-light">{value}</p>
+                    {href && (
+                      <p className={`mt-3 text-xs ${adminLinkClass}`}>Otvori modul →</p>
+                    )}
+                  </CardContent>
+                </Card>
+              );
+              return href ? (
+                <Link key={key} to={href} className="block rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-light">
+                  {inner}
+                </Link>
+              ) : (
+                <div key={key}>{inner}</div>
+              );
+            })}
+        </div>
+      </AdminPageShell>
+    </>
   );
 }

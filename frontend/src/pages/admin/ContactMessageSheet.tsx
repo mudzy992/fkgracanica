@@ -1,4 +1,5 @@
 import type { ContactMessage } from '../../types';
+import { adminLinkClass } from '../../lib/admin-styles';
 import { formatDateTime } from '../../lib/utils';
 import { AdminFormSheet } from '../../components/admin/AdminFormSheet';
 import { Button } from '../../components/ui/button';
@@ -30,7 +31,7 @@ export function ContactMessageSheet({
         <div>
           <dt className="text-text-muted">Od</dt>
           <dd className="font-medium">
-            <a href={`mailto:${message.email}`} className="hover:text-primary">
+            <a href={`mailto:${message.email}`} className={adminLinkClass}>
               {message.name} &lt;{message.email}&gt;
             </a>
           </dd>

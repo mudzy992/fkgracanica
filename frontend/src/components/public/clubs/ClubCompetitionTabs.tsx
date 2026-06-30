@@ -1,12 +1,13 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, type ReactNode } from 'react';
 import { useMatches } from '../../../hooks';
 import { useStandings } from '../../../hooks/use-competition-admin';
 import { useRounds } from '../../../hooks/use-rounds';
-import { matchRoundNumber } from '../../../lib/round-utils';
-import { roundLabel } from '../../../lib/round-utils';
+import { matchRoundNumber, roundLabel } from '../../../lib/round-utils';
+import { cn } from '../../../lib/utils';
+import { NewsSectionTitle } from '../../news/NewsSectionTitle';
+import { LeagueStandingsMobile } from '../league/LeagueStandingsMobile';
 import { LeagueStandingsTable } from '../league/LeagueStandingsTable';
 import { ClubLastRoundMatchesTable } from './ClubLastRoundMatchesTable';
-import { Button } from '../../ui/button';
 import { Skeleton } from '../../ui/skeleton';
 
 type Tab = 'lastRound' | 'standings';
@@ -15,6 +16,31 @@ interface Props {
   clubId: string;
   seasonId?: string;
   seasonName?: string;
+}
+
+function TabPill({
+  active,
+  onClick,
+  children,
+}: {
+  active: boolean;
+  onClick: () => void;
+  children: ReactNode;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={cn(
+        'rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-wider transition',
+        active
+          ? 'bg-primary text-white shadow-[0_0_20px_rgba(0,102,255,0.35)]'
+          : 'glass-premium text-white/70 hover:text-white',
+      )}
+    >
+      {children}
+    </button>
+  );
 }
 
 export function ClubCompetitionTabs({ clubId, seasonId, seasonName }: Props) {
@@ -33,43 +59,34 @@ export function ClubCompetitionTabs({ clubId, seasonId, seasonName }: Props) {
     return matches.filter((m) => {
       if (m.status !== 'FINISHED' && m.status !== 'LIVE') return false;
       if (m.roundId && lastRound.id) return m.roundId === lastRound.id;
-      const n = matchRoundNumber(m);
-      return n === lastRound.number;
+      return matchRoundNumber(m) === lastRound.number;
     });
   }, [matches, lastRound]);
 
   if (!seasonId) return null;
 
-  const tabs: { key: Tab; label: string }[] = [
-    { key: 'lastRound', label: 'Posljednje kolo' },
-    { key: 'standings', label: 'Tabela' },
-  ];
-
   return (
-    <section className="space-y-4">
-      <div className="flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <h2 className="text-xl font-bold text-text">Takmičenje</h2>
-          {seasonName && <p className="mt-1 text-sm text-text-muted">{seasonName}</p>}
-        </div>
+    <section>
+      <NewsSectionTitle>Takmičenje</NewsSectionTitle>
+
+      <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
+        {seasonName && (
+          <p className="text-sm text-white/50">{seasonName}</p>
+        )}
         <div className="flex flex-wrap gap-2">
-          {tabs.map((t) => (
-            <Button
-              key={t.key}
-              size="sm"
-              variant={tab === t.key ? 'default' : 'outline'}
-              onClick={() => setTab(t.key)}
-            >
-              {t.label}
-            </Button>
-          ))}
+          <TabPill active={tab === 'lastRound'} onClick={() => setTab('lastRound')}>
+            Posljednje kolo
+          </TabPill>
+          <TabPill active={tab === 'standings'} onClick={() => setTab('standings')}>
+            Tabela
+          </TabPill>
         </div>
       </div>
 
       {tab === 'lastRound' && (
         <div className="space-y-3">
           {lastRound && (
-            <p className="text-sm font-medium text-text-muted">{roundLabel(lastRound)}</p>
+            <p className="text-center text-sm font-medium text-primary-light">{roundLabel(lastRound)}</p>
           )}
           <ClubLastRoundMatchesTable
             matches={lastRoundMatches}
@@ -80,16 +97,16 @@ export function ClubCompetitionTabs({ clubId, seasonId, seasonName }: Props) {
       )}
 
       {tab === 'standings' && (
-        <div className="overflow-x-auto rounded-xl border border-[var(--border-subtle)]">
-          {sl ? (
-            <Skeleton className="m-4 h-48 w-full" />
-          ) : (
-            <LeagueStandingsTable
-              rows={standings ?? []}
-              highlightClubId={clubId}
-            />
-          )}
-        </div>
+        sl ? (
+          <Skeleton className="h-64 rounded-2xl" />
+        ) : (
+          <div className="border-gradient-club glass-premium overflow-hidden rounded-2xl">
+            <LeagueStandingsMobile rows={standings ?? []} highlightClubId={clubId} />
+            <div className="hidden overflow-x-auto lg:block">
+              <LeagueStandingsTable rows={standings ?? []} highlightClubId={clubId} />
+            </div>
+          </div>
+        )
       )}
     </section>
   );

@@ -4,6 +4,7 @@ import type { WidgetType } from '../../../../cms/widgets/schemas';
 import { widgetMeta } from '../../../../cms/widgets/schemas';
 import { HeroSectionForm } from './HeroSectionForm';
 import { NewsFeedSectionForm } from './NewsFeedSectionForm';
+import { NextMatchSectionForm } from './NextMatchSectionForm';
 import { GenericSectionForm } from './GenericSectionForm';
 
 interface Props {
@@ -23,7 +24,8 @@ export function CmsSectionForm({ widgetType, config, onChange }: Props) {
       {widgetType === 'rich-text' && <RichTextSectionForm config={config} onChange={onChange} />}
       {widgetType === 'custom-html' && <CustomHtmlSectionForm config={config} onChange={onChange} />}
       {widgetType === 'footer-about' && <FooterAboutForm config={config} onChange={onChange} />}
-      {!['hero', 'news-feed', 'rich-text', 'footer-about'].includes(widgetType) && (
+      {widgetType === 'next-match' && <NextMatchSectionForm config={config} onChange={onChange} />}
+      {!['hero', 'news-feed', 'rich-text', 'footer-about', 'next-match'].includes(widgetType) && (
         <GenericSectionForm widgetType={widgetType} config={config} onChange={onChange} />
       )}
     </div>

@@ -1,86 +1,50 @@
 @import "tailwindcss";
+@import "./styles/premium-landing.css";
 
 @theme {
   --color-primary: #1e3a8a;
-  --color-primary-light: #3b82f6;
-  --color-background: #ffffff;
-  --color-surface: #f8fafc;
-  --color-text: #0f172a;
-  --color-text-muted: #64748b;
-  --color-accent: #2563eb;
-  --color-success: #16a34a;
-  --color-danger: #dc2626;
+  --color-primary-light: #60a5fa;
+  --color-background: #050a14;
+  --color-surface: #0a1525;
+  --color-text: #f8fafc;
+  --color-text-muted: #94a3b8;
+  --color-accent: #60a5fa;
+  --color-success: #22c55e;
+  --color-danger: #ef4444;
   --font-sans: 'Inter', system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   --font-display: 'Plus Jakarta Sans', 'Inter', system-ui, sans-serif;
 }
 
 :root {
   --color-primary: #1e3a8a;
-  --color-primary-light: #3b82f6;
-  --color-background: #ffffff;
-  --color-surface: #f8fafc;
-  --color-text: #0f172a;
-  --color-text-muted: #64748b;
-  --color-accent: #2563eb;
-  --color-success: #16a34a;
-  --color-danger: #dc2626;
-  --gradient-hero: linear-gradient(135deg, #1e3a8a 0%, #2563eb 50%, #3b82f6 100%);
-  --gradient-page-hero: linear-gradient(180deg, rgba(30, 58, 138, 0.06) 0%, transparent 100%);
-  --hero-radial-accent: rgba(37, 99, 235, 0.12);
-  --hero-orb-color: rgba(30, 58, 138, 0.1);
-  --gradient-surface: linear-gradient(180deg, var(--color-surface) 0%, var(--color-background) 100%);
-  --border-subtle: rgba(148, 163, 184, 0.35);
-  --ring-focus: rgba(37, 99, 235, 0.45);
-  --glass-bg: rgba(255, 255, 255, 0.72);
-  --shadow-premium: 0 20px 50px -12px rgba(30, 58, 138, 0.18);
-  --text-display: 3rem;
-  --text-h1: 2.25rem;
-  --text-h2: 1.5rem;
-  --text-body: 1rem;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root:not(.light) {
-    --color-primary: #3b82f6;
-    --color-primary-light: #60a5fa;
-    --color-background: #0f172a;
-    --color-surface: #1e293b;
-    --color-text: #f8fafc;
-    --color-text-muted: #94a3b8;
-    --color-accent: #60a5fa;
-    --color-success: #22c55e;
-    --color-danger: #ef4444;
-    --gradient-hero: linear-gradient(135deg, #1e293b 0%, #1e3a8a 45%, #2563eb 100%);
-    --gradient-page-hero: linear-gradient(180deg, rgba(15, 23, 42, 0.95) 0%, transparent 100%);
-    --hero-radial-accent: rgba(59, 130, 246, 0.06);
-    --hero-orb-color: rgba(59, 130, 246, 0.04);
-    --gradient-surface: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
-    --glass-bg: rgba(30, 41, 59, 0.82);
-    --border-subtle: rgba(148, 163, 184, 0.22);
-    --ring-focus: rgba(96, 165, 250, 0.5);
-    --shadow-premium: 0 20px 50px -12px rgba(0, 0, 0, 0.45);
-  }
-}
-
-:root.dark {
-  --color-primary: #3b82f6;
   --color-primary-light: #60a5fa;
-  --color-background: #0f172a;
-  --color-surface: #1e293b;
+  --color-background: #050a14;
+  --color-surface: #0a1525;
   --color-text: #f8fafc;
   --color-text-muted: #94a3b8;
   --color-accent: #60a5fa;
   --color-success: #22c55e;
   --color-danger: #ef4444;
   --gradient-hero: linear-gradient(135deg, #1e293b 0%, #1e3a8a 45%, #2563eb 100%);
-  --gradient-page-hero: linear-gradient(180deg, rgba(15, 23, 42, 0.95) 0%, transparent 100%);
+  --gradient-page-hero: linear-gradient(180deg, rgba(5, 10, 20, 0.95) 0%, transparent 100%);
   --hero-radial-accent: rgba(59, 130, 246, 0.06);
   --hero-orb-color: rgba(59, 130, 246, 0.04);
-  --gradient-surface: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
-  --glass-bg: rgba(30, 41, 59, 0.82);
+  --hero-image-overlay: linear-gradient(
+      to right,
+      rgba(5, 10, 20, 0.95) 0%,
+      rgba(30, 58, 138, 0.88) 50%,
+      rgba(30, 58, 138, 0.65) 100%
+    ),
+    linear-gradient(to top, rgba(5, 10, 20, 0.9) 0%, transparent 45%, rgba(5, 10, 20, 0.5) 100%);
+  --gradient-surface: linear-gradient(180deg, #0a1525 0%, #050a14 100%);
   --border-subtle: rgba(148, 163, 184, 0.22);
   --ring-focus: rgba(96, 165, 250, 0.5);
+  --glass-bg: rgba(10, 21, 37, 0.82);
   --shadow-premium: 0 20px 50px -12px rgba(0, 0, 0, 0.45);
+  --text-display: 3rem;
+  --text-h1: 2.25rem;
+  --text-h2: 1.5rem;
+  --text-body: 1rem;
 }
 
 @layer base {
@@ -120,7 +84,7 @@
   }
 
   .rich-content a {
-    @apply text-primary underline;
+    @apply text-primary-light underline decoration-primary-light/40 hover:text-white hover:decoration-white/60;
   }
 
   .rich-content ul {

@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { adminLinkClass } from '../../lib/admin-styles';
 import { useState } from 'react';
 import { Pencil, Plus, Trash2 } from 'lucide-react';
 import { useCompetitions, useSeasons } from '../../hooks';
@@ -120,10 +121,18 @@ export function CompetitionsAdminPage() {
             { key: 'competition', header: 'Takmičenje', render: (r) => compName(r.competitionId) },
             { key: 'years', header: 'Period', render: (r) => `${r.yearStart}–${r.yearEnd}` },
             {
+              key: 'participants',
+              header: 'Učesnici',
+              render: (r) => {
+                const count = (r as Season).participants?.length ?? 0;
+                return count ? <Badge variant="muted">{count}</Badge> : <span className="text-text-muted">—</span>;
+              },
+            },
+            {
               key: 'hub',
               header: 'Kola & utakmice',
               render: (r) => (
-                <Link to={`/admin/competitions/seasons/${r.id}`} className="text-sm font-medium text-primary hover:underline">
+                <Link to={`/admin/competitions/seasons/${r.id}`} className={`text-sm ${adminLinkClass}`}>
                   Upravljaj
                 </Link>
               ),

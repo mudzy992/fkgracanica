@@ -458,6 +458,7 @@ model Club {
   stadiumRel    Stadium?
   squadSlots    ClubSquadSlot[]
   matchLineups  MatchLineup[]
+  seasonEntries SeasonClub[]
 }
 
 model Stadium {
@@ -497,8 +498,23 @@ model Season {
   competition   Competition @relation(fields: [competitionId], references: [id], onDelete: Cascade)
   matches       Match[]
   rounds        Round[]
+  participants  SeasonClub[]
 
   @@index([competitionId])
+}
+
+model SeasonClub {
+  id        String   @id @default(cuid())
+  seasonId  String
+  clubId    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  season    Season   @relation(fields: [seasonId], references: [id], onDelete: Cascade)
+  club      Club     @relation(fields: [clubId], references: [id], onDelete: Cascade)
+
+  @@unique([seasonId, clubId])
+  @@index([seasonId])
+  @@index([clubId])
 }
 
 model Round {

@@ -1,7 +1,37 @@
 import { Link } from 'react-router-dom';
-import { formatDateTime } from '../../../lib/utils';
+import { formatDate, formatDateTime } from '../../../lib/utils';
+import { ClubCrest } from './ClubCrest';
 import { ClubLink } from './ClubLink';
-import type { Match } from '../../../types';
+import { cn } from '../../../lib/utils';
+import type { Club, Match } from '../../../types';
+
+function HomeClubCell({ club }: { club?: Club }) {
+  if (!club) return <span className="text-white/50">—</span>;
+  return (
+    <div className="flex items-center justify-end gap-2">
+      {club.slug ? (
+        <ClubLink slug={club.slug} name={club.name ?? '—'} className="text-sm font-medium" />
+      ) : (
+        <span className="text-sm font-medium text-white">{club.name}</span>
+      )}
+      <ClubCrest club={club} size="sm" />
+    </div>
+  );
+}
+
+function AwayClubCell({ club }: { club?: Club }) {
+  if (!club) return <span className="text-white/50">—</span>;
+  return (
+    <div className="flex items-center gap-2">
+      <ClubCrest club={club} size="sm" />
+      {club.slug ? (
+        <ClubLink slug={club.slug} name={club.name ?? '—'} className="text-sm font-medium" />
+      ) : (
+        <span className="text-sm font-medium text-white">{club.name}</span>
+      )}
+    </div>
+  );
+}
 
 interface Props {
   matches: Match[];
@@ -14,7 +44,7 @@ export function ClubLastRoundMatchesTable({ matches, highlightClubId, loading }:
     return (
       <div className="space-y-2">
         {Array.from({ length: 4 }).map((_, i) => (
-          <div key={i} className="h-12 animate-pulse rounded-lg bg-surface" />
+          <div key={i} className="h-12 animate-pulse rounded-xl bg-white/5" />
         ))}
       </div>
     );
@@ -29,54 +59,55 @@ export function ClubLastRoundMatchesTable({ matches, highlightClubId, loading }:
   );
 
   return (
-    <div className="overflow-x-auto rounded-xl border border-[var(--border-subtle)]">
-      <table className="w-full min-w-[520px] text-sm">
-        <thead>
-          <tr className="border-b bg-surface/50 text-left text-text-muted">
-            <th className="px-4 py-3">Datum</th>
-            <th className="px-4 py-3">Domaćin</th>
-            <th className="px-4 py-3 text-center">Rez.</th>
-            <th className="px-4 py-3">Gost</th>
-          </tr>
-        </thead>
-        <tbody>
-          {sorted.map((m) => {
-            const involved =
-              m.homeClubId === highlightClubId || m.awayClubId === highlightClubId;
-            return (
-              <tr
-                key={m.id}
-                className={
-                  involved
-                    ? 'border-b border-[var(--border-subtle)] bg-primary/5 font-medium last:border-0'
-                    : 'border-b border-[var(--border-subtle)] last:border-0'
-                }
-              >
-                <td className="px-4 py-3.5 text-text-muted">{formatDateTime(m.scheduledAt)}</td>
-                <td className="px-4 py-3.5">
-                  {m.homeClub?.slug ? (
-                    <ClubLink slug={m.homeClub.slug} name={m.homeClub.name ?? '—'} />
-                  ) : (
-                    m.homeClub?.name ?? '—'
+    <div className="border-gradient-club glass-premium overflow-hidden rounded-2xl">
+      <div className="overflow-x-auto">
+        <table className="w-full min-w-[520px] text-sm">
+          <thead>
+            <tr className="border-b border-white/10 text-left text-[10px] font-semibold uppercase tracking-wider text-white/45">
+              <th className="hidden p-4 sm:table-cell">Datum</th>
+              <th className="p-4 text-right">Domaćin</th>
+              <th className="p-4 text-center">Rez.</th>
+              <th className="p-4">Gost</th>
+            </tr>
+          </thead>
+          <tbody>
+            {sorted.map((m) => {
+              const involved =
+                m.homeClubId === highlightClubId || m.awayClubId === highlightClubId;
+              return (
+                <tr
+                  key={m.id}
+                  className={cn(
+                    'border-b border-white/5 transition last:border-0 hover:bg-white/[0.03]',
+                    involved && 'bg-primary/10',
                   )}
-                </td>
-                <td className="px-4 py-3.5 text-center tabular-nums">
-                  <Link to={`/utakmice/${m.id}`} className="font-bold text-primary hover:underline">
-                    {m.homeScore}:{m.awayScore}
-                  </Link>
-                </td>
-                <td className="px-4 py-3.5">
-                  {m.awayClub?.slug ? (
-                    <ClubLink slug={m.awayClub.slug} name={m.awayClub.name ?? '—'} />
-                  ) : (
-                    m.awayClub?.name ?? '—'
-                  )}
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
+                >
+                  <td className="hidden p-4 text-white/50 sm:table-cell">
+                    <span className="block">{formatDate(m.scheduledAt)}</span>
+                    <span className="text-[10px] text-white/35">
+                      {formatDateTime(m.scheduledAt).split(' ').slice(1).join(' ')}
+                    </span>
+                  </td>
+                  <td className="p-3 sm:p-4">
+                    <HomeClubCell club={m.homeClub} />
+                  </td>
+                  <td className="p-3 text-center sm:p-4">
+                    <Link
+                      to={`/utakmice/${m.id}`}
+                      className="font-display inline-block min-w-[3.5rem] rounded-lg bg-white/5 px-2 py-1 text-base font-bold tabular-nums text-white transition hover:bg-primary/20 hover:text-primary-light"
+                    >
+                      {m.homeScore}:{m.awayScore}
+                    </Link>
+                  </td>
+                  <td className="p-3 sm:p-4">
+                    <AwayClubCell club={m.awayClub} />
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }

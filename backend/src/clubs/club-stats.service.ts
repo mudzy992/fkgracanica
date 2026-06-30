@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { MatchStatus } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { computeStandings } from '../statistics/standings.util';
+import { getSeasonParticipantClubs } from '../competitions/season-participants.util';
 
 @Injectable()
 export class ClubStatsService {
@@ -13,14 +14,18 @@ export class ClubStatsService {
       : await this.prisma.season.findFirst({ where: { isActive: true }, orderBy: { yearStart: 'desc' } });
     if (!season) return { season: null, standing: null, players: [] };
 
-    const matches = await this.prisma.match.findMany({
-      where: { seasonId: season.id, status: MatchStatus.FINISHED },
-      include: {
-        homeClub: { select: { id: true, name: true, slug: true } },
-        awayClub: { select: { id: true, name: true, slug: true } },
-      },
-    });
-    const standing = computeStandings(matches).find((r) => r.clubId === clubId) ?? null;
+    const [matches, participants] = await Promise.all([
+      this.prisma.match.findMany({
+        where: { seasonId: season.id, status: MatchStatus.FINISHED },
+        include: {
+          homeClub: { select: { id: true, name: true, slug: true } },
+          awayClub: { select: { id: true, name: true, slug: true } },
+        },
+        orderBy: { scheduledAt: 'asc' },
+      }),
+      getSeasonParticipantClubs(this.prisma, season.id),
+    ]);
+    const standing = computeStandings(matches, participants).find((r) => r.clubId === clubId) ?? null;
 
     const players = await this.prisma.player.findMany({
       where: { clubId },

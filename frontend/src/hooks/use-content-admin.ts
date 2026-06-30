@@ -69,6 +69,18 @@ export function useAddGalleryPhoto() {
   });
 }
 
+export function useAddGalleryPhotos() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ galleryId, paths }: { galleryId: string; paths: string[] }) => {
+      for (const path of paths) {
+        await api.post(`/gallery/${galleryId}/photos`, { path });
+      }
+    },
+    onSuccess: () => void qc.invalidateQueries({ queryKey: ['gallery'] }),
+  });
+}
+
 export function useRemoveGalleryPhoto() {
   const qc = useQueryClient();
   return useMutation({

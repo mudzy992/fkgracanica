@@ -131,7 +131,9 @@ export default function App() {
             <Route element={<ModuleRoute moduleKey="modules.media" redirectTo={ADMIN} />}>
               <Route path="media" element={<MediaPage />} />
             </Route>
-            <Route path="audit" element={<AuditPage />} />
+            <Route element={<PermissionRoute permission="audit.read" />}>
+              <Route path="audit" element={<AuditPage />} />
+            </Route>
             <Route element={<ModuleRoute moduleKey="modules.news" redirectTo={ADMIN} />}>
               <Route path="news" element={<NewsAdminPage />} />
             </Route>

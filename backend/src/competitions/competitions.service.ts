@@ -2,6 +2,15 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { slugify } from '../common/utils/slug.util';
 import { deactivateOtherSeasons } from './season-active.util';
+import { getSeasonParticipantClubs, syncSeasonParticipants } from './season-participants.util';
+
+const seasonInclude = {
+  competition: true,
+  participants: {
+    include: { club: { select: { id: true, name: true, slug: true } } },
+    orderBy: { club: { name: 'asc' as const } },
+  },
+};
 
 @Injectable()
 export class CompetitionsService {
@@ -33,7 +42,7 @@ export class CompetitionsService {
   findSeasons(competitionId?: string) {
     return this.prisma.season.findMany({
       where: competitionId ? { competitionId } : undefined,
-      include: { competition: true },
+      include: seasonInclude,
       orderBy: { yearStart: 'desc' },
     });
   }
@@ -44,27 +53,40 @@ export class CompetitionsService {
     yearEnd: number;
     competitionId: string;
     isActive?: boolean;
+    clubIds?: string[];
   }) {
-    if (!data.isActive) return this.prisma.season.create({ data });
-    return this.prisma.$transaction(async (tx) => {
-      await deactivateOtherSeasons(tx, data.competitionId);
-      return tx.season.create({ data });
-    });
+    const { clubIds = [], ...seasonData } = data;
+    const run = async (tx: Parameters<Parameters<PrismaService['$transaction']>[0]>[0]) => {
+      if (seasonData.isActive) await deactivateOtherSeasons(tx, seasonData.competitionId);
+      const season = await tx.season.create({ data: seasonData });
+      await syncSeasonParticipants(tx, season.id, clubIds);
+      return tx.season.findUnique({ where: { id: season.id }, include: seasonInclude });
+    };
+    return this.prisma.$transaction(run);
   }
 
   async updateSeason(id: string, data: Record<string, unknown>) {
-    if (data.isActive !== true) {
-      return this.prisma.season.update({ where: { id }, data });
-    }
-    const season = await this.prisma.season.findUnique({ where: { id } });
-    if (!season) return this.prisma.season.update({ where: { id }, data });
-    return this.prisma.$transaction(async (tx) => {
-      await deactivateOtherSeasons(tx, season.competitionId, id);
-      return tx.season.update({ where: { id }, data });
-    });
+    const clubIds = Array.isArray(data.clubIds) ? (data.clubIds as string[]) : undefined;
+    const patch = { ...data };
+    delete patch.clubIds;
+
+    const run = async (tx: Parameters<Parameters<PrismaService['$transaction']>[0]>[0]) => {
+      if (patch.isActive === true) {
+        const season = await tx.season.findUnique({ where: { id } });
+        if (season) await deactivateOtherSeasons(tx, season.competitionId, id);
+      }
+      await tx.season.update({ where: { id }, data: patch });
+      if (clubIds) await syncSeasonParticipants(tx, id, clubIds);
+      return tx.season.findUnique({ where: { id }, include: seasonInclude });
+    };
+    return this.prisma.$transaction(run);
   }
 
   removeSeason(id: string) {
     return this.prisma.season.delete({ where: { id } });
+  }
+
+  getSeasonParticipants(seasonId: string) {
+    return getSeasonParticipantClubs(this.prisma, seasonId);
   }
 }

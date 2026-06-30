@@ -1,6 +1,6 @@
 # HANDOFF — FK Gračanica
 
-> Ažurirano: **2026-06-29** (Web Complete #1–#14 APPROVED, #15 READY_FOR_REVIEW)
+> Ažurirano: **2026-06-30**
 
 ---
 
@@ -8,17 +8,17 @@
 
 | Polje | Vrijednost |
 |-------|------------|
-| **Aktivna faza** | Web Complete — Track 3 admin moduli |
+| **Aktivna faza** | Web Complete — **javne stranice dizajn polish** |
 | **Plan folder** | `.cursor/plans/fk-gracanica/21_web-complete/` |
 | **Session handoff** | [21_web-complete/HANDOFF.md](./21_web-complete/HANDOFF.md) |
 | **Gate log** | [21_web-complete/GATE_LOG.md](./21_web-complete/GATE_LOG.md) |
-| **Branch** | `main` @ `be03774` (uncommitted work — vidi session HANDOFF §12) |
+| **Responsive checklist** | [23_responsive-premium-web/CHECKLIST.md](./23_responsive-premium-web/CHECKLIST.md) |
 
 ---
 
 ## 2. Status u jednoj rečenici
 
-**#1–#14 APPROVED** (ulaznice, Stripe, unified auth, članstvo online, multi-provider plaćanje, Moj račun ulaznice). **#15 Kontakt READY_FOR_REVIEW**. Sljedeće: smoke Kontakt → APPROVED → **#16 Newsletter**. **Commit + Docker rebuild** prije produkcije.
+**#1–#13, #15–#20 APPROVED.** **#14 Ulaznice** i **#21 Dashboard/Audit/Notifikacije** — READY_FOR_REVIEW. Naslovna premium dark gotova (hero 100dvh + utakmice u docku). **Sljedeće:** poliranje ostalih javnih stranica, zatim gate smoke (#14, #21) i #20 regresija.
 
 ---
 
@@ -26,11 +26,11 @@
 
 | Modul | Status |
 |-------|--------|
-| 1–12 | APPROVED |
-| 13 Članstvo | APPROVED |
-| 14 Ulaznice | APPROVED |
-| 15 Kontakt | READY_FOR_REVIEW |
-| 16+ | Nije gate-ovan |
+| 1–13 | APPROVED |
+| **14** Ulaznice | **READY_FOR_REVIEW** |
+| 15–19 | APPROVED |
+| **20** Postavke | **APPROVED** |
+| **21** Dashboard / Audit / Notif. | **READY_FOR_REVIEW** |
 
 **Izvor istine:** [21_web-complete/GATE_LOG.md](./21_web-complete/GATE_LOG.md)
 
@@ -38,27 +38,14 @@
 
 ## 4. Produkcija / deploy
 
-| Resurs | URL |
-|--------|-----|
-| Javni web | https://fkgracanica.ba |
-| API | https://fkgracanica.ba/backend/api/v1 |
-| Admin | https://fkgracanica.ba/admin |
-
 ```bash
-./scripts/docker-prod-build.sh && docker compose up -d
-cd backend && npx prisma migrate deploy
+cd frontend && npm run build
+cd backend && npm run build
+docker compose build frontend backend && docker compose up -d
 ```
-
-**⚠️** Veliki uncommitted diff — deploy bez commita = stari image bez payments modula.
 
 ---
 
-## 5. Sljedeći koraci
+## 5. Sljedeća sesija
 
-1. Smoke #15 Kontakt (forma + admin inbox)
-2. Korisnik APPROVED u GATE_LOG
-3. `git commit` cijelog Web Complete diffa
-4. Docker rebuild + migrate
-5. #16 Newsletter
-
-Detalji: [21_web-complete/HANDOFF.md](./21_web-complete/HANDOFF.md)
+Vidi **§3 i §10** u [21_web-complete/HANDOFF.md](./21_web-complete/HANDOFF.md).

@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { asArray } from '../../lib/as-array';
 import {
   useCreateMediaFolder,
@@ -30,12 +30,24 @@ export function MediaPage() {
   const [replaceId, setReplaceId] = useState<string | null>(null);
   const [newFolder, setNewFolder] = useState('');
   const [search, setSearch] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
   const [page, setPage] = useState(1);
   const [editAsset, setEditAsset] = useState<MediaAsset | null>(null);
   const [copied, setCopied] = useState<string | null>(null);
   const { data: foldersRaw, isLoading: fl } = useMediaFolders();
   const folders = asArray<MediaFolder>(foldersRaw);
-  const { data, isLoading: al } = useMediaAssets({ folderId, page, search });
+
+  useEffect(() => {
+    const t = setTimeout(() => setDebouncedSearch(search.trim()), 300);
+    return () => clearTimeout(t);
+  }, [search]);
+
+  const globalSearch = !!debouncedSearch;
+  const { data, isLoading: al } = useMediaAssets({
+    folderId: globalSearch ? undefined : folderId,
+    page,
+    search: debouncedSearch || undefined,
+  });
   const createFolder = useCreateMediaFolder();
   const updateFolder = useUpdateMediaFolder();
   const deleteFolder = useDeleteMediaFolder();
@@ -43,6 +55,8 @@ export function MediaPage() {
   const replace = useReplaceMedia();
   const remove = useDeleteMedia();
   const { confirm, dialog } = useConfirm();
+
+  const selectedFolderName = folders.find((f) => f.id === folderId)?.name;
 
   const copyUrl = (path: string) => {
     void navigator.clipboard.writeText(mediaUrl(path, 'original') ?? path).then(() => {
@@ -69,7 +83,7 @@ export function MediaPage() {
       {dialog}
       <input ref={uploadRef} type="file" accept="image/*" className="hidden" onChange={(e) => {
         const file = e.target.files?.[0];
-        if (file) void upload.mutateAsync({ file, folderId });
+        if (file && folderId) void upload.mutateAsync({ file, folderId });
         e.target.value = '';
       }} />
       <input ref={replaceRef} type="file" accept="image/*" className="hidden" onChange={(e) => {
@@ -80,10 +94,29 @@ export function MediaPage() {
       <AdminPageShell
         title="Mediji"
         isLoading={fl || al}
-        actions={<Button onClick={() => uploadRef.current?.click()} disabled={upload.isPending}>Upload</Button>}
+        actions={(
+          <Button
+            onClick={() => uploadRef.current?.click()}
+            disabled={upload.isPending || !folderId}
+            title={folderId ? undefined : 'Prvo odaberite mapu'}
+          >
+            Upload{selectedFolderName ? ` u „${selectedFolderName}"` : ''}
+          </Button>
+        )}
       >
-        <div className="mb-4">
-          <Input value={search} onChange={(e) => { setSearch(e.target.value); setPage(1); }} placeholder="Pretraga..." />
+        <div className="space-y-2 px-4 pb-2">
+          <Input
+            value={search}
+            onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+            placeholder="Pretraga po nazivu, tagu ili putanji…"
+          />
+          <p className="text-xs text-text-muted">
+            {globalSearch
+              ? 'Pretraga kroz sve mape. Upload je uvijek u odabranu mapu.'
+              : folderId
+                ? `Prikaz mape „${selectedFolderName ?? '—'}". Upload ide u ovu mapu.`
+                : 'Odaberite mapu za upload i pregled. „Svi mediji" prikazuje cijelu biblioteku.'}
+          </p>
         </div>
         <div className="grid min-h-[320px] lg:grid-cols-[220px_1fr]">
           <MediaFolderTree

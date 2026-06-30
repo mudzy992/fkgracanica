@@ -41,6 +41,8 @@
 
 ## Changelog
 
+- 2026-06-30: Premium landing 1:1 (fkt-newdesign ref) — widgeti, hero, header scroll, footer
+- 2026-06-30: Audit na `settings.update`; FE PermissionRoute za `/admin/audit`
 - 2026-06-30: Postavke — tabovi po grupama, ModuleRoute guard, module-flags API, CMS nav filter
 - 2026-06-30: Postavke — moduli s ovisnostima, unified card UI, nav filter
 - 2026-06-30: Korisnici + Uloge spojeni u jedan modul (`/admin/users` + tabovi)

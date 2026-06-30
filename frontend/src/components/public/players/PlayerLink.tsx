@@ -10,7 +10,10 @@ interface Props {
 
 export function PlayerLink({ id, name, className }: Props) {
   return (
-    <Link to={playerPath(id)} className={cn('font-medium text-primary hover:underline', className)}>
+    <Link
+      to={playerPath(id)}
+      className={cn('font-medium text-primary-light transition hover:text-white hover:underline', className)}
+    >
       {name}
     </Link>
   );

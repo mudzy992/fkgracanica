@@ -11,7 +11,7 @@ interface Props {
 }
 
 export function HeroSectionForm({ config, onChange }: Props) {
-  const hero = { title: '', buttons: [], ...config } as HeroConfig;
+  const hero = { title: '', buttons: [], showMatches: true, showLastResult: true, ...config } as HeroConfig;
 
   const patch = (next: Partial<HeroConfig>) => onChange({ ...hero, ...next });
 
@@ -26,7 +26,23 @@ export function HeroSectionForm({ config, onChange }: Props) {
       <Input value={hero.foundedYear ?? ''} onChange={(e) => patch({ foundedYear: e.target.value })} placeholder="Godina osnivanja" />
       <Input value={hero.title} onChange={(e) => patch({ title: e.target.value })} placeholder="Naslov *" />
       <Input value={hero.subtitle ?? ''} onChange={(e) => patch({ subtitle: e.target.value })} placeholder="Podnaslov" />
-      <MediaPicker value={hero.backgroundImage ?? ''} onChange={(v) => patch({ backgroundImage: v })} label="Pozadinska slika" />
+      <MediaPicker value={hero.backgroundImage ?? ''} onChange={(v) => patch({ backgroundImage: v })} label="Pozadinska slika (hero + stadion)" />
+      <label className="flex items-center gap-2 text-sm text-text-muted">
+        <input
+          type="checkbox"
+          checked={hero.showMatches !== false}
+          onChange={(e) => patch({ showMatches: e.target.checked })}
+        />
+        Prikaži sljedeću utakmicu u hero dnu
+      </label>
+      <label className="flex items-center gap-2 text-sm text-text-muted">
+        <input
+          type="checkbox"
+          checked={hero.showLastResult !== false}
+          onChange={(e) => patch({ showLastResult: e.target.checked })}
+        />
+        Prikaži zadnji rezultat (suptilno)
+      </label>
       <div className="space-y-2 rounded-lg border border-slate-200 p-3">
         <p className="text-sm font-medium">Dugmad (label + link)</p>
         {(hero.buttons ?? []).map((btn, i) => (

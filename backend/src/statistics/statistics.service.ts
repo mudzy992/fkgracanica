@@ -9,6 +9,7 @@ import {
 } from './match-stats.util';
 import { computeStandings } from './standings.util';
 import { getSeasonLeaders } from './leaders.util';
+import { getSeasonParticipantClubs } from '../competitions/season-participants.util';
 
 @Injectable()
 export class StatisticsService {
@@ -165,19 +166,22 @@ export class StatisticsService {
   }
 
   async getStandings(seasonId: string, upToRound?: number) {
-    const matches = await this.prisma.match.findMany({
-      where: { seasonId, status: MatchStatus.FINISHED },
-      include: {
-        homeClub: { select: { name: true, slug: true } },
-        awayClub: { select: { name: true, slug: true } },
-        roundRel: { select: { number: true } },
-      },
-    });
+    const [matches, participants] = await Promise.all([
+      this.prisma.match.findMany({
+        where: { seasonId, status: MatchStatus.FINISHED },
+        include: {
+          homeClub: { select: { name: true, slug: true, crestPath: true } },
+          awayClub: { select: { name: true, slug: true, crestPath: true } },
+          roundRel: { select: { number: true } },
+        },
+      }),
+      getSeasonParticipantClubs(this.prisma, seasonId),
+    ]);
     const filtered =
       upToRound == null
         ? matches
         : matches.filter((m) => matchWithinRoundLimit(m, upToRound));
-    return computeStandings(filtered);
+    return computeStandings(filtered, participants);
   }
 
   getTopScorers(seasonId: string) {

@@ -1,12 +1,11 @@
 import { useEffect, useState } from 'react';
 import {
-  useAddGalleryPhoto,
   useCreateGallery,
-  useGalleryDetail,
   useUpdateGallery,
+  useGalleryDetail,
 } from '../../hooks/use-content-admin';
 import { AdminFormSheet } from '../../components/admin/AdminFormSheet';
-import { MediaPicker } from '../../components/admin/MediaPicker';
+import { GalleryPhotoPicker } from '../../components/admin/GalleryPhotoPicker';
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
 import type { GalleryItem } from '../../types';
@@ -21,14 +20,11 @@ interface Props {
 export function GalleryAdminFormSheet({ open, onOpenChange, edit }: Props) {
   const create = useCreateGallery();
   const update = useUpdateGallery();
-  const addPhoto = useAddGalleryPhoto();
   const [activeId, setActiveId] = useState<string | null>(null);
   const galleryId = edit?.id ?? activeId ?? undefined;
   const { data: detail } = useGalleryDetail(galleryId);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [photoPath, setPhotoPath] = useState('');
-  const [caption, setCaption] = useState('');
   const [feedback, setFeedback] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
   useEffect(() => {
@@ -39,8 +35,6 @@ export function GalleryAdminFormSheet({ open, onOpenChange, edit }: Props) {
     }
     setTitle(edit?.title ?? '');
     setDescription(edit?.description ?? '');
-    setPhotoPath('');
-    setCaption('');
     setActiveId(edit?.id ?? null);
   }, [open, edit]);
 
@@ -61,12 +55,14 @@ export function GalleryAdminFormSheet({ open, onOpenChange, edit }: Props) {
   };
 
   const photos = detail?.photos ?? edit?.photos ?? [];
+  const existingPaths = photos.map((p) => p.path);
 
   return (
     <AdminFormSheet
       open={open}
       onOpenChange={onOpenChange}
       title={galleryId ? 'Uredi galeriju' : 'Nova galerija'}
+      size="xl"
     >
       <div className="space-y-4">
         <Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Naslov *" />
@@ -80,24 +76,8 @@ export function GalleryAdminFormSheet({ open, onOpenChange, edit }: Props) {
         {galleryId && (
           <div className="space-y-3 border-t border-slate-200 pt-4">
             <p className="text-sm font-medium">Fotografije</p>
+            <GalleryPhotoPicker galleryId={galleryId} existingPaths={existingPaths} />
             <GalleryAdminPhotos galleryId={galleryId} photos={photos} />
-            <MediaPicker value={photoPath} onChange={setPhotoPath} label="Nova fotografija" />
-            <Input value={caption} onChange={(e) => setCaption(e.target.value)} placeholder="Opis (opcionalno)" />
-            <Button
-              variant="outline"
-              size="sm"
-              disabled={!photoPath || addPhoto.isPending}
-              onClick={() => {
-                void addPhoto
-                  .mutateAsync({ galleryId, path: photoPath, caption: caption || undefined })
-                  .then(() => {
-                    setPhotoPath('');
-                    setCaption('');
-                  });
-              }}
-            >
-              Dodaj fotografiju
-            </Button>
           </div>
         )}
         {feedback && (
