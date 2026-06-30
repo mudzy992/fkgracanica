@@ -4,12 +4,16 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { AuditService } from '../audit/audit.service';
 
-const SYSTEM_ROLES = ['Administrator', 'Moderator', 'Writer', 'Komentator', 'Član'];
+export const SYSTEM_ROLES = ['Administrator', 'Moderator', 'Writer', 'Komentator', 'Član'];
 
 @Injectable()
 export class RbacService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly audit: AuditService,
+  ) {}
 
   findRoles() {
     return this.prisma.role.findMany({
@@ -25,7 +29,7 @@ export class RbacService {
     return this.prisma.permission.findMany({ orderBy: { key: 'asc' } });
   }
 
-  async updateRolePermissions(roleId: string, permissionKeys: string[]) {
+  async updateRolePermissions(actorId: string, roleId: string, permissionKeys: string[]) {
     const role = await this.prisma.role.findUnique({ where: { id: roleId } });
     if (!role) throw new NotFoundException('Uloga nije pronađena');
     if (role.name === 'Administrator') {
@@ -45,17 +49,33 @@ export class RbacService {
         data: permissions.map((p) => ({ roleId, permissionId: p.id })),
       });
     }
-    return this.prisma.role.findUnique({
+    const updated = await this.prisma.role.findUnique({
       where: { id: roleId },
       include: { permissions: { include: { permission: true } } },
     });
+    await this.audit.log({
+      actorId,
+      action: 'rbac.role.permissions.update',
+      entity: 'Role',
+      entityId: roleId,
+      metadata: { roleName: role.name, permissionKeys },
+    });
+    return updated;
   }
 
-  async createRole(data: { name: string; description?: string }) {
-    return this.prisma.role.create({ data });
+  async createRole(actorId: string, data: { name: string; description?: string }) {
+    const role = await this.prisma.role.create({ data });
+    await this.audit.log({
+      actorId,
+      action: 'rbac.role.create',
+      entity: 'Role',
+      entityId: role.id,
+      metadata: { name: role.name },
+    });
+    return role;
   }
 
-  async deleteRole(roleId: string) {
+  async deleteRole(actorId: string, roleId: string) {
     const role = await this.prisma.role.findUnique({ where: { id: roleId } });
     if (!role) throw new NotFoundException('Uloga nije pronađena');
     if (this.isSystemRole(role.name)) {
@@ -63,7 +83,15 @@ export class RbacService {
     }
     await this.prisma.rolePermission.deleteMany({ where: { roleId } });
     await this.prisma.userRole.deleteMany({ where: { roleId } });
-    return this.prisma.role.delete({ where: { id: roleId } });
+    await this.prisma.role.delete({ where: { id: roleId } });
+    await this.audit.log({
+      actorId,
+      action: 'rbac.role.delete',
+      entity: 'Role',
+      entityId: roleId,
+      metadata: { name: role.name },
+    });
+    return { ok: true };
   }
 
   isSystemRole(name: string) {

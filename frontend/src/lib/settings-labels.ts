@@ -7,14 +7,9 @@ export const SETTINGS_LABELS: Record<string, string> = {
   'contact.address': 'Adresa kluba',
   'seo.title': 'SEO naslov',
   'seo.description': 'SEO opis',
-  'modules.news': 'Modul vijesti',
-  'modules.gallery': 'Modul galerija',
-  'modules.ticketing': 'Modul ulaznice',
   'smtp.host': 'SMTP host',
   'smtp.port': 'SMTP port',
-  'feature.live': 'Live centar',
   'live.prematchAudioUrl': 'YouTube URL — pre-match audio (live centar)',
-  'feature.membership': 'Članstvo',
   'upload.maxSizeMb': 'Maks. upload (MB)',
 };
 

@@ -169,6 +169,13 @@ export function usePublicSettings() {
   });
 }
 
+export function useModuleFlags() {
+  return useQuery({
+    queryKey: ['settings', 'module-flags'],
+    queryFn: async () => (await api.get<Record<string, string>>('/settings/module-flags')).data,
+  });
+}
+
 export function usePrivateSettings() {
   return useQuery({
     queryKey: ['settings', 'private'],
@@ -272,7 +279,10 @@ export function useUpdatePublicSettings() {
   return useMutation({
     mutationFn: async (body: Record<string, string>) =>
       (await api.put('/settings/public', body)).data,
-    onSuccess: () => void qc.invalidateQueries({ queryKey: ['settings', 'public'] }),
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: ['settings', 'public'] });
+      void qc.invalidateQueries({ queryKey: ['settings', 'module-flags'] });
+    },
   });
 }
 
@@ -281,7 +291,10 @@ export function useUpdatePrivateSettings() {
   return useMutation({
     mutationFn: async (body: Record<string, string>) =>
       (await api.put('/settings/private', body)).data,
-    onSuccess: () => void qc.invalidateQueries({ queryKey: ['settings', 'private'] }),
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: ['settings', 'private'] });
+      void qc.invalidateQueries({ queryKey: ['settings', 'module-flags'] });
+    },
   });
 }
 

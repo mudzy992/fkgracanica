@@ -12,7 +12,11 @@ import { AdminPagination } from '../../components/admin/AdminPagination';
 import { ContactMessageSheet } from './ContactMessageSheet';
 import type { ContactMessage } from '../../types';
 
-export function ContactAdminPage() {
+interface Props {
+  embedded?: boolean;
+}
+
+export function ContactAdminPage({ embedded = false }: Props) {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
   const [unreadOnly, setUnreadOnly] = useState(false);
@@ -40,66 +44,89 @@ export function ContactAdminPage() {
     if (ok) void remove.mutateAsync(msg.id);
   };
 
+  const markAllAction = (
+    <Button size="sm" variant="outline" onClick={() => void markAllRead.mutateAsync()} disabled={markAllRead.isPending}>
+      Označi sve pročitanim
+    </Button>
+  );
+
+  const body = (
+    <>
+      {embedded && (
+        <div className="flex justify-end border-b border-[var(--border-subtle)] p-4">
+          {markAllAction}
+        </div>
+      )}
+      <div className="flex flex-wrap gap-3 border-b border-[var(--border-subtle)] p-4">
+        <Input
+          className="max-w-xs"
+          placeholder="Pretraži..."
+          value={search}
+          onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+        />
+        <Button size="sm" variant={unreadOnly ? 'default' : 'outline'} onClick={() => { setUnreadOnly((v) => !v); setPage(1); }}>
+          Samo nepročitane
+        </Button>
+      </div>
+      <AdminDataTable
+        rows={rows}
+        onRowClick={openMessage}
+        empty="Nema poruka."
+        columns={[
+          { key: 'name', header: 'Ime', render: (r) => r.name },
+          { key: 'email', header: 'Email', render: (r) => r.email },
+          { key: 'subject', header: 'Naslov', render: (r) => r.subject ?? '—' },
+          {
+            key: 'read',
+            header: 'Status',
+            render: (r) => (
+              <Badge variant={r.isRead ? 'success' : 'default'}>{r.isRead ? 'Pročitano' : 'Novo'}</Badge>
+            ),
+          },
+          { key: 'date', header: 'Datum', render: (r) => formatDateTime(r.createdAt) },
+          {
+            key: 'actions',
+            header: '',
+            render: (r) => (
+              <Button variant="ghost" size="icon" onClick={(e) => void onDelete(r, e)}>
+                <Trash2 className="h-4 w-4 text-danger" />
+              </Button>
+            ),
+          },
+        ]}
+      />
+      {data?.meta && <AdminPagination meta={data.meta} page={page} onPageChange={setPage} />}
+    </>
+  );
+
+  const sheet = (
+    <ContactMessageSheet
+      message={selected}
+      open={!!selected}
+      onOpenChange={(o) => !o && setSelected(null)}
+      onMarkRead={(id) => void markRead.mutateAsync(id)}
+      isMarking={markRead.isPending}
+    />
+  );
+
+  if (embedded) {
+    return (
+      <>
+        {dialog}
+        {body}
+        {sheet}
+      </>
+    );
+  }
+
   return (
     <>
       <Seo title="Kontakt" />
       {dialog}
-      <AdminPageShell
-        title="Kontakt poruke"
-        isLoading={isLoading}
-        actions={
-          <Button size="sm" variant="outline" onClick={() => void markAllRead.mutateAsync()} disabled={markAllRead.isPending}>
-            Označi sve pročitanim
-          </Button>
-        }
-      >
-        <div className="flex flex-wrap gap-3 border-b border-slate-200 p-4">
-          <Input
-            className="max-w-xs"
-            placeholder="Pretraži..."
-            value={search}
-            onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-          />
-          <Button size="sm" variant={unreadOnly ? 'default' : 'outline'} onClick={() => { setUnreadOnly((v) => !v); setPage(1); }}>
-            Samo nepročitane
-          </Button>
-        </div>
-        <AdminDataTable
-          rows={rows}
-          onRowClick={openMessage}
-          empty="Nema poruka."
-          columns={[
-            { key: 'name', header: 'Ime', render: (r) => r.name },
-            { key: 'email', header: 'Email', render: (r) => r.email },
-            { key: 'subject', header: 'Naslov', render: (r) => r.subject ?? '—' },
-            {
-              key: 'read',
-              header: 'Status',
-              render: (r) => (
-                <Badge variant={r.isRead ? 'success' : 'default'}>{r.isRead ? 'Pročitano' : 'Novo'}</Badge>
-              ),
-            },
-            { key: 'date', header: 'Datum', render: (r) => formatDateTime(r.createdAt) },
-            {
-              key: 'actions',
-              header: '',
-              render: (r) => (
-                <Button variant="ghost" size="icon" onClick={(e) => void onDelete(r, e)}>
-                  <Trash2 className="h-4 w-4 text-danger" />
-                </Button>
-              ),
-            },
-          ]}
-        />
-        {data?.meta && <AdminPagination meta={data.meta} page={page} onPageChange={setPage} />}
+      <AdminPageShell title="Kontakt poruke" isLoading={isLoading} actions={markAllAction}>
+        {body}
       </AdminPageShell>
-      <ContactMessageSheet
-        message={selected}
-        open={!!selected}
-        onOpenChange={(o) => !o && setSelected(null)}
-        onMarkRead={(id) => void markRead.mutateAsync(id)}
-        isMarking={markRead.isPending}
-      />
+      {sheet}
     </>
   );
 }

@@ -1,124 +1,176 @@
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   usePrivateSettings,
   usePublicSettings,
   useUpdatePrivateSettings,
   useUpdatePublicSettings,
 } from '../../hooks';
-import { SettingMediaField } from '../../components/admin/SettingMediaField';
+import { useAuth } from '../../lib/auth';
+import { hasPermission } from '../../lib/permissions';
+import { getApiErrorMessage } from '../../lib/api-error';
+import { isModuleEnabled } from '../../lib/module-settings-rules';
+import { getSettingsTabs } from '../../lib/settings-sections';
 import { Seo } from '../../components/seo/Seo';
 import { Button } from '../../components/ui/button';
-import { Input } from '../../components/ui/input';
-import { Switch } from '../../components/ui/switch';
-import { Skeleton } from '../../components/ui/skeleton';
+import { AdminPageShell } from '../../components/admin/AdminPageShell';
+import { SettingsModuleSection } from './settings/SettingsModuleSection';
+import {
+  hasSettingsFieldGroup,
+  SettingsFieldGroupPanel,
+} from './settings/SettingsFieldGroupPanel';
 import { cn } from '../../lib/utils';
-import { isMediaSettingKey, isTicketingManagedSetting, settingInputPlaceholder } from '../../lib/setting-field-utils';
-import { settingLabel, settingDescription } from '../../lib/settings-labels';
 
-function SettingField({
-  keyName,
-  value,
-  draftValue,
-  onDraft,
-}: {
-  keyName: string;
-  value: string;
-  draftValue?: string;
-  onDraft: (v: string) => void;
-}) {
-  const current = draftValue ?? value;
+type Scope = 'public' | 'private';
 
-  if (value === 'true' || value === 'false') {
-    return (
-      <Switch checked={current === 'true'} onCheckedChange={(checked) => onDraft(String(checked))} />
-    );
-  }
-
-  if (isMediaSettingKey(keyName)) {
-    return <SettingMediaField settingKey={keyName} value={current} onChange={onDraft} />;
-  }
-
-  return (
-    <Input
-      value={current}
-      placeholder={settingInputPlaceholder(keyName)}
-      onChange={(e) => onDraft(e.target.value)}
-    />
-  );
-}
+const SCOPES: { key: Scope; label: string }[] = [
+  { key: 'public', label: 'Javne' },
+  { key: 'private', label: 'Privatne' },
+];
 
 export function SettingsPage() {
-  const [tab, setTab] = useState<'public' | 'private'>('public');
+  const { user } = useAuth();
+  const canUpdate = hasPermission(user?.permissions, 'settings.update');
+  const [scope, setScope] = useState<Scope>('public');
+  const [groupTab, setGroupTab] = useState('modules');
   const { data: publicData, isLoading: pl } = usePublicSettings();
   const { data: privateData, isLoading: prl } = usePrivateSettings();
   const updatePublic = useUpdatePublicSettings();
   const updatePrivate = useUpdatePrivateSettings();
   const [draft, setDraft] = useState<Record<string, string>>({});
 
-  const data = tab === 'public' ? publicData : privateData;
-  const isLoading = tab === 'public' ? pl : prl;
-  const values = { ...data, ...draft };
+  const isLoading = scope === 'public' ? pl : prl;
+  const values = (scope === 'public' ? publicData : privateData) ?? {};
+  const allValues = { ...publicData, ...privateData, ...draft };
+  const saveError = scope === 'public' ? updatePublic.error : updatePrivate.error;
+
+  const tabs = useMemo(
+    () =>
+      getSettingsTabs(
+        scope,
+        (group) => hasSettingsFieldGroup(group, values),
+        isModuleEnabled(allValues, 'feature.live'),
+      ),
+    [scope, values, allValues],
+  );
+
+  const activeTab = tabs.find((t) => t.id === groupTab) ?? tabs[0];
+
+  useEffect(() => {
+    if (!tabs.some((t) => t.id === groupTab)) {
+      setGroupTab(tabs[0]?.id ?? 'modules');
+    }
+  }, [tabs, groupTab]);
+
+  const setDraftKey = (key: string, value: string) => {
+    if (!canUpdate) return;
+    setDraft((d) => ({ ...d, [key]: value }));
+  };
 
   const handleSave = async () => {
-    if (tab === 'private' && !window.confirm('Spremiti privatne postavke?')) return;
-    if (tab === 'public') await updatePublic.mutateAsync(draft);
-    else await updatePrivate.mutateAsync(draft);
+    if (!canUpdate || !Object.keys(draft).length) return;
+    if (scope === 'private' && !window.confirm('Spremiti privatne postavke?')) return;
+    try {
+      if (scope === 'public') await updatePublic.mutateAsync(draft);
+      else await updatePrivate.mutateAsync(draft);
+      setDraft({});
+    } catch {
+      /* mutation error */
+    }
+  };
+
+  const switchScope = (next: Scope) => {
+    setScope(next);
     setDraft({});
+    setGroupTab('modules');
   };
 
   return (
-    <div>
+    <>
       <Seo title="Postavke" />
-      <h1 className="mb-6 text-2xl font-bold">Postavke</h1>
-      <div className="mb-6 flex gap-2">
-        {(['public', 'private'] as const).map((t) => (
-          <button
-            key={t}
-            type="button"
-            onClick={() => {
-              setTab(t);
-              setDraft({});
-            }}
-            className={cn(
-              'rounded-lg px-4 py-2 text-sm font-medium',
-              tab === t ? 'bg-primary text-white' : 'bg-surface text-text',
-            )}
-          >
-            {t === 'public' ? 'Javne' : 'Privatne'}
-          </button>
-        ))}
-      </div>
-      {isLoading ? (
-        <Skeleton className="h-64" />
-      ) : (
-        <div className="max-w-xl space-y-4">
-          {Object.entries(values ?? {})
-            .filter(([key]) => !isTicketingManagedSetting(key))
-            .map(([key, value]) => (
-            <div key={key} className="flex flex-col gap-2">
-              {!isMediaSettingKey(key) && (
-                <div>
-                  <label className="text-sm font-medium text-text">{settingLabel(key)}</label>
-                  {settingDescription(key) && (
-                    <p className="mt-0.5 text-xs text-text-muted">{settingDescription(key)}</p>
-                  )}
-                </div>
-              )}
-              <SettingField
-                keyName={key}
-                value={value}
-                draftValue={draft[key]}
-                onDraft={(v) => setDraft((d) => ({ ...d, [key]: v }))}
-              />
-            </div>
-          ))}
-          {Object.keys(draft).length > 0 && (
-            <Button onClick={() => void handleSave()} disabled={updatePublic.isPending || updatePrivate.isPending}>
-              Sačuvaj
-            </Button>
-          )}
+      <AdminPageShell
+        title="Postavke"
+        isLoading={isLoading}
+        actions={
+          <div className="flex flex-wrap gap-2">
+            {SCOPES.map((s) => (
+              <Button
+                key={s.key}
+                size="sm"
+                variant={scope === s.key ? 'default' : 'outline'}
+                onClick={() => switchScope(s.key)}
+              >
+                {s.label}
+              </Button>
+            ))}
+          </div>
+        }
+      >
+        <div className="border-b border-[var(--border-subtle)] bg-surface/40 px-3 py-2 sm:px-4">
+          <div className="flex gap-1 overflow-x-auto pb-0.5">
+            {tabs.map((tab) => (
+              <button
+                key={tab.id}
+                type="button"
+                onClick={() => setGroupTab(tab.id)}
+                className={cn(
+                  'shrink-0 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
+                  activeTab?.id === tab.id
+                    ? 'bg-primary text-white'
+                    : 'text-text-muted hover:bg-surface hover:text-text',
+                )}
+              >
+                {tab.title}
+              </button>
+            ))}
+          </div>
         </div>
-      )}
-    </div>
+
+        {activeTab?.description && activeTab.kind === 'modules' && (
+          <p className="border-b border-slate-100 px-5 py-3 text-xs leading-relaxed text-text-muted">
+            {activeTab.description}. Modul koji ovisi o drugom ne može biti uključen bez roditelja,
+            niti roditelj isključen dok je ovisni modul aktivan.
+          </p>
+        )}
+
+        {activeTab?.kind === 'modules' && (
+          <SettingsModuleSection
+            scope={scope}
+            values={values}
+            draft={draft}
+            readOnly={!canUpdate}
+            onDraft={setDraftKey}
+          />
+        )}
+
+        {activeTab?.kind === 'fields' && activeTab.group && (
+          <SettingsFieldGroupPanel
+            group={activeTab.group}
+            values={values}
+            draft={draft}
+            readOnly={!canUpdate}
+            onDraft={setDraftKey}
+          />
+        )}
+
+        {(saveError || (canUpdate && Object.keys(draft).length > 0)) && (
+          <div className="sticky bottom-0 flex flex-col gap-3 border-t border-[var(--border-subtle)] bg-background/95 px-5 py-4 backdrop-blur sm:flex-row sm:items-center sm:justify-between">
+            {saveError && (
+              <p className="text-sm text-danger">
+                {getApiErrorMessage(saveError, 'Spremanje postavki nije uspjelo.')}
+              </p>
+            )}
+            {canUpdate && Object.keys(draft).length > 0 && (
+              <Button
+                className="sm:ml-auto"
+                onClick={() => void handleSave()}
+                disabled={updatePublic.isPending || updatePrivate.isPending}
+              >
+                Sačuvaj promjene
+              </Button>
+            )}
+          </div>
+        )}
+      </AdminPageShell>
+    </>
   );
 }

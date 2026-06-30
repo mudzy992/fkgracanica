@@ -30,4 +30,4 @@
 
 ## Changelog
 
-Vidi [CHANGELOG.md](./CHANGELOG.md)
+- 2026-06-29: Gate #15 APPROVED (korisnik)

@@ -1,18 +1,28 @@
 import { useState } from 'react';
 import { usePermissions, useRoles } from '../../hooks';
 import { useDeleteRole, useUpdateRolePermissions } from '../../hooks/use-users-admin';
+import { useAuth } from '../../lib/auth';
+import { hasPermission } from '../../lib/permissions';
+import { getApiErrorMessage } from '../../lib/api-error';
+import { isSystemRole } from '../../lib/rbac-constants';
 import { useConfirm } from '../../hooks/use-confirm';
 import { Seo } from '../../components/seo/Seo';
 import { Button } from '../../components/ui/button';
 import { AdminDataTable, AdminPageShell } from '../../components/admin/AdminPageShell';
 import { AdminFormSheet } from '../../components/admin/AdminFormSheet';
+import { Skeleton } from '../../components/ui/skeleton';
 import { RolesAdminFormSheet } from './RolesAdminFormSheet';
+
+interface Props {
+  embedded?: boolean;
+}
 
 interface Role {
   id: string;
   name: string;
   description?: string | null;
   permissions?: { permission: { key: string } }[];
+  _count?: { users: number };
 }
 
 interface Permission {
@@ -21,7 +31,9 @@ interface Permission {
   description?: string | null;
 }
 
-export function RolesPage() {
+export function RolesPage({ embedded = false }: Props) {
+  const { user } = useAuth();
+  const canUpdate = hasPermission(user?.permissions, 'rbac.update');
   const { data: roles, isLoading } = useRoles();
   const { data: permissions } = usePermissions();
   const updatePerms = useUpdateRolePermissions();
@@ -44,8 +56,12 @@ export function RolesPage() {
 
   const save = async () => {
     if (!editRole) return;
-    await updatePerms.mutateAsync({ roleId: editRole.id, permissionKeys: selected });
-    setEditRole(null);
+    try {
+      await updatePerms.mutateAsync({ roleId: editRole.id, permissionKeys: selected });
+      setEditRole(null);
+    } catch {
+      /* error via mutation */
+    }
   };
 
   const onDelete = async (role: Role) => {
@@ -58,45 +74,61 @@ export function RolesPage() {
     if (ok) void deleteRole.mutateAsync(role.id);
   };
 
-  return (
+  const createAction = canUpdate ? (
+    <Button size="sm" onClick={() => setCreateOpen(true)}>
+      Nova uloga
+    </Button>
+  ) : undefined;
+
+  const body = isLoading ? (
+    <div className="space-y-3 p-4">
+      {Array.from({ length: 5 }).map((_, i) => (
+        <Skeleton key={i} className="h-12 w-full" />
+      ))}
+    </div>
+  ) : (
     <>
-      <Seo title="Uloge" />
-      {dialog}
-      <AdminPageShell
-        title="Uloge i dozvole"
-        isLoading={isLoading}
-        actions={
-          <Button size="sm" onClick={() => setCreateOpen(true)}>
-            Nova uloga
-          </Button>
-        }
-      >
-        <AdminDataTable
-          rows={roleList}
-          columns={[
-            { key: 'name', header: 'Naziv', render: (r) => r.name },
-            { key: 'desc', header: 'Opis', render: (r) => r.description ?? '—' },
-            { key: 'perms', header: 'Dozvole', render: (r) => String(r.permissions?.length ?? 0) },
-            {
-              key: 'actions',
-              header: 'Akcije',
-              render: (r) =>
-                r.name === 'Administrator' ? (
-                  <span className="text-xs text-text-muted">Sistemska</span>
-                ) : (
-                  <div className="flex gap-1">
-                    <Button variant="outline" size="sm" onClick={() => openEdit(r)}>
-                      Uredi dozvole
-                    </Button>
+      {embedded && createAction && (
+        <div className="flex justify-end border-b border-slate-200 p-4">
+          {createAction}
+        </div>
+      )}
+      <AdminDataTable
+        rows={roleList}
+        empty="Nema uloga."
+        columns={[
+          { key: 'name', header: 'Naziv', render: (r) => r.name },
+          { key: 'desc', header: 'Opis', render: (r) => r.description ?? '—' },
+          { key: 'users', header: 'Korisnici', render: (r) => String(r._count?.users ?? 0) },
+          { key: 'perms', header: 'Dozvole', render: (r) => String(r.permissions?.length ?? 0) },
+          {
+            key: 'actions',
+            header: 'Akcije',
+            render: (r) =>
+              !canUpdate ? (
+                <span className="text-xs text-text-muted">—</span>
+              ) : r.name === 'Administrator' ? (
+                <span className="text-xs text-text-muted">Sistemska</span>
+              ) : (
+                <div className="flex gap-1">
+                  <Button variant="outline" size="sm" onClick={() => openEdit(r)}>
+                    Uredi dozvole
+                  </Button>
+                  {!isSystemRole(r.name) && (
                     <Button variant="ghost" size="sm" onClick={() => void onDelete(r)}>
                       Obriši
                     </Button>
-                  </div>
-                ),
-            },
-          ]}
-        />
-      </AdminPageShell>
+                  )}
+                </div>
+              ),
+          },
+        ]}
+      />
+    </>
+  );
+
+  const sheets = (
+    <>
       <RolesAdminFormSheet open={createOpen} onOpenChange={setCreateOpen} />
       <AdminFormSheet
         open={!!editRole}
@@ -114,10 +146,36 @@ export function RolesPage() {
             </label>
           ))}
         </div>
+        {updatePerms.isError && (
+          <p className="mt-2 text-sm text-danger">
+            {getApiErrorMessage(updatePerms.error, 'Spremanje dozvola nije uspjelo.')}
+          </p>
+        )}
         <Button className="mt-4" onClick={() => void save()} disabled={updatePerms.isPending}>
           Sačuvaj dozvole
         </Button>
       </AdminFormSheet>
+    </>
+  );
+
+  if (embedded) {
+    return (
+      <>
+        {dialog}
+        {body}
+        {sheets}
+      </>
+    );
+  }
+
+  return (
+    <>
+      <Seo title="Uloge" />
+      {dialog}
+      <AdminPageShell title="Uloge i dozvole" isLoading={isLoading} actions={createAction}>
+        {body}
+      </AdminPageShell>
+      {sheets}
     </>
   );
 }

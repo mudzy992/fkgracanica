@@ -15,10 +15,16 @@
 | 2026-06-26 | Utakmice | APPROVED | Kolo, sezona, status/rezultat |
 | 2026-06-26 | Takmičenja (unified hub) | APPROVED | competitions→sezona→kolo→utakmice |
 | 2026-06-26 | Live | APPROVED | TV semafor, komentator v2, autogol, pending flow |
-| 2026-06-29 | Članstvo | APPROVED | Admin workflow, javna kartica+QR; bez hard delete (CANCELLED) |
-| 2026-06-29 | Ulaznice | **APPROVED** | Stripe online, unified auth, članstvo online; header user menu |
-| 2026-06-29 | Kontakt | READY_FOR_REVIEW | Forma + admin inbox + prefill + mailto |
+| 2026-06-29 | Članstvo | APPROVED | Admin workflow, javna kartica+QR |
+| 2026-06-29 | Ulaznice | **READY_FOR_REVIEW** | Sportska ulaznica, backdrop, Moj račun — čeka korisnički APPROVED |
+| 2026-06-29 | Kontakt | **APPROVED** | Korisnik potvrdio |
+| 2026-06-30 | Newsletter | **APPROVED** | Korisnik potvrdio — widget, admin, email DTO, PermissionRoute |
+| 2026-06-30 | Hall of Fame | **APPROVED** | Korisnik potvrdio — CRUD, years, PermissionRoute |
+| 2026-06-30 | Muzej | **APPROVED** | Korisnik potvrdio — EmptyState, PermissionRoute, category labels |
+| 2026-06-30 | Korisnici + Role | **APPROVED** | Korisnik potvrdio — RBAC, audit, spojeni modul Korisnici i uloge |
+| 2026-06-29 | Postavke | **READY_FOR_REVIEW** | Moduli + ovisnosti, AdminPageShell UI, nav filter — čeka smoke + APPROVED |
+| 2026-06-29 | Dashboard / Audit / Notifikacije | **READY_FOR_REVIEW** | KPI, audit log, in-app |
 
 Statusi: `IN_PROGRESS` | `READY_FOR_REVIEW` | `APPROVED` | `REVISE`
 
-**Sljedeći gate:** #15 Kontakt — korisnički APPROVED → #16 Newsletter
+**Sljedeći fokus:** **#20 Postavke** deploy + smoke → APPROVED · zatim **#21** · #14 frozen

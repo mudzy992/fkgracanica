@@ -17,6 +17,11 @@ export class SettingsController {
     return this.settingsService.getPublic();
   }
 
+  @Get('module-flags')
+  getModuleFlags() {
+    return this.settingsService.getModuleFlags();
+  }
+
   @Get('private')
   @UseGuards(JwtAuthGuard, PermissionsGuard)
   @RequirePermissions('settings.read')

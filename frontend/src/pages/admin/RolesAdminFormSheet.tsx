@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useCreateRole } from '../../hooks/use-users-admin';
+import { getApiErrorMessage } from '../../lib/api-error';
 import { AdminFormSheet } from '../../components/admin/AdminFormSheet';
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
@@ -15,10 +16,14 @@ export function RolesAdminFormSheet({ open, onOpenChange }: Props) {
   const [description, setDescription] = useState('');
 
   const save = async () => {
-    await create.mutateAsync({ name, description: description || undefined });
-    setName('');
-    setDescription('');
-    onOpenChange(false);
+    try {
+      await create.mutateAsync({ name, description: description || undefined });
+      setName('');
+      setDescription('');
+      onOpenChange(false);
+    } catch {
+      /* error via mutation */
+    }
   };
 
   return (
@@ -29,6 +34,11 @@ export function RolesAdminFormSheet({ open, onOpenChange }: Props) {
         <Button onClick={() => void save()} disabled={!name || create.isPending}>
           Kreiraj
         </Button>
+        {create.isError && (
+          <p className="text-sm text-danger">
+            {getApiErrorMessage(create.error, 'Kreiranje uloge nije uspjelo.')}
+          </p>
+        )}
       </div>
     </AdminFormSheet>
   );

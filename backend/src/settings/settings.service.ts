@@ -4,6 +4,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { SETTINGS_REGISTRY, settingDefToCreate } from './settings.registry';
 import { RealtimeGateway } from '../realtime/realtime.gateway';
 import { NotificationsService } from '../notifications/notifications.service';
+import { validateModuleSettingUpdates } from './module-settings.util';
 
 @Injectable()
 export class SettingsService implements OnModuleInit {
@@ -31,6 +32,16 @@ export class SettingsService implements OnModuleInit {
     return this.toKeyValue(settings);
   }
 
+  /** Javni on/off flagovi modula (public + private scope) za routing i navigaciju. */
+  async getModuleFlags() {
+    const settings = await this.prisma.setting.findMany({
+      where: {
+        OR: [{ key: { startsWith: 'modules.' } }, { key: { startsWith: 'feature.' } }],
+      },
+    });
+    return this.toKeyValue(settings);
+  }
+
   async updatePublic(updates: Record<string, string>, actorId?: string) {
     return this.updateByScope(SettingScope.PUBLIC, updates, actorId);
   }
@@ -54,6 +65,9 @@ export class SettingsService implements OnModuleInit {
     updates: Record<string, string>,
     actorId?: string,
   ) {
+    const [pub, priv] = await Promise.all([this.getPublic(), this.getPrivate()]);
+    validateModuleSettingUpdates({ ...pub, ...priv, ...updates }, updates);
+
     const keys = Object.keys(updates);
     await Promise.all(
       keys.map((key) =>

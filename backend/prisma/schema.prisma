@@ -413,6 +413,7 @@ model HallOfFameEntry {
   id          String   @id @default(cuid())
   name        String
   role        String
+  years       String?
   bio         String?  @db.LongText
   imagePath   String?
   achievements Json?

@@ -52,6 +52,7 @@
     "settings": "Postavke",
     "users": "Korisnici",
     "roles": "Uloge",
+    "usersAndRoles": "Korisnici i uloge",
     "cms": "CMS",
     "media": "Mediji",
     "audit": "Audit log",
@@ -72,7 +73,19 @@
     "contact": "Kontakt",
     "newsletter": "Newsletter",
     "hallOfFame": "Hall of Fame",
-    "museum": "Muzej"
+    "museum": "Muzej",
+    "heritage": "Baština",
+    "comms": "Komunikacija",
+    "navGroup": {
+      "overview": "Pregled",
+      "system": "Sistem",
+      "content": "Sadržaj",
+      "club": "Klub",
+      "competitions": "Takmičenja",
+      "heritage": "Baština",
+      "comms": "Komunikacija",
+      "monetization": "Monetizacija"
+    }
   },
   "common": {
     "loading": "Učitavanje...",

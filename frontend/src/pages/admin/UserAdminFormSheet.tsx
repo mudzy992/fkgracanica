@@ -1,9 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useRoles } from '../../hooks';
-import { useCreateUser, useUpdateUser, type UserFormData } from '../../hooks/use-users-admin';
+import { useCreateUser, useUpdateUser, useUserRoleOptions, type UserFormData } from '../../hooks/use-users-admin';
+import { getApiErrorMessage } from '../../lib/api-error';
 import { AdminFormSheet } from '../../components/admin/AdminFormSheet';
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
@@ -35,15 +35,17 @@ interface Props {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   user?: UserRow | null;
+  canCreate: boolean;
+  canUpdate: boolean;
 }
 
-export function UserAdminFormSheet({ open, onOpenChange, user }: Props) {
+export function UserAdminFormSheet({ open, onOpenChange, user, canCreate, canUpdate }: Props) {
   const create = useCreateUser();
   const update = useUpdateUser();
-  const { data: roles } = useRoles();
-  const [error, setError] = useState('');
+  const { data: roles } = useUserRoleOptions();
   const isEdit = !!user;
   const schema = isEdit ? editSchema : createSchema;
+  const canSubmit = isEdit ? canUpdate : canCreate;
 
   const {
     register,
@@ -73,10 +75,10 @@ export function UserAdminFormSheet({ open, onOpenChange, user }: Props) {
   }, [user, reset, open]);
 
   const roleIds = watch('roleIds') ?? [];
-  const roleList = (roles as { id: string; name: string }[] | undefined) ?? [];
+  const roleList = roles ?? [];
+  const mutationError = create.error ?? update.error;
 
   const onSubmit = async (data: UserFormData & { password?: string }) => {
-    setError('');
     try {
       if (isEdit && user) {
         const payload: UserFormData = { ...data };
@@ -87,7 +89,7 @@ export function UserAdminFormSheet({ open, onOpenChange, user }: Props) {
       }
       onOpenChange(false);
     } catch {
-      setError('Greška pri spremanju korisnika');
+      /* error via mutation state */
     }
   };
 
@@ -110,6 +112,7 @@ export function UserAdminFormSheet({ open, onOpenChange, user }: Props) {
           placeholder={isEdit ? 'Nova lozinka (opcionalno)' : 'Lozinka'}
           {...register('password')}
         />
+        {errors.password && <p className="text-xs text-danger">{errors.password.message}</p>}
         <div className="grid grid-cols-2 gap-2">
           <Input placeholder="Ime" {...register('firstName')} />
           <Input placeholder="Prezime" {...register('lastName')} />
@@ -140,8 +143,12 @@ export function UserAdminFormSheet({ open, onOpenChange, user }: Props) {
             ))}
           </div>
         </div>
-        {error && <p className="text-sm text-danger">{error}</p>}
-        <Button type="submit" disabled={isSubmitting}>
+        {mutationError && (
+          <p className="text-sm text-danger">
+            {getApiErrorMessage(mutationError, 'Greška pri spremanju korisnika')}
+          </p>
+        )}
+        <Button type="submit" disabled={!canSubmit || isSubmitting}>
           {isEdit ? 'Sačuvaj' : 'Kreiraj'}
         </Button>
       </form>

@@ -5,6 +5,8 @@ import { UpdateRolePermissionsDto } from './dto/update-role-permissions.dto';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { PermissionsGuard } from '../common/guards/permissions.guard';
 import { RequirePermissions } from '../common/decorators/permissions.decorator';
+import { CurrentUser } from '../common/decorators/current-user.decorator';
+import type { AuthUser } from '../common/types/auth-user.type';
 
 @ApiTags('rbac')
 @Controller('rbac')
@@ -27,22 +29,26 @@ export class RbacController {
 
   @Post('roles')
   @RequirePermissions('rbac.update')
-  createRole(@Body() body: { name: string; description?: string }) {
-    return this.rbacService.createRole(body);
+  createRole(
+    @CurrentUser() actor: AuthUser,
+    @Body() body: { name: string; description?: string },
+  ) {
+    return this.rbacService.createRole(actor.id, body);
   }
 
   @Delete('roles/:id')
   @RequirePermissions('rbac.update')
-  deleteRole(@Param('id') id: string) {
-    return this.rbacService.deleteRole(id);
+  deleteRole(@CurrentUser() actor: AuthUser, @Param('id') id: string) {
+    return this.rbacService.deleteRole(actor.id, id);
   }
 
   @Patch('roles/:id/permissions')
   @RequirePermissions('rbac.update')
   updateRolePermissions(
+    @CurrentUser() actor: AuthUser,
     @Param('id') id: string,
     @Body() dto: UpdateRolePermissionsDto,
   ) {
-    return this.rbacService.updateRolePermissions(id, dto.permissionKeys);
+    return this.rbacService.updateRolePermissions(actor.id, id, dto.permissionKeys);
   }
 }

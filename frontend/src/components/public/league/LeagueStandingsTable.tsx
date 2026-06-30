@@ -41,8 +41,8 @@ export function LeagueStandingsTable({ rows, compact, highlightClubId }: Props) 
             key={row.clubId}
             className={
               row.clubId === highlightClubId
-                ? 'border-b border-slate-100 bg-primary/5 font-medium last:border-0'
-                : 'border-b border-slate-100 last:border-0'
+                ? 'border-b border-[var(--border-subtle)] bg-primary/5 font-medium last:border-0'
+                : 'border-b border-[var(--border-subtle)] last:border-0'
             }
           >
             <td className="px-4 py-3.5 text-text-muted">{i + 1}</td>

@@ -1,18 +1,27 @@
 import {
   ConflictException,
-  BadRequestException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { PrismaService } from '../prisma/prisma.service';
+import { AuditService } from '../audit/audit.service';
 import { CreateUserDto, UpdateUserDto } from './dto/user.dto';
 import { PaginatedQueryDto } from '../common/dto/paginated-query.dto';
 import { paginate, parsePagination } from '../common/utils/pagination.util';
+import {
+  ensureNotLastAdmin,
+  ensureNotSelf,
+  ensureNotSelfAdminRemoval,
+  ensureNotSelfDeactivate,
+} from './users-security.util';
 
 @Injectable()
 export class UsersService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly audit: AuditService,
+  ) {}
 
   async findAll(query: PaginatedQueryDto) {
     const params = parsePagination(query);
@@ -42,6 +51,13 @@ export class UsersService {
     );
   }
 
+  findRoleOptions() {
+    return this.prisma.role.findMany({
+      select: { id: true, name: true },
+      orderBy: { name: 'asc' },
+    });
+  }
+
   async findOne(id: string) {
     const user = await this.prisma.user.findFirst({
       where: { id, deletedAt: null },
@@ -51,13 +67,11 @@ export class UsersService {
     return user;
   }
 
-  async create(dto: CreateUserDto) {
-    const exists = await this.prisma.user.findUnique({
-      where: { email: dto.email },
-    });
+  async create(actorId: string, dto: CreateUserDto) {
+    const exists = await this.prisma.user.findUnique({ where: { email: dto.email } });
     if (exists) throw new ConflictException('Email već postoji');
     const passwordHash = await bcrypt.hash(dto.password, 10);
-    return this.prisma.user.create({
+    const user = await this.prisma.user.create({
       data: {
         email: dto.email,
         passwordHash,
@@ -69,18 +83,28 @@ export class UsersService {
       },
       select: this.userSelect(),
     });
+    await this.audit.log({
+      actorId,
+      action: 'users.create',
+      entity: 'User',
+      entityId: user.id,
+      metadata: { email: user.email, roleIds: dto.roleIds ?? [] },
+    });
+    return user;
   }
 
-  async update(id: string, dto: UpdateUserDto) {
+  async update(actorId: string, id: string, dto: UpdateUserDto) {
     const existing = await this.findOne(id);
+    ensureNotSelfDeactivate(actorId, id, dto.isActive);
     if (dto.isActive === false || (dto.roleIds && !dto.roleIds.length)) {
-      await this.ensureNotLastAdmin(id);
+      await ensureNotLastAdmin(this.prisma, id);
     }
+    const adminRole = await this.prisma.role.findUnique({ where: { name: 'Administrator' } });
+    const hadAdmin = existing.roles?.some((r) => r.role.name === 'Administrator') ?? false;
+    const willHaveAdmin = adminRole ? (dto.roleIds?.includes(adminRole.id) ?? hadAdmin) : hadAdmin;
     if (dto.roleIds) {
-      const adminRole = await this.prisma.role.findUnique({ where: { name: 'Administrator' } });
-      const hadAdmin = existing.roles?.some((r) => r.role.name === 'Administrator');
-      const willHaveAdmin = adminRole && dto.roleIds.includes(adminRole.id);
-      if (hadAdmin && !willHaveAdmin) await this.ensureNotLastAdmin(id);
+      ensureNotSelfAdminRemoval(actorId, id, hadAdmin, willHaveAdmin);
+      if (hadAdmin && !willHaveAdmin) await ensureNotLastAdmin(this.prisma, id);
     }
     const data: Record<string, unknown> = {
       email: dto.email,
@@ -88,9 +112,7 @@ export class UsersService {
       lastName: dto.lastName,
       isActive: dto.isActive,
     };
-    if (dto.password) {
-      data.passwordHash = await bcrypt.hash(dto.password, 10);
-    }
+    if (dto.password) data.passwordHash = await bcrypt.hash(dto.password, 10);
     if (dto.roleIds) {
       await this.prisma.userRole.deleteMany({ where: { userId: id } });
       if (dto.roleIds.length) {
@@ -99,39 +121,38 @@ export class UsersService {
         });
       }
     }
-    return this.prisma.user.update({
+    const user = await this.prisma.user.update({
       where: { id },
       data,
       select: this.userSelect(),
     });
+    await this.audit.log({
+      actorId,
+      action: 'users.update',
+      entity: 'User',
+      entityId: id,
+      metadata: { email: user.email, isActive: user.isActive, roleIds: dto.roleIds },
+    });
+    return user;
   }
 
-  async remove(id: string) {
-    await this.ensureNotLastAdmin(id);
+  async remove(actorId: string, id: string) {
+    ensureNotSelf(actorId, id, 'Ne možete obrisati vlastiti račun');
+    await ensureNotLastAdmin(this.prisma, id);
     await this.findOne(id);
-    return this.prisma.user.update({
+    const user = await this.prisma.user.update({
       where: { id },
       data: { deletedAt: new Date(), isActive: false },
       select: this.userSelect(),
     });
-  }
-
-  private async ensureNotLastAdmin(userId: string) {
-    const adminRole = await this.prisma.role.findUnique({ where: { name: 'Administrator' } });
-    if (!adminRole) return;
-    const isAdmin = await this.prisma.userRole.findFirst({
-      where: { userId, roleId: adminRole.id },
+    await this.audit.log({
+      actorId,
+      action: 'users.delete',
+      entity: 'User',
+      entityId: id,
+      metadata: { email: user.email },
     });
-    if (!isAdmin) return;
-    const adminCount = await this.prisma.userRole.count({
-      where: {
-        roleId: adminRole.id,
-        user: { deletedAt: null, isActive: true },
-      },
-    });
-    if (adminCount <= 1) {
-      throw new BadRequestException('Ne možete ukloniti posljednjeg administratora');
-    }
+    return user;
   }
 
   private userSelect() {
@@ -143,11 +164,7 @@ export class UsersService {
       isActive: true,
       createdAt: true,
       updatedAt: true,
-      roles: {
-        select: {
-          role: { select: { id: true, name: true } },
-        },
-      },
+      roles: { select: { role: { select: { id: true, name: true } } } },
     };
   }
 }

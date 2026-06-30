@@ -9,6 +9,7 @@ import { seedPlayers } from './players';
 import { seedClubStadiumAndSquad } from './club-squad';
 import { seedSponsors } from './sponsors';
 import { seedTrophies } from './trophies';
+import { seedHeritage } from './heritage';
 
 export async function seedDemoContent(prisma: SeedPrisma, adminUserId: string | null) {
   const ctx = await seedClubsAndCompetition(prisma);
@@ -17,6 +18,7 @@ export async function seedDemoContent(prisma: SeedPrisma, adminUserId: string | 
   await seedCmsPages(prisma);
   await seedSponsors(prisma);
   await seedTrophies(prisma);
+  await seedHeritage(prisma);
   await seedClubTimeline(prisma);
   await seedPlayers(prisma, ctx.ownClubId, ctx.opponentClubId);
   await seedClubStadiumAndSquad(prisma, ctx.ownClubId);

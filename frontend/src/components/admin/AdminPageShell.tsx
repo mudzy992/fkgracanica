@@ -57,7 +57,7 @@ export function AdminDataTable<T extends { id: string }>({
     <div className="overflow-x-auto">
       <table className="w-full text-sm">
         <thead>
-          <tr className="border-b border-slate-200 text-left text-text-muted">
+          <tr className="border-b border-[var(--border-subtle)] text-left text-text-muted">
             {columns.map((col) => (
               <th key={col.key} className="p-4 font-medium">
                 {col.header}
@@ -69,7 +69,7 @@ export function AdminDataTable<T extends { id: string }>({
           {rows.map((row) => (
             <tr
               key={row.id}
-              className={`border-b border-slate-100 hover:bg-surface/50${onRowClick ? ' cursor-pointer' : ''}${rowClassName?.(row) ? ` ${rowClassName(row)}` : ''}`}
+              className={`border-b border-[var(--border-subtle)] hover:bg-surface/50${onRowClick ? ' cursor-pointer' : ''}${rowClassName?.(row) ? ` ${rowClassName(row)}` : ''}`}
               onClick={onRowClick ? () => onRowClick(row) : undefined}
             >
               {columns.map((col) => (

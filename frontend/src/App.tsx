@@ -3,6 +3,7 @@ import { PublicLayout } from './components/layout/PublicLayout';
 import { AdminLayout } from './components/layout/AdminLayout';
 import { ProtectedRoute } from './components/common/ProtectedRoute';
 import { PermissionRoute } from './components/common/PermissionRoute';
+import { ModuleRoute } from './components/common/ModuleRoute';
 import { HomePage } from './pages/home/HomePage';
 import { ClubTimelinePage } from './pages/public/ClubTimelinePage';
 import { NewsListPage } from './pages/public/NewsListPage';
@@ -27,8 +28,7 @@ import { LoginPage } from './pages/public/LoginPage';
 import { AdminLoginPage } from './pages/admin/AdminLoginPage';
 import { DashboardPage } from './pages/admin/DashboardPage';
 import { SettingsPage } from './pages/admin/SettingsPage';
-import { UsersPage } from './pages/admin/UsersPage';
-import { RolesPage } from './pages/admin/RolesPage';
+import { UsersRolesPage } from './pages/admin/UsersRolesPage';
 import { CmsHubPage } from './pages/admin/cms/CmsHubPage';
 import { CmsPageBuilderPage } from './pages/admin/cms/CmsPageBuilderPage';
 import { MediaPage } from './pages/admin/MediaPage';
@@ -47,12 +47,12 @@ import { CommentatorPage } from './pages/admin/CommentatorPage';
 import { LivePendingPage } from './pages/admin/LivePendingPage';
 import { MembershipAdminPage } from './pages/admin/MembershipAdminPage';
 import { TicketingAdminPage } from './pages/admin/TicketingAdminPage';
-import { ContactAdminPage } from './pages/admin/ContactAdminPage';
-import { NewsletterAdminPage } from './pages/admin/NewsletterAdminPage';
-import { HallOfFameAdminPage } from './pages/admin/HallOfFameAdminPage';
-import { MuseumAdminPage } from './pages/admin/MuseumAdminPage';
+import { HeritageAdminPage } from './pages/admin/HeritageAdminPage';
+import { CommsAdminPage } from './pages/admin/CommsAdminPage';
 import { NotificationsPage } from './pages/admin/NotificationsPage';
 import { CmsDynamicPage } from './pages/public/CmsDynamicPage';
+
+const ADMIN = '/admin';
 
 export default function App() {
   return (
@@ -60,73 +60,129 @@ export default function App() {
       <Routes>
         <Route element={<PublicLayout />}>
           <Route index element={<HomePage />} />
-          <Route path="o-klubu" element={<ClubTimelinePage />} />
-          <Route path="vijesti" element={<NewsListPage />} />
-          <Route path="vijesti/:slug" element={<NewsDetailPage />} />
-          <Route path="galerija" element={<GalleryListPage />} />
-          <Route path="galerija/:slug" element={<GalleryDetailPage />} />
-          <Route path="sponzori" element={<SponsorsPage />} />
-          <Route path="trofeji" element={<TrophiesPage />} />
-          <Route path="tim" element={<FirstTeamPage />} />
-          <Route path="klub/:slug" element={<ClubPublicPage />} />
-          <Route path="igrac/:id" element={<PlayerDetailPage />} />
-          <Route path="liga" element={<LeaguePage />} />
-          <Route path="utakmice/:id" element={<MatchCenterPage />} />
-          <Route path="kontakt" element={<ContactPage />} />
+          <Route element={<ModuleRoute moduleKey="modules.timeline" />}>
+            <Route path="o-klubu" element={<ClubTimelinePage />} />
+          </Route>
+          <Route element={<ModuleRoute moduleKey="modules.news" />}>
+            <Route path="vijesti" element={<NewsListPage />} />
+            <Route path="vijesti/:slug" element={<NewsDetailPage />} />
+          </Route>
+          <Route element={<ModuleRoute moduleKey="modules.gallery" />}>
+            <Route path="galerija" element={<GalleryListPage />} />
+            <Route path="galerija/:slug" element={<GalleryDetailPage />} />
+          </Route>
+          <Route element={<ModuleRoute moduleKey="modules.sponsors" />}>
+            <Route path="sponzori" element={<SponsorsPage />} />
+          </Route>
+          <Route element={<ModuleRoute moduleKey="modules.trophies" />}>
+            <Route path="trofeji" element={<TrophiesPage />} />
+          </Route>
+          <Route element={<ModuleRoute moduleKey="modules.clubs" />}>
+            <Route path="tim" element={<FirstTeamPage />} />
+            <Route path="klub/:slug" element={<ClubPublicPage />} />
+            <Route path="igrac/:id" element={<PlayerDetailPage />} />
+          </Route>
+          <Route element={<ModuleRoute moduleKey="modules.competitions" />}>
+            <Route path="liga" element={<LeaguePage />} />
+            <Route path="utakmice/:id" element={<MatchCenterPage />} />
+          </Route>
+          <Route element={<ModuleRoute moduleKey="modules.contact" />}>
+            <Route path="kontakt" element={<ContactPage />} />
+          </Route>
           <Route path="pretraga" element={<SearchPage />} />
-          <Route path="hall-of-fame" element={<HallOfFamePage />} />
-          <Route path="muzej" element={<MuseumPage />} />
-          <Route path="clanstvo" element={<MembershipPage />} />
-          <Route path="ulaznice" element={<TicketsPage />} />
-          <Route path="p/:slug" element={<CmsDynamicPage />} />
+          <Route element={<ModuleRoute moduleKey="modules.hallOfFame" />}>
+            <Route path="hall-of-fame" element={<HallOfFamePage />} />
+          </Route>
+          <Route element={<ModuleRoute moduleKey="modules.museum" />}>
+            <Route path="muzej" element={<MuseumPage />} />
+          </Route>
+          <Route element={<ModuleRoute moduleKey="feature.membership" />}>
+            <Route path="clanstvo" element={<MembershipPage />} />
+          </Route>
+          <Route element={<ModuleRoute moduleKey="modules.ticketing" />}>
+            <Route path="ulaznice" element={<TicketsPage />} />
+          </Route>
+          <Route element={<ModuleRoute moduleKey="modules.cms" />}>
+            <Route path="p/:slug" element={<CmsDynamicPage />} />
+          </Route>
         </Route>
 
         <Route path="prijava" element={<LoginPage />} />
 
-        <Route path="live/:id" element={<LiveMatchPage />} />
+        <Route element={<ModuleRoute moduleKey="feature.live" />}>
+          <Route path="live/:id" element={<LiveMatchPage />} />
+        </Route>
 
         <Route path="admin/login" element={<AdminLoginPage />} />
 
         <Route path="admin" element={<ProtectedRoute />}>
           <Route element={<AdminLayout />}>
             <Route index element={<DashboardPage />} />
-            <Route path="settings" element={<SettingsPage />} />
+            <Route element={<PermissionRoute permission="settings.read" />}>
+              <Route path="settings" element={<SettingsPage />} />
+            </Route>
             <Route path="notifications" element={<NotificationsPage />} />
-            <Route path="users" element={<UsersPage />} />
-            <Route path="roles" element={<RolesPage />} />
-            <Route path="cms" element={<CmsHubPage />} />
-            <Route path="cms/pages/:id" element={<CmsPageBuilderPage />} />
-            <Route path="media" element={<MediaPage />} />
+            <Route path="users" element={<UsersRolesPage />} />
+            <Route path="roles" element={<Navigate to="/admin/users?tab=roles" replace />} />
+            <Route element={<ModuleRoute moduleKey="modules.cms" redirectTo={ADMIN} />}>
+              <Route path="cms" element={<CmsHubPage />} />
+              <Route path="cms/pages/:id" element={<CmsPageBuilderPage />} />
+            </Route>
+            <Route element={<ModuleRoute moduleKey="modules.media" redirectTo={ADMIN} />}>
+              <Route path="media" element={<MediaPage />} />
+            </Route>
             <Route path="audit" element={<AuditPage />} />
-            <Route path="news" element={<NewsAdminPage />} />
-            <Route path="gallery" element={<GalleryAdminPage />} />
-            <Route path="sponsors" element={<SponsorsAdminPage />} />
-            <Route path="trophies" element={<TrophiesAdminPage />} />
-            <Route path="club-timeline" element={<TimelineAdminPage />} />
-            <Route path="clubs" element={<ClubsListPage />} />
-            <Route path="clubs/:id" element={<ClubHubPage />} />
-            <Route path="players" element={<Navigate to="/admin/clubs" replace />} />
-            <Route path="competitions" element={<CompetitionsAdminPage />} />
-            <Route path="competitions/seasons/:seasonId" element={<SeasonHubPage />} />
-            <Route path="rounds" element={<Navigate to="/admin/competitions" replace />} />
-            <Route path="matches" element={<Navigate to="/admin/competitions" replace />} />
-            <Route element={<PermissionRoute permission="live.approve" />}>
-              <Route path="live/pending" element={<LivePendingPage />} />
+            <Route element={<ModuleRoute moduleKey="modules.news" redirectTo={ADMIN} />}>
+              <Route path="news" element={<NewsAdminPage />} />
             </Route>
-            <Route element={<PermissionRoute permission="live.manage" />}>
-              <Route path="live/:id" element={<CommentatorPage />} />
-              <Route path="matches/:id/report" element={<MatchReportPage />} />
+            <Route element={<ModuleRoute moduleKey="modules.gallery" redirectTo={ADMIN} />}>
+              <Route path="gallery" element={<GalleryAdminPage />} />
             </Route>
-            <Route element={<PermissionRoute permission="membership.manage" />}>
-              <Route path="membership" element={<MembershipAdminPage />} />
+            <Route element={<ModuleRoute moduleKey="modules.sponsors" redirectTo={ADMIN} />}>
+              <Route path="sponsors" element={<SponsorsAdminPage />} />
             </Route>
-            <Route element={<PermissionRoute permission="ticketing.manage" />}>
-              <Route path="ticketing" element={<TicketingAdminPage />} />
+            <Route element={<ModuleRoute moduleKey="modules.trophies" redirectTo={ADMIN} />}>
+              <Route path="trophies" element={<TrophiesAdminPage />} />
             </Route>
-            <Route path="contact" element={<ContactAdminPage />} />
-            <Route path="newsletter" element={<NewsletterAdminPage />} />
-            <Route path="hall-of-fame" element={<HallOfFameAdminPage />} />
-            <Route path="museum" element={<MuseumAdminPage />} />
+            <Route element={<ModuleRoute moduleKey="modules.timeline" redirectTo={ADMIN} />}>
+              <Route path="club-timeline" element={<TimelineAdminPage />} />
+            </Route>
+            <Route element={<ModuleRoute moduleKey="modules.clubs" redirectTo={ADMIN} />}>
+              <Route path="clubs" element={<ClubsListPage />} />
+              <Route path="clubs/:id" element={<ClubHubPage />} />
+              <Route path="players" element={<Navigate to="/admin/clubs" replace />} />
+            </Route>
+            <Route element={<ModuleRoute moduleKey="modules.competitions" redirectTo={ADMIN} />}>
+              <Route path="competitions" element={<CompetitionsAdminPage />} />
+              <Route path="competitions/seasons/:seasonId" element={<SeasonHubPage />} />
+              <Route path="rounds" element={<Navigate to="/admin/competitions" replace />} />
+              <Route path="matches" element={<Navigate to="/admin/competitions" replace />} />
+            </Route>
+            <Route element={<ModuleRoute moduleKey="feature.live" redirectTo={ADMIN} />}>
+              <Route element={<PermissionRoute permission="live.approve" />}>
+                <Route path="live/pending" element={<LivePendingPage />} />
+              </Route>
+              <Route element={<PermissionRoute permission="live.manage" />}>
+                <Route path="live/:id" element={<CommentatorPage />} />
+                <Route path="matches/:id/report" element={<MatchReportPage />} />
+              </Route>
+            </Route>
+            <Route element={<ModuleRoute moduleKey="feature.membership" redirectTo={ADMIN} />}>
+              <Route element={<PermissionRoute permission="membership.manage" />}>
+                <Route path="membership" element={<MembershipAdminPage />} />
+              </Route>
+            </Route>
+            <Route element={<ModuleRoute moduleKey="modules.ticketing" redirectTo={ADMIN} />}>
+              <Route element={<PermissionRoute permission="ticketing.manage" />}>
+                <Route path="ticketing" element={<TicketingAdminPage />} />
+              </Route>
+            </Route>
+            <Route path="heritage" element={<HeritageAdminPage />} />
+            <Route path="hall-of-fame" element={<Navigate to="/admin/heritage?tab=hall-of-fame" replace />} />
+            <Route path="museum" element={<Navigate to="/admin/heritage?tab=museum" replace />} />
+            <Route path="comms" element={<CommsAdminPage />} />
+            <Route path="contact" element={<Navigate to="/admin/comms?tab=contact" replace />} />
+            <Route path="newsletter" element={<Navigate to="/admin/comms?tab=newsletter" replace />} />
           </Route>
         </Route>
 

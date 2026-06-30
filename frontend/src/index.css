@@ -26,6 +26,8 @@
   --color-danger: #dc2626;
   --gradient-hero: linear-gradient(135deg, #1e3a8a 0%, #2563eb 50%, #3b82f6 100%);
   --gradient-page-hero: linear-gradient(180deg, rgba(30, 58, 138, 0.06) 0%, transparent 100%);
+  --hero-radial-accent: rgba(37, 99, 235, 0.12);
+  --hero-orb-color: rgba(30, 58, 138, 0.1);
   --gradient-surface: linear-gradient(180deg, var(--color-surface) 0%, var(--color-background) 100%);
   --border-subtle: rgba(148, 163, 184, 0.35);
   --ring-focus: rgba(37, 99, 235, 0.45);
@@ -49,7 +51,9 @@
     --color-success: #22c55e;
     --color-danger: #ef4444;
     --gradient-hero: linear-gradient(135deg, #1e293b 0%, #1e3a8a 45%, #2563eb 100%);
-    --gradient-page-hero: linear-gradient(180deg, rgba(59, 130, 246, 0.1) 0%, transparent 100%);
+    --gradient-page-hero: linear-gradient(180deg, rgba(15, 23, 42, 0.95) 0%, transparent 100%);
+    --hero-radial-accent: rgba(59, 130, 246, 0.06);
+    --hero-orb-color: rgba(59, 130, 246, 0.04);
     --gradient-surface: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
     --glass-bg: rgba(30, 41, 59, 0.82);
     --border-subtle: rgba(148, 163, 184, 0.22);
@@ -69,7 +73,9 @@
   --color-success: #22c55e;
   --color-danger: #ef4444;
   --gradient-hero: linear-gradient(135deg, #1e293b 0%, #1e3a8a 45%, #2563eb 100%);
-  --gradient-page-hero: linear-gradient(180deg, rgba(59, 130, 246, 0.1) 0%, transparent 100%);
+  --gradient-page-hero: linear-gradient(180deg, rgba(15, 23, 42, 0.95) 0%, transparent 100%);
+  --hero-radial-accent: rgba(59, 130, 246, 0.06);
+  --hero-orb-color: rgba(59, 130, 246, 0.04);
   --gradient-surface: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
   --glass-bg: rgba(30, 41, 59, 0.82);
   --border-subtle: rgba(148, 163, 184, 0.22);

@@ -6,7 +6,7 @@ import { PageHeroHeader } from '../../components/public/shell/PageHeroHeader';
 import { PremiumCard } from '../../components/public/shell/PremiumCard';
 import { Reveal } from '../../lib/motion/Reveal';
 import { Seo } from '../../components/seo/Seo';
-import { Skeleton } from '../../components/ui/skeleton';
+import { EmptyState } from '../../components/public/EmptyState';
 import { Button } from '../../components/ui/button';
 
 function extractYears(years?: string | null): string[] {
@@ -46,9 +46,14 @@ export function HallOfFamePage() {
             ))}
           </div>
         )}
+        {!isLoading && (filtered?.length ?? 0) === 0 && (
+          <EmptyState message="Nema unosa u Hall of Fame." />
+        )}
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {isLoading
-            ? Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} className="h-48 rounded-2xl" />)
+            ? Array.from({ length: 6 }).map((_, i) => (
+                <div key={i} className="h-48 animate-pulse rounded-2xl bg-surface" />
+              ))
             : filtered?.map((entry, i) => (
                 <Reveal key={entry.id} delay={i * 0.05}>
                   <PremiumCard className="p-6 text-center">

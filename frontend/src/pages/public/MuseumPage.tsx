@@ -7,7 +7,8 @@ import { PageHeroHeader } from '../../components/public/shell/PageHeroHeader';
 import { PremiumCard } from '../../components/public/shell/PremiumCard';
 import { Reveal } from '../../lib/motion/Reveal';
 import { Seo } from '../../components/seo/Seo';
-import { Skeleton } from '../../components/ui/skeleton';
+import { museumCategoryLabel } from '../../lib/museum-categories';
+import { EmptyState } from '../../components/public/EmptyState';
 import { Button } from '../../components/ui/button';
 
 export function MuseumPage() {
@@ -59,14 +60,19 @@ export function MuseumPage() {
             </Button>
             {categories.map((c) => (
               <Button key={c} size="sm" variant={category === c ? 'default' : 'ghost'} onClick={() => setCategory(c)}>
-                {c}
+                {museumCategoryLabel(c)}
               </Button>
             ))}
           </div>
         )}
+        {!isLoading && (filtered?.length ?? 0) === 0 && (
+          <EmptyState message="Nema predmeta u muzeju." />
+        )}
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {isLoading
-            ? Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} className="h-56 rounded-2xl" />)
+            ? Array.from({ length: 6 }).map((_, i) => (
+                <div key={i} className="h-56 animate-pulse rounded-2xl bg-surface" />
+              ))
             : filtered?.map((item, i) => (
                 <Reveal key={item.id} delay={i * 0.05}>
                   <PremiumCard className="overflow-hidden p-0">
@@ -76,7 +82,7 @@ export function MuseumPage() {
                     <div className="p-4">
                       {item.year && <p className="text-sm font-bold text-primary">{item.year}</p>}
                       <h2 className="font-display font-semibold">{item.title}</h2>
-                      {item.category && <p className="text-xs text-text-muted">{item.category}</p>}
+                      {item.category && <p className="text-xs text-text-muted">{museumCategoryLabel(item.category)}</p>}
                       {item.description && (
                         <RichContent html={item.description} className="mt-2 text-sm text-text-muted" />
                       )}

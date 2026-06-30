@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSubscribeNewsletter } from '../../../hooks';
+import { getApiErrorMessage } from '../../../lib/api-error';
 import { Button } from '../../../components/ui/button';
 import { Input } from '../../../components/ui/input';
 import { Card, CardContent } from '../../../components/ui/card';
@@ -13,9 +14,13 @@ export function Newsletter() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    await subscribe.mutateAsync(email);
-    setDone(true);
-    setEmail('');
+    try {
+      await subscribe.mutateAsync(email);
+      setDone(true);
+      setEmail('');
+    } catch {
+      /* error shown via subscribe.isError */
+    }
   };
 
   return (
@@ -40,6 +45,11 @@ export function Newsletter() {
                 <Button type="submit" disabled={subscribe.isPending} className="bg-white text-primary">
                   {t('actions.subscribe')}
                 </Button>
+                {subscribe.isError && (
+                  <p className="text-sm text-red-200">
+                    {getApiErrorMessage(subscribe.error, 'Pretplata nije uspjela. Provjerite email i pokušajte ponovo.')}
+                  </p>
+                )}
               </form>
             )}
           </CardContent>

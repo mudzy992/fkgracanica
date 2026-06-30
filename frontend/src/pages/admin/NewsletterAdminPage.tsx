@@ -9,7 +9,11 @@ import { Input } from '../../components/ui/input';
 import { AdminDataTable, AdminPageShell } from '../../components/admin/AdminPageShell';
 import { AdminPagination } from '../../components/admin/AdminPagination';
 
-export function NewsletterAdminPage() {
+interface Props {
+  embedded?: boolean;
+}
+
+export function NewsletterAdminPage({ embedded = false }: Props) {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
   const { data, isLoading } = useNewsletterSubscribers({ page, search: search || undefined });
@@ -27,45 +31,60 @@ export function NewsletterAdminPage() {
     if (ok) void unsubscribe.mutateAsync(email);
   };
 
+  const body = (
+    <>
+      <div className="border-b border-[var(--border-subtle)] p-4">
+        <Input
+          className="max-w-xs"
+          placeholder="Pretraži email..."
+          value={search}
+          onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+        />
+      </div>
+      <AdminDataTable
+        rows={rows}
+        empty="Nema pretplatnika."
+        columns={[
+          { key: 'email', header: 'Email', render: (r) => r.email },
+          {
+            key: 'active',
+            header: 'Status',
+            render: (r) => (
+              <Badge variant={r.isActive ? 'success' : 'muted'}>{r.isActive ? 'Aktivan' : 'Neaktivan'}</Badge>
+            ),
+          },
+          { key: 'date', header: 'Prijavljen', render: (r) => formatDateTime(r.createdAt) },
+          {
+            key: 'actions',
+            header: 'Akcije',
+            render: (r) =>
+              r.isActive ? (
+                <Button size="sm" variant="outline" onClick={() => void onUnsubscribe(r.email)} disabled={unsubscribe.isPending}>
+                  Odjavi
+                </Button>
+              ) : null,
+          },
+        ]}
+      />
+      {data?.meta && <AdminPagination meta={data.meta} page={page} onPageChange={setPage} />}
+    </>
+  );
+
+  if (embedded) {
+    return (
+      <>
+        {dialog}
+        {body}
+      </>
+    );
+  }
+
   return (
     <>
       <Seo title="Newsletter" />
       {dialog}
       <AdminPageShell title="Newsletter pretplatnici" isLoading={isLoading}>
-        <div className="border-b border-slate-200 p-4">
-          <Input
-            className="max-w-xs"
-            placeholder="Pretraži email..."
-            value={search}
-            onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-          />
-        </div>
-        <AdminDataTable
-          rows={rows}
-          empty="Nema pretplatnika."
-          columns={[
-            { key: 'email', header: 'Email', render: (r) => r.email },
-            {
-              key: 'active',
-              header: 'Status',
-              render: (r) => (
-                <Badge variant={r.isActive ? 'success' : 'muted'}>{r.isActive ? 'Aktivan' : 'Neaktivan'}</Badge>
-              ),
-            },
-            { key: 'date', header: 'Prijavljen', render: (r) => formatDateTime(r.createdAt) },
-            {
-              key: 'actions',
-              header: 'Akcije',
-              render: (r) =>
-                r.isActive ? (
-                  <Button size="sm" variant="outline" onClick={() => void onUnsubscribe(r.email)} disabled={unsubscribe.isPending}>
-                    Odjavi
-                  </Button>
-                ) : null,
-            },
-          ]}
-        />
-        {data?.meta && <AdminPagination meta={data.meta} page={page} onPageChange={setPage} />}
+        {body}
       </AdminPageShell>
     </>
   );

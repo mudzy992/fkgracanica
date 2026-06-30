@@ -1,14 +1,14 @@
 import { Link, useParams } from 'react-router-dom';
 import { useClubPublic } from '../../hooks/use-club-public';
+import { useModuleFlags } from '../../hooks';
 import { mediaUrl } from '../../lib/media';
 import { clubCrestPath } from '../../lib/club-utils';
+import { isModuleEnabled } from '../../lib/module-settings-rules';
 import { ClubStatsSummary, PlayerStatsTable } from '../../components/club/ClubStatsPanels';
 import { ClubProfileHero } from '../../components/public/clubs/ClubProfileHero';
 import { ResponsiveFormationPitch } from '../../components/public/clubs/ResponsiveFormationPitch';
-import {
-  ClubPlayersGrid,
-  LastMatchLineupSection,
-} from '../../components/public/clubs/ClubPublicSections';
+import { ClubPlayersGrid } from '../../components/public/clubs/ClubPublicSections';
+import { ClubCompetitionTabs } from '../../components/public/clubs/ClubCompetitionTabs';
 import { Seo } from '../../components/seo/Seo';
 import { Badge } from '../../components/ui/badge';
 import { PremiumCard } from '../../components/public/shell/PremiumCard';
@@ -17,6 +17,8 @@ import { Skeleton } from '../../components/ui/skeleton';
 export function ClubPublicPage() {
   const { slug = '' } = useParams();
   const { data, isLoading, isError } = useClubPublic(slug);
+  const { data: moduleFlags } = useModuleFlags();
+  const competitionsOn = isModuleEnabled(moduleFlags, 'modules.competitions');
 
   if (isLoading) {
     return (
@@ -30,7 +32,7 @@ export function ClubPublicPage() {
     return <p className="p-12 text-center text-text-muted">Klub nije pronađen.</p>;
   }
 
-  const { club, stadium, squad, seasonStats, players, lastMatch } = data;
+  const { club, stadium, squad, seasonStats, players } = data;
   const crest = clubCrestPath(club);
   const heroClub = {
     ...club,
@@ -38,6 +40,7 @@ export function ClubPublicPage() {
     city: stadium?.city ?? club.city,
     description: club.description ?? stadium?.description,
   };
+  const showCompetition = competitionsOn && !!seasonStats.season?.id;
 
   return (
     <div className="pb-20">
@@ -75,15 +78,19 @@ export function ClubPublicPage() {
           <ResponsiveFormationPitch slots={squad.slots} />
         </PremiumCard>
 
-        {lastMatch && (
-          <PremiumCard className="p-6 md:p-8">
-            <LastMatchLineupSection lastMatch={lastMatch} />
-          </PremiumCard>
-        )}
-
         <PremiumCard className="p-6 md:p-8">
           <ClubPlayersGrid players={players} />
         </PremiumCard>
+
+        {showCompetition && (
+          <PremiumCard className="p-6 md:p-8">
+            <ClubCompetitionTabs
+              clubId={club.id}
+              seasonId={seasonStats.season?.id}
+              seasonName={seasonStats.season?.name}
+            />
+          </PremiumCard>
+        )}
 
         <PremiumCard className="p-6 md:p-8">
           <h2 className="mb-4 text-xl font-bold">Statistike</h2>

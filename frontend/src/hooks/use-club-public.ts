@@ -3,30 +3,12 @@ import { api } from '../lib/api';
 import type { Club, Player } from '../types';
 import type { ClubSeasonStats, ClubSquadResponse, Stadium } from '../types/club-hub';
 
-export interface ClubPublicLastMatch {
-  matchId: string;
-  scheduledAt: string;
-  homeScore: number;
-  awayScore: number;
-  isHome: boolean;
-  opponent: { id: string; name: string; slug: string };
-  lineup: {
-    id: string;
-    playerId: string;
-    positionX?: number | null;
-    positionY?: number | null;
-    isStarter: boolean;
-    player?: Player | null;
-  }[];
-}
-
 export interface ClubPublicProfile {
   club: Club;
   stadium: Stadium | null;
   squad: ClubSquadResponse;
   seasonStats: ClubSeasonStats;
   players: Player[];
-  lastMatch: ClubPublicLastMatch | null;
 }
 
 export function useClubPublic(slug: string) {

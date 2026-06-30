@@ -17,7 +17,7 @@ export function HeroWidget({ config }: Props) {
       {bgUrl && (
         <>
           <img src={bgUrl} alt="" className="absolute inset-0 h-full w-full object-cover" aria-hidden />
-          <div className="absolute inset-0 bg-gradient-to-br from-primary/90 via-primary/75 to-accent/40" />
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/90 via-primary/75 to-accent/40 dark:to-accent/25" />
         </>
       )}
       {!bgUrl && <div className="absolute inset-0 bg-gradient-hero" />}

@@ -1,11 +1,13 @@
 import { Link } from 'react-router-dom';
 import { Outlet } from 'react-router-dom';
 import { Menu, Search } from 'lucide-react';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { usePublicSettings } from '../../hooks';
+import { usePublicSettings, useModuleFlags } from '../../hooks';
 import { useDynamicFavicon } from '../../hooks/use-dynamic-favicon';
 import { useCmsMenu, useCmsPage } from '../../hooks/use-cms-pages';
+import { filterPathsByModule } from '../../lib/route-module-map';
+import { isModuleEnabled } from '../../lib/module-settings-rules';
 import { Button } from '../ui/button';
 import { ThemeToggle } from '../ui/ThemeToggle';
 import { Sheet, SheetContent, SheetHeader } from '../ui/sheet';
@@ -26,23 +28,27 @@ export function PublicLayout() {
   const [open, setOpen] = useState(false);
   const { t } = useTranslation();
   const { data: settings } = usePublicSettings();
+  const { data: moduleFlags } = useModuleFlags();
   const crestUrl = settings?.['club.crestUrl'];
   const clubName = settings?.['club.name'] ?? 'FK Gračanica';
   const tagline = settings?.['club.tagline'];
   useDynamicFavicon(crestUrl || undefined);
   const { data: menu } = useCmsMenu('main');
   const { data: sitePage } = useCmsPage('site');
-  const fallbackNav = useFallbackNavItems();
+  const fallbackNav = useFallbackNavItems(moduleFlags);
 
   const footerSection = sitePage?.sections?.find((s) => s.widgetType === 'footer-about');
   const footerText = String((footerSection?.config as { text?: string } | undefined)?.text ?? '');
 
-  const navItems =
-    menu?.items && menu.items.length > 0
-      ? menu.items
-          .filter((it) => it.enabled !== false)
-          .map((it) => ({ to: menuHref(it), label: it.label, external: !!it.externalUrl }))
-      : fallbackNav;
+  const navItems = useMemo(() => {
+    const raw =
+      menu?.items && menu.items.length > 0
+        ? menu.items
+            .filter((it) => it.enabled !== false)
+            .map((it) => ({ to: menuHref(it), label: it.label, external: !!it.externalUrl }))
+        : fallbackNav;
+    return filterPathsByModule(raw, moduleFlags, isModuleEnabled);
+  }, [menu?.items, fallbackNav, moduleFlags]);
 
   return (
     <div className="flex min-h-dvh flex-col bg-background">

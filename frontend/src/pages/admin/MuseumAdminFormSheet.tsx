@@ -1,19 +1,14 @@
 import { useEffect, useState } from 'react';
 import { useCreateMuseumItem, useUpdateMuseumItem } from '../../hooks/use-heritage-admin';
+import { getApiErrorMessage } from '../../lib/api-error';
+import { MUSEUM_CATEGORIES } from '../../lib/museum-categories';
 import { AdminFormSheet } from '../../components/admin/AdminFormSheet';
 import { MediaPicker } from '../../components/admin/MediaPicker';
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
 import type { MuseumItem } from '../../types';
 
-const CATEGORIES = [
-  { value: 'artifact', label: 'Artefakt' },
-  { value: 'photo', label: 'Fotografija' },
-  { value: 'jersey', label: 'Dres' },
-  { value: 'trophy', label: 'Trofej' },
-  { value: 'document', label: 'Dokument' },
-  { value: 'other', label: 'Ostalo' },
-];
+const CATEGORIES = MUSEUM_CATEGORIES;
 
 type MuseumRow = MuseumItem & { category?: string };
 
@@ -49,9 +44,13 @@ export function MuseumAdminFormSheet({ open, onOpenChange, edit }: Props) {
       description: description || undefined,
       imagePath: imagePath || undefined,
     };
-    if (edit) await update.mutateAsync({ id: edit.id, ...body });
-    else await create.mutateAsync(body);
-    onOpenChange(false);
+    try {
+      if (edit) await update.mutateAsync({ id: edit.id, ...body });
+      else await create.mutateAsync(body);
+      onOpenChange(false);
+    } catch {
+      /* error via mutation state */
+    }
   };
 
   return (
@@ -76,6 +75,11 @@ export function MuseumAdminFormSheet({ open, onOpenChange, edit }: Props) {
         <Button onClick={() => void save()} disabled={!title || create.isPending || update.isPending}>
           {edit ? 'Spremi' : 'Kreiraj'}
         </Button>
+        {(create.isError || update.isError) && (
+          <p className="text-sm text-danger">
+            {getApiErrorMessage(create.error ?? update.error, 'Spremanje nije uspjelo.')}
+          </p>
+        )}
       </div>
     </AdminFormSheet>
   );

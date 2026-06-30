@@ -1,39 +1,18 @@
-import { Link, NavLink, Outlet } from 'react-router-dom';
+import { Link, Outlet } from 'react-router-dom';
 import { Menu, LogOut } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../lib/auth';
-import { cn } from '../../lib/utils';
+import { usePublicSettings, usePrivateSettings } from '../../hooks';
+import { isModuleEnabled } from '../../lib/module-settings-rules';
+import { resolveAdminModuleKey } from '../../lib/admin-module-map';
 import { Button } from '../ui/button';
 import { ThemeToggle } from '../ui/ThemeToggle';
 import { NotificationBell } from '../notifications/NotificationBell';
 import { ErrorBoundary } from '../common/ErrorBoundary';
 import { Sheet, SheetContent, SheetHeader } from '../ui/sheet';
-import { filterAdminNav } from './admin-nav';
-
-function SidebarNav({ items, onNavigate }: { items: ReturnType<typeof filterAdminNav>; onNavigate?: () => void }) {
-  const { t } = useTranslation();
-  return (
-    <nav className="flex flex-col gap-0.5">
-      {items.map((item) => (
-        <NavLink
-          key={item.to}
-          to={item.to}
-          end={item.end ?? false}
-          onClick={onNavigate}
-          className={({ isActive }) =>
-            cn(
-              'rounded-lg px-3 py-2 text-sm transition-colors',
-              isActive ? 'bg-primary text-white' : 'text-text hover:bg-surface',
-            )
-          }
-        >
-          {t(item.labelKey)}
-        </NavLink>
-      ))}
-    </nav>
-  );
-}
+import { filterNavLeaves, type AdminNavLeaf } from './admin-nav-groups';
+import { AdminSidebarNav } from './AdminSidebarNav';
 
 function SidebarFooter({ onLogout }: { onLogout: () => void }) {
   const { t } = useTranslation();
@@ -48,13 +27,27 @@ function SidebarFooter({ onLogout }: { onLogout: () => void }) {
 export function AdminLayout() {
   const [open, setOpen] = useState(false);
   const { user, logout } = useAuth();
-  const navItems = useMemo(() => filterAdminNav(user?.permissions), [user?.permissions]);
+  const { data: publicSettings } = usePublicSettings();
+  const { data: privateSettings } = usePrivateSettings();
+
+  const navGroups = useMemo(() => {
+    const merged = { ...publicSettings, ...privateSettings };
+    const isModuleVisible = (item: AdminNavLeaf) => {
+      if (item.moduleKeys?.length) {
+        return item.moduleKeys.some((k) => isModuleEnabled(merged, k));
+      }
+      const moduleKey = resolveAdminModuleKey(item.to);
+      if (!moduleKey) return true;
+      return isModuleEnabled(merged, moduleKey);
+    };
+    return filterNavLeaves(user?.permissions, isModuleVisible);
+  }, [user?.permissions, publicSettings, privateSettings]);
 
   const handleLogout = () => void logout();
 
   return (
     <div className="flex min-h-dvh bg-surface">
-      <aside className="hidden w-64 shrink-0 flex-col border-r border-slate-200 bg-background lg:flex">
+      <aside className="hidden w-64 shrink-0 flex-col border-r border-[var(--border-subtle)] bg-background lg:flex">
         <div className="flex min-h-0 flex-1 flex-col p-4">
           <div className="mb-4 flex shrink-0 items-center justify-between gap-2">
             <div>
@@ -70,16 +63,16 @@ export function AdminLayout() {
             <NotificationBell admin />
           </div>
           <div className="min-h-0 flex-1 overflow-y-auto">
-            <SidebarNav items={navItems} />
+            <AdminSidebarNav groups={navGroups} />
           </div>
-          <div className="mt-4 shrink-0 border-t border-slate-200 pt-4">
+          <div className="mt-4 shrink-0 border-t border-[var(--border-subtle)] pt-4">
             <SidebarFooter onLogout={handleLogout} />
           </div>
         </div>
       </aside>
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="flex h-14 shrink-0 items-center justify-between border-b border-slate-200 bg-background px-4 lg:hidden">
+        <header className="flex h-14 shrink-0 items-center justify-between border-b border-[var(--border-subtle)] bg-background px-4 lg:hidden">
           <Link to="/admin" className="font-bold text-primary">
             FK Admin
           </Link>
@@ -97,7 +90,7 @@ export function AdminLayout() {
             <SheetHeader onClose={() => setOpen(false)}>Admin</SheetHeader>
             <SheetContent className="flex min-h-0 flex-1 flex-col overflow-hidden">
               <div className="min-h-0 flex-1 overflow-y-auto">
-                <SidebarNav items={navItems} onNavigate={() => setOpen(false)} />
+                <AdminSidebarNav groups={navGroups} onNavigate={() => setOpen(false)} />
               </div>
               <div className="mt-4 shrink-0 border-t border-[var(--border-subtle)] pt-4">
                 <SidebarFooter onLogout={handleLogout} />

@@ -15,6 +15,8 @@ import { CreateUserDto, UpdateUserDto } from './dto/user.dto';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { PermissionsGuard } from '../common/guards/permissions.guard';
 import { RequirePermissions } from '../common/decorators/permissions.decorator';
+import { CurrentUser } from '../common/decorators/current-user.decorator';
+import type { AuthUser } from '../common/types/auth-user.type';
 import { PaginatedQueryDto } from '../common/dto/paginated-query.dto';
 
 @ApiTags('users')
@@ -30,6 +32,12 @@ export class UsersController {
     return this.usersService.findAll(query);
   }
 
+  @Get('role-options')
+  @RequirePermissions('users.read')
+  findRoleOptions() {
+    return this.usersService.findRoleOptions();
+  }
+
   @Get(':id')
   @RequirePermissions('users.read')
   findOne(@Param('id') id: string) {
@@ -38,19 +46,23 @@ export class UsersController {
 
   @Post()
   @RequirePermissions('users.create')
-  create(@Body() dto: CreateUserDto) {
-    return this.usersService.create(dto);
+  create(@CurrentUser() actor: AuthUser, @Body() dto: CreateUserDto) {
+    return this.usersService.create(actor.id, dto);
   }
 
   @Patch(':id')
   @RequirePermissions('users.update')
-  update(@Param('id') id: string, @Body() dto: UpdateUserDto) {
-    return this.usersService.update(id, dto);
+  update(
+    @CurrentUser() actor: AuthUser,
+    @Param('id') id: string,
+    @Body() dto: UpdateUserDto,
+  ) {
+    return this.usersService.update(actor.id, id, dto);
   }
 
   @Delete(':id')
   @RequirePermissions('users.delete')
-  remove(@Param('id') id: string) {
-    return this.usersService.remove(id);
+  remove(@CurrentUser() actor: AuthUser, @Param('id') id: string) {
+    return this.usersService.remove(actor.id, id);
   }
 }

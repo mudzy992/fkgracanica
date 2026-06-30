@@ -1,3 +1,5 @@
+import { APP_MODULE_KEYS } from './module-definitions';
+
 /** Settings that use media upload picker (not plain URL text). */
 const MEDIA_SETTING_KEYS = new Set(['club.crestUrl']);
 
@@ -6,6 +8,10 @@ const TICKETING_MANAGED_KEYS = new Set([
   'membership.onlineEnabled',
   'membership.annualPrice',
 ]);
+
+export function isModuleSettingKey(key: string): boolean {
+  return APP_MODULE_KEYS.has(key);
+}
 
 export function isTicketingManagedSetting(key: string): boolean {
   return (

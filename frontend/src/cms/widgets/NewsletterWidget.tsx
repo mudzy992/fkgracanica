@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSubscribeNewsletter } from '../../hooks';
+import { getApiErrorMessage } from '../../lib/api-error';
 import { Reveal } from '../../lib/motion/Reveal';
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
@@ -18,9 +19,13 @@ export function NewsletterWidget({ config }: Props) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    await subscribe.mutateAsync(email);
-    setDone(true);
-    setEmail('');
+    try {
+      await subscribe.mutateAsync(email);
+      setDone(true);
+      setEmail('');
+    } catch {
+      /* error shown via subscribe.isError */
+    }
   };
 
   return (
@@ -46,6 +51,11 @@ export function NewsletterWidget({ config }: Props) {
                 <Button type="submit" disabled={subscribe.isPending} className="bg-white text-primary shrink-0">
                   {t('actions.subscribe')}
                 </Button>
+                {subscribe.isError && (
+                  <p className="text-sm text-red-200 sm:col-span-2">
+                    {getApiErrorMessage(subscribe.error, 'Pretplata nije uspjela. Provjerite email i pokušajte ponovo.')}
+                  </p>
+                )}
               </form>
             )}
           </div>

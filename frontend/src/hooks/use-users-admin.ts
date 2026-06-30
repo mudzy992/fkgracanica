@@ -1,4 +1,4 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { api } from '../lib/api';
 
 export interface UserFormData {
@@ -33,6 +33,14 @@ export function useDeleteUser() {
   return useMutation({
     mutationFn: async (id: string) => (await api.delete(`/users/${id}`)).data,
     onSuccess: () => void qc.invalidateQueries({ queryKey: ['users'] }),
+  });
+}
+
+export function useUserRoleOptions() {
+  return useQuery({
+    queryKey: ['users', 'role-options'],
+    queryFn: async () =>
+      (await api.get<{ id: string; name: string }[]>('/users/role-options')).data,
   });
 }
 

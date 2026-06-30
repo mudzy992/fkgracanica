@@ -1,6 +1,8 @@
 import { NavLink } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { cn } from '../../lib/utils';
+import { resolvePublicModuleKey } from '../../lib/route-module-map';
+import { isModuleEnabled } from '../../lib/module-settings-rules';
 
 export const FALLBACK_NAV_KEYS = [
   { to: '/', key: 'nav.home' },
@@ -60,7 +62,11 @@ export function PublicNavItems({
   );
 }
 
-export function useFallbackNavItems() {
+export function useFallbackNavItems(settings?: Record<string, string>) {
   const { t } = useTranslation();
-  return FALLBACK_NAV_KEYS.map((item) => ({ to: item.to, label: t(item.key), external: false }));
+  return FALLBACK_NAV_KEYS.filter((item) => {
+    const moduleKey = resolvePublicModuleKey(item.to);
+    if (!moduleKey) return true;
+    return isModuleEnabled(settings, moduleKey);
+  }).map((item) => ({ to: item.to, label: t(item.key), external: false }));
 }

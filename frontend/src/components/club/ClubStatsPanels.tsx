@@ -56,7 +56,7 @@ export function PlayerStatsTable({ stats }: { stats: ClubSeasonStats }) {
   const rows = stats.players.filter((p) => p.stats);
   if (!rows.length) return <p className="text-sm text-text-muted">Nema statistike igrača za sezonu.</p>;
   return (
-    <div className="overflow-x-auto rounded-xl border border-slate-200">
+    <div className="overflow-x-auto rounded-xl border border-[var(--border-subtle)]">
       <table className="w-full text-sm">
         <thead>
           <tr className="border-b bg-surface text-left text-text-muted">
@@ -69,7 +69,7 @@ export function PlayerStatsTable({ stats }: { stats: ClubSeasonStats }) {
         </thead>
         <tbody>
           {rows.map((p) => (
-            <tr key={p.id} className="border-b border-slate-100">
+            <tr key={p.id} className="border-b border-[var(--border-subtle)]">
               <td className="p-3 font-medium">
                 <PlayerLink id={p.id} name={`${p.firstName} ${p.lastName}`} />
               </td>
