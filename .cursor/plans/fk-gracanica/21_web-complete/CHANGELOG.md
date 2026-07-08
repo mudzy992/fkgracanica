@@ -1,10 +1,26 @@
 # Changelog — Web Complete
 
+## 2026-07-08 (g) — Gates #14 + #21 + SeasonClub + Muzej/HOF APPROVED
+
+- Korisnik: Muzej/HOF, #14 Ulaznice, #21 Dashboard, SeasonClub → **APPROVED**
+- GATE_LOG: #1–#21 sve APPROVED; Web Complete gates closed
+- Commit: korisnik ručno
+
+## 2026-07-08 (f) — Muzej + HOF cinematic public (plan Remaining)
+
+- `/muzej`, `/hall-of-fame`: cinematic hero + glass kartice (javni UI only)
+- HANDOFF: kontakt/match/live APPROVED; #14/#21 i dalje READY_FOR_REVIEW
+
+## 2026-07-08 (e) — Live pitch scale: teren veći, tokeni manji
+
+- Live: `enlarged` samo teren (container + vertical max-w-lg); `compact` avatar `h-7/8` + manje ime
+- Crest fallback bez fotke zadržan; club/team pitch netaknut
+- `/kontakt`, `/utakmice/:id`, `/live` — korisnik APPROVED
+
 ## 2026-07-08 (d) — Live prematch pitch = club premium + crest fallback
 
 - `/live` prematch: `ResponsiveFormationPitch premium` u `border-gradient-club glass-premium` (kao Club/Team)
 - Token bez fotke na live skici: `crestFallback` → grb kluba (samo kad se prop proslijedi)
-- Gate: `/kontakt` + `/utakmice/:id` APPROVED; `/live` partial (pitch fix)
 
 ## 2026-07-08 (c) — CMS meni UX: modul-off warning
 

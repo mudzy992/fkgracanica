@@ -16,15 +16,17 @@
 | 2026-06-26 | Takmičenja (unified hub) | APPROVED | competitions→sezona→kolo→utakmice |
 | 2026-06-26 | Live | APPROVED | TV semafor, komentator v2, autogol, pending flow |
 | 2026-06-29 | Članstvo | APPROVED | Admin workflow, javna kartica+QR |
-| 2026-06-29 | Ulaznice | **READY_FOR_REVIEW** | Sportska ulaznica, backdrop, Moj račun — čeka korisnički APPROVED |
+| 2026-07-08 | Ulaznice | **APPROVED** | Korisnik potvrdio (#14 + SeasonClub smoke) |
 | 2026-06-29 | Kontakt | **APPROVED** | Korisnik potvrdio |
 | 2026-06-30 | Newsletter | **APPROVED** | Korisnik potvrdio — widget, admin, email DTO, PermissionRoute |
-| 2026-06-30 | Hall of Fame | **APPROVED** | Korisnik potvrdio — CRUD, years, PermissionRoute |
-| 2026-06-30 | Muzej | **APPROVED** | Korisnik potvrdio — EmptyState, PermissionRoute, category labels |
+| 2026-06-30 | Hall of Fame | **APPROVED** | Admin + 2026-07-08 javni cinematic APPROVED |
+| 2026-06-30 | Muzej | **APPROVED** | Admin + 2026-07-08 javni cinematic APPROVED |
 | 2026-06-30 | Korisnici + Role | **APPROVED** | Korisnik potvrdio — RBAC, audit, spojeni modul Korisnici i uloge |
 | 2026-06-30 | Postavke | **APPROVED** | Korisnik potvrdio — moduli, guard, sidebar hubovi, dark hero |
-| 2026-06-30 | Dashboard / Audit / Notifikacije | **READY_FOR_REVIEW** | KPI polish, audit RBAC, dark-only, notifikacije |
+| 2026-07-08 | Dashboard / Audit / Notifikacije | **APPROVED** | Korisnik potvrdio (#21) |
 
 Statusi: `IN_PROGRESS` | `READY_FOR_REVIEW` | `APPROVED` | `REVISE`
 
-**Sljedeći fokus:** `/liga` dizajn polish → preostale javne → review **#14** + **#21** · #20 regresija
+**Web Complete gate #1–#21: sve APPROVED.** SeasonClub REVIEW zatvoren (korisnik 2026-07-08).
+
+**Sljedeći fokus:** opcionalni backlog / deploy verify / mobile — vidi HANDOFF.

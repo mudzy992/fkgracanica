@@ -13,5 +13,8 @@
 
 ## Track 3 Admin
 - [x] Shared primitives
-- [x] Vijesti GATE (READY_FOR_REVIEW)
+- [x] Vijesti GATE (APPROVED)
 - [x] Remaining modules (initial polish)
+- [x] Gates #1–#21 ALL APPROVED (2026-07-08)
+- [x] SeasonClub + standings REVIEW APPROVED
+- [x] Public Muzej/HOF cinematic APPROVED

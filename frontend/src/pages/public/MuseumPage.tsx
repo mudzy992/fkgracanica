@@ -1,15 +1,15 @@
 import { useMemo, useState } from 'react';
 import { useMuseum } from '../../hooks';
-import { RichContent } from '../../components/public/RichContent';
-import { mediaUrl } from '../../lib/media';
 import { PageContainer } from '../../components/public/PageContainer';
-import { PageHeroHeader } from '../../components/public/shell/PageHeroHeader';
-import { PremiumCard } from '../../components/public/shell/PremiumCard';
+import { MuseumCinematicHero } from '../../components/public/museum/MuseumCinematicHero';
+import { MuseumExhibitCard } from '../../components/public/museum/MuseumExhibitCard';
+import { MuseumFilters } from '../../components/public/museum/MuseumFilters';
+import { NewsSectionTitle } from '../../components/news/NewsSectionTitle';
 import { Reveal } from '../../lib/motion/Reveal';
 import { Seo } from '../../components/seo/Seo';
 import { museumCategoryLabel } from '../../lib/museum-categories';
 import { EmptyState } from '../../components/public/EmptyState';
-import { Button } from '../../components/ui/button';
+import { Skeleton } from '../../components/ui/skeleton';
 
 export function MuseumPage() {
   const { data, isLoading } = useMuseum();
@@ -39,57 +39,42 @@ export function MuseumPage() {
   );
 
   return (
-    <div className="pb-16">
-      <Seo title="Muzej" />
-      <PageHeroHeader eyebrow="Baština" title="Muzej" subtitle="Artefakti, uspomene i historijski trenuci kluba." />
+    <div className="pb-16 sm:pb-20">
+      <Seo title="Muzej" description="Artefakti i historija FK Gračanica" />
+      <MuseumCinematicHero
+        totalCount={data?.length ?? 0}
+        yearCount={years.length}
+        categoryCount={categories.length}
+      />
       <PageContainer className="py-10 sm:py-12">
-        <div className="mb-4 flex flex-wrap gap-2">
-          <Button size="sm" variant={year == null ? 'default' : 'ghost'} onClick={() => setYear(undefined)}>
-            Sve godine
-          </Button>
-          {years.map((y) => (
-            <Button key={y} size="sm" variant={year === y ? 'default' : 'ghost'} onClick={() => setYear(y)}>
-              {y}
-            </Button>
-          ))}
-        </div>
-        {categories.length > 0 && (
-          <div className="mb-8 flex flex-wrap gap-2">
-            <Button size="sm" variant={!category ? 'default' : 'ghost'} onClick={() => setCategory(undefined)}>
-              Sve kategorije
-            </Button>
-            {categories.map((c) => (
-              <Button key={c} size="sm" variant={category === c ? 'default' : 'ghost'} onClick={() => setCategory(c)}>
-                {museumCategoryLabel(c)}
-              </Button>
-            ))}
+        <MuseumFilters
+          years={years}
+          categories={categories}
+          year={year}
+          category={category}
+          categoryLabel={museumCategoryLabel}
+          onYear={setYear}
+          onCategory={setCategory}
+        />
+
+        <div className="mt-10">
+          <Reveal>
+            <NewsSectionTitle>Zbirka</NewsSectionTitle>
+          </Reveal>
+          {!isLoading && (filtered?.length ?? 0) === 0 && (
+            <EmptyState message="Nema predmeta u muzeju." />
+          )}
+          <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {isLoading
+              ? Array.from({ length: 6 }).map((_, i) => (
+                  <Skeleton key={i} className="h-72 rounded-2xl" />
+                ))
+              : filtered?.map((item, i) => (
+                  <Reveal key={item.id} delay={Math.min(i * 0.05, 0.3)}>
+                    <MuseumExhibitCard item={item} />
+                  </Reveal>
+                ))}
           </div>
-        )}
-        {!isLoading && (filtered?.length ?? 0) === 0 && (
-          <EmptyState message="Nema predmeta u muzeju." />
-        )}
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {isLoading
-            ? Array.from({ length: 6 }).map((_, i) => (
-                <div key={i} className="h-56 animate-pulse rounded-2xl bg-surface" />
-              ))
-            : filtered?.map((item, i) => (
-                <Reveal key={item.id} delay={i * 0.05}>
-                  <PremiumCard className="overflow-hidden p-0">
-                    {item.imagePath && (
-                      <img src={mediaUrl(item.imagePath, 'medium')} alt="" className="h-40 w-full object-cover" />
-                    )}
-                    <div className="p-4">
-                      {item.year && <p className="text-sm font-bold text-primary">{item.year}</p>}
-                      <h2 className="font-display font-semibold">{item.title}</h2>
-                      {item.category && <p className="text-xs text-text-muted">{museumCategoryLabel(item.category)}</p>}
-                      {item.description && (
-                        <RichContent html={item.description} className="mt-2 text-sm text-text-muted" />
-                      )}
-                    </div>
-                  </PremiumCard>
-                </Reveal>
-              ))}
         </div>
       </PageContainer>
     </div>
