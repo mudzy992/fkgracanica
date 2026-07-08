@@ -10,6 +10,7 @@ import {
   View,
 } from 'react-native';
 import { api } from '../../src/lib/api';
+import { RequireAuth } from '../../src/components/RequireAuth';
 import { colors, spacing, typography } from '../../src/lib/theme';
 import type { Notification, PaginatedResponse } from '../../src/types/api';
 
@@ -22,7 +23,7 @@ function formatDate(iso: string): string {
   });
 }
 
-export default function NotificationsScreen() {
+function NotificationsBody() {
   const { t } = useTranslation();
   const [items, setItems] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(true);
@@ -107,3 +108,11 @@ const styles = StyleSheet.create({
   action: { color: colors.accent, marginTop: spacing.sm, fontWeight: '600' },
   empty: { textAlign: 'center', color: colors.textMuted, marginTop: spacing.xl },
 });
+
+export default function NotificationsScreen() {
+  return (
+    <RequireAuth returnTo="/(tabs)/notifications">
+      <NotificationsBody />
+    </RequireAuth>
+  );
+}

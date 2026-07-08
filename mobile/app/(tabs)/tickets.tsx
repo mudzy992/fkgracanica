@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import { api } from '../../src/lib/api';
 import { QrCodeView } from '../../src/components/QrCodeView';
+import { RequireAuth } from '../../src/components/RequireAuth';
 import { colors, spacing, typography } from '../../src/lib/theme';
 import type { TicketOrder } from '../../src/types/api';
 
@@ -21,7 +22,7 @@ function formatDate(iso: string): string {
   });
 }
 
-export default function TicketsScreen() {
+function TicketsBody() {
   const { t } = useTranslation();
   const [orders, setOrders] = useState<TicketOrder[]>([]);
   const [loading, setLoading] = useState(true);
@@ -116,3 +117,11 @@ const styles = StyleSheet.create({
   qrWrap: { marginTop: spacing.sm, alignItems: 'flex-start' },
   empty: { textAlign: 'center', color: colors.textMuted, marginTop: spacing.xl },
 });
+
+export default function TicketsScreen() {
+  return (
+    <RequireAuth returnTo="/(tabs)/tickets">
+      <TicketsBody />
+    </RequireAuth>
+  );
+}

@@ -1,4 +1,4 @@
-import { useRouter } from 'expo-router';
+import { Link, useLocalSearchParams, useRouter } from 'expo-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -13,12 +13,15 @@ import {
   View,
 } from 'react-native';
 import { useAuth } from '../src/lib/auth';
-import { colors, spacing, typography } from '../src/lib/theme';
+import { useTheme } from '../src/lib/theme-context';
+import { spacing, typography } from '../src/lib/theme';
 
 export default function LoginScreen() {
   const { t } = useTranslation();
   const router = useRouter();
+  const { returnTo } = useLocalSearchParams<{ returnTo?: string }>();
   const { login } = useAuth();
+  const { colors } = useTheme();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [submitting, setSubmitting] = useState(false);
@@ -28,7 +31,8 @@ export default function LoginScreen() {
     setSubmitting(true);
     try {
       await login(email.trim(), password);
-      router.replace('/(tabs)/home');
+      const target = typeof returnTo === 'string' && returnTo.startsWith('/') ? returnTo : '/(tabs)/home';
+      router.replace(target as '/(tabs)/home');
     } catch {
       Alert.alert(t('error'), t('invalidCredentials'));
     } finally {
@@ -38,16 +42,19 @@ export default function LoginScreen() {
 
   return (
     <KeyboardAvoidingView
-      style={styles.container}
+      style={[styles.container, { backgroundColor: colors.surface }]}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
-      <View style={styles.card}>
-        <Text style={styles.title}>{t('appName')}</Text>
-        <Text style={styles.subtitle}>{t('login')}</Text>
+      <View style={[styles.card, { backgroundColor: colors.background, borderColor: colors.border }]}>
+        <Text style={[styles.title, { color: colors.primary }]}>{t('appName')}</Text>
+        <Text style={[styles.subtitle, { color: colors.textMuted }]}>{t('login')}</Text>
 
-        <Text style={styles.label}>{t('email')}</Text>
+        <Text style={[styles.label, { color: colors.textMuted }]}>{t('email')}</Text>
         <TextInput
-          style={styles.input}
+          style={[
+            styles.input,
+            { borderColor: colors.border, color: colors.text, backgroundColor: colors.background },
+          ]}
           value={email}
           onChangeText={setEmail}
           autoCapitalize="none"
@@ -57,9 +64,12 @@ export default function LoginScreen() {
           placeholderTextColor={colors.textMuted}
         />
 
-        <Text style={styles.label}>{t('password')}</Text>
+        <Text style={[styles.label, { color: colors.textMuted }]}>{t('password')}</Text>
         <TextInput
-          style={styles.input}
+          style={[
+            styles.input,
+            { borderColor: colors.border, color: colors.text, backgroundColor: colors.background },
+          ]}
           value={password}
           onChangeText={setPassword}
           secureTextEntry
@@ -69,75 +79,43 @@ export default function LoginScreen() {
         />
 
         <Pressable
-          style={[styles.button, submitting && styles.buttonDisabled]}
+          style={[styles.button, { backgroundColor: colors.primary }, submitting && styles.buttonDisabled]}
           onPress={() => void handleLogin()}
           disabled={submitting}
         >
           {submitting ? (
             <ActivityIndicator color={colors.white} />
           ) : (
-            <Text style={styles.buttonText}>{t('signIn')}</Text>
+            <Text style={[styles.buttonText, { color: colors.white }]}>{t('signIn')}</Text>
           )}
         </Pressable>
+
+        <Link href="/(tabs)/home" asChild>
+          <Pressable style={styles.skip}>
+            <Text style={{ color: colors.primary, fontWeight: '600' }}>{t('continueAsGuest')}</Text>
+          </Pressable>
+        </Link>
       </View>
     </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    padding: spacing.lg,
-    backgroundColor: colors.surface,
-  },
-  card: {
-    backgroundColor: colors.background,
-    borderRadius: 12,
-    padding: spacing.lg,
-    borderWidth: 1,
-    borderColor: colors.border,
-  },
-  title: {
-    ...typography.title,
-    color: colors.primary,
-    textAlign: 'center',
-  },
-  subtitle: {
-    ...typography.body,
-    color: colors.textMuted,
-    textAlign: 'center',
-    marginBottom: spacing.lg,
-  },
-  label: {
-    ...typography.caption,
-    color: colors.textMuted,
-    marginBottom: spacing.xs,
-  },
+  container: { flex: 1, justifyContent: 'center', padding: spacing.lg },
+  card: { borderRadius: 12, padding: spacing.lg, borderWidth: 1 },
+  title: { ...typography.title, textAlign: 'center' },
+  subtitle: { ...typography.body, textAlign: 'center', marginBottom: spacing.lg },
+  label: { ...typography.caption, marginBottom: spacing.xs },
   input: {
     borderWidth: 1,
-    borderColor: colors.border,
     borderRadius: 8,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm + 4,
     marginBottom: spacing.md,
     fontSize: 16,
-    color: colors.text,
-    backgroundColor: colors.white,
   },
-  button: {
-    backgroundColor: colors.primary,
-    borderRadius: 8,
-    paddingVertical: spacing.md,
-    alignItems: 'center',
-    marginTop: spacing.sm,
-  },
-  buttonDisabled: {
-    opacity: 0.7,
-  },
-  buttonText: {
-    color: colors.white,
-    fontSize: 16,
-    fontWeight: '600',
-  },
+  button: { borderRadius: 8, paddingVertical: spacing.md, alignItems: 'center', marginTop: spacing.sm },
+  buttonDisabled: { opacity: 0.7 },
+  buttonText: { fontSize: 16, fontWeight: '600' },
+  skip: { marginTop: spacing.lg, alignItems: 'center', padding: spacing.sm },
 });

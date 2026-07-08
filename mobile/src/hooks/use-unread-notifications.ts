@@ -1,11 +1,17 @@
+import { useAuth } from '../lib/auth';
 import { useEffect, useState } from 'react';
 import { api } from '../lib/api';
 import type { PaginatedResponse, Notification } from '../types/api';
 
 export function useUnreadNotificationCount() {
+  const { isAuthenticated } = useAuth();
   const [count, setCount] = useState(0);
 
   useEffect(() => {
+    if (!isAuthenticated) {
+      setCount(0);
+      return;
+    }
     let active = true;
     const load = async () => {
       try {
@@ -23,7 +29,7 @@ export function useUnreadNotificationCount() {
       active = false;
       clearInterval(id);
     };
-  }, []);
+  }, [isAuthenticated]);
 
   return count;
 }

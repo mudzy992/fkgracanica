@@ -52,6 +52,8 @@ const resources = {
       category: 'Kategorija',
       price: 'Cijena',
       invalidCredentials: 'Neispravni podaci za prijavu',
+      continueAsGuest: 'Nastavi bez prijave',
+      loginRequired: 'Prijava je obavezna za ovaj dio aplikacije.',
     },
   },
   en: {
@@ -104,6 +106,8 @@ const resources = {
       category: 'Category',
       price: 'Price',
       invalidCredentials: 'Invalid login credentials',
+      continueAsGuest: 'Continue without signing in',
+      loginRequired: 'Sign in is required for this part of the app.',
     },
   },
 };

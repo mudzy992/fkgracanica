@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import { api } from '../../src/lib/api';
 import { QrCodeView } from '../../src/components/QrCodeView';
+import { RequireAuth } from '../../src/components/RequireAuth';
 import { colors, spacing, typography } from '../../src/lib/theme';
 import type { Membership } from '../../src/types/api';
 
@@ -19,7 +20,7 @@ function formatDate(iso: string | null): string {
   return new Date(iso).toLocaleDateString('bs-BA');
 }
 
-export default function MembershipScreen() {
+function MembershipBody() {
   const { t } = useTranslation();
   const [memberships, setMemberships] = useState<Membership[]>([]);
   const [loading, setLoading] = useState(true);
@@ -89,6 +90,14 @@ export default function MembershipScreen() {
         <Text style={styles.qrHint}>Pokažite ovaj kod na ulazu</Text>
       </View>
     </ScrollView>
+  );
+}
+
+export default function MembershipScreen() {
+  return (
+    <RequireAuth returnTo="/(tabs)/membership">
+      <MembershipBody />
+    </RequireAuth>
   );
 }
 

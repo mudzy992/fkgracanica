@@ -18,3 +18,4 @@
 - [x] Gates #1–#21 ALL APPROVED (2026-07-08)
 - [x] SeasonClub + standings REVIEW APPROVED
 - [x] Public Muzej/HOF cinematic APPROVED
+- [x] **Track CLOSED** → mobile `25_mobile-complete`

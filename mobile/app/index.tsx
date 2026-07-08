@@ -1,31 +1,24 @@
 import { Redirect } from 'expo-router';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import { useAuth } from '../src/lib/auth';
-import { colors } from '../src/lib/theme';
+import { useTheme } from '../src/lib/theme-context';
 
+/** Always land on tabs; guest browse is allowed. */
 export default function IndexScreen() {
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isLoading } = useAuth();
+  const { colors } = useTheme();
 
   if (isLoading) {
     return (
-      <View style={styles.center}>
+      <View style={[styles.center, { backgroundColor: colors.background }]}>
         <ActivityIndicator size="large" color={colors.primary} />
       </View>
     );
   }
 
-  if (isAuthenticated) {
-    return <Redirect href="/(tabs)/home" />;
-  }
-
-  return <Redirect href="/login" />;
+  return <Redirect href="/(tabs)/home" />;
 }
 
 const styles = StyleSheet.create({
-  center: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: colors.background,
-  },
+  center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
 });

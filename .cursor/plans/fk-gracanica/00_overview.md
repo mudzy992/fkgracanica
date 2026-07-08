@@ -4,23 +4,19 @@
 
 Produkcijska full-stack platforma: javni portal, admin CMS, statistički/live centar, članstvo, ulaznice, Expo mobile.
 
-## Stack
-
-- **backend/** — NestJS, Prisma 7, MySQL, Socket.IO, JWT
-- **frontend/** — React, Vite, Tailwind, shadcn, TanStack Query
-- **mobile/** — Expo, TypeScript, i18n
-
 ## Faze
 
 | Faza | Fokus | Dokument |
 |------|-------|----------|
-| 1 | Infrastruktura, auth, RBAC, settings, mobile scaffold | [01_phase-infrastructure.md](01_phase-infrastructure.md) |
-| 2 | Admin dashboard, CMS, media, audit | [02_phase-admin-cms.md](02_phase-admin-cms.md) |
-| 3 | Javni portal | [03_phase-public-portal.md](03_phase-public-portal.md) |
-| 4 | Tim, liga, statistika | [04_phase-competition-stats.md](04_phase-competition-stats.md) |
-| 5 | Live centar | [05_phase-live-center.md](05_phase-live-center.md) |
-| 6 | Članstvo, ulaznice (bez online plaćanja) | [06_phase-membership-ticketing.md](06_phase-membership-ticketing.md) |
-| 7 | Premium, PWA, optimizacija | [07_phase-premium-optimization.md](07_phase-premium-optimization.md) |
+| … | … (web faze 1–24) | vidi folder |
+| **21** | Web Complete — **CLOSED** | [21_web-complete](21_web-complete/HANDOFF.md) |
+| **25** | **Mobile Complete (aktivno)** | [25_mobile-complete](25_mobile-complete/HANDOFF.md) |
+
+## Stack
+
+- **backend/** — NestJS, Prisma 7, MySQL, Socket.IO, JWT — **stabilan**
+- **frontend/** — React, Vite, Tailwind — **Web Complete APPROVED**
+- **mobile/** — Expo 56, TypeScript, i18n BS — **aktivni track**
 
 ## Izvori
 

@@ -1,5 +1,10 @@
 # Changelog — Web Complete
 
+## 2026-07-08 (h) — Web Complete CLOSED → Mobile track
+
+- Gates #1–#21 APPROVED; HANDOFF CLOSED
+- Sljedeći: `25_mobile-complete`
+
 ## 2026-07-08 (g) — Gates #14 + #21 + SeasonClub + Muzej/HOF APPROVED
 
 - Korisnik: Muzej/HOF, #14 Ulaznice, #21 Dashboard, SeasonClub → **APPROVED**
