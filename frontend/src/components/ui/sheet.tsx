@@ -30,7 +30,7 @@ export function Sheet({ open, onOpenChange, children, side = 'left' }: SheetProp
       />
       <div
         className={cn(
-          'absolute top-0 h-full w-[min(100%,20rem)] bg-background shadow-xl',
+          'absolute top-0 flex h-full w-[min(100%,20rem)] flex-col overflow-hidden bg-background shadow-xl',
           side === 'left' ? 'left-0' : 'right-0',
         )}
       >
@@ -52,5 +52,5 @@ export function SheetHeader({ children, onClose }: { children: ReactNode; onClos
 }
 
 export function SheetContent({ children, className }: { children: ReactNode; className?: string }) {
-  return <div className={cn('overflow-y-auto p-4', className)}>{children}</div>;
+  return <div className={cn('min-h-0 flex-1 overflow-y-auto p-4', className)}>{children}</div>;
 }

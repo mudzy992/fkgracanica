@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useCmsMenu, useCmsPages, useSaveCmsMenu } from '../../../hooks/use-cms-pages';
+import { useModuleFlags } from '../../../hooks';
 import { asArray } from '../../../lib/as-array';
 import { Button } from '../../../components/ui/button';
 import { AdminPageShell } from '../../../components/admin/AdminPageShell';
@@ -11,6 +12,7 @@ import { menuItemToDraft, type MenuDraftItem } from './menu-utils';
 export function CmsMenuEditor() {
   const { data: menu, isLoading } = useCmsMenu('main');
   const { data: pagesRaw } = useCmsPages(true);
+  const { data: moduleFlags } = useModuleFlags();
   const pages = asArray<CmsPage>(pagesRaw);
   const save = useSaveCmsMenu('main');
   const [items, setItems] = useState<MenuDraftItem[]>([]);
@@ -44,11 +46,17 @@ export function CmsMenuEditor() {
   return (
     <AdminPageShell title="Glavni meni" isLoading={isLoading}>
       <div className="space-y-4 p-3">
-        <CmsMenuPreviewBar items={items} />
+        <CmsMenuPreviewBar items={items} moduleFlags={moduleFlags} />
         <p className="text-xs text-text-muted">
-          Sistemske stavke (zaključane) možete samo ugašiti ili premjestiti. Prilagođene stavke možete potpuno uređivati.
+          Sistemske stavke (zaključane) možete samo ugašiti ili premjestiti. Prilagođene stavke možete potpuno
+          uređivati. Javna navigacija također skriva stavke čiji je modul isključen u Postavkama.
         </p>
-        <CmsMenuSortableList items={items} pages={pages} onChange={setItems} />
+        <CmsMenuSortableList
+          items={items}
+          pages={pages}
+          moduleFlags={moduleFlags}
+          onChange={setItems}
+        />
         <div className="flex gap-2">
           <Button variant="outline" onClick={addCustom}>
             + Prilagođena stavka

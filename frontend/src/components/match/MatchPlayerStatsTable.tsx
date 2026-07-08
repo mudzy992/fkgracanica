@@ -1,5 +1,4 @@
 import { PlayerLink } from '../public/players/PlayerLink';
-import { PremiumCard } from '../public/shell/PremiumCard';
 import type { PlayerMatchStat } from '../../types/match-stats';
 
 export function MatchPlayerStatsTable({
@@ -16,12 +15,14 @@ export function MatchPlayerStatsTable({
   );
 
   return (
-    <PremiumCard className="overflow-hidden p-0" hover={false}>
-      <p className="border-b border-slate-100 px-4 py-3 font-medium">{title}</p>
+    <div className="border-gradient-club glass-premium overflow-hidden rounded-2xl">
+      <p className="border-b border-white/10 px-4 py-3 font-display text-sm font-bold uppercase tracking-wider">
+        {title}
+      </p>
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b bg-surface text-left text-text-muted">
+            <tr className="border-b border-white/5 bg-black/[0.03] text-left text-[10px] font-semibold uppercase tracking-wider text-text-muted">
               <th className="p-3">Igrač</th>
               {hasDetail && (
                 <>
@@ -37,7 +38,7 @@ export function MatchPlayerStatsTable({
           </thead>
           <tbody>
             {players.map((p) => (
-              <tr key={p.playerId} className="border-b border-slate-50 last:border-0">
+              <tr key={p.playerId} className="border-b border-white/5 last:border-0">
                 <td className="p-3">
                   <PlayerLink id={p.playerId} name={`${p.firstName} ${p.lastName}`} />
                   {!p.isStarter && (
@@ -63,6 +64,6 @@ export function MatchPlayerStatsTable({
           </tbody>
         </table>
       </div>
-    </PremiumCard>
+    </div>
   );
 }

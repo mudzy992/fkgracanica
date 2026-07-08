@@ -1,14 +1,17 @@
 import { Link } from 'react-router-dom';
-import { PremiumCard } from '../public/shell/PremiumCard';
 import { PlayerLink } from '../public/players/PlayerLink';
+import { NewsSectionTitle } from '../news/NewsSectionTitle';
+import { Reveal } from '../../lib/motion/Reveal';
 import type { Match, MatchLineup } from '../../types';
 
 function LineupList({ title, rows }: { title: string; rows: MatchLineup[] }) {
   if (!rows.length) return null;
   return (
     <div>
-      <h3 className="mb-2 text-sm font-semibold text-text-muted">{title}</h3>
-      <ul className="space-y-1 text-sm">
+      <h3 className="mb-2 text-[10px] font-semibold uppercase tracking-[0.2em] text-text-muted">
+        {title}
+      </h3>
+      <ul className="space-y-1.5 text-sm">
         {rows.map((row) => (
           <li key={row.id}>
             {row.player && (
@@ -26,11 +29,13 @@ function ClubLineupCard({ title, lineup }: { title: string; lineup: MatchLineup[
   const starters = lineup.filter((l) => l.isStarter);
   const subs = lineup.filter((l) => !l.isStarter);
   return (
-    <PremiumCard className="p-4 sm:p-6" hover={false}>
-      <p className="mb-3 font-medium">{title}</p>
-      <LineupList title="Startna postava" rows={starters} />
-      <LineupList title="Rezerve" rows={subs} />
-    </PremiumCard>
+    <div className="border-gradient-club glass-premium rounded-2xl p-5 sm:p-6">
+      <p className="mb-4 font-display text-sm font-bold uppercase tracking-wider text-text">{title}</p>
+      <div className="space-y-4">
+        <LineupList title="Startna postava" rows={starters} />
+        <LineupList title="Rezerve" rows={subs} />
+      </div>
+    </div>
   );
 }
 
@@ -42,11 +47,17 @@ export function MatchLineupSection({ match }: { match: Match }) {
   const away = lineup.filter((l) => l.clubId === match.awayClubId || l.player?.clubId === match.awayClubId);
 
   return (
-    <section className="mt-8">
-      <h2 className="font-display mb-4 text-xl font-semibold">Postave</h2>
-      <div className="grid gap-4 md:grid-cols-2">
-        <ClubLineupCard title={match.homeClub?.name ?? 'Domaći'} lineup={home} />
-        <ClubLineupCard title={match.awayClub?.name ?? 'Gosti'} lineup={away} />
+    <section className="mt-10 sm:mt-12">
+      <Reveal>
+        <NewsSectionTitle>Postave</NewsSectionTitle>
+      </Reveal>
+      <div className="mt-2 grid gap-4 md:grid-cols-2">
+        <Reveal delay={0.05}>
+          <ClubLineupCard title={match.homeClub?.name ?? 'Domaći'} lineup={home} />
+        </Reveal>
+        <Reveal delay={0.1}>
+          <ClubLineupCard title={match.awayClub?.name ?? 'Gosti'} lineup={away} />
+        </Reveal>
       </div>
     </section>
   );
@@ -61,13 +72,20 @@ export function MatchRelatedNewsSection({
 }) {
   if (loading || !items?.length) return null;
   return (
-    <section className="mt-8">
-      <h2 className="font-display mb-4 text-xl font-semibold">Povezane vijesti</h2>
-      <div className="space-y-2">
-        {items.map((n) => (
-          <Link key={n.id} to={`/vijesti/${n.slug}`}>
-            <PremiumCard className="block p-3 text-sm">{n.title}</PremiumCard>
-          </Link>
+    <section className="mt-10 sm:mt-12">
+      <Reveal>
+        <NewsSectionTitle>Povezane vijesti</NewsSectionTitle>
+      </Reveal>
+      <div className="mt-2 space-y-2">
+        {items.map((n, i) => (
+          <Reveal key={n.id} delay={Math.min(i * 0.04, 0.2)}>
+            <Link
+              to={`/vijesti/${n.slug}`}
+              className="border-gradient-club glass-premium card-lift block rounded-xl px-4 py-3 text-sm font-medium text-text transition hover:text-primary"
+            >
+              {n.title}
+            </Link>
+          </Reveal>
         ))}
       </div>
     </section>

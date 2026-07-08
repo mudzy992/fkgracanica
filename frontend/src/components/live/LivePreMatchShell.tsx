@@ -64,43 +64,57 @@ export function LivePreMatchShell({ match }: Props) {
 
   return (
     <div className="relative flex min-h-dvh flex-col overflow-y-auto bg-gradient-to-b from-slate-950 via-slate-900 to-black px-4 py-6 text-white sm:px-8 sm:py-10">
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(0,102,255,0.14),transparent_55%)]" />
       <LivePrematchAudio url={audioUrl} active={!!audioUrl} />
-      <div className="mx-auto w-full max-w-3xl text-center">
-        <span className="rounded bg-primary/90 px-3 py-1 text-xs font-bold uppercase tracking-wider">
+
+      <div className="relative mx-auto w-full max-w-3xl text-center">
+        <span className="inline-flex items-center gap-1.5 rounded-full bg-primary/90 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.2em]">
+          <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-white" />
           Uskoro uživo
         </span>
-        <div className="mt-6 flex items-center justify-center gap-4 sm:gap-8">
-          <div className="flex min-w-0 flex-1 flex-col items-center gap-2">
-            <ClubCrest club={match.homeClub} size="md" />
-            <span className="truncate text-sm font-semibold">{match.homeClub?.name}</span>
+
+        <div className="mt-8 overflow-hidden rounded-3xl border border-white/10 bg-white/5 px-4 py-8 backdrop-blur-sm sm:px-8 sm:py-10">
+          <div className="flex items-center justify-center gap-4 sm:gap-8">
+            <div className="flex min-w-0 flex-1 flex-col items-center gap-2">
+              <ClubCrest club={match.homeClub} size="md" />
+              <span className="truncate text-sm font-semibold">{match.homeClub?.name}</span>
+            </div>
+            <div className="font-display text-2xl font-bold text-white/45 sm:text-3xl">vs</div>
+            <div className="flex min-w-0 flex-1 flex-col items-center gap-2">
+              <ClubCrest club={match.awayClub} size="md" />
+              <span className="truncate text-sm font-semibold">{match.awayClub?.name}</span>
+            </div>
           </div>
-          <div className="font-display text-2xl font-bold text-white/60 sm:text-3xl">vs</div>
-          <div className="flex min-w-0 flex-1 flex-col items-center gap-2">
-            <ClubCrest club={match.awayClub} size="md" />
-            <span className="truncate text-sm font-semibold">{match.awayClub?.name}</span>
-          </div>
+          {!countdown.started ? (
+            <div className="mt-8 font-mono text-4xl font-bold tabular-nums tracking-tight text-amber-300 sm:text-5xl">
+              {String(countdown.h).padStart(2, '0')}:{String(countdown.m).padStart(2, '0')}:
+              {String(countdown.s).padStart(2, '0')}
+            </div>
+          ) : (
+            <p className="mt-8 text-sm font-medium text-amber-300">Utakmica uskoro počinje…</p>
+          )}
         </div>
-        {!countdown.started ? (
-          <div className="mt-6 font-mono text-3xl font-bold tabular-nums sm:text-4xl">
-            {String(countdown.h).padStart(2, '0')}:{String(countdown.m).padStart(2, '0')}:
-            {String(countdown.s).padStart(2, '0')}
-          </div>
-        ) : (
-          <p className="mt-6 text-sm text-amber-300">Utakmica uskoro počinje…</p>
-        )}
       </div>
 
       {activeSlots.length > 0 && (
-        <section className="mx-auto mt-8 w-full max-w-lg">
-          <h2 className="mb-3 text-center text-xs font-semibold uppercase tracking-[0.2em] text-white/50">
-            Postava — {activeClub?.name}
-          </h2>
-          <ResponsiveFormationPitch slots={activeSlots} />
+        <section className="relative mx-auto mt-8 w-full max-w-xl sm:max-w-2xl">
+          <div className="border-gradient-club glass-premium overflow-hidden rounded-3xl p-4 sm:p-6 md:p-7">
+            <h2 className="mb-4 text-center text-[10px] font-semibold uppercase tracking-[0.25em] text-white/55 sm:text-[11px]">
+              Postava — {activeClub?.name}
+            </h2>
+            <ResponsiveFormationPitch
+              slots={activeSlots}
+              premium
+              enlarged
+              compact
+              crestFallback={activeClub}
+            />
+          </div>
         </section>
       )}
 
-      <section className="mx-auto mt-8 w-full max-w-3xl flex-1">
-        <h2 className="mb-4 text-center text-xs font-semibold uppercase tracking-[0.2em] text-amber-300/80">
+      <section className="relative mx-auto mt-8 w-full max-w-3xl flex-1">
+        <h2 className="mb-4 text-center text-[10px] font-semibold uppercase tracking-[0.25em] text-amber-300/80">
           Naši partneri
         </h2>
         {sponsorsLoading ? (
@@ -115,22 +129,22 @@ export function LivePreMatchShell({ match }: Props) {
         )}
       </section>
 
-      <div className="mx-auto mt-8 flex flex-wrap justify-center gap-3">
+      <div className="relative mx-auto mt-8 flex flex-wrap justify-center gap-3">
         {showTicketsCta && (
           <Link
             to={`/ulaznice?matchId=${match.id}`}
-            className="rounded-full bg-primary px-5 py-2 text-sm font-semibold text-white hover:bg-primary/90"
+            className="rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-white hover:bg-primary/90"
           >
             Kupi ulaznice
           </Link>
         )}
         <Link
           to={`/utakmice/${match.id}`}
-          className="rounded-full bg-white/10 px-5 py-2 text-sm hover:bg-white/20"
+          className="rounded-full bg-white/10 px-5 py-2.5 text-sm hover:bg-white/20"
         >
           Detalji utakmice
         </Link>
-        <Link to="/liga" className="rounded-full bg-white/10 px-5 py-2 text-sm hover:bg-white/20">
+        <Link to="/liga" className="rounded-full bg-white/10 px-5 py-2.5 text-sm hover:bg-white/20">
           Liga
         </Link>
       </div>

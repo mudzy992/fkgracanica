@@ -4,19 +4,19 @@ import { useAuth } from '../../lib/auth';
 import { hasPermission } from '../../lib/permissions';
 import { formatDateTime } from '../../lib/utils';
 import { matchShareDescription, matchShareImage, matchShareTitle } from '../../lib/match-seo';
-import { matchEventLabel } from '../../lib/match-event-labels';
+import { matchStatusLabel } from '../../lib/match-status-label';
 import { MatchScoreHero } from '../../components/match/MatchScoreHero';
+import { MatchCenterToolbar } from '../../components/match/MatchCenterToolbar';
+import { MatchEventsSection } from '../../components/match/MatchEventsSection';
 import { PageContainer } from '../../components/public/PageContainer';
-import { PremiumCard } from '../../components/public/shell/PremiumCard';
 import { Seo } from '../../components/seo/Seo';
-import { PlayerLink } from '../../components/public/players/PlayerLink';
 import { VideoEmbed } from '../../components/public/VideoEmbed';
 import { MatchReportApproval } from '../../components/match/MatchReportApproval';
 import { MatchLineupSection, MatchRelatedNewsSection } from '../../components/match/MatchCenterSections';
 import { MatchStatisticsSection } from '../../components/match/MatchStatisticsSection';
-import { Badge } from '../../components/ui/badge';
 import { Skeleton } from '../../components/ui/skeleton';
-import { Button } from '../../components/ui/button';
+import { NewsSectionTitle } from '../../components/news/NewsSectionTitle';
+import { Reveal } from '../../lib/motion/Reveal';
 
 export function MatchCenterPage() {
   const { id } = useParams<{ id: string }>();
@@ -28,16 +28,34 @@ export function MatchCenterPage() {
   const canApprove = hasPermission(user?.permissions, 'live.approve');
   const canCommentate = hasPermission(user?.permissions, 'live.manage');
 
-  if (isLoading) return <Skeleton className="mx-auto mt-12 h-96 max-w-3xl" />;
+  if (isLoading) {
+    return (
+      <div className="mx-auto max-w-3xl space-y-4 px-4 py-12">
+        <Skeleton className="h-10 w-40 rounded-full" />
+        <Skeleton className="h-56 rounded-3xl sm:h-64" />
+        <Skeleton className="h-32 rounded-2xl" />
+      </div>
+    );
+  }
+
   if (isError || !data) {
-    return <p className="p-12 text-center text-text-muted">Utakmica nije pronađena.</p>;
+    return (
+      <div className="flex flex-col items-center gap-3 p-12 text-center">
+        <p className="text-text-muted">Utakmica nije pronađena.</p>
+        <Link to="/liga" className="text-sm text-primary hover:underline">
+          Natrag na ligu
+        </Link>
+      </div>
+    );
   }
 
   const isLive = data.status === 'LIVE' || data.status === 'HALFTIME';
+  const meta =
+    formatDateTime(data.scheduledAt) + (data.venue ? ` · ${data.venue}` : '');
 
   return (
-    <div className="pb-16">
-      <PageContainer size="md" className="py-10 sm:py-12">
+    <div className="pb-16 sm:pb-20">
+      <PageContainer size="md" className="py-8 sm:py-10 md:py-12">
         <Seo
           title={matchShareTitle(data)}
           description={matchShareDescription(data)}
@@ -46,63 +64,55 @@ export function MatchCenterPage() {
           type="article"
         />
         {canApprove && <MatchReportApproval matchId={data.id} reportStatus={data.reportStatus} />}
-        {canCommentate && data.status === 'FINISHED' && (data.reportStatus === 'DRAFT' || data.reportStatus === 'PENDING_APPROVAL' || !data.reportStatus) && (
-          <div className="mb-4 rounded-lg border border-primary/30 bg-primary/5 px-4 py-3 text-sm">
-            <span className="text-text-muted">Izvještaj utakmice — </span>
-            <Link to={`/admin/matches/${data.id}/report`} className="font-medium text-primary hover:underline">
-              {data.reportStatus === 'PENDING_APPROVAL' ? 'Uredi izvještaj' : 'Kreiraj / uredi izvještaj'}
-            </Link>
-          </div>
-        )}
-        <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
-          <Badge variant={isLive ? 'danger' : 'muted'}>{data.status}</Badge>
-          <div className="flex flex-wrap gap-2">
-            <Link to={`/live/${data.id}`}>
-              <Button size="sm" variant={isLive ? 'default' : 'outline'}>
-                {isLive ? 'Live centar' : 'Live prikaz'}
-              </Button>
-            </Link>
-            {canCommentate && (
-              <Link to={`/admin/live/${data.id}`}>
-                <Button size="sm" variant="outline">Komentator</Button>
+        {canCommentate &&
+          data.status === 'FINISHED' &&
+          (data.reportStatus === 'DRAFT' ||
+            data.reportStatus === 'PENDING_APPROVAL' ||
+            !data.reportStatus) && (
+            <div className="mb-4 rounded-2xl border border-primary/30 bg-primary/5 px-4 py-3 text-sm">
+              <span className="text-text-muted">Izvještaj utakmice — </span>
+              <Link
+                to={`/admin/matches/${data.id}/report`}
+                className="font-medium text-primary hover:underline"
+              >
+                {data.reportStatus === 'PENDING_APPROVAL'
+                  ? 'Uredi izvještaj'
+                  : 'Kreiraj / uredi izvještaj'}
               </Link>
-            )}
-          </div>
-        </div>
+            </div>
+          )}
+
+        <MatchCenterToolbar
+          matchId={data.id}
+          status={data.status}
+          isLive={isLive}
+          canCommentate={canCommentate}
+        />
+
         <MatchScoreHero
           homeClub={data.homeClub}
           awayClub={data.awayClub}
           homeScore={data.homeScore}
           awayScore={data.awayScore}
-          meta={formatDateTime(data.scheduledAt) + (data.venue ? ` · ${data.venue}` : '')}
+          meta={meta}
           live={isLive}
+          statusLabel={matchStatusLabel(data.status)}
         />
+
         {data.youtubeUrl && (
-          <div className="mt-8">
-            <VideoEmbed url={data.youtubeUrl} title="Snimak utakmice" />
-          </div>
-        )}
-        <MatchLineupSection match={data} />
-        <MatchStatisticsSection match={data} stats={matchStats} loading={msl} />
-        {data.events && data.events.length > 0 && (
-          <section className="mt-8">
-            <h2 className="font-display mb-4 text-xl font-semibold">Događaji</h2>
-            <div className="space-y-2">
-              {data.events.map((ev) => (
-                <PremiumCard key={ev.id} className="p-3 text-sm" hover={false}>
-                  <span className="font-bold text-primary">{ev.minute}&apos;</span>{' '}
-                  {matchEventLabel(ev.type)}
-                  {ev.player && (
-                    <>
-                      {' — '}
-                      <PlayerLink id={ev.player.id} name={`${ev.player.firstName} ${ev.player.lastName}`} />
-                    </>
-                  )}
-                </PremiumCard>
-              ))}
+          <section className="mt-10 sm:mt-12">
+            <Reveal>
+              <NewsSectionTitle>Snimak</NewsSectionTitle>
+            </Reveal>
+            <div className="mt-2 overflow-hidden rounded-2xl border border-white/10">
+              <VideoEmbed url={data.youtubeUrl} title="Snimak utakmice" />
             </div>
           </section>
         )}
+
+        <MatchLineupSection match={data} />
+        <MatchStatisticsSection match={data} stats={matchStats} loading={msl} />
+        <MatchEventsSection events={data.events ?? []} />
         <MatchRelatedNewsSection items={relatedNews} loading={rnl} />
       </PageContainer>
     </div>

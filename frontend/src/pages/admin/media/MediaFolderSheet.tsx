@@ -37,7 +37,7 @@ export function MediaFolderSheet({
   return (
     <Sheet open={open} onOpenChange={onOpenChange} side="left">
       <SheetHeader onClose={() => onOpenChange(false)}>Mape medija</SheetHeader>
-      <SheetContent className="p-0">
+      <SheetContent className="min-h-0 flex-1 p-0">
         <MediaFolderTree
           folders={folders}
           selectedId={selectedId}

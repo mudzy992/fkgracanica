@@ -1,9 +1,9 @@
 # HANDOFF — Web Complete
 
-> **Datum:** 2026-06-30 (ažurirano)  
-> **Sesija završila na:** `/liga`, `/klub/:slug`, **SeasonClub** (učesnici sezone) — kod ✅  
-> **Sljedeći fokus:** **Poliranje `/sponzori` + `/trofeji`** → preostale javne → gate review (#14, #21)  
-> **Git:** veliki **uncommitted** diff — **commit preporučen** prije sljedeće sesije
+> **Datum:** 2026-07-08  
+> **Sesija završila na:** `/kontakt` cinematic ✅ · Match center (`/utakmice/:id`) maximal polish ✅ · Live shell polish ✅  
+> **Sljedeći fokus:** Gate smoke (#14, #21) + SeasonClub smoke (sekcija 4) — **statuse NE mijenjati bez korisnika**  
+> **Git:** working tree **dirty** (ova sesija — uncommitted); prethodni clean: `60d1e5e` / `fbd337a`
 
 ---
 
@@ -13,8 +13,8 @@
 |--------|----------|---------------|
 | **APPROVED** | **#1–13, #15–#20** | Ne dirati osim regresije |
 | **READY_FOR_REVIEW** | **#14**, **#21** | Ne prebacivati u APPROVED dok korisnik ne potvrdi |
-| **REVIEW (kod)** | **SeasonClub + standings** | Smoke u sekciji 4 — ne mijenjati logiku bez potrebe |
-| **Sljedeći red (kod)** | `/sponzori`, `/trofeji` | Zatim `/kontakt`, match center, … |
+| **REVIEW (kod)** | **SeasonClub + standings** | Smoke sekcija 4 — logiku ne dirati bez potrebe |
+| **Ova sesija** | `/kontakt`, match center, live UI | Polish done — gate status nepromijenjen |
 | **Frozen** | #14 | Samo regresija dok nije APPROVED |
 
 ---
@@ -25,7 +25,7 @@
 |---|-------|--------|
 | 1–13 | Vijesti → Članstvo | **APPROVED** |
 | **14** | Ulaznice | **READY_FOR_REVIEW** |
-| 15–19 | Kontakt → Korisnici + Role | **APPROVED** |
+| 15–19 | Kontakt → Korisnici + Role | **APPROVED** (#15 funkcionalno; UI polish ova sesija) |
 | **20** | Postavke | **APPROVED** |
 | **21** | Dashboard / Audit / Notifikacije | **READY_FOR_REVIEW** |
 
@@ -33,131 +33,115 @@ Log: [GATE_LOG.md](./GATE_LOG.md)
 
 ---
 
-## 2. Uradio po segmentima (kumulativno)
+## 2. Uradio po segmentima (ova sesija = Segment I)
 
-### Segment A — Admin moduli (#1–#21)
+### Segment I — `/kontakt` + match center + live (maximal polish) ✅
 
-| # | Oblast | Status | Napomena |
-|---|--------|--------|----------|
-| 1–13 | Vijesti … Članstvo | APPROVED | — |
-| 14 | Ulaznice | READY_FOR_REVIEW | Frozen |
-| 15–19 | Kontakt … Korisnici+Role | APPROVED | — |
-| 20 | Postavke | APPROVED | Moduli, guard, sidebar hubovi |
-| 21 | Dashboard / Audit / Notif. | READY_FOR_REVIEW | KPI, audit RBAC, bell/sheet |
+#### `/kontakt`
 
-### Segment B — Dark-only + tokeni (naslovna)
+| Fajl | Uloga |
+|------|-------|
+| `ContactCinematicHero.tsx` | Gradient hero + KPI chipovi (Email/Tel/Adresa ako postoje u settings) |
+| `ContactInfoAside.tsx` | Glass tileovi + mailto/tel linkovi + `NewsSectionTitle` |
+| `ContactFormPanel.tsx` | Forma (labeli, validacija BS, success stanje) |
+| `ContactPage.tsx` | Orchestracija; prefill auth user; bez starog `PageHeroHeader`/`FormShell` |
 
-| Šta | Fajlovi |
-|-----|---------|
-| Forsiran `dark` | `theme.tsx`, `index.html`, `index.css` |
-| Premium paleta + glass | `index.css`, `premium-landing.css` |
-| Hero 100dvh + HeroMatchDock | `HeroWidget.tsx`, `hero/HeroMatchDock.tsx` |
-| CMS widgeti redesign | news, gallery, players, league table, trophies, club-actions |
+#### Match center `/utakmice/:id`
 
-Referenca: `.cursor/reference/fkt-newdesign/` (gitignored)
+| Fajl | Uloga |
+|------|-------|
+| `MatchScoreHero.tsx` | Cinematic scoreboard (full-bleed gradient, motion, live pulse) |
+| `MatchCenterToolbar.tsx` | Status badge (BS labeli) + Live / Komentator CTA |
+| `MatchEventsSection.tsx` | Glass timeline događaja |
+| `MatchCenterSections.tsx` | Postave + vijesti → `NewsSectionTitle` + glass |
+| `MatchStatisticsSection.tsx` | Glass statistika + Reveal |
+| `MatchPlayerStatsTable.tsx` | Glass tabela |
+| `MatchCenterPage.tsx` | Sastavljeno; skeleton loading; Snimak sekcija |
+| `match-status-label.ts` | BS labeli + tone (LIVE/Pauza/Završena…) |
+| `badge.tsx` | Dodan `warning` variant (HALFTIME) |
 
-### Segment C — Javne stranice polish (ranije) ✅
+#### Live `/live/:id`
 
-| Stranica | Ključni fajlovi |
-|----------|-----------------|
-| `/vijesti` + detalj | `NewsListPage`, `NewsDetailPage`, `components/news/*` |
-| `/galerija` + detalj | `GalleryListPage`, `GalleryDetailPage`, `components/gallery/*` |
-| `/tim` + `/igrac/:id` | `FirstTeamPage`, `TeamCinematicHero`, `PlayerPortraitCard`, … |
-| Forma | `standings.util.ts`, `FormResultChips.tsx` |
+| Fajl | Uloga |
+|------|-------|
+| `LiveCenterShell.tsx` | Radial glow, rounded-3xl score, pulse live badge |
+| `LivePreMatchShell.tsx` | Glass countdown kartica, usklađen tipografski ritam |
+| `LiveMatchPage.tsx` | „Nije uživo“ finished state sa crest + score card |
 
-**Reuse:** `PremiumPhotoBento`, `NewsSectionTitle`, `FormResultChips`
+### Raniji segmenti (ne dirati)
 
-**Skip:** `/o-klubu` (timeline) — korisnik zadovoljan
-
-### Segment D — Javne stranice polish (ova sesija) ✅
-
-| Stranica | Šta je urađeno |
-|----------|----------------|
-| **`/liga`** | `LeagueCinematicHero`, KPI, filteri (sezona/kolo), tabela + ± pozicija, rezultati po kolima (tabela), strijelci; layout **jedno ispod drugog** |
-| **`/klub/:slug`** | `ClubCinematicHero`, `ClubInfoSection`, reuse `TeamFormationSection` / `TeamSpotlight` / `TeamRosterSections` / `TeamSeasonStats`, premium competition tabovi |
-| **SeasonClub (BE+admin)** | Učesnici sezone → tabela prikazuje klubove **bez odigranih utakmica** (0 bodova) |
-
-### Segment E — SeasonClub + standings (**REVIEW** → sekcija 4)
-
-| Sloj | Promjena |
-|------|----------|
-| **Prisma** | `SeasonClub` (`seasonId` + `clubId`), migracija `20260630140000_season_clubs` |
-| **BE** | `createSeason` / `updateSeason` + `clubIds[]`; standings iz učesnika sezone |
-| **Admin** | `SeasonClubPicker` u formi sezone; kolona „Učesnici“ |
-| **Seed** | Demo sezona dobija FK Gračanica + FK Slavija |
+A–H: Segment A–H iz prethodnog HANDOFF-a (admin, public liga/klub, SEO OG, mediji, sponzori/trofeji, SeasonClub…) — **intaktno**.
 
 ---
 
 ## 3. Šta je sljedeće (redoslijed)
 
 ```
-1. AGENT: Poliranje /sponzori + /trofeji (premium dark, kao Tim/Vijesti/Liga)
-   - Referenca: CMS widgeti na naslovnoj (SponsorsWidget, TrophiesWidget)
-   - Cinematic hero umjesto PageHeroHeader gdje ima smisla
-   - NewsSectionTitle, glass-premium, border-gradient-club
+1. TI: Smoke visual
+   - /kontakt — hero, aside tiles, forma (logged-in prefill)
+   - /utakmice/:id — score hero, sekcije, Live CTA
+   - /live/:id — prematch / live / finished shell
 
-2. AGENT (opciono): /kontakt, /utakmice/:id, /live, muzej, HOF
+2. TI: Smoke REVIEW — SeasonClub (sekcija 4) ako još nije
 
-3. TI: Smoke REVIEW — SeasonClub + /liga + /klub (sekcija 4)
-
-4. TI + AGENT: Gate review
-   - #14 Ulaznice — smoke → APPROVED
-   - #21 Dashboard/Audit/Notifikacije — smoke → APPROVED
+3. TI + AGENT: Gate review (bez auto-approve)
+   - #14 Ulaznice → APPROVED kad potvrdiš
+   - #21 Dashboard/Audit/Notif. → APPROVED kad potvrdiš
    - #20 Postavke — brza regresija
 
-5. Commit + deploy
-   cd backend && npx prisma migrate deploy
-   docker compose build frontend backend && docker compose up -d
+4. (Opciono) Muzej, HOF polish
+
+5. Commit + deploy ako lokal ≠ prod:
+   docker compose build frontend && docker compose up -d frontend
 ```
 
 ### Javne stranice — status polish-a
 
 | Stranica | Status |
 |----------|--------|
-| Naslovna (CMS) | ✅ Premium |
-| `/vijesti` + detalj | ✅ |
+| Naslovna (CMS) | ✅ Premium + SEO home = club.name |
+| `/vijesti` + detalj | ✅ + OG |
 | `/galerija` + detalj | ✅ |
 | `/tim` + `/igrac/:id` | ✅ |
-| `/liga` | ✅ |
+| `/liga` | ✅ + crest u tabeli |
 | `/klub/:slug` | ✅ |
-| **`/sponzori`** | **⏭ Sljedeće** |
-| **`/trofeji`** | **⏭ Sljedeće** |
-| `/kontakt` | Čeka |
+| `/sponzori` | ✅ |
+| `/trofeji` | ✅ |
+| `/kontakt` | ✅ **Cinematic** (ova sesija) |
+| `/utakmice/:id` | ✅ **Cinematic match center** (ova sesija) |
+| `/live/:id` | ✅ **Shell polish** (ova sesija); SEO već ok |
 | `/o-klubu` | Skip |
 | `/ulaznice`, `/clanstvo` | #14 — samo regresija |
-| `/utakmice/:id`, `/live` | Čeka |
 | Muzej, HOF | Čeka |
 
 ---
 
 ## 4. Smoke checkliste
 
-### REVIEW — SeasonClub + standings (obavezno prije commita)
+### Ova sesija — Kontakt / Match / Live
 
-- [ ] **Migracija:** `npx prisma migrate deploy` (tabela `SeasonClub`)
-- [ ] **Admin → Takmičenja → Uredi aktivnu sezonu** — čekirani svi klubovi lige (ukl. novododani)
-- [ ] **`/liga`** — svi učesnici u tabeli (0 bodova ako nema utakmica)
-- [ ] **`/liga`** — promjena sezone/kola, rezultati po kolima, strijelci
-- [ ] **Nova sezona** — min. 1 učesnik; „Svi“ / „Očisti“ radi
-- [ ] **Drugo takmičenje** — učesnici sezone A ≠ sezone B (izolacija)
+- [ ] `/kontakt` — hero + tileovi iz settings; forma submit; auth prefill
+- [ ] `/utakmice/:id` — cinematic score; BS status badge; sekcije glass
+- [ ] `/live/:id` — SCHEDULED countdown; LIVE timeline; FINISHED card
+- [ ] Mobile 375px — bez horizontal overflow (kontakt split → stack)
 
-### REVIEW — Javne polish (ova sesija)
+### REVIEW — SeasonClub + standings
 
-- [ ] `/liga` — tabela + rezultati vertikalno, čitljivo na 375/768/1280
-- [ ] `/klub/:slug` — hero, stadion, formacija, kadar, takmičenje tab
-- [ ] `/tim` — forma chipovi, tooltip (regresija)
+- [ ] Migracija `SeasonClub` applied
+- [ ] Admin → Uredi sezonu → checkboxi **rade**
+- [ ] `/liga` — učesnici + **grbovi** pored imena
+- [ ] Promjena sezone/kola, rezultati, strijelci
 
-### #21 Dashboard / Audit / Notifikacije
-- [ ] `/admin` — KPI kartice
-- [ ] `/admin/audit` — filteri; writer → redirect
-- [ ] `/admin/notifications` + bell
-- [ ] Postavke save → audit + notifikacija
+### SEO / OG (produkcija)
 
-### #14 Ulaznice (frozen)
-- [ ] Javna `/ulaznice`, Moj račun, Stripe — bez regresije
+- [ ] `seo/share?path=/` → title = FK Gračanica
+- [ ] WhatsApp UA curl na `/`, `/vijesti/:slug`, `/utakmice/:id`
 
-### #20 Postavke (regresija)
-- [ ] Modul guard, scope tabovi, sidebar hubovi
+### #21 / #14 / #20
+
+- [ ] Dashboard KPI linkovi; audit; bell
+- [ ] Ulaznice regresija
+- [ ] Postavke moduli
 
 ---
 
@@ -165,22 +149,20 @@ Referenca: `.cursor/reference/fkt-newdesign/` (gitignored)
 
 | Tema | Status |
 |------|--------|
-| `/sponzori` + `/trofeji` polish | **Sljedeća sesija** |
-| Realtime `settings:changed` na public layoutu | BE emit ✅, FE listener nema |
-| `smtp.port` / `upload.maxSizeMb` kao number | Još text |
-| Match validacija: samo učesnici sezone | Nije implementirano (opciono) |
+| `/kontakt` UI polish | ✅ Done |
+| Match center / live UI polish | ✅ Done |
+| Realtime `settings:changed` FE listener | Još nema |
+| `smtp.port` / `upload.maxSizeMb` number inputs | Još text |
+| Match validacija: samo SeasonClub učesnici | Opciono |
+| Muzej / HOF polish | Opciono |
 
 ---
 
 ## 6. Build / deploy
 
 ```bash
-cd frontend && npm run build   # ✅
-cd backend && npm run build    # ✅
-cd backend && npm test -- standings.util.spec.ts  # ✅
-cd backend && npx prisma migrate deploy
-
-docker compose build frontend backend && docker compose up -d
+cd frontend && npm run build
+# opcioni: docker compose build frontend && docker compose up -d frontend
 ```
 
 ---
@@ -189,39 +171,28 @@ docker compose build frontend backend && docker compose up -d
 
 | Oblast | Putanja |
 |--------|---------|
-| Liga | `pages/public/LeaguePage.tsx`, `components/public/league/*` |
-| Klub | `pages/public/ClubPublicPage.tsx`, `ClubCinematicHero`, `ClubInfoSection` |
-| SeasonClub | `prisma/schema.prisma` (`SeasonClub`), `competitions/season-participants.util.ts` |
-| Standings | `statistics/standings.util.ts`, `statistics.service.ts` |
-| Admin sezona | `SeasonClubPicker.tsx`, `CompetitionsAdminFormSheet.tsx` |
-| **Sponzori (sljedeće)** | `pages/public/SponsorsPage.tsx`, `SponsorsTierSection`, `SponsorLogoTile`, `SponsorsWidget` |
-| **Trofeji (sljedeće)** | `pages/public/TrophiesPage.tsx`, `TrophyCard`, `TrophyFeaturedShowcase`, `TrophiesWidget` |
+| Kontakt | `components/public/contact/*`, `pages/public/ContactPage.tsx` |
+| Match center | `components/match/MatchScoreHero`, `MatchCenterToolbar`, `MatchEventsSection`, `MatchCenterSections`, `MatchStatisticsSection`, `MatchPlayerStatsTable`, `pages/public/MatchCenterPage` |
+| Status helper | `lib/match-status-label.ts`, `ui/badge.tsx` (`warning`) |
+| Live | `LiveCenterShell`, `LivePreMatchShell`, `LiveMatchPage` |
 
 ---
 
-## 8. Uncommitted diff
+## 8. Git stanje
 
-Glavne oblasti:
-
-- Javne: vijesti, galerija, tim, igrač, **liga, klub**
-- **SeasonClub** + standings fix
-- Premium landing + CMS widgeti
-- Admin #16–#21 (ranije)
-
-```bash
-git status && git diff --stat
-```
+- Branch: `main`
+- Working tree: **dirty** (kontakt + match + live polish) — commit na zahtjev
+- Prethodni: `fbd337a` Do seo · `60d1e5e` Poliranje odrađeno
 
 ---
 
-## 9. Poznati blockeri
+## 9. Poznati blockeri / pitfalli
 
 | Problem | Rješenje |
 |---------|----------|
-| Klub nije u ligaškoj tabeli | Admin → Uredi sezonu → čekiraj učesnika |
-| Admin login 401 | `ADMIN_PASSWORD` u `.env` ≠ hash u DB |
-| Forma tooltip prazan | Restart backend (`formMatches`) |
-| FE/BE module defs sync | Oba `module-definitions.ts` |
+| WhatsApp preview „Početna“ | Redeploy backend; `?v=` za cache |
+| Checkboxi sezone | Fix already — ne vraćati nestabilne deps |
+| Gate #14/#21 | NE upgrade bez eksplicitne potvrde |
 
 ---
 
@@ -231,23 +202,18 @@ git status && git diff --stat
 Nastavi iz HANDOFF-a:
 @.cursor/plans/fk-gracanica/21_web-complete/HANDOFF.md
 
-Fokus: poliranje /sponzori i /trofeji (premium dark, kao Tim/Vijesti/Liga).
+Fokus (po redu):
+1) Gate smoke: #14 Ulaznice, #21 Dashboard/Audit/Notif. — NE mijenjaj status bez moje potvrde
+2) SeasonClub smoke (sekcija 4) ako još nije checked
+3) Opciono: Muzej / HOF polish
+4) Commit + deploy frontend (dirty tree iz kontakt/match polish)
+
+Već gotovo (ne diraj bez potrebe):
+- /kontakt cinematic (ContactCinematicHero + FormPanel + InfoAside)
+- /utakmice/:id MatchScoreHero cinematic + sekcije glass
+- /live shell polish (prematch / center / finished)
+- /sponzori, /trofeji, SEO OG, SeasonClub, medije, formatDate
 
 Gate: #1–#13, #15–#20 APPROVED — samo regresija.
-#14 i #21 READY_FOR_REVIEW — ne mijenjaj status bez moje potvrde.
-
-REVIEW (ne preskači): SeasonClub smoke (sekcija 4) ako još nije odrađen.
-
-── Postojeće (referenca) ──
-/sponzori:
-- SponsorsPage.tsx — PageHeroHeader, SponsorsTierSection po tieru (GENERAL hero)
-- SponsorLogoTile, SponsorsMarquee, sponsor-tiers.ts
-- CMS: SponsorsWidget na naslovnoj
-
-/trofeji:
-- TrophiesPage.tsx — PageHeroHeader, TrophyFeaturedShowcase + TrophyCard grid
-- splitFeaturedTrophy (trophy-utils.ts)
-- CMS: TrophiesWidget na naslovnoj
-
-Cilj: cinematic hero, NewsSectionTitle, glass-premium, uskladiti s TrophiesWidget/SponsorsWidget jezikom.
+#14 i #21 READY_FOR_REVIEW.
 ```

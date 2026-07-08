@@ -1,4 +1,5 @@
 import { mapPitchPosition } from '../../../lib/pitch-coords';
+import type { Club } from '../../../types';
 import type { ClubSquadSlot } from '../../../types/club-hub';
 import { cn } from '../../../lib/utils';
 import { PitchMarkings } from './PitchMarkings';
@@ -10,9 +11,23 @@ interface Props {
   onSlotClick?: (slot: ClubSquadSlot) => void;
   editable?: boolean;
   premium?: boolean;
+  crestFallback?: Pick<Club, 'name' | 'crestPath' | 'logoPath'> | null;
+  /** ~12–15% veći teren (live) — ne dira tokene. */
+  enlarged?: boolean;
+  /** Manji avatar/ime (live). */
+  compact?: boolean;
 }
 
-export function FormationPitch({ slots, horizontal = true, onSlotClick, editable, premium }: Props) {
+export function FormationPitch({
+  slots,
+  horizontal = true,
+  onSlotClick,
+  editable,
+  premium,
+  crestFallback,
+  enlarged,
+  compact,
+}: Props) {
   const starters = slots.filter((s) => !s.isBench);
   return (
     <div
@@ -21,7 +36,9 @@ export function FormationPitch({ slots, horizontal = true, onSlotClick, editable
         premium
           ? 'border border-primary/20 bg-gradient-to-b from-emerald-900/95 via-emerald-800/85 to-emerald-950 shadow-[0_0_48px_rgba(0,102,255,0.12)]'
           : 'border border-slate-200 bg-green-700',
-        horizontal ? 'aspect-[16/9] w-full' : 'aspect-[3/4] max-w-md mx-auto',
+        horizontal
+          ? 'aspect-[16/9] w-full'
+          : cn('aspect-[3/4] w-full mx-auto', enlarged ? 'max-w-lg' : 'max-w-md'),
       )}
     >
       <PitchMarkings horizontal={horizontal} />
@@ -37,6 +54,8 @@ export function FormationPitch({ slots, horizontal = true, onSlotClick, editable
               slot={slot}
               vertical={!horizontal}
               editable={editable}
+              crestFallback={crestFallback}
+              compact={compact}
               onClick={onSlotClick ? () => onSlotClick(slot) : undefined}
             />
           </div>

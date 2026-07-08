@@ -14,7 +14,8 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { GripVertical, Lock } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { AlertTriangle, GripVertical, Lock } from 'lucide-react';
 import { Badge } from '../../../components/ui/badge';
 import { Button } from '../../../components/ui/button';
 import { Input } from '../../../components/ui/input';
@@ -22,26 +23,31 @@ import { Switch } from '../../../components/ui/switch';
 import type { CmsPage } from '../../../cms/types';
 import { cn } from '../../../lib/utils';
 import type { MenuDraftItem } from './menu-utils';
+import { blockedModuleForItem } from './menu-module-warnings';
 
 interface Props {
   items: MenuDraftItem[];
   pages: CmsPage[];
   onChange: (items: MenuDraftItem[]) => void;
+  moduleFlags?: Record<string, string>;
 }
 
 function SortableMenuRow({
   item,
   index,
   pages,
+  moduleFlags,
   onPatch,
   onRemove,
 }: {
   item: MenuDraftItem;
   index: number;
   pages: CmsPage[];
+  moduleFlags?: Record<string, string>;
   onPatch: (patch: Partial<MenuDraftItem>) => void;
   onRemove: () => void;
 }) {
+  const blocked = blockedModuleForItem(item, moduleFlags);
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: item.id ?? `new-${index}`,
   });
@@ -52,7 +58,11 @@ function SortableMenuRow({
       style={{ transform: CSS.Transform.toString(transform), transition }}
       className={cn(
         'rounded-lg border p-3',
-        item.isSystem ? 'border-primary/20 bg-primary/5' : 'border-slate-200 bg-background',
+        blocked
+          ? 'border-amber-500/40 bg-amber-500/5'
+          : item.isSystem
+            ? 'border-primary/20 bg-primary/5'
+            : 'border-slate-200 bg-background',
         !item.enabled && 'opacity-50',
         isDragging && 'shadow-md',
       )}
@@ -68,11 +78,27 @@ function SortableMenuRow({
         ) : (
           <Badge variant="muted">Prilagođena</Badge>
         )}
+        {blocked && (
+          <Badge variant="warning" className="gap-1">
+            <AlertTriangle className="h-3 w-3" /> Modul off
+          </Badge>
+        )}
         <label className="ml-auto flex items-center gap-2 text-xs">
           <span>Aktivno</span>
           <Switch checked={item.enabled} onCheckedChange={(v) => onPatch({ enabled: v })} />
         </label>
       </div>
+      {blocked && (
+        <p className="mb-2 flex items-start gap-1.5 text-xs text-amber-800">
+          <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" aria-hidden />
+          <span>
+            Neće se prikazati dok je modul „{blocked.moduleLabel}” isključen.{' '}
+            <Link to="/admin/settings" className="font-semibold underline underline-offset-2">
+              Otvori postavke
+            </Link>
+          </span>
+        </p>
+      )}
       {item.isSystem ? (
         <div className="space-y-1 text-sm">
           <p className="font-medium">{item.label}</p>
@@ -110,7 +136,7 @@ function SortableMenuRow({
   );
 }
 
-export function CmsMenuSortableList({ items, pages, onChange }: Props) {
+export function CmsMenuSortableList({ items, pages, onChange, moduleFlags }: Props) {
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 6 } }),
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
@@ -144,6 +170,7 @@ export function CmsMenuSortableList({ items, pages, onChange }: Props) {
               item={item}
               index={i}
               pages={pages}
+              moduleFlags={moduleFlags}
               onPatch={(patch) => patchAt(i, patch)}
               onRemove={() => onChange(items.filter((_, idx) => idx !== i))}
             />

@@ -1,5 +1,34 @@
 # Changelog — Web Complete
 
+## 2026-07-08 (d) — Live prematch pitch = club premium + crest fallback
+
+- `/live` prematch: `ResponsiveFormationPitch premium` u `border-gradient-club glass-premium` (kao Club/Team)
+- Token bez fotke na live skici: `crestFallback` → grb kluba (samo kad se prop proslijedi)
+- Gate: `/kontakt` + `/utakmice/:id` APPROVED; `/live` partial (pitch fix)
+
+## 2026-07-08 (c) — CMS meni UX: modul-off warning
+
+- Uzrok: Kontakt u CMS meniju `enabled`, ali `modules.contact=false` → javni nav filter ga sklanja
+- Admin CMS meni: `menu-module-warnings.ts`; amber banner u preview; per-row „Modul off” + link na Postavke
+- Hint u editoru da javna navigacija skriva stavke čiji je modul isključen
+
+## 2026-07-08 (b) — /kontakt + match center + live maximal polish
+
+- `/kontakt`: `ContactCinematicHero`, `ContactInfoAside` (glass mailto/tel), `ContactFormPanel`; page bez `PageHeroHeader`/`FormShell`
+- `/utakmice/:id`: cinematic `MatchScoreHero`; `MatchCenterToolbar` (BS status); glass postave/statistika/događaji/vijesti; `match-status-label.ts`; badge `warning`
+- `/live`: polish `LiveCenterShell`, `LivePreMatchShell`, finished card na `LiveMatchPage`
+- Gate status **nepromijenjen** (#14/#21 READY_FOR_REVIEW)
+- **Uncommitted** — čeka commit na zahtjev
+
+## 2026-07-08 — sponzori/trofeji, mediji/galerije, SEO OG server, crest+SeasonClub fix
+
+- `/sponzori`, `/trofeji`: cinematic hero, glass, NewsSectionTitle; usklađeno s CMS widgetima
+- SeasonClub: checkbox picker fix (stable deps); standings `crestPath` (bez Club.logoPath)
+- Mediji: upload samo u mapu; debounce search; Galerija multi-select + Dodaj mapu
+- Datumi: `DD.MM.YYYY`; dashboard KPI linkovi + `adminLinkClass`
+- SEO: `og-server.mjs` crawler injekcija; `GET /seo/share`; naslovna title = `club.name` (ne CMS „Početna“)
+- Git: committed/pushed (`fbd337a`, `60d1e5e`); HANDOFF ažuriran
+
 ## 2026-06-29 (c) — payments polish, Moj račun ulaznice, multi-provider
 
 - Gate #14 Ulaznice → **APPROVED**; #15 Kontakt → READY_FOR_REVIEW (prefill, mailto, matrix)
