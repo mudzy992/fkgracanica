@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { mediaUrl } from '../../lib/media';
+import { galleryPreviewUrl, mediaUrl } from '../../lib/media';
 import { Lightbox } from './Lightbox';
 
 export interface PhotoItem {
@@ -33,7 +33,7 @@ export function PhotoGridWithLightbox({ photos, columns = 'two' }: Props) {
               onClick={() => setLightboxIndex(index)}
             >
               <img
-                src={mediaUrl(photo.path, 'medium') ?? mediaUrl(photo.path, 'original')}
+                src={galleryPreviewUrl(photo.path)}
                 alt={photo.caption ?? ''}
                 className="w-full object-cover transition hover:opacity-90"
               />

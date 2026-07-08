@@ -49,6 +49,7 @@
   },
   "admin": {
     "dashboard": "Dashboard",
+    "publicSite": "Public site",
     "settings": "Settings",
     "users": "Users",
     "roles": "Roles",

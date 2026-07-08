@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useGalleryList } from '../../../hooks';
-import { mediaUrl } from '../../../lib/media';
+import { galleryPreviewUrl } from '../../../lib/media';
 import { Card } from '../../../components/ui/card';
 import { SkeletonCard } from '../../../components/ui/skeleton';
 import { Button } from '../../../components/ui/button';
@@ -29,7 +29,7 @@ export function GallerySection() {
                   <Link key={g.id} to={`/galerija/${g.slug}`}>
                     <Card className="overflow-hidden">
                       {cover ? (
-                        <img src={mediaUrl(cover)} alt="" className="aspect-square object-cover" />
+                        <img src={galleryPreviewUrl(cover)} alt="" className="aspect-square object-cover" />
                       ) : (
                         <div className="flex aspect-square items-center justify-center bg-primary/5 text-sm text-text-muted">
                           {g.title}

@@ -46,7 +46,7 @@ export function SeasonHubPage() {
           <SeasonRoundsPanel
             seasonId={seasonId}
             selectedRoundId={selectedRoundId}
-            onSelectRound={(id) => setParams({ roundId: id })}
+            onSelectRound={(id) => (id ? setParams({ roundId: id }) : setParams({}))}
             canManage={canManage}
           />
         </div>

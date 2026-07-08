@@ -29,7 +29,12 @@ export function PageRenderer({ slug, admin }: Props) {
 
   return (
     <>
-      <Seo title={page.seoTitle ?? page.title} description={page.seoDesc ?? undefined} />
+      <Seo
+        title={slug === 'home' ? undefined : (page.seoTitle ?? page.title)}
+        description={slug === 'home' ? undefined : (page.seoDesc ?? undefined)}
+        url={slug === 'home' ? '/' : `/p/${slug}`}
+        type="website"
+      />
       {sections.map((section, index) => (
         <div key={section.id}>
           {index > 0 && section.widgetType !== 'hero' && <SectionDivider />}

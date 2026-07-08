@@ -9,3 +9,13 @@ export function pickNextAndLast(matches: Match[] | undefined) {
     .sort((a, b) => new Date(b.scheduledAt).getTime() - new Date(a.scheduledAt).getTime())[0];
   return { next, last };
 }
+
+export function isHeroMatchDockVisible(
+  matches: Match[] | undefined,
+  showMatches: boolean,
+  showLastResult: boolean,
+): boolean {
+  if (!showMatches) return false;
+  const { next, last } = pickNextAndLast(matches);
+  return !!next || (showLastResult && !!last);
+}

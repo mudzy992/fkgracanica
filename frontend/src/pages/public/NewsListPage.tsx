@@ -53,7 +53,11 @@ export function NewsListPage() {
 
   return (
     <div className="pb-16">
-      <Seo title="Vijesti" />
+      <Seo
+        title="Vijesti"
+        description="Najnovije vijesti, izvještaji sa utakmica i objave FK Gračanica."
+        url="/vijesti"
+      />
       <PageHeroHeader eyebrow="Mediji" title="Vijesti" subtitle="Najnovije vijesti iz kluba i sa terena." />
       <PageContainer className="py-10 sm:py-12">
         <NewsCategoryFilter categories={categories} activeId={categoryId} onChange={setCategoryId} />

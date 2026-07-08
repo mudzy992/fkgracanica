@@ -2,10 +2,13 @@ import { Link } from 'react-router-dom';
 import { ChevronRight } from 'lucide-react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { PublicHeroShell } from '../../components/public/shell/PublicHeroShell';
+import { useMatches } from '../../hooks';
 import { mediaUrl } from '../../lib/media';
 import { defaultTransition, fadeUp, staggerContainer } from '../../lib/motion/presets';
 import { HeroBackground } from './hero/HeroBackground';
 import { HeroMatchDock } from './hero/HeroMatchDock';
+import { HeroMobileCrest } from './hero/HeroMobileCrest';
+import { isHeroMatchDockVisible } from './hero/hero-match-utils';
 import type { WidgetConfigMap } from './schemas';
 
 type Props = { config: WidgetConfigMap['hero'] };
@@ -15,14 +18,21 @@ export function HeroWidget({ config }: Props) {
   const reduce = useReducedMotion();
   const showMatches = config.showMatches !== false;
   const showLast = config.showLastResult !== false;
+  const { data: matches } = useMatches();
+  const matchDockVisible = isHeroMatchDockVisible(matches, showMatches, showLast);
 
   return (
     <PublicHeroShell>
       <section className="relative -mt-16 flex min-h-[100dvh] flex-col overflow-hidden pt-16 text-white">
-        <HeroBackground bgUrl={bgUrl || undefined} />
+        <HeroBackground
+          bgUrl={bgUrl || undefined}
+          backgroundDisplay={config.backgroundDisplay ?? 'all'}
+        />
 
-        <div className="relative z-10 flex min-h-0 flex-1 flex-col">
-          <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col justify-center px-4 py-8 sm:px-6 sm:py-10">
+        <div className="relative z-10 grid min-h-0 flex-1 grid-rows-[minmax(0,1fr)_auto_auto] lg:flex lg:flex-col">
+          <HeroMobileCrest compact={matchDockVisible} />
+
+          <div className="mx-auto w-full max-w-6xl shrink-0 px-4 pb-4 sm:px-6 sm:pb-6 lg:flex lg:min-h-0 lg:flex-1 lg:flex-col lg:justify-center lg:py-10">
             {config.foundedYear && (
               <motion.div
                 variants={fadeUp}
@@ -39,7 +49,7 @@ export function HeroWidget({ config }: Props) {
             )}
 
             <motion.h1
-              className="font-display max-w-4xl text-4xl font-bold uppercase leading-[0.95] tracking-tight sm:text-5xl md:text-6xl lg:text-7xl"
+              className="font-display max-w-[11.5rem] text-3xl font-bold uppercase leading-[0.95] tracking-tight sm:max-w-sm sm:text-4xl md:max-w-2xl md:text-5xl lg:max-w-4xl lg:text-6xl xl:text-7xl"
               variants={fadeUp}
               initial={reduce ? false : 'hidden'}
               animate="visible"
@@ -50,7 +60,7 @@ export function HeroWidget({ config }: Props) {
 
             {config.subtitle && (
               <motion.p
-                className="mt-3 max-w-xl font-display text-sm uppercase tracking-[0.12em] text-white/70 sm:mt-4 sm:text-base md:text-lg"
+                className="mt-3 max-w-[11.5rem] font-display text-sm uppercase tracking-[0.12em] text-white/70 sm:mt-4 sm:max-w-sm sm:text-base md:max-w-xl md:text-lg"
                 variants={fadeUp}
                 initial={reduce ? false : 'hidden'}
                 animate="visible"

@@ -1,6 +1,7 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { roundDefaultName } from './round.util';
+import { cascadeDeleteRound, getRoundDeleteImpact } from './round-cascade-delete.util';
 
 type RoundInput = {
   seasonId: string;
@@ -60,13 +61,23 @@ export class RoundsService {
     return round;
   }
 
-  async remove(id: string) {
+  async getDeleteImpact(id: string) {
     await this.findOrThrow(id);
+    return getRoundDeleteImpact(this.prisma, id);
+  }
+
+  async remove(id: string, cascade = false) {
+    const round = await this.findOrThrow(id);
     const linked = await this.prisma.match.count({ where: { roundId: id } });
-    if (linked > 0) {
-      throw new BadRequestException('Kolo ima povezane utakmice. Prvo uklonite ili premjestite utakmice.');
+    if (linked === 0) {
+      return this.prisma.round.delete({ where: { id } });
     }
-    return this.prisma.round.delete({ where: { id } });
+    if (!cascade) {
+      throw new BadRequestException(
+        'Kolo ima povezane utakmice. Koristite cascade brisanje da uklonite kolo i sve povezane podatke.',
+      );
+    }
+    return cascadeDeleteRound(this.prisma, id, round.seasonId);
   }
 
   /** Links legacy `Match.round` integers to Round rows (idempotent). */

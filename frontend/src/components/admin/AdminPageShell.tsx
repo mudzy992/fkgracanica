@@ -43,12 +43,16 @@ export function AdminDataTable<T extends { id: string }>({
   empty = 'Nema podataka',
   onRowClick,
   rowClassName,
+  cellClassName = 'p-4',
+  headerCellClassName = 'p-4',
 }: {
   rows: T[];
   columns: Column<T>[];
   empty?: string;
   onRowClick?: (row: T) => void;
   rowClassName?: (row: T) => string | undefined;
+  cellClassName?: string;
+  headerCellClassName?: string;
 }) {
   if (!rows.length) {
     return <p className="p-6 text-center text-text-muted">{empty}</p>;
@@ -59,7 +63,7 @@ export function AdminDataTable<T extends { id: string }>({
         <thead>
           <tr className="border-b border-[var(--border-subtle)] text-left text-text-muted">
             {columns.map((col) => (
-              <th key={col.key} className="p-4 font-medium">
+              <th key={col.key} className={`${headerCellClassName} font-medium`}>
                 {col.header}
               </th>
             ))}
@@ -73,7 +77,7 @@ export function AdminDataTable<T extends { id: string }>({
               onClick={onRowClick ? () => onRowClick(row) : undefined}
             >
               {columns.map((col) => (
-                <td key={col.key} className="p-4">
+                <td key={col.key} className={cellClassName}>
                   {col.render(row)}
                 </td>
               ))}

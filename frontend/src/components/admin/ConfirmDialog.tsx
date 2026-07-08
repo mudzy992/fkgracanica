@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import { Button } from '../ui/button';
 import { Dialog, DialogBody, DialogFooter, DialogHeader } from '../ui/dialog';
 
@@ -5,10 +6,11 @@ interface ConfirmDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   title: string;
-  description?: string;
+  description?: ReactNode;
   confirmLabel?: string;
   onConfirm: () => void | Promise<void>;
   isPending?: boolean;
+  confirmDisabled?: boolean;
   variant?: 'danger' | 'default';
 }
 
@@ -20,6 +22,7 @@ export function ConfirmDialog({
   confirmLabel = 'Potvrdi',
   onConfirm,
   isPending,
+  confirmDisabled,
   variant = 'default',
 }: ConfirmDialogProps) {
   const handleConfirm = () => {
@@ -30,7 +33,13 @@ export function ConfirmDialog({
     <Dialog open={open} onOpenChange={onOpenChange} className="max-w-sm">
       <DialogHeader onClose={() => onOpenChange(false)}>{title}</DialogHeader>
       <DialogBody>
-        {description && <p className="text-sm text-text-muted">{description}</p>}
+        {description && (
+          typeof description === 'string' ? (
+            <p className="text-sm text-text-muted">{description}</p>
+          ) : (
+            description
+          )
+        )}
       </DialogBody>
       <DialogFooter>
         <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isPending}>
@@ -39,7 +48,7 @@ export function ConfirmDialog({
         <Button
           className={variant === 'danger' ? 'bg-danger hover:bg-danger/90' : ''}
           onClick={handleConfirm}
-          disabled={isPending}
+          disabled={isPending || confirmDisabled}
         >
           {isPending ? '...' : confirmLabel}
         </Button>

@@ -2,6 +2,7 @@ export type AdminNavLeaf = {
   to: string;
   labelKey: string;
   end?: boolean;
+  external?: boolean;
   permissions: string[];
   /** Ako je set — modul vidljiv kad je bilo koji uključen (npr. heritage hub). */
   moduleKeys?: string[];
@@ -17,6 +18,13 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
     labelKey: 'admin.navGroup.overview',
     items: [
       { to: '/admin', labelKey: 'admin.dashboard', end: true, permissions: ['dashboard.read'] },
+      {
+        to: '/',
+        labelKey: 'admin.publicSite',
+        end: true,
+        external: true,
+        permissions: ['dashboard.read'],
+      },
       {
         to: '/admin/notifications',
         labelKey: 'notifications.title',

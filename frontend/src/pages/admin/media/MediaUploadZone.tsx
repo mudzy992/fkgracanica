@@ -1,0 +1,43 @@
+import { useCallback } from 'react';
+import { ImagePlus } from 'lucide-react';
+import { cn } from '../../../lib/utils';
+
+interface Props {
+  folderId?: string;
+  disabled?: boolean;
+  onTrigger: () => void;
+  onFiles?: (files: FileList) => void;
+  className?: string;
+}
+
+export function MediaUploadZone({ folderId, disabled, onTrigger, onFiles, className }: Props) {
+  const handleDrop = useCallback(
+    (e: React.DragEvent) => {
+      e.preventDefault();
+      if (disabled || !folderId || !onFiles || !e.dataTransfer.files.length) return;
+      onFiles(e.dataTransfer.files);
+    },
+    [disabled, folderId, onFiles],
+  );
+
+  return (
+    <div className={cn('px-3 pb-3 sm:px-4 lg:hidden', className)}>
+      <button
+        type="button"
+        disabled={disabled || !folderId}
+        onClick={onTrigger}
+        className={cn(
+          'flex min-h-11 w-full items-center justify-center gap-2 rounded-lg border border-dashed px-4 py-3 text-sm transition',
+          disabled || !folderId
+            ? 'cursor-not-allowed border-slate-200 text-text-muted opacity-60'
+            : 'border-primary/40 text-primary hover:border-primary hover:bg-primary/5',
+        )}
+        onDragOver={(e) => e.preventDefault()}
+        onDrop={handleDrop}
+      >
+        <ImagePlus className="h-4 w-4 shrink-0" />
+        <span>{folderId ? 'Dodaj slike (galerija ili kamera)' : 'Prvo odaberite mapu'}</span>
+      </button>
+    </div>
+  );
+}

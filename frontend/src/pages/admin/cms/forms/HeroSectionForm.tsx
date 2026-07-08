@@ -11,7 +11,14 @@ interface Props {
 }
 
 export function HeroSectionForm({ config, onChange }: Props) {
-  const hero = { title: '', buttons: [], showMatches: true, showLastResult: true, ...config } as HeroConfig;
+  const hero = {
+    title: '',
+    buttons: [],
+    showMatches: true,
+    showLastResult: true,
+    backgroundDisplay: 'all' as const,
+    ...config,
+  } as HeroConfig;
 
   const patch = (next: Partial<HeroConfig>) => onChange({ ...hero, ...next });
 
@@ -27,6 +34,19 @@ export function HeroSectionForm({ config, onChange }: Props) {
       <Input value={hero.title} onChange={(e) => patch({ title: e.target.value })} placeholder="Naslov *" />
       <Input value={hero.subtitle ?? ''} onChange={(e) => patch({ subtitle: e.target.value })} placeholder="Podnaslov" />
       <MediaPicker value={hero.backgroundImage ?? ''} onChange={(v) => patch({ backgroundImage: v })} label="Pozadinska slika (hero + stadion)" />
+      <label className="block text-sm text-text-muted">
+        <span className="mb-1 block font-medium text-text">Prikaz pozadine</span>
+        <select
+          className="w-full rounded-lg border border-slate-200 bg-background px-3 py-2 text-sm"
+          value={hero.backgroundDisplay ?? 'all'}
+          onChange={(e) => patch({ backgroundDisplay: e.target.value as HeroConfig['backgroundDisplay'] })}
+        >
+          <option value="all">Uključeno — svi ekrani</option>
+          <option value="desktop">Samo veliki ekrani</option>
+          <option value="mobile">Samo mali ekrani</option>
+          <option value="none">Isključeno</option>
+        </select>
+      </label>
       <label className="flex items-center gap-2 text-sm text-text-muted">
         <input
           type="checkbox"

@@ -56,7 +56,6 @@ export async function seedCmsPages(prisma: SeedPrisma) {
       title: 'Naslovna',
       status: ContentStatus.PUBLISHED,
       isSystem: true,
-      seoTitle: 'Početna',
       seoDesc: 'Službena web stranica FK Gračanica',
     },
     update: { status: ContentStatus.PUBLISHED },

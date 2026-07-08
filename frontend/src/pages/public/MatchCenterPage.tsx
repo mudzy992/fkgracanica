@@ -1,8 +1,9 @@
 import { Link, useParams } from 'react-router-dom';
-import { useMatch, useMatchStatistics, useNewsForMatch } from '../../hooks';
+import { useMatch, useMatchStatistics, useNewsForMatch, usePublicSettings } from '../../hooks';
 import { useAuth } from '../../lib/auth';
 import { hasPermission } from '../../lib/permissions';
 import { formatDateTime } from '../../lib/utils';
+import { matchShareDescription, matchShareImage, matchShareTitle } from '../../lib/match-seo';
 import { matchEventLabel } from '../../lib/match-event-labels';
 import { MatchScoreHero } from '../../components/match/MatchScoreHero';
 import { PageContainer } from '../../components/public/PageContainer';
@@ -23,6 +24,7 @@ export function MatchCenterPage() {
   const { data, isLoading, isError } = useMatch(id ?? '');
   const { data: matchStats, isLoading: msl } = useMatchStatistics(id);
   const { data: relatedNews, isLoading: rnl } = useNewsForMatch(id);
+  const { data: settings } = usePublicSettings();
   const canApprove = hasPermission(user?.permissions, 'live.approve');
   const canCommentate = hasPermission(user?.permissions, 'live.manage');
 
@@ -36,7 +38,13 @@ export function MatchCenterPage() {
   return (
     <div className="pb-16">
       <PageContainer size="md" className="py-10 sm:py-12">
-        <Seo title={`${data.homeClub?.name} vs ${data.awayClub?.name}`} />
+        <Seo
+          title={matchShareTitle(data)}
+          description={matchShareDescription(data)}
+          image={matchShareImage(data, settings?.['club.crestUrl'])}
+          url={`/utakmice/${data.id}`}
+          type="article"
+        />
         {canApprove && <MatchReportApproval matchId={data.id} reportStatus={data.reportStatus} />}
         {canCommentate && data.status === 'FINISHED' && (data.reportStatus === 'DRAFT' || data.reportStatus === 'PENDING_APPROVAL' || !data.reportStatus) && (
           <div className="mb-4 rounded-lg border border-primary/30 bg-primary/5 px-4 py-3 text-sm">

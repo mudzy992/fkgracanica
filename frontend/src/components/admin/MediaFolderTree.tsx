@@ -15,6 +15,7 @@ interface MediaFolderTreeProps {
   isCreating?: boolean;
   onRename?: (id: string, name: string) => void;
   onDelete?: (id: string, name: string) => void;
+  className?: string;
 }
 
 function FolderNode({
@@ -94,11 +95,12 @@ export function MediaFolderTree({
   isCreating,
   onRename,
   onDelete,
+  className,
 }: MediaFolderTreeProps) {
   const roots = asArray<MediaFolder>(folders).filter((f) => !f.parentId);
 
   return (
-    <div className="space-y-3 border-r border-slate-200 p-4">
+    <div className={cn('space-y-3 border-r border-slate-200 p-4', className)}>
       <button
         type="button"
         onClick={() => onSelect(undefined)}

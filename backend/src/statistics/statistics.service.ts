@@ -10,10 +10,15 @@ import {
 import { computeStandings } from './standings.util';
 import { getSeasonLeaders } from './leaders.util';
 import { getSeasonParticipantClubs } from '../competitions/season-participants.util';
+import { rebuildSeasonPlayerStatistics } from './season-stats-rebuild.service';
 
 @Injectable()
 export class StatisticsService {
   constructor(private readonly prisma: PrismaService) {}
+
+  rebuildSeasonPlayerStatistics(seasonId: string) {
+    return rebuildSeasonPlayerStatistics(this.prisma, seasonId);
+  }
 
   async recalculateForMatch(matchId: string) {
     const match = await this.prisma.match.findUnique({

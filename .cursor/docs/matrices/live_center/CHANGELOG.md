@@ -1,5 +1,11 @@
 # Changelog — Live Center
 
+## 2026-07-02
+
+- Retroaktivne utakmice: admin može kreirati FINISHED utakmicu u prošlosti, postavu i izvještaj bez live toka
+- Kaskadno brisanje kola: `DELETE /rounds/:id?cascade=true` + impact preview
+- `rebuildSeasonPlayerStatistics` nakon brisanja utakmice/kola sa odobrenim izvještajem
+
 ## 2026-06-26 (live clock & broadcast)
 
 - Automatski sat utakmice od kickoffa; sudijska nadoknada (+N) nakon 45/90

@@ -6,8 +6,22 @@
 |--------------|---------------|-------------|
 | SCHEDULED | DRAFT | Countdown / scheduled info |
 | LIVE | DRAFT | Live feed, score, events |
+| FINISHED | DRAFT (retro, no live) | Admin report entry; lineup editable until approved |
 | FINISHED | PENDING_APPROVAL | Frozen live view, awaiting approval |
 | FINISHED | APPROVED | Final report, stats updated |
+
+## Retroactive match entry
+
+- Admin creates match with `status: FINISHED`, past `scheduledAt`, scores; `clockStartedAt` stays null
+- `isRetrospectiveMatch`: FINISHED + no clock + report not APPROVED
+- Lineup editable for retrospective matches; report via `/admin/matches/:id/report` (no live required)
+- Standings include FINISHED matches immediately; player season stats update on report approval only
+
+## Round cascade delete
+
+- `GET /rounds/:id/delete-impact` — preview counts (matches, reports, tickets, events)
+- `DELETE /rounds/:id?cascade=true` — deletes all round matches (DB cascade) then round
+- Rebuilds `PlayerStatistics` for season when any deleted match had `reportStatus: APPROVED`
 
 ## Socket events
 

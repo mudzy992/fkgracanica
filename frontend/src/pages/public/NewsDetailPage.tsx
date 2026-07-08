@@ -40,7 +40,9 @@ export function NewsDetailPage() {
       <Seo
         title={data.seoTitle ?? data.title}
         description={data.seoDesc ?? data.excerpt ?? undefined}
-        image={mediaUrl(data.coverPath)}
+        image={mediaUrl(data.coverPath, 'medium')}
+        url={`/vijesti/${data.slug}`}
+        type="article"
       />
       <NewsArticleHero
         title={data.title}

@@ -19,3 +19,8 @@ export function mediaUrl(path?: string | null, variant: MediaVariant = 'original
   const base = API_URL.replace(/\/$/, '');
   return `${base}/uploads/files/${normalized}`;
 }
+
+/** Public grid / bento previews — medium (800px) avoids blurry upscaled thumbs on retina. */
+export function galleryPreviewUrl(path?: string | null): string | undefined {
+  return mediaUrl(path, 'medium') ?? mediaUrl(path, 'original');
+}

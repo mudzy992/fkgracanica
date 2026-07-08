@@ -1,4 +1,4 @@
-import { Controller, Get, Header } from '@nestjs/common';
+import { Controller, Get, Header, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { SeoService } from './seo.service';
 
@@ -17,5 +17,11 @@ export class SeoController {
   @Header('Content-Type', 'text/plain')
   robots() {
     return this.seo.buildRobots();
+  }
+
+  /** Meta za OG / WhatsApp / Viber — koristi frontend OG server i crawleri */
+  @Get('seo/share')
+  shareMeta(@Query('path') path = '/') {
+    return this.seo.resolveShareMeta(path);
   }
 }

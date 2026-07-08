@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { ZoomIn } from 'lucide-react';
-import { mediaUrl, type MediaVariant } from '../../lib/media';
+import { galleryPreviewUrl, mediaUrl } from '../../lib/media';
 import { cn } from '../../lib/utils';
 import { Lightbox } from './Lightbox';
 
@@ -19,12 +19,8 @@ const BENTO_SPANS = [
   'col-span-2 row-span-1 min-h-[76px] sm:min-h-[96px]',
 ];
 
-function photoSrc(path: string, variant: MediaVariant) {
-  return mediaUrl(path, variant);
-}
-
-function thumbSrc(path: string) {
-  return photoSrc(path, 'thumb') ?? photoSrc(path, 'medium') ?? photoSrc(path, 'original');
+function photoSrc(path: string) {
+  return mediaUrl(path, 'original');
 }
 
 interface Props {
@@ -35,7 +31,7 @@ export function PremiumPhotoBento({ photos }: Props) {
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
 
   const images = photos.map((p) => ({
-    src: photoSrc(p.path, 'original') ?? '',
+    src: photoSrc(p.path) ?? '',
     alt: p.caption ?? undefined,
   }));
 
@@ -44,7 +40,7 @@ export function PremiumPhotoBento({ photos }: Props) {
       <div className="grid grid-cols-2 gap-2 sm:gap-3 md:grid-cols-4 md:[grid-auto-rows:minmax(84px,auto)]">
         {photos.map((photo, index) => {
           const span = BENTO_SPANS[index % BENTO_SPANS.length];
-          const src = thumbSrc(photo.path);
+          const src = galleryPreviewUrl(photo.path);
 
           return (
             <button

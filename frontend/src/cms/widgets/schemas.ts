@@ -12,6 +12,7 @@ export const widgetSchemas = {
     title: z.string().min(1),
     subtitle: z.string().optional(),
     backgroundImage: z.string().optional(),
+    backgroundDisplay: z.enum(['all', 'desktop', 'mobile', 'none']).default('all'),
     showMatches: z.boolean().default(true),
     showLastResult: z.boolean().default(true),
     buttons: z.array(ctaButton).default([]),

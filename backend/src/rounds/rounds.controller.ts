@@ -49,11 +49,19 @@ export class RoundsController {
     return this.service.update(id, body);
   }
 
+  @Get(':id/delete-impact')
+  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @RequirePermissions('competitions.manage')
+  @ApiBearerAuth()
+  deleteImpact(@Param('id') id: string) {
+    return this.service.getDeleteImpact(id);
+  }
+
   @Delete(':id')
   @UseGuards(JwtAuthGuard, PermissionsGuard)
   @RequirePermissions('competitions.manage')
   @ApiBearerAuth()
-  remove(@Param('id') id: string) {
-    return this.service.remove(id);
+  remove(@Param('id') id: string, @Query('cascade') cascade?: string) {
+    return this.service.remove(id, cascade === 'true');
   }
 }

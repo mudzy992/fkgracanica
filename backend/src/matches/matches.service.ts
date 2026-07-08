@@ -1,10 +1,13 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
-import { MatchStatus, Prisma } from '@prisma/client';
+import { MatchReportStatus, MatchStatus, Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
+import { StatisticsService } from '../statistics/statistics.service';
 import { assertDistinctClubs, isResolvedRound, resolveMatchRoundFields, roundToMatchCreateInput, roundToMatchUpdateInput } from './match-round.util';
 import { assertSingleScheduledHomeMatch } from './match-scheduling.util';
 import { validateMatchLineup, type LineupSlotInput } from './match-lineup.util';
 import { resolveEffectiveMatchLineup } from './match-squad-lineup.util';
+import { assertRetrospectiveCreate, isRetrospectiveMatch } from './match-retrospective.util';
+import { resolveMatchVenue } from './match-venue.util';
 import { assertManualMatchStatus } from './update-match.dto';
 
 const matchInclude = {
@@ -28,7 +31,10 @@ type MatchInput = {
 
 @Injectable()
 export class MatchesService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly statistics: StatisticsService,
+  ) {}
 
   findAll(seasonId?: string, roundId?: string) {
     return this.prisma.match.findMany({
@@ -64,6 +70,8 @@ export class MatchesService {
 
   async create(data: MatchInput) {
     assertDistinctClubs(data.homeClubId, data.awayClubId);
+    assertManualMatchStatus(data.status);
+    assertRetrospectiveCreate(data);
     const round = await resolveMatchRoundFields(this.prisma, data.roundId);
     if (isResolvedRound(round) && round.roundId) {
       const r = await this.prisma.round.findUnique({ where: { id: round.roundId } });
@@ -75,16 +83,19 @@ export class MatchesService {
     if (status === MatchStatus.SCHEDULED) {
       await assertSingleScheduledHomeMatch(this.prisma, data.homeClubId);
     }
+    const isRetro = status === MatchStatus.FINISHED;
+    const venue = await resolveMatchVenue(this.prisma, data.homeClubId, data.venue);
     return this.prisma.match.create({
       data: {
         seasonId: data.seasonId,
         homeClubId: data.homeClubId,
         awayClubId: data.awayClubId,
         scheduledAt: new Date(data.scheduledAt),
-        venue: data.venue ?? null,
+        venue,
         status,
         homeScore: data.homeScore ?? 0,
         awayScore: data.awayScore ?? 0,
+        minute: isRetro ? 90 : 0,
         ...roundToMatchCreateInput(round),
       },
       include: matchInclude,
@@ -144,14 +155,22 @@ export class MatchesService {
     return this.prisma.match.update({ where: { id }, data: patch, include: matchInclude });
   }
 
-  remove(id: string) {
-    return this.prisma.match.delete({ where: { id } });
+  async remove(id: string) {
+    const match = await this.prisma.match.findUnique({ where: { id } });
+    if (!match) throw new NotFoundException('Utakmica nije pronađena');
+    const needsRebuild = match.reportStatus === MatchReportStatus.APPROVED;
+    const seasonId = match.seasonId;
+    await this.prisma.match.delete({ where: { id } });
+    if (needsRebuild) {
+      await this.statistics.rebuildSeasonPlayerStatistics(seasonId);
+    }
+    return { ok: true };
   }
 
   async setLineup(matchId: string, slots: LineupSlotInput[]) {
     const match = await this.prisma.match.findUnique({ where: { id: matchId } });
     if (!match) throw new NotFoundException('Utakmica nije pronađena');
-    if (match.status === MatchStatus.FINISHED) {
+    if (match.status === MatchStatus.FINISHED && !isRetrospectiveMatch(match)) {
       throw new BadRequestException('Postava završene utakmice se ne može mijenjati.');
     }
     await validateMatchLineup(this.prisma, matchId, slots);

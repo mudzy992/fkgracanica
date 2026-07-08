@@ -49,6 +49,7 @@
   },
   "admin": {
     "dashboard": "Kontrolna tabla",
+    "publicSite": "Javna stranica",
     "settings": "Postavke",
     "users": "Korisnici",
     "roles": "Uloge",

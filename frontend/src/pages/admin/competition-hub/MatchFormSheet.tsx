@@ -11,6 +11,8 @@ import { Button } from '../../../components/ui/button';
 import { Input } from '../../../components/ui/input';
 import { Badge } from '../../../components/ui/badge';
 import type { Match, MatchStatus } from '../../../types';
+import { isPastDatetime, isRetrospectiveMatch } from '../../../lib/match-retrospective';
+import { resolveClubVenue } from '../../../lib/club-venue';
 import { getApiErrorMessage } from '../../../lib/api-error';
 
 interface Props {
@@ -52,15 +54,22 @@ export function MatchFormSheet({ open, onOpenChange, edit, seasonId, roundId }: 
   const [status, setStatus] = useState<MatchStatus>('SCHEDULED');
   const [homeScore, setHomeScore] = useState(0);
   const [awayScore, setAwayScore] = useState(0);
+  const [isPastMatch, setIsPastMatch] = useState(false);
   const [error, setError] = useState('');
   const clubOptions = (clubs ?? []).map((c) => ({ id: c.id, label: c.name }));
+
+  const onHomeClubChange = (id: string) => {
+    setHomeClubId(id);
+    const defaultVenue = resolveClubVenue((clubs ?? []).find((c) => c.id === id));
+    if (defaultVenue) setVenue(defaultVenue);
+  };
 
   useEffect(() => {
     if (!open) return;
     setError('');
     setHomeClubId(edit?.homeClubId ?? edit?.homeClub?.id ?? '');
     setAwayClubId(edit?.awayClubId ?? edit?.awayClub?.id ?? '');
-    setVenue(edit?.venue ?? '');
+    setVenue(edit?.venue ?? resolveClubVenue(edit?.homeClub) ?? '');
     setScheduledAt(toLocalDatetime(edit?.scheduledAt) || toLocalDatetime(new Date().toISOString()));
     if (edit?.status && editableStatuses.includes(edit.status)) {
       setStatus(edit.status);
@@ -71,6 +80,7 @@ export function MatchFormSheet({ open, onOpenChange, edit, seasonId, roundId }: 
     }
     setHomeScore(edit?.homeScore ?? 0);
     setAwayScore(edit?.awayScore ?? 0);
+    setIsPastMatch(false);
   }, [open, edit, isLiveLocked]);
 
   const save = async () => {
@@ -82,6 +92,10 @@ export function MatchFormSheet({ open, onOpenChange, edit, seasonId, roundId }: 
     const scheduledIso = parseScheduledAt(scheduledAt);
     if (!scheduledIso) {
       setError('Unesite ispravan datum i vrijeme.');
+      return;
+    }
+    if (!edit && isPastMatch && !isPastDatetime(scheduledIso)) {
+      setError('Utakmica u prošlosti mora imati datum prije današnjeg dana.');
       return;
     }
     try {
@@ -108,7 +122,13 @@ export function MatchFormSheet({ open, onOpenChange, edit, seasonId, roundId }: 
           venue: venue || null,
           scheduledAt: scheduledIso,
           roundId,
-          status: 'SCHEDULED',
+          ...(isPastMatch
+            ? {
+                status: 'FINISHED',
+                homeScore: Math.max(0, Math.floor(Number(homeScore)) || 0),
+                awayScore: Math.max(0, Math.floor(Number(awayScore)) || 0),
+              }
+            : { status: 'SCHEDULED' }),
         });
       }
       onOpenChange(false);
@@ -117,7 +137,7 @@ export function MatchFormSheet({ open, onOpenChange, edit, seasonId, roundId }: 
     }
   };
 
-  if (isFinished && edit) {
+  if (isFinished && edit && !isRetrospectiveMatch(edit)) {
     return (
       <AdminFormSheet open={open} onOpenChange={onOpenChange} title="Utakmica (završena)">
         <div className="space-y-3 text-sm">
@@ -146,13 +166,50 @@ export function MatchFormSheet({ open, onOpenChange, edit, seasonId, roundId }: 
             <span>Status i rezultat se mijenjaju u komentator panelu. Ovdje možete izmijeniti datum, stadion i klubove.</span>
           </div>
         )}
-        <EntitySelect label="Domaći" value={homeClubId} onChange={setHomeClubId} options={clubOptions} />
+        <EntitySelect label="Domaći" value={homeClubId} onChange={onHomeClubChange} options={clubOptions} />
         <EntitySelect label="Gosti" value={awayClubId} onChange={setAwayClubId} options={clubOptions} />
         <Input value={venue} onChange={(e) => setVenue(e.target.value)} placeholder="Stadion" />
         <div>
           <label className="mb-1 block text-sm font-medium">Datum i vrijeme</label>
           <Input type="datetime-local" value={scheduledAt} onChange={(e) => setScheduledAt(e.target.value)} />
         </div>
+        {!edit && (
+          <>
+            <label className="flex cursor-pointer items-center gap-2 text-sm">
+              <input
+                type="checkbox"
+                checked={isPastMatch}
+                onChange={(e) => setIsPastMatch(e.target.checked)}
+                className="h-4 w-4 rounded border-slate-300"
+              />
+              Utakmica u prošlosti (već odigrana)
+            </label>
+            {isPastMatch && (
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className="mb-1 block text-xs text-text-muted">Golovi domaćih</label>
+                  <Input
+                    type="number"
+                    min={0}
+                    step={1}
+                    value={homeScore}
+                    onChange={(e) => setHomeScore(Math.max(0, Math.floor(Number(e.target.value)) || 0))}
+                  />
+                </div>
+                <div>
+                  <label className="mb-1 block text-xs text-text-muted">Golovi gostiju</label>
+                  <Input
+                    type="number"
+                    min={0}
+                    step={1}
+                    value={awayScore}
+                    onChange={(e) => setAwayScore(Math.max(0, Math.floor(Number(e.target.value)) || 0))}
+                  />
+                </div>
+              </div>
+            )}
+          </>
+        )}
         {edit && !isLiveLocked && (
           <>
             <EntitySelect

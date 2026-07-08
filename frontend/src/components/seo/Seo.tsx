@@ -1,27 +1,40 @@
 import { useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
+import { usePublicSettings } from '../../hooks';
+import { defaultShareImage } from '../../lib/seo-meta';
+import { applySeoToDocument } from './seo-document';
 
-interface SeoProps {
+export interface SeoInput {
   title?: string;
   description?: string;
   image?: string;
+  url?: string;
+  type?: 'website' | 'article';
 }
 
-export function Seo({ title, description, image }: SeoProps) {
+export function Seo({ title, description, image, url, type }: SeoInput) {
+  const location = useLocation();
+  const { data: settings } = usePublicSettings();
+
+  const siteName = settings?.['club.name']?.trim() || settings?.['seo.title']?.trim() || 'FK Gračanica';
+  const defaultDescription =
+    settings?.['seo.description']?.trim() ||
+    'Službena web stranica FK Gračanica — vijesti, utakmice, članstvo i ulaznice.';
+  const defaultImage = defaultShareImage(settings?.['club.crestUrl']);
+  const pageUrl = url ?? location.pathname + location.search;
+
   useEffect(() => {
-    const base = 'FK Gračanica';
-    document.title = title ? `${title} | ${base}` : base;
-    const setMeta = (name: string, content?: string) => {
-      if (!content) return;
-      let el = document.querySelector(`meta[name="${name}"]`);
-      if (!el) {
-        el = document.createElement('meta');
-        el.setAttribute('name', name);
-        document.head.appendChild(el);
-      }
-      el.setAttribute('content', content);
-    };
-    setMeta('description', description);
-    if (image) setMeta('og:image', image);
-  }, [title, description, image]);
+    applySeoToDocument({
+      title,
+      description,
+      image,
+      url: pageUrl,
+      type,
+      siteName,
+      defaultDescription,
+      defaultImage,
+    });
+  }, [title, description, image, pageUrl, type, siteName, defaultDescription, defaultImage]);
+
   return null;
 }

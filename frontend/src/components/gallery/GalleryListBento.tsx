@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import { Images } from 'lucide-react';
 import { motion, useReducedMotion } from 'framer-motion';
 import type { GalleryItem } from '../../types';
-import { mediaUrl } from '../../lib/media';
+import { galleryPreviewUrl } from '../../lib/media';
 import { cn } from '../../lib/utils';
 
 const BENTO_SPANS = [
@@ -13,10 +13,6 @@ const BENTO_SPANS = [
   'col-span-1 row-span-1 min-h-[96px] sm:min-h-[120px]',
   'col-span-2 row-span-1 min-h-[110px] sm:min-h-[140px]',
 ];
-
-function coverSrc(path: string) {
-  return mediaUrl(path, 'thumb') ?? mediaUrl(path, 'medium') ?? mediaUrl(path, 'original');
-}
 
 interface Props {
   items: GalleryItem[];
@@ -31,7 +27,7 @@ export function GalleryListBento({ items }: Props) {
         const cover = g.photos?.[0]?.path;
         const count = g.photos?.length ?? 0;
         const span = BENTO_SPANS[i % BENTO_SPANS.length];
-        const src = cover ? coverSrc(cover) : undefined;
+        const src = cover ? galleryPreviewUrl(cover) : undefined;
 
         return (
           <motion.div

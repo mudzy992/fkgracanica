@@ -1,6 +1,7 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Put, Query, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { MatchesService } from './matches.service';
+import { CreateMatchDto } from './create-match.dto';
 import { UpdateMatchDto } from './update-match.dto';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { PermissionsGuard } from '../common/guards/permissions.guard';
@@ -25,8 +26,8 @@ export class MatchesController {
   @UseGuards(JwtAuthGuard, PermissionsGuard)
   @RequirePermissions('matches.manage')
   @ApiBearerAuth()
-  create(@Body() body: Record<string, unknown>) {
-    return this.service.create(body as Parameters<MatchesService['create']>[0]);
+  create(@Body() body: CreateMatchDto) {
+    return this.service.create(body);
   }
 
   @Patch(':id')

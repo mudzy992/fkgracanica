@@ -1,12 +1,18 @@
 import { useState } from 'react';
 import { Pencil, Plus, Trash2 } from 'lucide-react';
-import { useDeleteRound, useRounds } from '../../../hooks/use-rounds';
+import { api } from '../../../lib/api';
+import {
+  useDeleteRound,
+  useRounds,
+  type RoundDeleteImpact,
+} from '../../../hooks/use-rounds';
 import { useConfirm } from '../../../hooks/use-confirm';
 import { roundLabel } from '../../../lib/round-utils';
 import { cn } from '../../../lib/utils';
 import { Button } from '../../../components/ui/button';
 import type { CompetitionRound } from '../../../types';
 import { RoundFormSheet } from './RoundFormSheet';
+import { RoundCascadeDeleteDialog } from './RoundCascadeDeleteDialog';
 
 interface Props {
   seasonId: string;
@@ -21,16 +27,59 @@ export function SeasonRoundsPanel({ seasonId, selectedRoundId, onSelectRound, ca
   const { confirm, dialog } = useConfirm();
   const [open, setOpen] = useState(false);
   const [edit, setEdit] = useState<CompetitionRound | null>(null);
+  const [cascadeRound, setCascadeRound] = useState<CompetitionRound | null>(null);
+  const [cascadeImpact, setCascadeImpact] = useState<RoundDeleteImpact | null>(null);
 
   const onDelete = async (round: CompetitionRound, e: React.MouseEvent) => {
     e.stopPropagation();
-    const ok = await confirm({ title: 'Obrisati kolo?', description: roundLabel(round), variant: 'danger', confirmLabel: 'Obriši' });
-    if (ok) void remove.mutateAsync({ id: round.id, seasonId });
+    const count = round._count?.matches ?? 0;
+    if (count === 0) {
+      const ok = await confirm({
+        title: 'Obrisati kolo?',
+        description: roundLabel(round),
+        variant: 'danger',
+        confirmLabel: 'Obriši',
+      });
+      if (ok) void remove.mutateAsync({ id: round.id, seasonId });
+      return;
+    }
+    try {
+      const impact = (await api.get<RoundDeleteImpact>(`/rounds/${round.id}/delete-impact`)).data;
+      setCascadeImpact(impact);
+      setCascadeRound(round);
+    } catch {
+      await confirm({
+        title: 'Brisanje nije moguće',
+        description: 'Nije moguće učitati podatke o kolu.',
+        confirmLabel: 'U redu',
+      });
+    }
+  };
+
+  const onCascadeConfirm = async () => {
+    if (!cascadeRound) return;
+    await remove.mutateAsync({ id: cascadeRound.id, seasonId, cascade: true });
+    if (selectedRoundId === cascadeRound.id) onSelectRound('');
+    setCascadeRound(null);
+    setCascadeImpact(null);
   };
 
   return (
     <>
       {dialog}
+      <RoundCascadeDeleteDialog
+        open={!!cascadeRound && !!cascadeImpact}
+        roundLabel={cascadeRound ? roundLabel(cascadeRound) : ''}
+        impact={cascadeImpact ?? { matchCount: 0, approvedReportCount: 0, ticketCount: 0, eventCount: 0, lineupCount: 0, commentCount: 0 }}
+        isPending={remove.isPending}
+        onOpenChange={(o) => {
+          if (!o) {
+            setCascadeRound(null);
+            setCascadeImpact(null);
+          }
+        }}
+        onConfirm={() => void onCascadeConfirm()}
+      />
       <div className="flex items-center justify-between border-b border-slate-200 px-4 py-3">
         <h3 className="text-sm font-semibold">Kola</h3>
         {canManage && (

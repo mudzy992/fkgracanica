@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { FolderOpen, Images } from 'lucide-react';
-import { api } from '../../lib/api';
 import { asArray } from '../../lib/as-array';
-import type { MediaAsset, MediaFolder } from '../../hooks/use-media-admin';
+import { fetchAllMediaAssetsInFolder } from '../../lib/fetch-all-media-assets';
+import type { MediaFolder } from '../../hooks/use-media-admin';
 import { useAddGalleryPhotos } from '../../hooks/use-content-admin';
 import { MediaPickerDialog } from './MediaPickerDialog';
 import { Button } from '../ui/button';
@@ -39,10 +39,8 @@ export function GalleryPhotoPicker({ galleryId, existingPaths }: Props) {
     if (!folderId) return;
     setBusy(true);
     try {
-      const res = await api.get<{ data: MediaAsset[] }>('/media/assets', {
-        params: { folderId, limit: 500, page: 1 },
-      });
-      const paths = asArray<MediaAsset>(res.data?.data ?? res.data).map((a) => a.originalPath);
+      const assets = await fetchAllMediaAssetsInFolder(folderId);
+      const paths = assets.map((a) => a.originalPath);
       await addPaths(paths);
       setFolderOpen(false);
       setFolderId(undefined);

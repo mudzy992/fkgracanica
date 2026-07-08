@@ -6,6 +6,7 @@ import { useDeleteMatch } from '../../../hooks/use-competition-admin';
 import { useConfirm } from '../../../hooks/use-confirm';
 import { useAuth } from '../../../lib/auth';
 import { canEditReport } from '../../../lib/match-report';
+import { isRetrospectiveMatch } from '../../../lib/match-retrospective';
 import { hasPermission } from '../../../lib/permissions';
 import { formatDateTime } from '../../../lib/utils';
 import { Badge } from '../../../components/ui/badge';
@@ -75,6 +76,11 @@ export function RoundMatchesPanel({ seasonId, roundId, canManage }: Props) {
                     Zakazano
                   </Badge>
                 )}
+                {isRetrospectiveMatch(r) && (
+                  <Badge variant="muted" className="text-[10px]">
+                    Retro
+                  </Badge>
+                )}
               </div>
             ),
           },
@@ -92,6 +98,7 @@ export function RoundMatchesPanel({ seasonId, roundId, canManage }: Props) {
                 header: 'Akcije',
                 render: (r: Match) => {
                   const finished = r.status === 'FINISHED';
+                  const retro = isRetrospectiveMatch(r);
                   const reportEditable = canEditReport(r);
                   return (
                     <div className="flex flex-wrap gap-1">
@@ -111,17 +118,21 @@ export function RoundMatchesPanel({ seasonId, roundId, canManage }: Props) {
                           </Button>
                         </Link>
                       )}
-                      {canManage && !finished && (
+                      {canManage && (!finished || retro) && (
                         <>
-                          <Button variant="ghost" size="icon" onClick={() => { setEdit(r); setOpen(true); }}>
-                            <Pencil className="h-4 w-4" />
-                          </Button>
+                          {!finished && (
+                            <Button variant="ghost" size="icon" onClick={() => { setEdit(r); setOpen(true); }}>
+                              <Pencil className="h-4 w-4" />
+                            </Button>
+                          )}
                           <Button size="sm" variant="outline" onClick={() => setLineupId(r.id)}>
                             Postava
                           </Button>
-                          <Button variant="ghost" size="icon" onClick={() => void onDelete(r)}>
-                            <Trash2 className="h-4 w-4 text-danger" />
-                          </Button>
+                          {!finished && (
+                            <Button variant="ghost" size="icon" onClick={() => void onDelete(r)}>
+                              <Trash2 className="h-4 w-4 text-danger" />
+                            </Button>
+                          )}
                         </>
                       )}
                     </div>

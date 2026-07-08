@@ -1,5 +1,5 @@
 import { NavLink, useLocation } from 'react-router-dom';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown, ExternalLink } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { cn } from '../../lib/utils';
@@ -45,9 +45,39 @@ export function AdminSidebarNav({ groups, onNavigate }: Props) {
 
   const linkClass = ({ isActive }: { isActive: boolean }) =>
     cn(
-      'block rounded-lg py-2 pl-3 pr-2 text-sm transition-colors',
+      'flex items-center gap-1.5 rounded-lg py-2 pl-3 pr-2 text-sm transition-colors',
       isActive ? 'bg-primary font-medium text-white' : 'text-text hover:bg-surface',
     );
+
+  const renderItem = (item: AdminNavLeaf) => {
+    if (item.external) {
+      return (
+        <a
+          key={item.to}
+          href={item.to}
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={onNavigate}
+          className="flex items-center gap-1.5 rounded-lg py-2 pl-3 pr-2 text-sm text-text transition-colors hover:bg-surface"
+        >
+          {t(item.labelKey)}
+          <ExternalLink className="h-3.5 w-3.5 shrink-0 opacity-60" />
+        </a>
+      );
+    }
+
+    return (
+      <NavLink
+        key={item.to}
+        to={item.to}
+        end={item.end ?? false}
+        onClick={onNavigate}
+        className={linkClass}
+      >
+        {t(item.labelKey)}
+      </NavLink>
+    );
+  };
 
   return (
     <nav className="flex flex-col gap-4">
@@ -57,18 +87,7 @@ export function AdminSidebarNav({ groups, onNavigate }: Props) {
 
         if (singleItem) {
           const item = group.items[0];
-          return (
-            <div key={group.labelKey}>
-              <NavLink
-                to={item.to}
-                end={item.end ?? false}
-                onClick={onNavigate}
-                className={linkClass}
-              >
-                {t(item.labelKey)}
-              </NavLink>
-            </div>
-          );
+          return <div key={group.labelKey}>{renderItem(item)}</div>;
         }
 
         return (
@@ -90,17 +109,7 @@ export function AdminSidebarNav({ groups, onNavigate }: Props) {
             </button>
             {isOpen && (
               <div className="mt-1 flex flex-col gap-0.5 pl-1">
-                {group.items.map((item) => (
-                  <NavLink
-                    key={item.to}
-                    to={item.to}
-                    end={item.end ?? false}
-                    onClick={onNavigate}
-                    className={linkClass}
-                  >
-                    {t(item.labelKey)}
-                  </NavLink>
-                ))}
+                {group.items.map((item) => renderItem(item))}
               </div>
             )}
           </div>
