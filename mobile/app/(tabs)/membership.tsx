@@ -1,8 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
-  ActivityIndicator,
-  Platform,
   RefreshControl,
   ScrollView,
   StyleSheet,
@@ -12,12 +10,14 @@ import {
 import { api } from '../../src/lib/api';
 import { QrCodeView } from '../../src/components/QrCodeView';
 import { RequireAuth } from '../../src/components/RequireAuth';
+import { ScreenEmpty } from '../../src/components/ScreenEmpty';
+import { ScreenLoading } from '../../src/components/ScreenLoading';
+import { formatDateBs } from '../../src/lib/format-date';
 import { colors, spacing, typography } from '../../src/lib/theme';
 import type { Membership } from '../../src/types/api';
 
-function formatDate(iso: string | null): string {
-  if (!iso) return '—';
-  return new Date(iso).toLocaleDateString('bs-BA');
+function canRegister(status: string | undefined): boolean {
+  return !status || status === 'EXPIRED' || status === 'CANCELLED';
 }
 
 function MembershipBody() {
@@ -25,6 +25,7 @@ function MembershipBody() {
   const [memberships, setMemberships] = useState<Membership[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [registering, setRegistering] = useState(false);
 
   const loadMembership = useCallback(async () => {
     try {
@@ -40,56 +41,69 @@ function MembershipBody() {
   }, [loadMembership]);
 
   const active = memberships.find((m) => m.status === 'ACTIVE' && m.card);
+  const latest = memberships[0];
 
-  if (loading) {
+  const onRegister = async () => {
+    setRegistering(true);
+    try {
+      await api.post('/membership/register');
+      await loadMembership();
+    } finally {
+      setRegistering(false);
+    }
+  };
+
+  if (loading) return <ScreenLoading />;
+
+  if (active?.card) {
     return (
-      <View style={styles.center}>
-        <ActivityIndicator size="large" color={colors.primary} />
-      </View>
+      <ScrollView
+        style={styles.container}
+        contentContainerStyle={styles.content}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={() => {
+              setRefreshing(true);
+              void loadMembership().finally(() => setRefreshing(false));
+            }}
+          />
+        }
+      >
+        <Text style={styles.title}>{t('membershipCard')}</Text>
+        <View style={styles.card}>
+          <Text style={styles.label}>{t('cardNumber')}</Text>
+          <Text style={styles.value}>{active.card.cardNumber}</Text>
+          <Text style={styles.label}>{t('status')}</Text>
+          <Text style={styles.value}>{active.status}</Text>
+          <Text style={styles.label}>{t('validUntil')}</Text>
+          <Text style={styles.value}>{formatDateBs(active.endDate)}</Text>
+        </View>
+        <View style={styles.qrBox}>
+          <Text style={styles.label}>{t('qrCode')}</Text>
+          <QrCodeView value={active.card.qrCode} size={220} />
+          <Text style={styles.qrHint}>{t('qrHint')}</Text>
+        </View>
+      </ScrollView>
     );
   }
 
-  if (!active?.card) {
-    return (
-      <View style={styles.center}>
-        <Text style={styles.empty}>{t('noMembership')}</Text>
-      </View>
-    );
-  }
+  const statusMsg =
+    latest?.status === 'PENDING'
+      ? t('membershipPending')
+      : latest?.status === 'EXPIRED'
+        ? t('membershipExpired')
+        : latest?.status === 'SUSPENDED'
+          ? t('membershipSuspended')
+          : t('noMembership');
 
   return (
-    <ScrollView
-      style={styles.container}
-      contentContainerStyle={styles.content}
-      refreshControl={
-        <RefreshControl
-          refreshing={refreshing}
-          onRefresh={() => {
-            setRefreshing(true);
-            void loadMembership().finally(() => setRefreshing(false));
-          }}
-        />
-      }
-    >
-      <Text style={styles.title}>{t('membershipCard')}</Text>
-
-      <View style={styles.card}>
-        <Text style={styles.label}>{t('cardNumber')}</Text>
-        <Text style={styles.value}>{active.card.cardNumber}</Text>
-
-        <Text style={styles.label}>{t('status')}</Text>
-        <Text style={styles.value}>{active.status}</Text>
-
-        <Text style={styles.label}>Važi do</Text>
-        <Text style={styles.value}>{formatDate(active.endDate)}</Text>
-      </View>
-
-      <View style={styles.qrBox}>
-        <Text style={styles.label}>{t('qrCode')}</Text>
-        <QrCodeView value={active.card.qrCode} />
-        <Text style={styles.qrHint}>Pokažite ovaj kod na ulazu</Text>
-      </View>
-    </ScrollView>
+    <ScreenEmpty
+      message={statusMsg}
+      icon="id-card-outline"
+      actionLabel={canRegister(latest?.status) ? (registering ? t('loading') : t('registerMembership')) : undefined}
+      onAction={canRegister(latest?.status) ? () => void onRegister() : undefined}
+    />
   );
 }
 
@@ -104,7 +118,6 @@ export default function MembershipScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.surface },
   content: { padding: spacing.lg },
-  center: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: spacing.lg },
   title: { ...typography.title, color: colors.primary, marginBottom: spacing.lg },
   card: {
     backgroundColor: colors.background,
@@ -117,23 +130,5 @@ const styles = StyleSheet.create({
   label: { ...typography.caption, color: colors.textMuted, marginTop: spacing.sm },
   value: { ...typography.heading, color: colors.text },
   qrBox: { alignItems: 'center' },
-  qrPlaceholder: {
-    marginTop: spacing.md,
-    padding: spacing.lg,
-    backgroundColor: colors.white,
-    borderWidth: 2,
-    borderColor: colors.primary,
-    borderRadius: 12,
-    borderStyle: 'dashed',
-    minWidth: 220,
-    alignItems: 'center',
-  },
-  qrCode: {
-    fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
-    fontSize: 12,
-    color: colors.text,
-    textAlign: 'center',
-  },
   qrHint: { ...typography.caption, color: colors.textMuted, marginTop: spacing.md },
-  empty: { color: colors.textMuted, textAlign: 'center' },
 });

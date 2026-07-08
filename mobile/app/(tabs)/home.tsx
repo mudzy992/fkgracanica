@@ -2,7 +2,6 @@ import { useRouter } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
-  ActivityIndicator,
   Pressable,
   RefreshControl,
   ScrollView,
@@ -10,19 +9,26 @@ import {
   Text,
   View,
 } from 'react-native';
+import { RemoteImage } from '../../src/components/RemoteImage';
+import { ScreenEmpty } from '../../src/components/ScreenEmpty';
+import { ScreenLoading } from '../../src/components/ScreenLoading';
 import { api } from '../../src/lib/api';
 import { useAuth } from '../../src/lib/auth';
+import { formatDateTimeBs } from '../../src/lib/format-date';
 import { colors, spacing, typography } from '../../src/lib/theme';
 import type { Match, NewsItem } from '../../src/types/api';
 
-function formatDate(iso: string): string {
-  return new Date(iso).toLocaleDateString('bs-BA', {
-    day: '2-digit',
-    month: 'short',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  });
+function pickFeaturedMatch(matches: Match[]): Match | null {
+  const live = matches
+    .filter((m) => m.status === 'LIVE' || m.status === 'HALFTIME')
+    .sort((a, b) => new Date(b.scheduledAt).getTime() - new Date(a.scheduledAt).getTime());
+  if (live[0]) return live[0];
+
+  const now = Date.now();
+  const upcoming = matches
+    .filter((m) => m.status === 'SCHEDULED' && new Date(m.scheduledAt).getTime() >= now)
+    .sort((a, b) => new Date(a.scheduledAt).getTime() - new Date(b.scheduledAt).getTime());
+  return upcoming[0] ?? null;
 }
 
 export default function HomeScreen() {
@@ -40,14 +46,8 @@ export default function HomeScreen() {
         api.get<NewsItem[]>('/news/published'),
         api.get<Match[]>('/matches'),
       ]);
-
       setNews(newsRes.data.slice(0, 3));
-
-      const now = Date.now();
-      const upcoming = matchesRes.data
-        .filter((m) => new Date(m.scheduledAt).getTime() >= now && m.status === 'SCHEDULED')
-        .sort((a, b) => new Date(a.scheduledAt).getTime() - new Date(b.scheduledAt).getTime());
-      setNextMatch(upcoming[0] ?? null);
+      setNextMatch(pickFeaturedMatch(matchesRes.data));
     } catch {
       setNews([]);
       setNextMatch(null);
@@ -64,13 +64,7 @@ export default function HomeScreen() {
     setRefreshing(false);
   };
 
-  if (loading) {
-    return (
-      <View style={styles.center}>
-        <ActivityIndicator size="large" color={colors.primary} />
-      </View>
-    );
-  }
+  if (loading) return <ScreenLoading />;
 
   const displayName = user?.firstName
     ? `${user.firstName} ${user.lastName ?? ''}`.trim()
@@ -95,16 +89,17 @@ export default function HomeScreen() {
           <Text style={styles.matchTeams}>
             {nextMatch.homeClub.name} {t('vs')} {nextMatch.awayClub.name}
           </Text>
-          <Text style={styles.meta}>{formatDate(nextMatch.scheduledAt)}</Text>
+          <Text style={styles.meta}>{formatDateTimeBs(nextMatch.scheduledAt)}</Text>
           {nextMatch.venue ? <Text style={styles.meta}>{nextMatch.venue}</Text> : null}
+          <Text style={styles.link}>{t('followLive')}</Text>
         </Pressable>
       ) : (
-        <Text style={styles.empty}>—</Text>
+        <ScreenEmpty message="—" icon="football-outline" compact />
       )}
 
       <Text style={styles.sectionTitle}>{t('latestNews')}</Text>
       {news.length === 0 ? (
-        <Text style={styles.empty}>{t('noNews')}</Text>
+        <ScreenEmpty message={t('noNews')} icon="newspaper-outline" compact />
       ) : (
         news.map((item) => (
           <Pressable
@@ -112,8 +107,13 @@ export default function HomeScreen() {
             style={styles.card}
             onPress={() => router.push(`/(tabs)/news/${item.slug}`)}
           >
+            {item.coverPath ? (
+              <RemoteImage path={item.coverPath} style={styles.thumb} />
+            ) : null}
             <Text style={styles.newsTitle}>{item.title}</Text>
-            {item.excerpt ? <Text style={styles.excerpt} numberOfLines={2}>{item.excerpt}</Text> : null}
+            {item.excerpt ? (
+              <Text style={styles.excerpt} numberOfLines={2}>{item.excerpt}</Text>
+            ) : null}
             <Text style={styles.link}>{t('readMore')}</Text>
           </Pressable>
         ))
@@ -125,7 +125,6 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.surface },
   content: { padding: spacing.md, gap: spacing.sm },
-  center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   welcome: { ...typography.heading, color: colors.primary, marginBottom: spacing.md },
   sectionTitle: { ...typography.heading, color: colors.text, marginTop: spacing.md },
   card: {
@@ -136,10 +135,10 @@ const styles = StyleSheet.create({
     borderColor: colors.border,
     marginTop: spacing.sm,
   },
+  thumb: { height: 100, marginBottom: spacing.sm },
   matchTeams: { ...typography.heading, color: colors.text },
   newsTitle: { ...typography.heading, color: colors.text },
   excerpt: { ...typography.body, color: colors.textMuted, marginTop: spacing.xs },
   meta: { ...typography.caption, color: colors.textMuted, marginTop: spacing.xs },
   link: { color: colors.accent, marginTop: spacing.sm, fontWeight: '600' },
-  empty: { color: colors.textMuted, marginTop: spacing.sm },
 });

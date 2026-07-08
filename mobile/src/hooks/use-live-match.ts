@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { api } from '../lib/api';
-import { disconnectRealtimeSocket, getRealtimeSocket } from '../lib/realtime';
+import { getRealtimeSocket } from '../lib/realtime';
 import type { Match, MatchEvent } from '../types/api';
 
 export function useLiveMatch(matchId: string) {
@@ -55,7 +55,6 @@ export function useLiveMatch(matchId: string) {
       socket.off('match:event', onEvent);
       socket.off('match:score', patch);
       socket.off('match:status', patch);
-      disconnectRealtimeSocket();
     };
   }, [matchId, patch]);
 

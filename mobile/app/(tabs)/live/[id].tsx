@@ -1,7 +1,9 @@
 import { useLocalSearchParams } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { LiveEventList } from '../../../src/components/LiveEventList';
+import { ScreenEmpty } from '../../../src/components/ScreenEmpty';
+import { ScreenLoading } from '../../../src/components/ScreenLoading';
 import { useLiveMatch } from '../../../src/hooks/use-live-match';
 import { colors, spacing } from '../../../src/lib/theme';
 
@@ -10,20 +12,10 @@ export default function LiveMatchScreen() {
   const { t } = useTranslation();
   const { match, connected, loading } = useLiveMatch(id ?? '');
 
-  if (loading && !match) {
-    return (
-      <View style={styles.center}>
-        <ActivityIndicator size="large" color={colors.primary} />
-      </View>
-    );
-  }
+  if (loading && !match) return <ScreenLoading />;
 
   if (!match) {
-    return (
-      <View style={styles.center}>
-        <Text style={styles.muted}>{t('error')}</Text>
-      </View>
-    );
+    return <ScreenEmpty message={t('error')} icon="alert-circle-outline" />;
   }
 
   const isLive = match.status === 'LIVE' || match.status === 'HALFTIME';
@@ -61,7 +53,6 @@ export default function LiveMatchScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.surface },
   content: { padding: spacing.lg },
-  center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   scoreboard: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -77,5 +68,4 @@ const styles = StyleSheet.create({
   liveBadge: { color: '#FCA5A5', marginTop: spacing.xs, fontWeight: '600' },
   status: { color: colors.white, opacity: 0.8, marginTop: spacing.xs },
   venue: { textAlign: 'center', color: colors.textMuted, marginBottom: spacing.lg },
-  muted: { color: colors.textMuted },
 });

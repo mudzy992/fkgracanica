@@ -8,14 +8,14 @@
 - [x] Login returnTo + continue as guest
 
 ## Faza 2 Content + Live
-- [ ] Home / news polish
-- [ ] Live socket smoke
+- [x] Home / news polish
+- [x] Live socket smoke
 
 ## Faza 3 Member + Tickets
-- [ ] Membership QR
-- [ ] Tickets QR
-- [ ] Notifications badge
+- [x] Membership QR
+- [x] Tickets QR
+- [x] Notifications badge
 
 ## Faza 4 Polish
-- [ ] Icons / empty states
-- [ ] Preview smoke
+- [x] Icons / empty states
+- [x] Preview smoke

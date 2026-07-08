@@ -1,20 +1,14 @@
 import { useLocalSearchParams } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, Text } from 'react-native';
 import { RemoteImage } from '../../../src/components/RemoteImage';
+import { ScreenEmpty } from '../../../src/components/ScreenEmpty';
+import { ScreenLoading } from '../../../src/components/ScreenLoading';
 import { api } from '../../../src/lib/api';
+import { formatDateBs } from '../../../src/lib/format-date';
 import { colors, spacing, typography } from '../../../src/lib/theme';
 import type { NewsItem } from '../../../src/types/api';
-
-function formatDate(iso: string | null): string {
-  if (!iso) return '';
-  return new Date(iso).toLocaleDateString('bs-BA', {
-    day: '2-digit',
-    month: 'long',
-    year: 'numeric',
-  });
-}
 
 export default function NewsDetailScreen() {
   const { slug } = useLocalSearchParams<{ slug: string }>();
@@ -36,20 +30,10 @@ export default function NewsDetailScreen() {
     void loadArticle().finally(() => setLoading(false));
   }, [loadArticle]);
 
-  if (loading) {
-    return (
-      <View style={styles.center}>
-        <ActivityIndicator size="large" color={colors.primary} />
-      </View>
-    );
-  }
+  if (loading) return <ScreenLoading />;
 
   if (!article) {
-    return (
-      <View style={styles.center}>
-        <Text style={styles.empty}>{t('error')}</Text>
-      </View>
-    );
+    return <ScreenEmpty message={t('error')} icon="alert-circle-outline" />;
   }
 
   return (
@@ -57,7 +41,7 @@ export default function NewsDetailScreen() {
       {article.coverPath ? <RemoteImage path={article.coverPath} style={styles.cover} /> : null}
       <Text style={styles.title}>{article.title}</Text>
       <Text style={styles.date}>
-        {formatDate(article.publishedAt ?? article.createdAt)}
+        {formatDateBs(article.publishedAt ?? article.createdAt)}
         {article.category ? ` · ${article.category.name}` : ''}
       </Text>
       <Text style={styles.body}>{article.content}</Text>
@@ -68,10 +52,8 @@ export default function NewsDetailScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.background },
   content: { padding: spacing.md },
-  center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   cover: { marginBottom: spacing.md },
   title: { ...typography.title, color: colors.text, marginBottom: spacing.sm },
   date: { ...typography.caption, color: colors.textMuted, marginBottom: spacing.lg },
   body: { ...typography.body, color: colors.text, lineHeight: 24 },
-  empty: { color: colors.textMuted },
 });
