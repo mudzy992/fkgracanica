@@ -1,4 +1,4 @@
-import '../src/i18n';
+import { hydrateLanguage } from '../src/i18n';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
@@ -10,7 +10,10 @@ import { ThemeProvider, useTheme } from '../src/lib/theme-context';
 function RootStack() {
   const { colors, isDark } = useTheme();
 
-  useEffect(() => registerPushDeepLinks(), []);
+  useEffect(() => {
+    void hydrateLanguage();
+    return registerPushDeepLinks();
+  }, []);
 
   return (
     <>

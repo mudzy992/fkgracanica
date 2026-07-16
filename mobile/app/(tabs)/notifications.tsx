@@ -14,24 +14,29 @@ import { ScreenLoading } from '../../src/components/ScreenLoading';
 import { useUnreadNotifications } from '../../src/hooks/use-unread-notifications';
 import { api } from '../../src/lib/api';
 import { formatDateTimeBs } from '../../src/lib/format-date';
-import { colors, spacing, typography } from '../../src/lib/theme';
+import { useTheme } from '../../src/lib/theme-context';
+import { spacing, typography } from '../../src/lib/theme';
 import type { Notification, PaginatedResponse } from '../../src/types/api';
 
 function NotificationsBody() {
   const { t } = useTranslation();
+  const { colors } = useTheme();
   const { refresh: refreshBadge } = useUnreadNotifications();
   const [items, setItems] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const loadNotifications = useCallback(async () => {
     try {
+      setError(null);
       const { data } = await api.get<PaginatedResponse<Notification>>('/notifications');
       setItems(data.data);
     } catch {
       setItems([]);
+      setError(t('error'));
     }
-  }, []);
+  }, [t]);
 
   useEffect(() => {
     void loadNotifications().finally(() => setLoading(false));
@@ -58,6 +63,19 @@ function NotificationsBody() {
   };
 
   if (loading) return <ScreenLoading />;
+  if (error) {
+    return (
+      <ScreenEmpty
+        message={error}
+        icon="alert-circle-outline"
+        actionLabel={t('retry')}
+        onAction={() => {
+          setLoading(true);
+          void loadNotifications().finally(() => setLoading(false));
+        }}
+      />
+    );
+  }
 
   const hasUnread = items.some((n) => !n.isRead);
 
@@ -79,8 +97,13 @@ function NotificationsBody() {
       }
       ListHeaderComponent={
         hasUnread ? (
-          <Pressable style={styles.markAll} onPress={() => void markAllRead()}>
-            <Text style={styles.action}>{t('markAllRead')}</Text>
+          <Pressable
+            style={styles.markAll}
+            onPress={() => void markAllRead()}
+            accessibilityRole="button"
+            accessibilityLabel={t('markAllRead')}
+          >
+            <Text style={[styles.action, { color: colors.accent }]}>{t('markAllRead')}</Text>
           </Pressable>
         ) : null
       }
@@ -88,13 +111,22 @@ function NotificationsBody() {
         <ScreenEmpty message={t('noNotifications')} icon="notifications-outline" />
       }
       renderItem={({ item }) => (
-        <View style={[styles.card, !item.isRead && styles.unread]}>
-          <Text style={styles.title}>{item.title}</Text>
-          <Text style={styles.body}>{item.body}</Text>
-          <Text style={styles.date}>{formatDateTimeBs(item.createdAt)}</Text>
+        <View
+          style={[
+            styles.card,
+            { backgroundColor: colors.background, borderColor: colors.border },
+            !item.isRead && { borderLeftWidth: 4, borderLeftColor: colors.primary },
+          ]}
+        >
+          <View style={styles.titleRow}>
+            {!item.isRead ? <View style={[styles.dot, { backgroundColor: colors.primary }]} /> : null}
+            <Text style={[styles.title, { color: colors.text, flex: 1 }]}>{item.title}</Text>
+          </View>
+          <Text style={[styles.body, { color: colors.textMuted }]}>{item.body}</Text>
+          <Text style={[styles.date, { color: colors.textMuted }]}>{formatDateTimeBs(item.createdAt)}</Text>
           {!item.isRead ? (
-            <Pressable onPress={() => void markRead(item.id)}>
-              <Text style={styles.action}>{t('markRead')}</Text>
+            <Pressable onPress={() => void markRead(item.id)} accessibilityRole="button">
+              <Text style={[styles.action, { color: colors.accent }]}>{t('markRead')}</Text>
             </Pressable>
           ) : null}
         </View>
@@ -107,18 +139,17 @@ const styles = StyleSheet.create({
   list: { padding: spacing.md, flexGrow: 1 },
   markAll: { marginBottom: spacing.sm, alignSelf: 'flex-end' },
   card: {
-    backgroundColor: colors.background,
     borderRadius: 10,
     padding: spacing.md,
     borderWidth: 1,
-    borderColor: colors.border,
     marginBottom: spacing.sm,
   },
-  unread: { borderLeftWidth: 4, borderLeftColor: colors.primary },
-  title: { ...typography.heading, color: colors.text },
-  body: { ...typography.body, color: colors.textMuted, marginTop: spacing.xs },
-  date: { ...typography.caption, color: colors.textMuted, marginTop: spacing.sm },
-  action: { color: colors.accent, marginTop: spacing.sm, fontWeight: '600' },
+  titleRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
+  dot: { width: 8, height: 8, borderRadius: 4 },
+  title: { ...typography.heading },
+  body: { ...typography.body, marginTop: spacing.xs },
+  date: { ...typography.caption, marginTop: spacing.sm },
+  action: { marginTop: spacing.sm, fontWeight: '600' },
 });
 
 export default function NotificationsScreen() {

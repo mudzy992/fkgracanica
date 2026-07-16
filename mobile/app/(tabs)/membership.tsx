@@ -13,7 +13,8 @@ import { RequireAuth } from '../../src/components/RequireAuth';
 import { ScreenEmpty } from '../../src/components/ScreenEmpty';
 import { ScreenLoading } from '../../src/components/ScreenLoading';
 import { formatDateBs } from '../../src/lib/format-date';
-import { colors, spacing, typography } from '../../src/lib/theme';
+import { useTheme } from '../../src/lib/theme-context';
+import { spacing, typography } from '../../src/lib/theme';
 import type { Membership } from '../../src/types/api';
 
 function canRegister(status: string | undefined): boolean {
@@ -22,19 +23,23 @@ function canRegister(status: string | undefined): boolean {
 
 function MembershipBody() {
   const { t } = useTranslation();
+  const { colors } = useTheme();
   const [memberships, setMemberships] = useState<Membership[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [registering, setRegistering] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const loadMembership = useCallback(async () => {
     try {
+      setError(null);
       const { data } = await api.get<Membership[]>('/membership/me');
       setMemberships(data);
     } catch {
       setMemberships([]);
+      setError(t('error'));
     }
-  }, []);
+  }, [t]);
 
   useEffect(() => {
     void loadMembership().finally(() => setLoading(false));
@@ -55,10 +60,24 @@ function MembershipBody() {
 
   if (loading) return <ScreenLoading />;
 
+  if (error) {
+    return (
+      <ScreenEmpty
+        message={error}
+        icon="alert-circle-outline"
+        actionLabel={t('retry')}
+        onAction={() => {
+          setLoading(true);
+          void loadMembership().finally(() => setLoading(false));
+        }}
+      />
+    );
+  }
+
   if (active?.card) {
     return (
       <ScrollView
-        style={styles.container}
+        style={[styles.container, { backgroundColor: colors.surface }]}
         contentContainerStyle={styles.content}
         refreshControl={
           <RefreshControl
@@ -70,19 +89,19 @@ function MembershipBody() {
           />
         }
       >
-        <Text style={styles.title}>{t('membershipCard')}</Text>
-        <View style={styles.card}>
-          <Text style={styles.label}>{t('cardNumber')}</Text>
-          <Text style={styles.value}>{active.card.cardNumber}</Text>
-          <Text style={styles.label}>{t('status')}</Text>
-          <Text style={styles.value}>{active.status}</Text>
-          <Text style={styles.label}>{t('validUntil')}</Text>
-          <Text style={styles.value}>{formatDateBs(active.endDate)}</Text>
+        <Text style={[styles.title, { color: colors.primary }]}>{t('membershipCard')}</Text>
+        <View style={[styles.card, { backgroundColor: colors.background, borderColor: colors.border }]}>
+          <Text style={[styles.label, { color: colors.textMuted }]}>{t('cardNumber')}</Text>
+          <Text style={[styles.value, { color: colors.text }]}>{active.card.cardNumber}</Text>
+          <Text style={[styles.label, { color: colors.textMuted }]}>{t('status')}</Text>
+          <Text style={[styles.value, { color: colors.text }]}>{active.status}</Text>
+          <Text style={[styles.label, { color: colors.textMuted }]}>{t('validUntil')}</Text>
+          <Text style={[styles.value, { color: colors.text }]}>{formatDateBs(active.endDate)}</Text>
         </View>
         <View style={styles.qrBox}>
-          <Text style={styles.label}>{t('qrCode')}</Text>
+          <Text style={[styles.label, { color: colors.textMuted }]}>{t('qrCode')}</Text>
           <QrCodeView value={active.card.qrCode} size={220} />
-          <Text style={styles.qrHint}>{t('qrHint')}</Text>
+          <Text style={[styles.qrHint, { color: colors.textMuted }]}>{t('qrHint')}</Text>
         </View>
       </ScrollView>
     );
@@ -116,19 +135,17 @@ export default function MembershipScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.surface },
+  container: { flex: 1 },
   content: { padding: spacing.lg },
-  title: { ...typography.title, color: colors.primary, marginBottom: spacing.lg },
+  title: { ...typography.title, marginBottom: spacing.lg },
   card: {
-    backgroundColor: colors.background,
     borderRadius: 12,
     padding: spacing.lg,
     borderWidth: 1,
-    borderColor: colors.border,
     marginBottom: spacing.lg,
   },
-  label: { ...typography.caption, color: colors.textMuted, marginTop: spacing.sm },
-  value: { ...typography.heading, color: colors.text },
+  label: { ...typography.caption, marginTop: spacing.sm },
+  value: { ...typography.heading },
   qrBox: { alignItems: 'center' },
-  qrHint: { ...typography.caption, color: colors.textMuted, marginTop: spacing.md },
+  qrHint: { ...typography.caption, marginTop: spacing.md },
 });

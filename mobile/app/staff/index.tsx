@@ -22,10 +22,18 @@ function StaffHubBody() {
       <SectionHeader title={t('staffWorkspace')} subtitle={t('staffWorkspaceHint')} />
       {hasPermission(user, 'news.submit') || hasPermission(user, 'news.manage') ? (
         <ListRow
-          title="Writer"
-          subtitle="News submit i uređivanje"
+          title={t('writer')}
+          subtitle={t('writerHint')}
           icon="create-outline"
           onPress={() => router.push('/staff/writer')}
+        />
+      ) : null}
+      {hasPermission(user, 'gallery.manage') ? (
+        <ListRow
+          title={t('galleryManage')}
+          subtitle={t('galleryManageHint')}
+          icon="images-outline"
+          onPress={() => router.push('/staff/gallery-manage')}
         />
       ) : null}
       {hasPermission(user, 'live.manage') ? (

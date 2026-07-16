@@ -3,10 +3,12 @@ import { useState } from 'react';
 import { Alert, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { RequirePermission } from '../../../src/components/RequirePermission';
 import { Screen } from '../../../src/components/primitives/Screen';
-import { colors, spacing, typography } from '../../../src/lib/theme';
+import { useTheme } from '../../../src/lib/theme-context';
+import { spacing, typography } from '../../../src/lib/theme';
 import { api } from '../../../src/lib/api';
 
 export default function AdminValidateScreen() {
+  const { colors } = useTheme();
   const [permission, requestPermission] = useCameraPermissions();
   const [qrCode, setQrCode] = useState('');
   const [result, setResult] = useState('');
@@ -20,8 +22,8 @@ export default function AdminValidateScreen() {
   return (
     <RequirePermission permission="ticketing.manage" returnTo="/staff/admin/validate">
       <Screen scroll>
-        <Text style={styles.title}>QR validacija</Text>
-        <View style={styles.card}>
+        <Text style={[styles.title, { color: colors.text }]}>QR validacija</Text>
+        <View style={[styles.card, { backgroundColor: colors.background, borderColor: colors.border }]}>
           {permission?.granted ? (
             <CameraView
               style={styles.camera}
@@ -32,15 +34,24 @@ export default function AdminValidateScreen() {
               }}
             />
           ) : (
-            <Pressable style={styles.button} onPress={() => void requestPermission()}>
-              <Text style={styles.buttonText}>Omogući kameru</Text>
+            <Pressable style={[styles.button, { backgroundColor: colors.primary }]} onPress={() => void requestPermission()}>
+              <Text style={[styles.buttonText, { color: colors.white }]}>Omogući kameru</Text>
             </Pressable>
           )}
-          <TextInput style={styles.input} value={qrCode} onChangeText={setQrCode} placeholder="Ili unesite QR kod ručno" />
-          <Pressable style={styles.button} onPress={() => void validate()}>
-            <Text style={styles.buttonText}>Validiraj</Text>
+          <TextInput
+            style={[
+              styles.input,
+              { borderColor: colors.border, backgroundColor: colors.surface, color: colors.text },
+            ]}
+            value={qrCode}
+            onChangeText={setQrCode}
+            placeholder="Ili unesite QR kod ručno"
+            placeholderTextColor={colors.textMuted}
+          />
+          <Pressable style={[styles.button, { backgroundColor: colors.primary }]} onPress={() => void validate()}>
+            <Text style={[styles.buttonText, { color: colors.white }]}>Validiraj</Text>
           </Pressable>
-          {result ? <Text style={styles.result}>{result}</Text> : null}
+          {result ? <Text style={[styles.result, { color: colors.textMuted }]}>{result}</Text> : null}
         </View>
       </Screen>
     </RequirePermission>
@@ -48,26 +59,21 @@ export default function AdminValidateScreen() {
 }
 
 const styles = StyleSheet.create({
-  title: { ...typography.title, color: colors.text },
+  title: { ...typography.title },
   card: {
-    backgroundColor: colors.background,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: colors.border,
     padding: spacing.md,
     gap: spacing.sm,
   },
   camera: { height: 260, borderRadius: 12, overflow: 'hidden' },
   input: {
     borderWidth: 1,
-    borderColor: colors.border,
     borderRadius: 10,
-    backgroundColor: colors.surface,
-    color: colors.text,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm + 2,
   },
-  button: { backgroundColor: colors.primary, borderRadius: 10, paddingVertical: spacing.md, alignItems: 'center' },
-  buttonText: { color: colors.white, fontWeight: '600' },
-  result: { ...typography.caption, color: colors.textMuted },
+  button: { borderRadius: 10, paddingVertical: spacing.md, alignItems: 'center' },
+  buttonText: { fontWeight: '600' },
+  result: { ...typography.caption },
 });

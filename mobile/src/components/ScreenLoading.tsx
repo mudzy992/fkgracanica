@@ -1,7 +1,8 @@
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
-import { colors } from '../lib/theme';
+import { useTheme } from '../lib/theme-context';
 
 export function ScreenLoading() {
+  const { colors } = useTheme();
   return (
     <View style={styles.center}>
       <ActivityIndicator size="large" color={colors.primary} />

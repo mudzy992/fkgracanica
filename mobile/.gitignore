@@ -31,7 +31,9 @@ yarn-error.*
 *.pem
 
 # local env files
+.env
 .env*.local
+
 
 # iOS Firebase plist (keep out of git; Android google-services.json
 # must be available to EAS local pack — treat as client config)

@@ -10,26 +10,30 @@ Interni preview (bez store submita).
 
 ## Guest
 
-- [ ] Home bez logina (next match + latest news)
+- [ ] Home bez logina (next match + latest news); skeleton pa content
 - [ ] News list → slug detail (cover + DD.MM.YYYY)
-- [ ] Live tab lista → match detail + connected badge
-- [ ] More tab → Galerija / Tim / Liga / Baština / Kontakt / Pretraga / CMS stranice
+- [ ] Live tab lista → match detail + connected badge; score pulse na update
+- [ ] More → Galerija / Tim / Liga / Baština / Kontakt / Pretraga / CMS
+- [ ] Search: tap rezultat → odgovarajući ekran
 - [ ] „Nastavi bez prijave” sa logina → home
+- [ ] API fail → error + retry (ne prazan empty)
 
 ## Auth
 
 - [ ] Članstvo / Ulaznice / Obavještenja → login gate + returnTo
 - [ ] Membership ACTIVE → skenirabilan QR
-- [ ] Tickets filter + fullscreen QR
-- [ ] Notif mark one / mark all; badge pada
+- [ ] Tickets filter + QR modal sa dugmetom Zatvori
+- [ ] Notif unread dot + mark one / mark all; badge pada
 - [ ] Push permission prompt nakon logina
 - [ ] Logout
 
-## Flags / theme / live
+## Theme / i18n / flags
 
+- [ ] More → Izgled: system → light → dark (persist restart)
+- [ ] More → Jezik: BS ↔ EN (persist restart)
+- [ ] Dark mode na Home / News / Live / More / Staff
 - [ ] `feature.membership=false` / `modules.ticketing=false` → tab nestaje
-- [ ] `modules.gallery=false` / `modules.cms=false` → More screen skriva module
-- [ ] System dark mode
+- [ ] `modules.gallery=false` / `modules.cms=false` → More skriva module
 - [ ] Live: network drop → reconnect, eventi/score
 
 ## Staff

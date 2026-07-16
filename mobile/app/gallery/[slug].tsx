@@ -6,12 +6,14 @@ import { ScreenEmpty } from '../../src/components/ScreenEmpty';
 import { ScreenLoading } from '../../src/components/ScreenLoading';
 import { api } from '../../src/lib/api';
 import { asArray, asRecord, asString } from '../../src/lib/content-helpers';
-import { colors, spacing, typography } from '../../src/lib/theme';
+import { useTheme } from '../../src/lib/theme-context';
+import { spacing, typography } from '../../src/lib/theme';
 
 type Photo = { id: string; path?: string; caption?: string };
 
 export default function GalleryDetailScreen() {
   const { slug } = useLocalSearchParams<{ slug: string }>();
+  const { colors } = useTheme();
   const [title, setTitle] = useState('');
   const [photos, setPhotos] = useState<Photo[]>([]);
   const [loading, setLoading] = useState(true);
@@ -48,12 +50,12 @@ export default function GalleryDetailScreen() {
       data={photos}
       keyExtractor={(item) => item.id}
       contentContainerStyle={styles.list}
-      ListHeaderComponent={<Text style={styles.title}>{title}</Text>}
+      ListHeaderComponent={<Text style={[styles.title, { color: colors.text }]}>{title}</Text>}
       ListEmptyComponent={<ScreenEmpty message="Galerija nema fotografija." icon="image-outline" />}
       renderItem={({ item }) => (
         <View style={styles.card}>
           <RemoteImage path={item.path} style={styles.image} />
-          {item.caption ? <Text style={styles.caption}>{item.caption}</Text> : null}
+          {item.caption ? <Text style={[styles.caption, { color: colors.textMuted }]}>{item.caption}</Text> : null}
         </View>
       )}
     />
@@ -62,8 +64,8 @@ export default function GalleryDetailScreen() {
 
 const styles = StyleSheet.create({
   list: { padding: spacing.md, gap: spacing.sm, flexGrow: 1 },
-  title: { ...typography.title, color: colors.text, marginBottom: spacing.sm },
+  title: { ...typography.title, marginBottom: spacing.sm },
   card: { marginBottom: spacing.md },
   image: { height: 220 },
-  caption: { ...typography.caption, color: colors.textMuted, marginTop: spacing.xs },
+  caption: { ...typography.caption, marginTop: spacing.xs },
 });

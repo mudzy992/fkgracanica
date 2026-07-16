@@ -1,13 +1,13 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { colors, spacing, typography } from '../lib/theme';
+import { useTheme } from '../lib/theme-context';
+import { spacing, typography } from '../lib/theme';
 
 type Props = {
   message: string;
   icon?: keyof typeof Ionicons.glyphMap;
   actionLabel?: string;
   onAction?: () => void;
-  /** Inline (e.g. home section) — no flex fill */
   compact?: boolean;
 };
 
@@ -18,13 +18,19 @@ export function ScreenEmpty({
   onAction,
   compact,
 }: Props) {
+  const { colors } = useTheme();
   return (
     <View style={[styles.center, compact ? styles.compact : styles.fill]}>
       <Ionicons name={icon} size={compact ? 28 : 40} color={colors.textMuted} />
-      <Text style={styles.message}>{message}</Text>
+      <Text style={[styles.message, { color: colors.textMuted }]}>{message}</Text>
       {actionLabel && onAction ? (
-        <Pressable style={styles.cta} onPress={onAction}>
-          <Text style={styles.ctaText}>{actionLabel}</Text>
+        <Pressable
+          style={[styles.cta, { backgroundColor: colors.primary }]}
+          onPress={onAction}
+          accessibilityRole="button"
+          accessibilityLabel={actionLabel}
+        >
+          <Text style={[styles.ctaText, { color: colors.white }]}>{actionLabel}</Text>
         </Pressable>
       ) : null}
     </View>
@@ -35,18 +41,12 @@ const styles = StyleSheet.create({
   center: { alignItems: 'center', justifyContent: 'center', padding: spacing.lg },
   fill: { flex: 1 },
   compact: { paddingVertical: spacing.md },
-  message: {
-    ...typography.body,
-    color: colors.textMuted,
-    textAlign: 'center',
-    marginTop: spacing.md,
-  },
+  message: { ...typography.body, textAlign: 'center', marginTop: spacing.md },
   cta: {
     marginTop: spacing.lg,
-    backgroundColor: colors.primary,
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.md,
     borderRadius: 10,
   },
-  ctaText: { color: colors.white, fontWeight: '600' },
+  ctaText: { fontWeight: '600' },
 });

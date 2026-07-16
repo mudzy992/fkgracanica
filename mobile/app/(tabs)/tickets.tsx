@@ -1,21 +1,15 @@
+import { useRouter } from 'expo-router';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-  FlatList,
-  Modal,
-  Pressable,
-  RefreshControl,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import { FlatList, Pressable, RefreshControl, StyleSheet, Text, View } from 'react-native';
 import { api } from '../../src/lib/api';
-import { QrCodeView } from '../../src/components/QrCodeView';
+import { QrModal } from '../../src/components/QrModal';
 import { RequireAuth } from '../../src/components/RequireAuth';
 import { ScreenEmpty } from '../../src/components/ScreenEmpty';
 import { ScreenLoading } from '../../src/components/ScreenLoading';
-import { formatDateBs } from '../../src/lib/format-date';
-import { colors, spacing, typography } from '../../src/lib/theme';
+import { TicketOrderCard } from '../../src/components/TicketOrderCard';
+import { useTheme } from '../../src/lib/theme-context';
+import { spacing, typography } from '../../src/lib/theme';
 import type { Ticket, TicketOrder } from '../../src/types/api';
 
 type Filter = 'all' | 'valid' | 'used';
@@ -29,21 +23,26 @@ function ticketMatches(ticket: Ticket, filter: Filter): boolean {
 }
 
 function TicketsBody() {
+  const { colors } = useTheme();
   const { t } = useTranslation();
+  const router = useRouter();
   const [orders, setOrders] = useState<TicketOrder[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [filter, setFilter] = useState<Filter>('all');
   const [qrValue, setQrValue] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   const loadOrders = useCallback(async () => {
     try {
+      setError(null);
       const { data } = await api.get<TicketOrder[]>('/ticketing/orders');
       setOrders(data);
     } catch {
       setOrders([]);
+      setError(t('error'));
     }
-  }, []);
+  }, [t]);
 
   useEffect(() => {
     void loadOrders().finally(() => setLoading(false));
@@ -58,6 +57,19 @@ function TicketsBody() {
   );
 
   if (loading) return <ScreenLoading />;
+  if (error) {
+    return (
+      <ScreenEmpty
+        message={error}
+        icon="alert-circle-outline"
+        actionLabel={t('retry')}
+        onAction={() => {
+          setLoading(true);
+          void loadOrders().finally(() => setLoading(false));
+        }}
+      />
+    );
+  }
 
   return (
     <>
@@ -65,15 +77,33 @@ function TicketsBody() {
         {(['all', 'valid', 'used'] as Filter[]).map((f) => (
           <Pressable
             key={f}
-            style={[styles.chip, filter === f && styles.chipActive]}
+            style={[
+              styles.chip,
+              { borderColor: colors.border, backgroundColor: colors.background },
+              filter === f && { backgroundColor: colors.primary, borderColor: colors.primary },
+            ]}
             onPress={() => setFilter(f)}
+            accessibilityRole="button"
           >
-            <Text style={[styles.chipText, filter === f && styles.chipTextActive]}>
+            <Text
+              style={[
+                styles.chipText,
+                { color: colors.text },
+                filter === f && { color: colors.white, fontWeight: '600' },
+              ]}
+            >
               {f === 'all' ? t('filterAll') : f === 'valid' ? t('filterValid') : t('filterUsed')}
             </Text>
           </Pressable>
         ))}
       </View>
+      <Pressable
+        style={[styles.buyBtn, { backgroundColor: colors.primary }]}
+        onPress={() => router.push('/tickets-buy')}
+        accessibilityRole="button"
+      >
+        <Text style={[styles.buyText, { color: colors.white }]}>{t('reserveTicket')}</Text>
+      </Pressable>
       <FlatList
         data={filtered}
         keyExtractor={(item) => item.id}
@@ -89,44 +119,14 @@ function TicketsBody() {
         }
         ListEmptyComponent={<ScreenEmpty message={t('noTickets')} icon="ticket-outline" />}
         renderItem={({ item }) => (
-          <View style={styles.card}>
-            <Text style={styles.orderTitle}>
-              {t('order')} · {formatDateBs(item.createdAt)}
-            </Text>
-            <Text style={styles.status}>
-              {t('status')}: {item.status}
-            </Text>
-            {item.tickets.map((ticket) => (
-              <View key={ticket.id} style={styles.ticket}>
-                <Text style={styles.ticketLine}>
-                  {t('category')}: {ticket.category}
-                </Text>
-                <Text style={styles.ticketLine}>
-                  {t('price')}: {ticket.price} KM
-                </Text>
-                <Text style={styles.ticketLine}>
-                  {t('status')}: {ticket.status}
-                </Text>
-                <Pressable
-                  style={styles.qrWrap}
-                  onPress={() => setQrValue(ticket.qrCode)}
-                  accessibilityLabel={t('showQr')}
-                >
-                  <QrCodeView value={ticket.qrCode} size={120} />
-                  <Text style={styles.showQr}>{t('showQr')}</Text>
-                </Pressable>
-              </View>
-            ))}
-          </View>
+          <TicketOrderCard
+            order={item}
+            onShowQr={setQrValue}
+            onRefunded={() => void loadOrders()}
+          />
         )}
       />
-      <Modal visible={!!qrValue} transparent animationType="fade" onRequestClose={() => setQrValue(null)}>
-        <Pressable style={styles.modalBackdrop} onPress={() => setQrValue(null)}>
-          <View style={styles.modalCard}>
-            {qrValue ? <QrCodeView value={qrValue} size={260} /> : null}
-          </View>
-        </Pressable>
-      </Modal>
+      <QrModal value={qrValue} onClose={() => setQrValue(null)} />
     </>
   );
 }
@@ -134,43 +134,16 @@ function TicketsBody() {
 const styles = StyleSheet.create({
   list: { padding: spacing.md, flexGrow: 1 },
   filters: { flexDirection: 'row', gap: spacing.sm, padding: spacing.md, paddingBottom: 0 },
-  chip: {
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.xs,
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: colors.border,
-    backgroundColor: colors.background,
-  },
-  chipActive: { backgroundColor: colors.primary, borderColor: colors.primary },
-  chipText: { ...typography.caption, color: colors.text },
-  chipTextActive: { color: colors.white, fontWeight: '600' },
-  card: {
-    backgroundColor: colors.background,
+  chip: { paddingHorizontal: spacing.md, paddingVertical: spacing.xs, borderRadius: 16, borderWidth: 1 },
+  chipText: { ...typography.caption },
+  buyBtn: {
+    marginHorizontal: spacing.md,
+    marginTop: spacing.sm,
     borderRadius: 10,
-    padding: spacing.md,
-    borderWidth: 1,
-    borderColor: colors.border,
-    marginBottom: spacing.md,
-  },
-  orderTitle: { ...typography.heading, color: colors.text },
-  status: { ...typography.caption, color: colors.textMuted, marginTop: spacing.xs },
-  ticket: {
-    marginTop: spacing.md,
-    paddingTop: spacing.md,
-    borderTopWidth: 1,
-    borderTopColor: colors.border,
-  },
-  ticketLine: { ...typography.body, color: colors.text, marginTop: spacing.xs },
-  qrWrap: { marginTop: spacing.sm, alignItems: 'flex-start' },
-  showQr: { color: colors.accent, marginTop: spacing.xs, fontWeight: '600' },
-  modalBackdrop: {
-    flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.7)',
+    paddingVertical: spacing.sm,
     alignItems: 'center',
-    justifyContent: 'center',
   },
-  modalCard: { backgroundColor: colors.white, borderRadius: 16, padding: spacing.lg },
+  buyText: { fontWeight: '600' },
 });
 
 export default function TicketsScreen() {

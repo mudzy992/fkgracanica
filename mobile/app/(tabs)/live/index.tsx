@@ -9,11 +9,12 @@ import {
   Text,
   View,
 } from 'react-native';
+import { ListSkeleton } from '../../../src/components/ListSkeleton';
 import { ScreenEmpty } from '../../../src/components/ScreenEmpty';
-import { ScreenLoading } from '../../../src/components/ScreenLoading';
 import { api } from '../../../src/lib/api';
 import { formatDateTimeBs } from '../../../src/lib/format-date';
-import { colors, spacing, typography } from '../../../src/lib/theme';
+import { useTheme } from '../../../src/lib/theme-context';
+import { spacing, typography } from '../../../src/lib/theme';
 import type { Match } from '../../../src/types/api';
 
 function Section({
@@ -25,16 +26,25 @@ function Section({
   matches: Match[];
   onPress: (id: string) => void;
 }) {
+  const { colors } = useTheme();
   if (matches.length === 0) return null;
   return (
     <View style={styles.section}>
-      <Text style={styles.sectionTitle}>{title}</Text>
+      <Text style={[styles.sectionTitle, { color: colors.text }]}>{title}</Text>
       {matches.map((m) => (
-        <Pressable key={m.id} style={styles.card} onPress={() => onPress(m.id)}>
-          <Text style={styles.teams}>
+        <Pressable
+          key={m.id}
+          style={({ pressed }) => [
+            styles.card,
+            { backgroundColor: colors.background, borderColor: colors.border, opacity: pressed ? 0.9 : 1 },
+          ]}
+          onPress={() => onPress(m.id)}
+          accessibilityRole="button"
+        >
+          <Text style={[styles.teams, { color: colors.text }]}>
             {m.homeClub.name} vs {m.awayClub.name}
           </Text>
-          <Text style={styles.meta}>
+          <Text style={[styles.meta, { color: colors.textMuted }]}>
             {m.status === 'LIVE' || m.status === 'HALFTIME'
               ? `${m.homeScore} : ${m.awayScore} · ${m.minute}'`
               : formatDateTimeBs(m.scheduledAt)}
@@ -46,20 +56,24 @@ function Section({
 }
 
 export default function LiveListScreen() {
+  const { colors } = useTheme();
   const { t } = useTranslation();
   const router = useRouter();
   const [matches, setMatches] = useState<Match[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     try {
+      setError(null);
       const { data } = await api.get<Match[]>('/matches');
       setMatches(data);
     } catch {
       setMatches([]);
+      setError(t('error'));
     }
-  }, []);
+  }, [t]);
 
   useEffect(() => {
     void load().finally(() => setLoading(false));
@@ -67,27 +81,40 @@ export default function LiveListScreen() {
 
   const { live, upcoming, recent } = useMemo(() => {
     const now = Date.now();
-    const liveMs = matches.filter((m) => m.status === 'LIVE' || m.status === 'HALFTIME');
-    const upcomingMs = matches
-      .filter((m) => m.status === 'SCHEDULED' && new Date(m.scheduledAt).getTime() >= now)
-      .sort((a, b) => new Date(a.scheduledAt).getTime() - new Date(b.scheduledAt).getTime())
-      .slice(0, 10);
-    const recentMs = matches
-      .filter((m) => m.status === 'FINISHED')
-      .sort((a, b) => new Date(b.scheduledAt).getTime() - new Date(a.scheduledAt).getTime())
-      .slice(0, 5);
-    return { live: liveMs, upcoming: upcomingMs, recent: recentMs };
+    return {
+      live: matches.filter((m) => m.status === 'LIVE' || m.status === 'HALFTIME'),
+      upcoming: matches
+        .filter((m) => m.status === 'SCHEDULED' && new Date(m.scheduledAt).getTime() >= now)
+        .sort((a, b) => new Date(a.scheduledAt).getTime() - new Date(b.scheduledAt).getTime())
+        .slice(0, 10),
+      recent: matches
+        .filter((m) => m.status === 'FINISHED')
+        .sort((a, b) => new Date(b.scheduledAt).getTime() - new Date(a.scheduledAt).getTime())
+        .slice(0, 5),
+    };
   }, [matches]);
 
+  if (loading) return <ListSkeleton />;
+  if (error) {
+    return (
+      <ScreenEmpty
+        message={error}
+        icon="alert-circle-outline"
+        actionLabel={t('retry')}
+        onAction={() => {
+          setLoading(true);
+          void load().finally(() => setLoading(false));
+        }}
+      />
+    );
+  }
+
   const open = (id: string) => router.push(`/(tabs)/live/${id}`);
-
-  if (loading) return <ScreenLoading />;
-
   const empty = live.length === 0 && upcoming.length === 0 && recent.length === 0;
 
   return (
     <ScrollView
-      style={styles.container}
+      style={[styles.container, { backgroundColor: colors.surface }]}
       contentContainerStyle={[styles.content, empty && styles.contentEmpty]}
       refreshControl={
         <RefreshControl
@@ -108,19 +135,12 @@ export default function LiveListScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.surface },
+  container: { flex: 1 },
   content: { padding: spacing.md },
   contentEmpty: { flexGrow: 1 },
   section: { marginBottom: spacing.lg },
-  sectionTitle: { ...typography.heading, color: colors.text, marginBottom: spacing.sm },
-  card: {
-    backgroundColor: colors.background,
-    borderRadius: 10,
-    padding: spacing.md,
-    borderWidth: 1,
-    borderColor: colors.border,
-    marginBottom: spacing.sm,
-  },
-  teams: { ...typography.heading, color: colors.text },
-  meta: { ...typography.caption, color: colors.textMuted, marginTop: spacing.xs },
+  sectionTitle: { ...typography.heading, marginBottom: spacing.sm },
+  card: { borderRadius: 10, padding: spacing.md, borderWidth: 1, marginBottom: spacing.sm },
+  teams: { ...typography.heading },
+  meta: { ...typography.caption, marginTop: spacing.xs },
 });

@@ -21,6 +21,17 @@
         "buildType": "apk"
       }
     },
+    "preview": {
+      "extends": "android-base",
+      "distribution": "internal",
+      "env": {
+        "NODE_ENV": "production",
+        "EAS_BUILD_DISABLE_EXPO_DOCTOR": "1"
+      },
+      "android": {
+        "buildType": "apk"
+      }
+    },
     "production": {
       "extends": "android-base",
       "autoIncrement": true,
@@ -29,15 +40,15 @@
         "EAS_BUILD_DISABLE_EXPO_DOCTOR": "1"
       },
       "android": {
-        "buildType": "apk"
+        "buildType": "app-bundle"
       }
     }
   },
   "submit": {
     "production": {
-        "android": {
-            "track": "production"
-        }
+      "android": {
+        "track": "production"
+      }
     }
   }
 }

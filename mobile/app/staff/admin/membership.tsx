@@ -1,13 +1,18 @@
 import { useCallback, useEffect, useState } from 'react';
 import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { RequirePermission } from '../../../src/components/RequirePermission';
 import { api } from '../../../src/lib/api';
 import { asArray, asRecord, asString } from '../../../src/lib/content-helpers';
-import { colors, spacing, typography } from '../../../src/lib/theme';
+import { useTheme } from '../../../src/lib/theme-context';
+import { spacing, typography } from '../../../src/lib/theme';
 
 type MembershipItem = { id: string; name: string; status: string };
+type ActionKind = 'activate' | 'suspend' | 'renew' | 'cancel';
 
 export default function AdminMembershipScreen() {
+  const { t } = useTranslation();
+  const { colors } = useTheme();
   const [items, setItems] = useState<MembershipItem[]>([]);
 
   const load = useCallback(async () => {
@@ -33,9 +38,16 @@ export default function AdminMembershipScreen() {
     void load();
   }, [load]);
 
-  const action = async (id: string, kind: 'activate' | 'suspend' | 'renew' | 'cancel') => {
+  const action = async (id: string, kind: ActionKind) => {
     await api.patch(`/membership/${id}/${kind}`);
     await load();
+  };
+
+  const labels: Record<ActionKind, string> = {
+    activate: t('membershipActivate'),
+    renew: t('membershipRenew'),
+    suspend: t('membershipSuspend'),
+    cancel: t('membershipCancel'),
   };
 
   return (
@@ -43,15 +55,19 @@ export default function AdminMembershipScreen() {
       <FlatList
         data={items}
         keyExtractor={(item) => item.id}
-        contentContainerStyle={styles.list}
+        contentContainerStyle={[styles.list, { backgroundColor: colors.surface }]}
         renderItem={({ item }) => (
-          <View style={styles.card}>
-            <Text style={styles.name}>{item.name}</Text>
-            <Text style={styles.meta}>{item.status}</Text>
+          <View style={[styles.card, { backgroundColor: colors.background, borderColor: colors.border }]}>
+            <Text style={[styles.name, { color: colors.text }]}>{item.name}</Text>
+            <Text style={[styles.meta, { color: colors.textMuted }]}>{item.status}</Text>
             <View style={styles.actions}>
               {(['activate', 'renew', 'suspend', 'cancel'] as const).map((kind) => (
-                <Pressable key={kind} style={styles.button} onPress={() => void action(item.id, kind)}>
-                  <Text style={styles.buttonText}>{kind}</Text>
+                <Pressable
+                  key={kind}
+                  style={[styles.button, { backgroundColor: colors.surface }]}
+                  onPress={() => void action(item.id, kind)}
+                >
+                  <Text style={[styles.buttonText, { color: colors.text }]}>{labels[kind]}</Text>
                 </Pressable>
               ))}
             </View>
@@ -64,17 +80,10 @@ export default function AdminMembershipScreen() {
 
 const styles = StyleSheet.create({
   list: { padding: spacing.md, gap: spacing.sm },
-  card: {
-    backgroundColor: colors.background,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: colors.border,
-    padding: spacing.md,
-    marginBottom: spacing.sm,
-  },
-  name: { ...typography.body, color: colors.text, fontWeight: '600' },
-  meta: { ...typography.caption, color: colors.textMuted, marginTop: spacing.xs },
+  card: { borderRadius: 12, borderWidth: 1, padding: spacing.md, marginBottom: spacing.sm },
+  name: { ...typography.body, fontWeight: '600' },
+  meta: { ...typography.caption, marginTop: spacing.xs },
   actions: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm, marginTop: spacing.sm },
-  button: { backgroundColor: colors.surface, borderRadius: 10, paddingHorizontal: spacing.md, paddingVertical: spacing.sm },
-  buttonText: { color: colors.text, fontWeight: '600' },
+  button: { borderRadius: 10, paddingHorizontal: spacing.md, paddingVertical: spacing.sm },
+  buttonText: { fontWeight: '600' },
 });

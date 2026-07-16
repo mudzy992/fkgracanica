@@ -97,3 +97,36 @@ export type TicketOrder = {
   createdAt: string;
   tickets: Ticket[];
 };
+
+export type TicketCategory = {
+  id: string;
+  label: string;
+  price: number;
+  isActive: boolean;
+};
+
+export type MatchAvailability = {
+  matchId: string;
+  capacity: number;
+  sold: number;
+  remaining: number;
+  memberDiscountPercent: number;
+  userTickets: number;
+  maxPerUser: number | null;
+  userRemainingQuota: number | null;
+  salesModes?: { boxOffice: boolean; online: boolean };
+};
+
+export type TicketingConfig = {
+  categories: TicketCategory[];
+  salesModes?: { boxOffice: boolean; online: boolean };
+};
+
+export type NewsComment = {
+  id: string;
+  content: string;
+  newsId: string;
+  userId: string;
+  createdAt: string;
+  user?: Pick<User, 'id' | 'email' | 'firstName' | 'lastName'> | null;
+};

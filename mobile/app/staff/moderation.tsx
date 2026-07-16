@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { RequireAuth } from '../../src/components/RequireAuth';
 import { ScreenEmpty } from '../../src/components/ScreenEmpty';
 import { Screen } from '../../src/components/primitives/Screen';
@@ -8,12 +9,16 @@ import { api } from '../../src/lib/api';
 import { asArray, asRecord, asString } from '../../src/lib/content-helpers';
 import { useAuth } from '../../src/lib/auth';
 import { hasPermission } from '../../src/lib/permissions';
-import { colors, spacing, typography } from '../../src/lib/theme';
+import { useTheme } from '../../src/lib/theme-context';
+import { spacing, typography } from '../../src/lib/theme';
 
 type PendingItem = { id: string; title: string };
+type Kind = 'news' | 'gallery' | 'live';
 
 export default function ModerationScreen() {
+  const { t } = useTranslation();
   const { user } = useAuth();
+  const { colors } = useTheme();
   const [news, setNews] = useState<PendingItem[]>([]);
   const [gallery, setGallery] = useState<PendingItem[]>([]);
   const [live, setLive] = useState<PendingItem[]>([]);
@@ -25,9 +30,9 @@ export default function ModerationScreen() {
         api.get('/gallery', { params: { status: 'PENDING' } }),
         api.get('/live/pending'),
       ]);
-      setNews(asArray(newsRes.data).map((item, index) => ({ id: asString(asRecord(item).id, String(index)), title: asString(asRecord(item).title, 'Vijest') })));
-      setGallery(asArray(galleryRes.data).map((item, index) => ({ id: asString(asRecord(item).id, String(index)), title: asString(asRecord(item).title, 'Galerija') })));
-      setLive(asArray(liveRes.data).map((item, index) => ({ id: asString(asRecord(item).id, String(index)), title: asString(asRecord(item).title, 'Live report') })));
+      setNews(asArray(newsRes.data).map((item, i) => ({ id: asString(asRecord(item).id, String(i)), title: asString(asRecord(item).title, 'Vijest') })));
+      setGallery(asArray(galleryRes.data).map((item, i) => ({ id: asString(asRecord(item).id, String(i)), title: asString(asRecord(item).title, 'Galerija') })));
+      setLive(asArray(liveRes.data).map((item, i) => ({ id: asString(asRecord(item).id, String(i)), title: asString(asRecord(item).title, 'Live report') })));
     } catch {
       setNews([]);
       setGallery([]);
@@ -39,26 +44,15 @@ export default function ModerationScreen() {
     void load();
   }, [load]);
 
-  const approve = async (kind: 'news' | 'gallery' | 'live', id: string) => {
-    if (kind === 'live') await api.post(`/live/matches/${id}/approve`);
-    if (kind === 'news') await api.patch(`/news/${id}/status`, { status: 'PUBLISHED' });
-    if (kind === 'gallery') await api.patch(`/gallery/${id}/status`, { status: 'PUBLISHED' });
+  const setStatus = async (kind: Kind, id: string, status: 'PUBLISHED' | 'ARCHIVED') => {
+    if (kind === 'live') {
+      if (status === 'PUBLISHED') await api.post(`/live/matches/${id}/approve`);
+      return load();
+    }
+    const path = kind === 'news' ? `/news/${id}/status` : `/gallery/${id}/status`;
+    await api.patch(path, { status });
     await load();
   };
-
-  const Block = ({ title, items, kind }: { title: string; items: PendingItem[]; kind: 'news' | 'gallery' | 'live' }) => (
-    <View style={styles.card}>
-      <Text style={styles.title}>{title}</Text>
-      {items.map((item) => (
-        <View key={item.id} style={styles.row}>
-          <Text style={styles.name}>{item.title}</Text>
-          <Pressable style={styles.button} onPress={() => void approve(kind, item.id)}>
-            <Text style={styles.buttonText}>Approve</Text>
-          </Pressable>
-        </View>
-      ))}
-    </View>
-  );
 
   const canModerate =
     hasPermission(user, 'news.approve') ||
@@ -68,35 +62,55 @@ export default function ModerationScreen() {
   if (!canModerate) {
     return (
       <RequireAuth returnTo="/staff/moderation">
-        <ScreenEmpty message="Nemate moderator pristup." icon="lock-closed-outline" />
+        <ScreenEmpty message={t('noModeratorAccess')} icon="lock-closed-outline" />
       </RequireAuth>
     );
   }
 
+  const Block = ({ title, items, kind }: { title: string; items: PendingItem[]; kind: Kind }) => (
+    <View style={[styles.card, { backgroundColor: colors.background, borderColor: colors.border }]}>
+      <Text style={[styles.title, { color: colors.text }]}>{title}</Text>
+      {items.map((item) => (
+        <View key={item.id} style={[styles.row, { borderTopColor: colors.border }]}>
+          <Text style={[styles.name, { color: colors.text }]}>{item.title}</Text>
+          <View style={styles.actions}>
+            <Pressable style={[styles.button, { backgroundColor: colors.primary }]} onPress={() => void setStatus(kind, item.id, 'PUBLISHED')}>
+              <Text style={[styles.buttonText, { color: colors.white }]}>{t('approve')}</Text>
+            </Pressable>
+            {kind !== 'live' && (
+              <>
+                <Pressable style={[styles.button, { backgroundColor: colors.surface }]} onPress={() => void setStatus(kind, item.id, 'ARCHIVED')}>
+                  <Text style={[styles.buttonText, { color: colors.text }]}>{t('reject')}</Text>
+                </Pressable>
+                <Pressable style={[styles.button, { backgroundColor: colors.surface }]} onPress={() => void setStatus(kind, item.id, 'ARCHIVED')}>
+                  <Text style={[styles.buttonText, { color: colors.text }]}>{t('archive')}</Text>
+                </Pressable>
+              </>
+            )}
+          </View>
+        </View>
+      ))}
+    </View>
+  );
+
   return (
     <RequireAuth returnTo="/staff/moderation">
       <Screen scroll>
-        <SectionHeader title="Moderator" subtitle="Pending queue za sadržaj i live report." />
-        <Block title="Vijesti" items={news} kind="news" />
-        <Block title="Galerije" items={gallery} kind="gallery" />
-        <Block title="Live reporti" items={live} kind="live" />
+        <SectionHeader title={t('moderator')} subtitle={t('pendingQueue')} />
+        <Block title={t('newsPending')} items={news} kind="news" />
+        <Block title={t('galleryPending')} items={gallery} kind="gallery" />
+        <Block title={t('livePending')} items={live} kind="live" />
       </Screen>
     </RequireAuth>
   );
 }
 
 const styles = StyleSheet.create({
-  card: {
-    backgroundColor: colors.background,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: colors.border,
-    padding: spacing.md,
-    gap: spacing.sm,
-  },
-  title: { ...typography.heading, color: colors.text },
-  row: { gap: spacing.sm, borderTopWidth: 1, borderTopColor: colors.border, paddingTop: spacing.sm },
-  name: { ...typography.body, color: colors.text },
-  button: { backgroundColor: colors.primary, borderRadius: 10, paddingVertical: spacing.sm, alignItems: 'center' },
-  buttonText: { color: colors.white, fontWeight: '600' },
+  card: { borderRadius: 12, borderWidth: 1, padding: spacing.md, gap: spacing.sm },
+  title: { ...typography.heading },
+  row: { gap: spacing.sm, borderTopWidth: 1, paddingTop: spacing.sm },
+  name: { ...typography.body },
+  actions: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
+  button: { borderRadius: 10, paddingVertical: spacing.sm, paddingHorizontal: spacing.md, alignItems: 'center' },
+  buttonText: { fontWeight: '600' },
 });

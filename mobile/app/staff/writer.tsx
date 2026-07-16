@@ -1,85 +1,178 @@
 import { useCallback, useEffect, useState } from 'react';
-import { Alert, StyleSheet, Text, TextInput, View } from 'react-native';
-import { PrimaryButton } from '../../src/components/primitives/PrimaryButton';
+import { Alert } from 'react-native';
+import { useTranslation } from 'react-i18next';
+import { RequirePermission } from '../../src/components/RequirePermission';
 import { Screen } from '../../src/components/primitives/Screen';
 import { SectionHeader } from '../../src/components/primitives/SectionHeader';
-import { RequirePermission } from '../../src/components/RequirePermission';
+import { WriterForm, type NewsCategory } from '../../src/components/writer/WriterForm';
+import { WriterList, type WriterNewsItem } from '../../src/components/writer/WriterList';
 import { api } from '../../src/lib/api';
-import { colors, spacing, typography } from '../../src/lib/theme';
+import { asArray, asRecord, asString } from '../../src/lib/content-helpers';
+import { uploadMedia } from '../../src/lib/upload-media';
+
+type Mode = 'list' | 'form';
+
+function mapNews(raw: unknown): WriterNewsItem {
+  const r = asRecord(raw);
+  return {
+    id: asString(r.id),
+    title: asString(r.title, '—'),
+    status: asString(r.status, 'DRAFT'),
+    excerpt: typeof r.excerpt === 'string' ? r.excerpt : null,
+    content: typeof r.content === 'string' ? r.content : '',
+    coverPath: typeof r.coverPath === 'string' ? r.coverPath : null,
+    categoryId: typeof r.categoryId === 'string' ? r.categoryId : null,
+  };
+}
 
 export default function WriterScreen() {
+  const { t } = useTranslation();
+  const [mode, setMode] = useState<Mode>('list');
+  const [items, setItems] = useState<WriterNewsItem[]>([]);
+  const [categories, setCategories] = useState<NewsCategory[]>([]);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [title, setTitle] = useState('');
   const [excerpt, setExcerpt] = useState('');
   const [content, setContent] = useState('');
-  const [pendingCount, setPendingCount] = useState(0);
+  const [categoryId, setCategoryId] = useState<string | null>(null);
+  const [coverPath, setCoverPath] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
 
-  const loadPending = useCallback(async () => {
+  const load = useCallback(async () => {
     try {
-      const { data } = await api.get<unknown[]>('/news', { params: { status: 'PENDING' } });
-      setPendingCount(data.length);
+      const [drafts, pending, cats] = await Promise.all([
+        api.get('/news', { params: { status: 'DRAFT' } }),
+        api.get('/news', { params: { status: 'PENDING' } }),
+        api.get('/news-categories'),
+      ]);
+      setItems([...asArray(drafts.data).map(mapNews), ...asArray(pending.data).map(mapNews)]);
+      setCategories(
+        asArray(cats.data).map((c) => {
+          const r = asRecord(c);
+          return { id: asString(r.id), name: asString(r.name, '—') };
+        }),
+      );
     } catch {
-      setPendingCount(0);
+      setItems([]);
     }
   }, []);
 
   useEffect(() => {
-    void loadPending();
-  }, [loadPending]);
+    void load();
+  }, [load]);
 
-  const submit = async () => {
+  const resetForm = () => {
+    setEditingId(null);
+    setTitle('');
+    setExcerpt('');
+    setContent('');
+    setCategoryId(null);
+    setCoverPath(null);
+  };
+
+  const openCreate = () => {
+    resetForm();
+    setMode('form');
+  };
+
+  const openEdit = (item: WriterNewsItem) => {
+    setEditingId(item.id);
+    setTitle(item.title);
+    setExcerpt(item.excerpt ?? '');
+    setContent(item.content ?? '');
+    setCategoryId(item.categoryId ?? null);
+    setCoverPath(item.coverPath ?? null);
+    setMode('form');
+  };
+
+  const payload = () => ({
+    title: title.trim(),
+    excerpt: excerpt.trim() || undefined,
+    content: content.trim(),
+    categoryId: categoryId || undefined,
+    coverPath: coverPath || undefined,
+  });
+
+  const handleSave = async () => {
+    if (!title.trim() || !content.trim()) {
+      Alert.alert(t('writer'), t('validationRequired'));
+      return;
+    }
     setSaving(true);
     try {
-      const created = await api.post('/news', { title, excerpt, content });
-      await api.patch(`/news/${created.data.id}/submit`);
-      setTitle('');
-      setExcerpt('');
-      setContent('');
-      await loadPending();
-      Alert.alert('Writer', 'Vijest je poslana na odobravanje.');
+      if (editingId) {
+        await api.patch(`/news/${editingId}`, payload());
+      } else {
+        const { data } = await api.post('/news', payload());
+        const created = mapNews(data);
+        setEditingId(created.id);
+      }
+      await load();
+      Alert.alert(t('writer'), t('writerSaved'));
+    } catch {
+      Alert.alert(t('writer'), t('error'));
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleSubmit = async () => {
+    if (!editingId) return;
+    setSaving(true);
+    try {
+      await api.patch(`/news/${editingId}`, payload());
+      await api.patch(`/news/${editingId}/submit`);
+      resetForm();
+      setMode('list');
+      await load();
+      Alert.alert(t('writer'), t('writerSubmitted'));
+    } catch {
+      Alert.alert(t('writer'), t('error'));
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handlePickCover = async () => {
+    try {
+      const path = await uploadMedia();
+      setCoverPath(path);
+    } catch (err) {
+      if (err instanceof Error && err.message === 'cancelled') return;
+      Alert.alert(t('writer'), t('error'));
     }
   };
 
   return (
     <RequirePermission permission="news.submit" returnTo="/staff/writer">
       <Screen scroll>
-        <SectionHeader title="Writer" subtitle={`Pending vijesti: ${pendingCount}`} />
-        <View style={styles.card}>
-          <TextInput style={styles.input} value={title} onChangeText={setTitle} placeholder="Naslov" />
-          <TextInput style={styles.input} value={excerpt} onChangeText={setExcerpt} placeholder="Sažetak" />
-          <TextInput
-            style={[styles.input, styles.content]}
-            value={content}
-            onChangeText={setContent}
-            placeholder="Sadržaj vijesti"
-            multiline
+        <SectionHeader title={t('writer')} subtitle={t('writerHint')} />
+        {mode === 'list' ? (
+          <WriterList items={items} onSelect={openEdit} onCreate={openCreate} />
+        ) : (
+          <WriterForm
+            title={title}
+            excerpt={excerpt}
+            content={content}
+            categoryId={categoryId}
+            coverPath={coverPath}
+            categories={categories}
+            saving={saving}
+            isEdit={Boolean(editingId)}
+            onChangeTitle={setTitle}
+            onChangeExcerpt={setExcerpt}
+            onChangeContent={setContent}
+            onChangeCategory={setCategoryId}
+            onPickCover={() => void handlePickCover()}
+            onSave={() => void handleSave()}
+            onSubmit={() => void handleSubmit()}
+            onCancel={() => {
+              resetForm();
+              setMode('list');
+            }}
           />
-          <PrimaryButton label="Sačuvaj i pošalji na review" onPress={() => void submit()} loading={saving} />
-        </View>
+        )}
       </Screen>
     </RequirePermission>
   );
 }
-
-const styles = StyleSheet.create({
-  card: {
-    backgroundColor: colors.background,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: colors.border,
-    padding: spacing.md,
-    gap: spacing.sm,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: colors.border,
-    backgroundColor: colors.surface,
-    borderRadius: 10,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm + 2,
-    color: colors.text,
-  },
-  content: { minHeight: 160, textAlignVertical: 'top', ...typography.body },
-});

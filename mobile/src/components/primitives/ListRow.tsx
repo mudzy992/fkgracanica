@@ -18,7 +18,12 @@ export function ListRow({ title, subtitle, icon, onPress, rightText }: Props) {
     <Pressable
       disabled={!onPress}
       onPress={onPress}
-      style={[styles.row, { backgroundColor: colors.background, borderColor: colors.border }]}
+      accessibilityRole={onPress ? 'button' : undefined}
+      accessibilityLabel={title}
+      style={({ pressed }) => [
+        styles.row,
+        { backgroundColor: colors.background, borderColor: colors.border, opacity: pressed ? 0.85 : 1 },
+      ]}
     >
       <View style={styles.left}>
         {icon ? <Ionicons name={icon} size={18} color={colors.primary} /> : null}

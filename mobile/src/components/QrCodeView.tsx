@@ -1,6 +1,7 @@
 import QRCode from 'react-native-qrcode-svg';
 import { View, StyleSheet } from 'react-native';
-import { colors, spacing } from '../lib/theme';
+import { useTheme } from '../lib/theme-context';
+import { spacing } from '../lib/theme';
 
 interface Props {
   value: string;
@@ -8,8 +9,14 @@ interface Props {
 }
 
 export function QrCodeView({ value, size = 180 }: Props) {
+  const { colors } = useTheme();
   return (
-    <View style={styles.wrap}>
+    <View
+      style={[
+        styles.wrap,
+        { backgroundColor: colors.white, borderColor: colors.primary },
+      ]}
+    >
       <QRCode value={value} size={size} backgroundColor={colors.white} color={colors.primary} />
     </View>
   );
@@ -18,10 +25,8 @@ export function QrCodeView({ value, size = 180 }: Props) {
 const styles = StyleSheet.create({
   wrap: {
     padding: spacing.md,
-    backgroundColor: colors.white,
     borderRadius: 12,
     borderWidth: 2,
-    borderColor: colors.primary,
     alignItems: 'center',
   },
 });

@@ -1,21 +1,30 @@
+import { useRouter } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
-import { ScreenLoading } from '../src/components/ScreenLoading';
+import { useTranslation } from 'react-i18next';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ListSkeleton } from '../src/components/ListSkeleton';
+import { ScreenEmpty } from '../src/components/ScreenEmpty';
 import { api } from '../src/lib/api';
 import { asArray, asRecord, asString } from '../src/lib/content-helpers';
 import { formatDateTimeBs } from '../src/lib/format-date';
-import { colors, spacing, typography } from '../src/lib/theme';
+import { useTheme } from '../src/lib/theme-context';
+import { spacing, typography } from '../src/lib/theme';
 
 type LeagueRow = { id: string; label: string; value: string };
 type MatchRow = { id: string; title: string; meta: string };
 
 export default function LeagueScreen() {
+  const { colors } = useTheme();
+  const { t } = useTranslation();
+  const router = useRouter();
   const [standings, setStandings] = useState<LeagueRow[]>([]);
   const [matches, setMatches] = useState<MatchRow[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     try {
+      setError(null);
       const competitions = await api.get<unknown[]>('/competitions/seasons/list');
       const season = asRecord(asArray(competitions.data)[0]);
       const seasonId = asString(season.id);
@@ -24,7 +33,7 @@ export default function LeagueScreen() {
         seasonId ? api.get('/matches', { params: { seasonId } }) : api.get('/matches'),
       ]);
       setStandings(
-        asArray(standingsRes.data).slice(0, 8).map((row, index) => {
+        asArray(standingsRes.data).map((row, index) => {
           const item = asRecord(row);
           return {
             id: asString(item.clubId, String(index)),
@@ -51,49 +60,62 @@ export default function LeagueScreen() {
     } catch {
       setStandings([]);
       setMatches([]);
+      setError(t('error'));
     }
-  }, []);
+  }, [t]);
 
   useEffect(() => {
     void load().finally(() => setLoading(false));
   }, [load]);
 
-  if (loading) return <ScreenLoading />;
+  if (loading) return <ListSkeleton />;
+  if (error) {
+    return (
+      <ScreenEmpty
+        message={error}
+        icon="alert-circle-outline"
+        actionLabel={t('retry')}
+        onAction={() => {
+          setLoading(true);
+          void load().finally(() => setLoading(false));
+        }}
+      />
+    );
+  }
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.list}>
-      <Text style={styles.title}>Liga i statistika</Text>
-      <Text style={styles.section}>Tabela</Text>
+    <ScrollView style={[styles.container, { backgroundColor: colors.surface }]} contentContainerStyle={styles.list}>
+      <Text style={[styles.title, { color: colors.text }]}>{t('leagueStats')}</Text>
+      <Text style={[styles.section, { color: colors.text }]}>{t('standings')}</Text>
       {standings.map((row) => (
-        <View key={row.id} style={styles.row}>
-          <Text style={styles.name}>{row.label}</Text>
-          <Text style={styles.meta}>{row.value}</Text>
+        <View key={row.id} style={[styles.row, { backgroundColor: colors.background, borderColor: colors.border }]}>
+          <Text style={[styles.name, { color: colors.text }]}>{row.label}</Text>
+          <Text style={[styles.meta, { color: colors.textMuted }]}>{row.value}</Text>
         </View>
       ))}
-      <Text style={styles.section}>Utakmice</Text>
+      <Text style={[styles.section, { color: colors.text }]}>{t('matches')}</Text>
       {matches.map((item) => (
-        <View key={item.id} style={styles.row}>
-          <Text style={styles.name}>{item.title}</Text>
-          <Text style={styles.meta}>{item.meta}</Text>
-        </View>
+        <Pressable
+          key={item.id}
+          style={[styles.row, { backgroundColor: colors.background, borderColor: colors.border }]}
+          onPress={() => router.push(`/(tabs)/live/${item.id}`)}
+          accessibilityRole="button"
+          accessibilityLabel={item.title}
+        >
+          <Text style={[styles.name, { color: colors.text }]}>{item.title}</Text>
+          <Text style={[styles.meta, { color: colors.textMuted }]}>{item.meta}</Text>
+        </Pressable>
       ))}
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.surface },
+  container: { flex: 1 },
   list: { padding: spacing.md, gap: spacing.sm },
-  title: { ...typography.title, color: colors.text, marginBottom: spacing.sm },
-  section: { ...typography.heading, color: colors.text, marginVertical: spacing.sm },
-  row: {
-    backgroundColor: colors.background,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: colors.border,
-    padding: spacing.md,
-    marginBottom: spacing.sm,
-  },
-  name: { ...typography.body, color: colors.text, fontWeight: '600' },
-  meta: { ...typography.caption, color: colors.textMuted, marginTop: spacing.xs },
+  title: { ...typography.title, marginBottom: spacing.sm },
+  section: { ...typography.heading, marginVertical: spacing.sm },
+  row: { borderRadius: 12, borderWidth: 1, padding: spacing.md, marginBottom: spacing.sm },
+  name: { ...typography.body, fontWeight: '600' },
+  meta: { ...typography.caption, marginTop: spacing.xs },
 });

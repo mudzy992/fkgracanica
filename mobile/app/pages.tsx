@@ -1,21 +1,27 @@
 import { useRouter } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { FlatList, Pressable, StyleSheet, Text } from 'react-native';
+import { ListSkeleton } from '../src/components/ListSkeleton';
 import { ScreenEmpty } from '../src/components/ScreenEmpty';
-import { ScreenLoading } from '../src/components/ScreenLoading';
 import { api } from '../src/lib/api';
 import { asArray, asRecord, asString } from '../src/lib/content-helpers';
-import { colors, spacing, typography } from '../src/lib/theme';
+import { useTheme } from '../src/lib/theme-context';
+import { spacing, typography } from '../src/lib/theme';
 
 type PageItem = { id: string; slug: string; title: string };
 
 export default function PagesScreen() {
+  const { colors } = useTheme();
+  const { t } = useTranslation();
   const router = useRouter();
   const [pages, setPages] = useState<PageItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     try {
+      setError(null);
       const { data } = await api.get('/cms/pages');
       setPages(
         asArray(data).map((page, index) => {
@@ -23,32 +29,54 @@ export default function PagesScreen() {
           return {
             id: asString(item.id, String(index)),
             slug: asString(item.slug),
-            title: asString(item.title, 'CMS stranica'),
+            title: asString(item.title, t('cmsPages')),
           };
         }),
       );
     } catch {
       setPages([]);
+      setError(t('error'));
     }
-  }, []);
+  }, [t]);
 
   useEffect(() => {
     void load().finally(() => setLoading(false));
   }, [load]);
 
-  if (loading) return <ScreenLoading />;
+  if (loading) return <ListSkeleton />;
+  if (error) {
+    return (
+      <ScreenEmpty
+        message={error}
+        icon="alert-circle-outline"
+        actionLabel={t('retry')}
+        onAction={() => {
+          setLoading(true);
+          void load().finally(() => setLoading(false));
+        }}
+      />
+    );
+  }
 
   return (
     <FlatList
       data={pages}
       keyExtractor={(item) => item.id}
       contentContainerStyle={styles.list}
-      ListHeaderComponent={<Text style={styles.title}>CMS stranice</Text>}
-      ListEmptyComponent={<ScreenEmpty message="Nema objavljenih CMS stranica." icon="document-text-outline" />}
+      ListHeaderComponent={<Text style={[styles.title, { color: colors.text }]}>{t('cmsPages')}</Text>}
+      ListEmptyComponent={<ScreenEmpty message={t('searchNoResults')} icon="document-text-outline" />}
       renderItem={({ item }) => (
-        <Pressable style={styles.card} onPress={() => router.push(`/pages/${item.slug}`)}>
-          <Text style={styles.cardTitle}>{item.title}</Text>
-          <Text style={styles.slug}>/{item.slug}</Text>
+        <Pressable
+          style={({ pressed }) => [
+            styles.card,
+            { backgroundColor: colors.background, borderColor: colors.border, opacity: pressed ? 0.9 : 1 },
+          ]}
+          onPress={() => router.push(`/pages/${item.slug}`)}
+          accessibilityRole="button"
+          accessibilityLabel={item.title}
+        >
+          <Text style={[styles.cardTitle, { color: colors.text }]}>{item.title}</Text>
+          <Text style={[styles.slug, { color: colors.textMuted }]}>/{item.slug}</Text>
         </Pressable>
       )}
     />
@@ -57,15 +85,13 @@ export default function PagesScreen() {
 
 const styles = StyleSheet.create({
   list: { padding: spacing.md, gap: spacing.sm, flexGrow: 1 },
-  title: { ...typography.title, color: colors.text, marginBottom: spacing.sm },
+  title: { ...typography.title, marginBottom: spacing.sm },
   card: {
-    backgroundColor: colors.background,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: colors.border,
     padding: spacing.md,
     marginBottom: spacing.sm,
   },
-  cardTitle: { ...typography.body, color: colors.text, fontWeight: '600' },
-  slug: { ...typography.caption, color: colors.textMuted, marginTop: spacing.xs },
+  cardTitle: { ...typography.body, fontWeight: '600' },
+  slug: { ...typography.caption, marginTop: spacing.xs },
 });
