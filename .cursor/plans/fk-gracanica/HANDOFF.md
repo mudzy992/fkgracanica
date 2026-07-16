@@ -1,6 +1,6 @@
 # HANDOFF — FK Gračanica
 
-> Ažurirano: **2026-06-30**
+> Ažurirano: **2026-07-16**
 
 ---
 
@@ -8,44 +8,19 @@
 
 | Polje | Vrijednost |
 |-------|------------|
-| **Aktivna faza** | Web Complete — **javne stranice dizajn polish** |
-| **Plan folder** | `.cursor/plans/fk-gracanica/21_web-complete/` |
-| **Session handoff** | [21_web-complete/HANDOFF.md](./21_web-complete/HANDOFF.md) |
-| **Gate log** | [21_web-complete/GATE_LOG.md](./21_web-complete/GATE_LOG.md) |
-| **Responsive checklist** | [23_responsive-premium-web/CHECKLIST.md](./23_responsive-premium-web/CHECKLIST.md) |
+| **Aktivni track** | Mobile Full Parity — **DONE** (lokalni dev build OK) |
+| **Plan folder** | `.cursor/plans/fk-gracanica/26_mobile-full-parity/` |
+| **Session handoff** | [26_mobile-full-parity/HANDOFF.md](./26_mobile-full-parity/HANDOFF.md) |
+| **Matrica** | `.cursor/docs/matrices/mobile-parity/` |
 
 ---
 
 ## 2. Status u jednoj rečenici
 
-**#1–#13, #15–#20 APPROVED.** **#14 Ulaznice** i **#21 Dashboard/Audit/Notifikacije** — READY_FOR_REVIEW. Naslovna premium dark gotova (hero 100dvh + utakmice u docku). **Sljedeće:** poliranje ostalih javnih stranica, zatim gate smoke (#14, #21) i #20 regresija.
+Mobile Expo SDK 57 full parity + push/email; lokalni Android development APK buildan. Web tracks #1–#21 ostaju CLOSED.
 
 ---
 
-## 3. Gate (Track 3)
+## 3. Sljedeća sesija
 
-| Modul | Status |
-|-------|--------|
-| 1–13 | APPROVED |
-| **14** Ulaznice | **READY_FOR_REVIEW** |
-| 15–19 | APPROVED |
-| **20** Postavke | **APPROVED** |
-| **21** Dashboard / Audit / Notif. | **READY_FOR_REVIEW** |
-
-**Izvor istine:** [21_web-complete/GATE_LOG.md](./21_web-complete/GATE_LOG.md)
-
----
-
-## 4. Produkcija / deploy
-
-```bash
-cd frontend && npm run build
-cd backend && npm run build
-docker compose build frontend backend && docker compose up -d
-```
-
----
-
-## 5. Sljedeća sesija
-
-Vidi **§3 i §10** u [21_web-complete/HANDOFF.md](./21_web-complete/HANDOFF.md).
+Vidi [26_mobile-full-parity/HANDOFF.md](./26_mobile-full-parity/HANDOFF.md) § Sljedeća sesija.

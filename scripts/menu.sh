@@ -6,10 +6,14 @@ echo "1) Rebuild docker"
 echo "2) Popravka CI"
 echo "3) Prisma migracija"
 echo "4) GIT commit/push"
-echo "5) Izlaz"
+echo "5) Mobile EAS build (development, lokalno)"
+echo "6) Mobile EAS build (production, lokalno)"
+echo "7) Izlaz"
 
 # Unos odabira
-read -p "Unesite broj opcije (1-5): " izbor
+read -p "Unesite broj opcije (1-7): " izbor
+
+ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 
 # Izvršavanje naredbe ovisno o odabiru
 case $izbor in
@@ -23,18 +27,26 @@ case $izbor in
         ;;
     3)
         echo "Pokrećem: Prisma migracija..."
-        cd ~/Documents/GitHub/fkgracanica/backend && npx prisma migrate deploy
+        cd "$ROOT_DIR/backend" && npx prisma migrate deploy
         ;;
     4)
         echo "Pokrećem: GIT commit/push..."
         ./scripts/git.sh
         ;;
     5)
+        echo "Pokrećem: Mobile EAS development build (lokalno)..."
+        cd "$ROOT_DIR/mobile" && npx eas-cli@latest build --platform android --profile development --local
+        ;;
+    6)
+        echo "Pokrećem: Mobile EAS production build (lokalno)..."
+        cd "$ROOT_DIR/mobile" && npx eas-cli@latest build --platform android --profile production --local
+        ;;
+    7)
         echo "Izlaz iz skripte."
         exit 0
         ;;
     *)
-        echo "Pogrešan unos! Molimo odaberite broj od 1 do 5."
+        echo "Pogrešan unos! Molimo odaberite broj od 1 do 7."
         exit 1
         ;;
 esac

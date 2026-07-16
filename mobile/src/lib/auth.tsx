@@ -7,7 +7,15 @@ import {
   useState,
   type ReactNode,
 } from 'react';
-import { clearTokens, getAccessToken, getStoredUser, loginRequest, logoutRequest } from './api';
+import {
+  clearTokens,
+  fetchCurrentUser,
+  getAccessToken,
+  getStoredUser,
+  loginRequest,
+  logoutRequest,
+} from './api';
+import { clearPushRegistration, ensurePushRegistration } from './push';
 import type { User } from '../types/api';
 
 type AuthContextValue = {
@@ -35,7 +43,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const storedUser = await getStoredUser();
     if (storedUser) {
       setUser(storedUser);
-    } else {
+    }
+
+    try {
+      const freshUser = await fetchCurrentUser();
+      setUser(freshUser);
+    } catch {
       await clearTokens();
       setUser(null);
     }
@@ -46,12 +59,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     void restoreSession();
   }, [restoreSession]);
 
+  useEffect(() => {
+    if (user) {
+      void ensurePushRegistration();
+    }
+  }, [user]);
+
   const login = useCallback(async (email: string, password: string) => {
     const data = await loginRequest(email, password);
     setUser(data.user);
   }, []);
 
   const logout = useCallback(async () => {
+    await clearPushRegistration();
     await logoutRequest();
     setUser(null);
   }, []);

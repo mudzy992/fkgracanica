@@ -1,4 +1,5 @@
-import { Image, type ImageStyle, StyleSheet, View, type ViewStyle } from 'react-native';
+import { Image } from 'expo-image';
+import { type ImageStyle, StyleSheet, View, type ViewStyle } from 'react-native';
 import { colors } from '../lib/theme';
 
 const API_URL = process.env.EXPO_PUBLIC_API_URL ?? 'http://localhost:3000/api/v1';
@@ -23,9 +24,10 @@ export function RemoteImage({ path, style, containerStyle }: Props) {
   }
   return (
     <Image
-      source={{ uri }}
+      source={uri}
       style={[styles.image, style]}
-      resizeMode="cover"
+      contentFit="cover"
+      transition={120}
       accessibilityIgnoresInvertColors
     />
   );

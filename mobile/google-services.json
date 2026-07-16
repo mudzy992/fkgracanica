@@ -1,0 +1,29 @@
+{
+    "project_info": {
+      "project_number": "209295882315",
+      "project_id": "fkgracanica-8ff59",
+      "storage_bucket": "fkgracanica-8ff59.firebasestorage.app"
+    },
+    "client": [
+      {
+        "client_info": {
+          "mobilesdk_app_id": "1:209295882315:android:b663f7e6f21c3818feb5ce",
+          "android_client_info": {
+            "package_name": "com.mudzahud.fkgracanica"
+          }
+        },
+        "oauth_client": [],
+        "api_key": [
+          {
+            "current_key": "AIzaSyAo6YPiuRhQvO9O6VNUagRc9DGO1qXoLcU"
+          }
+        ],
+        "services": {
+          "appinvite_service": {
+            "other_platform_oauth_client": []
+          }
+        }
+      }
+    ],
+    "configuration_version": "1"
+  }

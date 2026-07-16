@@ -104,6 +104,12 @@ export async function loginRequest(email: string, password: string): Promise<Log
   return data;
 }
 
+export async function fetchCurrentUser(): Promise<User> {
+  const { data } = await api.get<User>('/auth/me');
+  await setStoredUser(data);
+  return data;
+}
+
 export async function logoutRequest(): Promise<void> {
   const refreshToken = await getRefreshToken();
   if (refreshToken) {

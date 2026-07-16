@@ -33,9 +33,17 @@ yarn-error.*
 # local env files
 .env*.local
 
+# iOS Firebase plist (keep out of git; Android google-services.json
+# must be available to EAS local pack — treat as client config)
+GoogleService-Info.plist
+
 # typescript
 *.tsbuildinfo
 
 # generated native folders
 /ios
 /android
+
+# local EAS artifacts
+*.apk
+*.aab

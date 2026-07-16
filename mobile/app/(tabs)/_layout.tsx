@@ -1,17 +1,16 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Link, Tabs } from 'expo-router';
-import { Pressable, StyleSheet, Text } from 'react-native';
+import { Pressable, StyleSheet, Text, type ColorValue } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { ScreenLoading } from '../../src/components/ScreenLoading';
 import { useAuth } from '../../src/lib/auth';
-import { useModuleFlags } from '../../src/hooks/use-module-flags';
 import { useUnreadNotifications } from '../../src/hooks/use-unread-notifications';
 import { useTheme } from '../../src/lib/theme-context';
 
 type IconName = keyof typeof Ionicons.glyphMap;
 
 function tabIcon(filled: IconName, outline: IconName) {
-  return ({ color, focused, size }: { color: string; focused: boolean; size: number }) => (
+  return ({ color, focused, size }: { color: ColorValue; focused: boolean; size: number }) => (
     <Ionicons name={focused ? filled : outline} size={size} color={color} />
   );
 }
@@ -21,7 +20,6 @@ export default function TabsLayout() {
   const { isAuthenticated, isLoading, logout } = useAuth();
   const { colors } = useTheme();
   const { count: unreadCount } = useUnreadNotifications();
-  const { isEnabled } = useModuleFlags();
 
   if (isLoading) {
     return <ScreenLoading />;
@@ -74,18 +72,18 @@ export default function TabsLayout() {
         }}
       />
       <Tabs.Screen
-        name="notifications"
+        name="more"
         options={{
-          title: t('notifications'),
+          title: t('more'),
           tabBarBadge: isAuthenticated && unreadCount > 0 ? unreadCount : undefined,
-          tabBarIcon: tabIcon('notifications', 'notifications-outline'),
+          tabBarIcon: tabIcon('grid', 'grid-outline'),
         }}
       />
       <Tabs.Screen
         name="membership"
         options={{
           title: t('membership'),
-          href: isEnabled('feature.membership') ? undefined : null,
+          href: null,
           tabBarIcon: tabIcon('id-card', 'id-card-outline'),
         }}
       />
@@ -93,8 +91,16 @@ export default function TabsLayout() {
         name="tickets"
         options={{
           title: t('tickets'),
-          href: isEnabled('modules.ticketing') ? undefined : null,
+          href: null,
           tabBarIcon: tabIcon('ticket', 'ticket-outline'),
+        }}
+      />
+      <Tabs.Screen
+        name="notifications"
+        options={{
+          title: t('notifications'),
+          href: null,
+          tabBarIcon: tabIcon('notifications', 'notifications-outline'),
         }}
       />
       <Tabs.Screen name="news/[slug]" options={{ href: null, title: t('news') }} />

@@ -36,12 +36,12 @@ export const lightColors: ColorPalette = {
 export const darkColors: ColorPalette = {
   ...brand,
   primaryLight: '#93C5FD',
-  background: '#0F172A',
-  surface: '#1E293B',
+  background: '#050A14',
+  surface: '#0A1525',
   text: '#F8FAFC',
   textMuted: '#94A3B8',
   border: '#334155',
-  headerBg: '#0F172A',
+  headerBg: '#050A14',
 };
 
 /** Default light — prefer `useTheme().colors` u ekranima. */

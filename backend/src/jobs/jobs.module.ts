@@ -1,5 +1,9 @@
 import { Injectable, Logger, Module, OnModuleDestroy } from '@nestjs/common';
 import { Queue, Worker } from 'bullmq';
+import nodemailer from 'nodemailer';
+import { PrismaService } from '../prisma/prisma.service';
+
+type EmailPayload = { to: string; subject: string; body: string };
 
 @Injectable()
 export class JobsService implements OnModuleDestroy {
@@ -8,7 +12,7 @@ export class JobsService implements OnModuleDestroy {
   private readonly emailQueue: Queue | null;
   private readonly worker: Worker | null;
 
-  constructor() {
+  constructor(private readonly prisma: PrismaService) {
     const url = process.env.REDIS_URL;
     if (!url) {
       this.connection = null;
@@ -21,19 +25,43 @@ export class JobsService implements OnModuleDestroy {
     this.emailQueue = new Queue('email', { connection: this.connection });
     this.worker = new Worker(
       'email',
-      async (job) => {
-        this.logger.log(`Email job ${job.id}: ${JSON.stringify(job.data)}`);
-      },
+      async (job) => this.sendEmail(job.data as EmailPayload),
       { connection: this.connection },
     );
   }
 
-  async enqueueEmail(payload: { to: string; subject: string; body: string }) {
+  async enqueueEmail(payload: EmailPayload) {
     if (!this.emailQueue) {
-      this.logger.warn('Email queue unavailable (no Redis)');
+      await this.sendEmail(payload);
       return;
     }
     await this.emailQueue.add('send', payload);
+  }
+
+  private async sendEmail(payload: EmailPayload) {
+    const smtp = await this.prisma.setting.findMany({
+      where: { key: { startsWith: 'smtp.' } },
+    });
+    const settings = smtp.reduce<Record<string, string>>((acc, item) => {
+      acc[item.key] = item.value;
+      return acc;
+    }, {});
+    if (!settings['smtp.host'] || !settings['smtp.user'] || !settings['smtp.pass']) {
+      this.logger.warn(`SMTP unavailable for ${payload.to}`);
+      return;
+    }
+    const transporter = nodemailer.createTransport({
+      host: settings['smtp.host'],
+      port: Number(settings['smtp.port'] || '587'),
+      secure: settings['smtp.secure'] === 'true',
+      auth: { user: settings['smtp.user'], pass: settings['smtp.pass'] },
+    });
+    await transporter.sendMail({
+      from: settings['smtp.from'] || settings['smtp.user'],
+      to: payload.to,
+      subject: payload.subject,
+      text: payload.body,
+    });
   }
 
   async onModuleDestroy() {

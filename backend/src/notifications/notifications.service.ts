@@ -4,6 +4,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { RealtimeGateway } from '../realtime/realtime.gateway';
 import { PaginatedQueryDto } from '../common/dto/paginated-query.dto';
 import { paginate, parsePagination } from '../common/utils/pagination.util';
+import { NotificationDeliveryService } from './notification-delivery.service';
 
 export interface CreateNotificationInput {
   userId: string;
@@ -18,6 +19,7 @@ export class NotificationsService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly realtime: RealtimeGateway,
+    private readonly delivery: NotificationDeliveryService,
   ) {}
 
   async findForUser(userId: string, query: PaginatedQueryDto, unreadOnly = false) {
@@ -57,7 +59,43 @@ export class NotificationsService {
 
   async create(input: CreateNotificationInput) {
     const notification = await this.prisma.notification.create({ data: input });
-    this.realtime.emitNotificationNew(input.userId, notification);
+    const user = await this.prisma.user.findUnique({
+      where: { id: input.userId },
+      select: {
+        email: true,
+        notifyInApp: true,
+        notifyEmail: true,
+        notifyPush: true,
+        pushDevices: { select: { expoPushToken: true } },
+      },
+    });
+    if (user?.notifyInApp !== false) {
+      this.realtime.emitNotificationNew(input.userId, notification);
+    }
+    const metadata = input.metadata as Record<string, unknown> | undefined;
+    if (user) {
+      await this.delivery.deliver(user, {
+        title: notification.title,
+        body: notification.body,
+        type: notification.type,
+        path: typeof metadata?.path === 'string' ? metadata.path : undefined,
+      });
+    }
     return notification;
+  }
+
+  async registerDevice(userId: string, token: string, platform?: string) {
+    return this.prisma.pushDevice.upsert({
+      where: { expoPushToken: token },
+      update: { userId, platform },
+      create: { userId, expoPushToken: token, platform },
+    });
+  }
+
+  async unregisterDevice(userId: string, token: string) {
+    await this.prisma.pushDevice.deleteMany({
+      where: { userId, expoPushToken: token },
+    });
+    return { ok: true };
   }
 }
