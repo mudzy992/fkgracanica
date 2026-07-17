@@ -3,6 +3,7 @@ import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import { commonBs, commonEn } from './common';
 import { commentatorBs, commentatorEn } from './commentator-keys';
+import { homeBs, homeEn } from './home';
 import { staffAdminBs, staffAdminEn } from './staff-admin';
 import { writerGalleryBs, writerGalleryEn } from './writer-gallery';
 
@@ -13,6 +14,7 @@ const bs = {
   ...commentatorBs,
   ...staffAdminBs,
   ...writerGalleryBs,
+  ...homeBs,
 };
 
 const en: Record<keyof typeof bs, string> = {
@@ -20,6 +22,7 @@ const en: Record<keyof typeof bs, string> = {
   ...commentatorEn,
   ...staffAdminEn,
   ...writerGalleryEn,
+  ...homeEn,
 };
 
 void i18n.use(initReactI18next).init({

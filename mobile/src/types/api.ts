@@ -29,6 +29,22 @@ export type Club = {
   id: string;
   name: string;
   shortName?: string | null;
+  crestPath?: string | null;
+};
+
+export type CmsPageSection = {
+  id: string;
+  widgetType: string;
+  sortOrder: number;
+  config: Record<string, unknown>;
+  enabled: boolean;
+};
+
+export type CmsPage = {
+  id: string;
+  slug: string;
+  title: string;
+  sections?: CmsPageSection[];
 };
 
 export type Match = {

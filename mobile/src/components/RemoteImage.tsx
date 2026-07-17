@@ -1,26 +1,20 @@
 import { Ionicons } from '@expo/vector-icons';
-import { Image } from 'expo-image';
+import { Image, type ImageContentFit } from 'expo-image';
 import { type ImageStyle, StyleSheet, View, type ViewStyle } from 'react-native';
+import { mediaUrl, type MediaVariant } from '../lib/media';
 import { useTheme } from '../lib/theme-context';
-
-const API_URL = process.env.EXPO_PUBLIC_API_URL ?? 'http://localhost:3000/api/v1';
-const API_ORIGIN = API_URL.replace(/\/api\/v1\/?$/, '');
-
-export function mediaUrl(path: string | null | undefined): string | null {
-  if (!path) return null;
-  if (path.startsWith('http')) return path;
-  return `${API_ORIGIN}${path.startsWith('/') ? '' : '/'}${path}`;
-}
 
 interface Props {
   path?: string | null;
   style?: ImageStyle;
   containerStyle?: ViewStyle;
+  variant?: MediaVariant;
+  contentFit?: ImageContentFit;
 }
 
-export function RemoteImage({ path, style, containerStyle }: Props) {
+export function RemoteImage({ path, style, containerStyle, variant, contentFit = 'cover' }: Props) {
   const { colors } = useTheme();
-  const uri = mediaUrl(path);
+  const uri = mediaUrl(path, variant);
   const base = { backgroundColor: colors.surface };
   if (!uri) {
     return (
@@ -33,7 +27,7 @@ export function RemoteImage({ path, style, containerStyle }: Props) {
     <Image
       source={uri}
       style={[styles.image, base, style]}
-      contentFit="cover"
+      contentFit={contentFit}
       transition={120}
       accessibilityIgnoresInvertColors
     />

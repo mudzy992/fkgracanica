@@ -56,6 +56,7 @@ export const spacing = {
 } as const;
 
 export const typography = {
+  display: { fontSize: 34, fontWeight: '800' as const, letterSpacing: -1 },
   title: { fontSize: 24, fontWeight: '700' as const },
   heading: { fontSize: 18, fontWeight: '600' as const },
   body: { fontSize: 16, fontWeight: '400' as const },
