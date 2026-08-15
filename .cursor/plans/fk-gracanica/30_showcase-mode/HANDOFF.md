@@ -7,6 +7,7 @@
 ## Šta je gotovo
 
 In-app scroll-driven prezentacija umjesto 503. Jedan API hrani web i mobile.
+Cinematic UI (device frames, mockovi, journey). Scroll: samo window (`overflow-x-hidden` skinut).
 
 - Flag `feature.showcaseMode` PRIVATE, default `false`, ON samo `'true'`
 - `showcase.launchNote` PUBLIC
@@ -14,6 +15,7 @@ In-app scroll-driven prezentacija umjesto 503. Jedan API hrani web i mobile.
 - Web: `/platforma` uvijek; `?showcase=1` preview; flag ON overlay javnog portala + `/live/:id`
 - Bypass: `/prijava`, `/admin`, `/admin/login`
 - Mobile: guest/član + flag → `ShowcaseScreen`; `isStaffUser` + `/login` + `/staff` rade
+- Katalog: `mobile-polish` 69%, `mobile-staff` 70% (audit 2026-08-15, upisano)
 - CTA: `POST /contact` + `POST /newsletter/subscribe`
 - Admin banner kad je flag ON
 - Lansiranje: Stripe + blagajna. PayPal/Monri/PWA/Excel = `after_launch`

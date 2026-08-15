@@ -1,0 +1,51 @@
+@keyframes showcase-orb {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(6%, -8%) scale(1.08);
+  }
+}
+
+@keyframes showcase-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-12px);
+  }
+}
+
+@keyframes showcase-cue {
+  0%,
+  100% {
+    opacity: 0.25;
+    transform: translateY(0);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(8px);
+  }
+}
+
+.showcase-orb {
+  animation: showcase-orb 18s ease-in-out infinite;
+}
+
+.showcase-float {
+  animation: showcase-float 7s ease-in-out infinite;
+}
+
+.showcase-cue {
+  animation: showcase-cue 2.2s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .showcase-orb,
+  .showcase-float,
+  .showcase-cue {
+    animation: none;
+  }
+}

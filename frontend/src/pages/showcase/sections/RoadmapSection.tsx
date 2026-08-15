@@ -33,13 +33,21 @@ export function RoadmapSection({ modules, index }: { modules: ShowcaseModule[]; 
                   {items.map((mod) => (
                     <li
                       key={mod.id}
-                      className="flex items-start justify-between gap-3 rounded-xl border border-white/10 bg-white/5 px-3 py-2"
+                      className="rounded-xl border border-white/10 bg-white/5 px-3 py-2.5"
                     >
-                      <div>
-                        <p className="text-sm font-medium text-white">{mod.title}</p>
-                        <p className="text-xs text-blue-100/60">{mod.summary}</p>
+                      <div className="flex items-start justify-between gap-3">
+                        <div>
+                          <p className="text-sm font-medium text-white">{mod.title}</p>
+                          <p className="text-xs text-blue-100/60">{mod.summary}</p>
+                        </div>
+                        <span className="shrink-0 tabular-nums text-sm text-blue-200">{mod.percent}%</span>
                       </div>
-                      <span className="shrink-0 tabular-nums text-sm text-blue-200">{mod.percent}%</span>
+                      <div className="mt-2 h-1 overflow-hidden rounded-full bg-white/10">
+                        <div
+                          className="h-full rounded-full bg-blue-400"
+                          style={{ width: `${mod.percent}%` }}
+                        />
+                      </div>
                     </li>
                   ))}
                 </ul>

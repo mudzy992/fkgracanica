@@ -4,7 +4,7 @@ export const SHOWCASE_SECTIONS: ShowcaseSection[] = [
   {
     id: 'surfaces',
     title: 'Tri površine, jedan sistem',
-    body: 'FK Gračanica dobija centralnu digitalnu platformu — ne običan sajt. Isti podaci hrane javni web, administraciju i mobilnu aplikaciju.',
+    body: 'FK Gračanica dobija centralnu digitalnu platformu — ne običan sajt. Isti podaci hrane javni web, administraciju i mobilnu aplikaciju. Jedan sistem, tri površine.',
     bullets: [
       'Javni web — navijači, vijesti, live, članstvo, ulaznice',
       'Admin — CMS, kadar, liga, komentator, blagajna, postavke',
@@ -84,11 +84,12 @@ export const SHOWCASE_SECTIONS: ShowcaseSection[] = [
   {
     id: 'mobile',
     title: 'Mobilna aplikacija',
-    body: 'Navijač prati klub s telefona. Osoblje vodi live, odobrava sadržaj i skenira ulaznice. CMS builder i drag-drop formacija ostaju na webu — namjerno.',
+    body: 'Expo aplikacija za navijače i osoblje. Flagship javni ekrani (home, liga, tim, klubovi) su cinematic. Vijesti, live lista, more i staff još ulaze u vizuelni polish. CMS builder i drag-drop formacija ostaju namjerno na webu.',
     bullets: [
-      'Javno: home, vijesti, live, članstvo, ulaznice, more',
-      'Staff: writer, komentator, moderacija, admin, QR',
-      'Web-only: page builder, formacija drag-drop, media tree',
+      'Spremno vizuelno: home, liga, tim, igrač, javni klub',
+      'Funkcionalno, polish u redu: vijesti, live, more, ulaznice, članstvo',
+      'Staff: writer, komentator, moderacija, admin ops, QR — radi, polish slijedi',
+      'Namjerno web-only: page builder, formacija drag-drop, media tree',
     ],
     moduleIds: ['mobile-staff', 'mobile-polish', 'cms-builder', 'formation-dnd', 'media-tree'],
   },

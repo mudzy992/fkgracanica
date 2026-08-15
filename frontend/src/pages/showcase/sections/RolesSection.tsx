@@ -13,7 +13,10 @@ export function RolesSection({ roles, index }: { roles: ShowcaseRole[]; index: n
         </p>
         <div className="mt-10 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {roles.map((role) => (
-            <article key={role.id} className="rounded-2xl border border-white/10 bg-white/5 p-5">
+            <article
+              key={role.id}
+              className="rounded-2xl border border-white/10 bg-white/5 p-5 shadow-[0_20px_50px_-24px_rgba(37,99,235,0.45)]"
+            >
               <div className="flex items-start justify-between gap-2">
                 <h3 className="font-display text-lg font-semibold text-white">{role.title}</h3>
                 <StatusBadge badge="ready" />

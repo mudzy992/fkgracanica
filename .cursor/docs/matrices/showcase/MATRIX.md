@@ -27,6 +27,8 @@
 - Guest / Član + flag ON → Showcase, bez tab bara
 - `isStaffUser` → normalni tabovi / staff
 - Bypass: `/login`, `/staff`
+- Status (2026-08-15 audit): Home, liga, tim, igrač, klubovi = cinematic. Vijesti/live/more/ulaznice/staff = funkcionalno, polish u redu.
+- Katalog (audit): `mobile-polish` **69**, `mobile-staff` **70**. Izvor: `.cursor/docs/matrices/showcase-audit/`
 
 ## CTA
 

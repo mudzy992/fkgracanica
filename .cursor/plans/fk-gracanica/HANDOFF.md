@@ -9,18 +9,16 @@
 | Polje | Vrijednost |
 |-------|------------|
 | **Datum** | 2026-08-15 |
-| **Branch** | `main` (origin usklađen) |
-| **Zadnji commit** | `477af7b` — frontend Docker npm ci (React lock) |
-| **Prije toga** | `b44b7e0` — Showcase Mode |
-| **Aktivni track** | Showcase **DONE** na serveru; mobile polish **lokalno, nije pushan** |
-| **Session** | [30_showcase-mode/HANDOFF.md](./30_showcase-mode/HANDOFF.md) |
-| **Matrica** | `.cursor/docs/matrices/showcase/` |
+| **Branch** | `main` |
+| **Aktivni track** | [31_parity-to-100](./31_parity-to-100/HANDOFF.md) — **backend prvi** |
+| **Prethodno** | Showcase cinematic + audit katalog |
+| **Matrica** | `.cursor/docs/matrices/showcase-audit/` |
 
 ---
 
 ## 2. Status u jednoj rečenici
 
-Showcase Mode je na `main` i u Docker produkciji; lokalni PC ima nesačuvan mobile polish (faza 29) već spojen sa showcaseom (stash/pull/pop bez konflikta).
+Showcase na `/platforma` je cinematic s audit %; sljedeća sesija diže backend pa frontend na 100%, mobile zadnji.
 
 ---
 
@@ -29,37 +27,25 @@ Showcase Mode je na `main` i u Docker produkciji; lokalni PC ima nesačuvan mobi
 | Resurs | Vrijednost |
 |--------|------------|
 | Web | https://fkgracanica.ba101.top |
+| Preview | https://fkgracanica.ba101.top/platforma |
 | API | https://fkgracanica.ba101.top/backend/api/v1 |
 | Swagger | https://fkgracanica.ba101.top/backend/api/docs |
 | Health | https://fkgracanica.ba101.top/backend/api/v1/health |
-| Docker | rebuild 2026-08-15 OK (`fkgracanica-backend` + `frontend` started) |
 
-Showcase flag default **OFF**. Preview: `/platforma` ili `?showcase=1`.
-
----
-
-## 4. Dvije mašine (važno)
-
-**Server (ova sesija):** showcase + Docker lock fix, pushano.
-
-**Lokalni Windows PC:** uncommitted polish. Nakon `stash` → `pull` → `stash pop` auto-merge na:
-
-- `mobile/app/_layout.tsx` (mora imati `Stack.Screen name="showcase"`)
-- `mobile/app/(tabs)/_layout.tsx` (mora imati showcase intercept + `isStaffUser`)
-
-**Ne committati polish dok nije spreman.** Showcase je već na remoteu.
+Flag `feature.showcaseMode` default OFF.
 
 ---
 
-## 5. Sljedeći koraci
+## 4. Sljedeći koraci
 
-1. Lokalno: nastaviti mobile screen polish (faza 29 / liga-klubovi), pa commit + push.
-2. Uključiti `feature.showcaseMode` kad klub treba javnu prezentaciju.
-3. Ne implementirati u ovoj traci: PayPal, Monri, PWA, Excel, newsletter blast (`after_launch`).
+1. **Backend 100%:** analytics H2H/agregacija, email HTML/fail log, SEO share crawler, newsletter lista.
+2. **Frontend 100%:** i18n-en, analytics UI, OG, media-tree.
+3. **Mobile polish** iz GAPS P0–P2 — tek nakon 1–2.
+4. After_launch ne dirati: PayPal, Monri, PWA, Excel, newsletter blast.
 
 ---
 
-## 6. Pokretanje
+## 5. Pokretanje
 
 ```bash
 ./scripts/menu.sh   # 1 = rebuild docker
@@ -69,8 +55,9 @@ Showcase flag default **OFF**. Preview: `/platforma` ili `?showcase=1`.
 
 ---
 
-## 7. Pravila
+## 6. Pravila
 
 - Fajlovi ≤200 linija (config do 400)
-- Logika → `MATRIX.md` + `CHANGELOG.md`
-- `npm ci` u Dockeru koristi **per-package** lock (`frontend/package-lock.json`), ne root workspace lock
+- Logika → MATRIX + CHANGELOG
+- `npm ci` u Dockeru = `frontend/package-lock.json`
+- Ne dirati mobile showcase intercept u `_layout.tsx`

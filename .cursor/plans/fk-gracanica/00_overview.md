@@ -12,6 +12,7 @@ Produkcijska full-stack platforma: javni portal, admin CMS, statistički/live ce
 | **21** | Web Complete — **CLOSED** | [21_web-complete](21_web-complete/HANDOFF.md) |
 | **25** | Mobile Complete | [25_mobile-complete](25_mobile-complete/HANDOFF.md) |
 | **30** | Showcase Mode — **DONE** | [30_showcase-mode](30_showcase-mode/HANDOFF.md) |
+| **31** | **Parity to 100% (aktivno, backend prvi)** | [31_parity-to-100](31_parity-to-100/HANDOFF.md) |
 
 ## Stack
 

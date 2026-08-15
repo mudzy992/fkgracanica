@@ -34,7 +34,8 @@ export function CtaSection({ club, index }: { club: ShowcaseClub; index: number 
   };
 
   return (
-    <AnimatedSection index={index} className="py-16 sm:py-20">
+    <AnimatedSection index={index} className="relative py-20 sm:py-28">
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-blue-400/40 to-transparent" />
       <div className="mx-auto grid max-w-6xl gap-10 px-4 sm:px-6 lg:grid-cols-2">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-blue-300/80">Kontakt</p>
