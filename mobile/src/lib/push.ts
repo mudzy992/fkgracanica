@@ -37,15 +37,22 @@ export function registerPushDeepLinks() {
 
 export async function ensurePushRegistration() {
   if (!Device.isDevice) return;
-  const permissions = await Notifications.requestPermissionsAsync();
-  if (!permissions.granted) return;
-  const projectId = getProjectId();
-  if (!projectId) return;
-  const token = await Notifications.getExpoPushTokenAsync({ projectId });
-  const previous = await SecureStore.getItemAsync(PUSH_TOKEN_KEY);
-  if (previous === token.data) return;
-  await api.post('/notifications/devices', { token: token.data, platform: Device.osName ?? 'unknown' });
-  await SecureStore.setItemAsync(PUSH_TOKEN_KEY, token.data);
+  try {
+    const permissions = await Notifications.requestPermissionsAsync();
+    if (!permissions.granted) return;
+    const projectId = getProjectId();
+    if (!projectId) return;
+    const token = await Notifications.getExpoPushTokenAsync({ projectId });
+    const previous = await SecureStore.getItemAsync(PUSH_TOKEN_KEY);
+    if (previous === token.data) return;
+    await api.post('/notifications/devices', {
+      token: token.data,
+      platform: Device.osName ?? 'unknown',
+    });
+    await SecureStore.setItemAsync(PUSH_TOKEN_KEY, token.data);
+  } catch {
+    // Expo push API can return transient 503; never crash the app for push setup.
+  }
 }
 
 export async function clearPushRegistration() {

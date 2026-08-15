@@ -1,5 +1,6 @@
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { Screen } from '../../src/components/primitives/Screen';
 import { SectionHeader } from '../../src/components/primitives/SectionHeader';
 import { ListRow } from '../../src/components/primitives/ListRow';
@@ -7,22 +8,26 @@ import { useModuleFlags } from '../../src/hooks/use-module-flags';
 import { useAuth } from '../../src/lib/auth';
 import { setAppLanguage } from '../../src/i18n';
 import { isStaffUser } from '../../src/lib/permissions';
-import { useTheme, type ThemePreference } from '../../src/lib/theme-context';
-
-const THEME_LABEL: Record<ThemePreference, string> = {
-  system: 'themeSystem',
-  light: 'themeLight',
-  dark: 'themeDark',
-};
+import { useTheme } from '../../src/lib/theme-context';
+import { spacing, typography } from '../../src/lib/theme';
 
 export default function MoreScreen() {
   const { t, i18n } = useTranslation();
   const router = useRouter();
-  const { isAuthenticated, user } = useAuth();
+  const { isAuthenticated, user, logout } = useAuth();
   const { isEnabled } = useModuleFlags();
-  const { preference, cyclePreference } = useTheme();
+  const { colors } = useTheme();
   const canAccessStaff = isStaffUser(user);
   const nextLang = i18n.language === 'en' ? 'bs' : 'en';
+  const displayName = user?.firstName
+    ? `${user.firstName} ${user.lastName ?? ''}`.trim()
+    : user?.email ?? '';
+  const initials = displayName
+    .split(' ')
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase() ?? '')
+    .join('') || '?';
 
   return (
     <Screen scroll>
@@ -85,26 +90,34 @@ export default function MoreScreen() {
       ) : null}
       <SectionHeader title={t('preferences')} />
       <ListRow
-        title={t('appearance')}
-        subtitle={t(THEME_LABEL[preference])}
-        icon="moon-outline"
-        onPress={cyclePreference}
-      />
-      <ListRow
         title={t('language')}
         subtitle={i18n.language === 'en' ? t('languageEn') : t('languageBs')}
         icon="language-outline"
         onPress={() => void setAppLanguage(nextLang)}
       />
-      <SectionHeader title={t('accountTools')} subtitle={isAuthenticated ? user?.email ?? '' : t('guestMode')} />
+      <SectionHeader title={t('accountTools')} subtitle={isAuthenticated ? undefined : t('guestMode')} />
       {isAuthenticated ? (
         <>
+          <View style={[styles.profileCard, { backgroundColor: colors.background }]}>
+            <View style={[styles.avatar, { backgroundColor: colors.primary }]}>
+              <Text style={[styles.avatarText, { color: colors.white }]}>{initials}</Text>
+            </View>
+            <View style={styles.profileCopy}>
+              <Text style={[styles.profileName, { color: colors.text }]}>{displayName}</Text>
+              <Text style={[styles.profileEmail, { color: colors.textMuted }]}>{user?.email}</Text>
+            </View>
+          </View>
           <ListRow title={t('membership')} icon="id-card-outline" onPress={() => router.push('/(tabs)/membership')} />
           <ListRow title={t('tickets')} icon="ticket-outline" onPress={() => router.push('/(tabs)/tickets')} />
           <ListRow
             title={t('notifications')}
             icon="notifications-outline"
             onPress={() => router.push('/(tabs)/notifications')}
+          />
+          <ListRow
+            title={t('logout')}
+            icon="log-out-outline"
+            onPress={() => void logout()}
           />
         </>
       ) : (
@@ -139,3 +152,25 @@ export default function MoreScreen() {
     </Screen>
   );
 }
+
+const styles = StyleSheet.create({
+  profileCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
+    borderRadius: 16,
+    padding: spacing.md,
+    marginBottom: spacing.sm,
+  },
+  avatar: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  avatarText: { ...typography.heading, fontSize: 16 },
+  profileCopy: { flex: 1 },
+  profileName: { ...typography.body, fontWeight: '700' },
+  profileEmail: { ...typography.caption, marginTop: spacing.xs },
+});

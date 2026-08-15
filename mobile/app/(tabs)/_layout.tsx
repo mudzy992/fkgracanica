@@ -62,6 +62,7 @@ export default function TabsLayout() {
         name="home"
         options={{
           title: t('home'),
+          headerShown: false,
           tabBarIcon: tabIcon('home', 'home-outline'),
         }}
       />

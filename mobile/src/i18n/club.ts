@@ -1,0 +1,25 @@
+export const clubBs = {
+  clubKicker: 'Klub',
+  clubSubtitle: 'Profil, stadion i kadar.',
+  clubBackHome: 'Početna',
+  clubNotFound: 'Klub nije pronađen.',
+  clubEmptyRoster: 'Kadar trenutno nije objavljen.',
+  clubStadium: 'Stadion',
+  clubStadiumName: 'Naziv',
+  clubStadiumCity: 'Grad',
+  clubStadiumAddress: 'Adresa',
+  clubStadiumCapacity: 'Kapacitet',
+} as const;
+
+export const clubEn: Record<keyof typeof clubBs, string> = {
+  clubKicker: 'Club',
+  clubSubtitle: 'Profile, stadium and squad.',
+  clubBackHome: 'Home',
+  clubNotFound: 'Club not found.',
+  clubEmptyRoster: 'Squad is not published yet.',
+  clubStadium: 'Stadium',
+  clubStadiumName: 'Name',
+  clubStadiumCity: 'City',
+  clubStadiumAddress: 'Address',
+  clubStadiumCapacity: 'Capacity',
+};

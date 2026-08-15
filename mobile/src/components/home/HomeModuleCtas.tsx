@@ -30,36 +30,43 @@ export function HomeModuleCtas({ showMembership, showTickets }: Props) {
   };
 
   return (
-    <View style={styles.stack}>
+    <View style={styles.row}>
       {showMembership ? (
         <Pressable
           style={({ pressed }) => [
+            styles.action,
             styles.primary,
-            { backgroundColor: colors.primary, opacity: pressed ? 0.92 : 1 },
+            { backgroundColor: colors.primary, opacity: pressed ? 0.9 : 1 },
           ]}
           onPress={goMembership}
           accessibilityRole="button"
           accessibilityLabel={t('joinClub')}
         >
-          <View style={styles.labelWrap}>
-            <Text style={[styles.primaryTitle, { color: colors.white }]}>{t('joinClub')}</Text>
-            <Text style={[styles.primarySub, { color: colors.white }]}>{t('joinClubDesc')}</Text>
-          </View>
-          <Ionicons name="chevron-forward" size={22} color={colors.white} />
+          <Ionicons name="people" size={18} color={colors.white} />
+          <Text style={[styles.label, { color: colors.white }]} numberOfLines={1}>
+            {t('joinClub')}
+          </Text>
         </Pressable>
       ) : null}
       {showTickets ? (
         <Pressable
           style={({ pressed }) => [
+            styles.action,
             styles.secondary,
-            { backgroundColor: colors.background, opacity: pressed ? 0.92 : 1 },
+            {
+              backgroundColor: colors.background,
+              borderColor: colors.border,
+              opacity: pressed ? 0.9 : 1,
+            },
           ]}
           onPress={goTickets}
           accessibilityRole="button"
           accessibilityLabel={t('browseTickets')}
         >
-          <Text style={[styles.secondaryText, { color: colors.primary }]}>{t('browseTickets')}</Text>
-          <Ionicons name="ticket-outline" size={20} color={colors.primary} />
+          <Ionicons name="ticket-outline" size={18} color={colors.link} />
+          <Text style={[styles.label, { color: colors.link }]} numberOfLines={1}>
+            {t('browseTickets')}
+          </Text>
         </Pressable>
       ) : null}
     </View>
@@ -67,27 +74,19 @@ export function HomeModuleCtas({ showMembership, showTickets }: Props) {
 }
 
 const styles = StyleSheet.create({
-  stack: { gap: spacing.sm, marginTop: spacing.md, marginBottom: spacing.sm },
-  primary: {
+  row: { flexDirection: 'row', gap: spacing.sm },
+  action: {
+    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    borderRadius: 18,
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.md,
-    minHeight: 72,
+    justifyContent: 'center',
+    gap: spacing.xs,
+    borderRadius: 14,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm + 2,
+    minHeight: 46,
   },
-  labelWrap: { flex: 1, paddingRight: spacing.sm },
-  primaryTitle: { ...typography.heading, fontWeight: '800' },
-  primarySub: { ...typography.caption, marginTop: spacing.xs, opacity: 0.88 },
-  secondary: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    borderRadius: 16,
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.md,
-    minHeight: 52,
-  },
-  secondaryText: { ...typography.body, fontWeight: '700' },
+  primary: {},
+  secondary: { borderWidth: 1 },
+  label: { ...typography.caption, fontWeight: '700', flexShrink: 1 },
 });

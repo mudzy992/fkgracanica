@@ -16,18 +16,30 @@
 - [x] Komponente split; home.tsx orchestrator
 - [x] `tsc --noEmit`
 
-## Faza 2 — preostalo (max polish)
+## Widget polish (pojedinačno)
 
-- [x] Hero fade u surface (`expo-linear-gradient`)
-- [x] Istaknuti CTA dugmad (stacked primary/secondary)
-- [x] Spojeni match widget + Posljednja utakmica unutra
-- [x] Borderless soft-tonal kartice (`home-surface.ts`)
-- [x] Liga snippet (top 5) + link na `/league`
-- [x] Galerija preview (1–2 albuma)
-- [x] Sponzori + trofeji + featured players
-- [x] Membership band „Budi dio kluba”
-- [ ] `HomeSkeleton` (match + news shape)
-- [ ] Newsletter CTA (inline ili → contact)
-- [x] Module flags bez blinka dok loading
-- [ ] Manual smoke: 375px, dark, guest, član, offline retry
-- [ ] HANDOFF + SCREEN_QUEUE → Home **done**
+- [x] **Najnovije vijesti**
+- [x] **Hero + CTA** (transparent original crest, CTA u fade zoni)
+- [x] **Sljedeća utakmica**
+- [x] **Galerija**
+- [x] **Trofeji**
+- [x] **Sponzori**
+- [x] **Membership band**
+- [x] Dark-only app + `colors.link` + `HomeSkeleton`
+- [~] **Tabela** — Home snippet DONE za naslovnu; **puna liga + club pages = DEFERRED** → Track League/Clubs (ekrani #7–#8)
+- [~] **Naši igrači** — widget postoji u `home.tsx` / `HomeFeaturedPlayers`; **vizuelni polish + parity = DEFERRED** uz Team ekran (#7)
+
+## Faza 2 — preostalo (izvan Home zatvaranja)
+
+- [ ] Newsletter CTA (opcionalno)
+- [ ] Manual smoke: 375px, guest, član, offline retry
+- [x] HANDOFF + SCREEN_QUEUE → Home **done** (sa deferred scope ispod)
+
+## Deferred (namjerno van Home DONE)
+
+Ovo **nije** blokada za zatvaranje Home; ide kao poseban track jer diraju više ekrana:
+
+1. Full `/league` paritet s web `/liga` (standings, forma, round filter…)
+2. Club pages: `/clubs/[slug]` + poseban own-team (`/team`) kao na frontendu
+3. Tabela redovi na Home → tap na klub → club page
+4. Polish „Naši igrači” na Home + deep link na Team/Player

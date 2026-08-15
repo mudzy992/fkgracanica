@@ -1,47 +1,32 @@
-import { useRouter } from 'expo-router';
+import { Stack } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
+import { RefreshControl, ScrollView, StyleSheet, View } from 'react-native';
 import { ListSkeleton } from '../src/components/ListSkeleton';
-import { RemoteImage } from '../src/components/RemoteImage';
 import { ScreenEmpty } from '../src/components/ScreenEmpty';
-import { api } from '../src/lib/api';
-import { asArray, asRecord, asString } from '../src/lib/content-helpers';
+import { TeamFormationPitch } from '../src/components/team/TeamFormationPitch';
+import { TeamHero } from '../src/components/team/TeamHero';
+import { TeamRoster } from '../src/components/team/TeamRoster';
+import { TeamSeasonSummary } from '../src/components/team/TeamSeasonSummary';
+import { TeamSpotlight } from '../src/components/team/TeamSpotlight';
+import { loadTeamScreen, type TeamScreenData } from '../src/components/team/load-team-screen';
 import { useTheme } from '../src/lib/theme-context';
-import { spacing, typography } from '../src/lib/theme';
-
-type PlayerItem = { id: string; name: string; position: string; imagePath?: string };
+import { spacing } from '../src/lib/theme';
 
 export default function TeamScreen() {
-  const router = useRouter();
-  const { t } = useTranslation();
   const { colors } = useTheme();
-  const [clubName, setClubName] = useState('FK Gračanica');
-  const [players, setPlayers] = useState<PlayerItem[]>([]);
+  const { t } = useTranslation();
+  const [data, setData] = useState<TeamScreenData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     try {
       setError(null);
-      const { data } = await api.get('/clubs/own');
-      const club = asRecord(data);
-      setClubName(asString(club.name, 'FK Gračanica'));
-      const squad = await api.get(`/clubs/${asString(club.id)}/squad`);
-      setPlayers(
-        asArray(squad.data).map((entry, index) => {
-          const item = asRecord(entry);
-          const player = asRecord(item.player);
-          return {
-            id: asString(player.id, String(index)),
-            name: [asString(player.firstName), asString(player.lastName)].filter(Boolean).join(' ') || asString(player.name, 'Igrač'),
-            position: asString(player.position, 'Tim'),
-            imagePath: asString(player.imagePath) || asString(player.photoPath),
-          };
-        }),
-      );
+      setData(await loadTeamScreen());
     } catch {
-      setPlayers([]);
+      setData(null);
       setError(t('error'));
     }
   }, [t]);
@@ -50,62 +35,80 @@ export default function TeamScreen() {
     void load().finally(() => setLoading(false));
   }, [load]);
 
-  if (loading) return <ListSkeleton />;
-  if (error) {
+  if (loading) {
     return (
-      <ScreenEmpty
-        message={error}
-        icon="alert-circle-outline"
-        actionLabel={t('retry')}
-        onAction={() => {
-          setLoading(true);
-          void load().finally(() => setLoading(false));
-        }}
-      />
+      <View style={[styles.fill, { backgroundColor: colors.surface }]}>
+        <Stack.Screen options={{ headerShown: false }} />
+        <ListSkeleton />
+      </View>
     );
   }
 
+  if (error || !data) {
+    return (
+      <View style={[styles.fill, { backgroundColor: colors.surface }]}>
+        <Stack.Screen options={{ headerShown: false }} />
+        <ScreenEmpty
+          message={error ?? t('error')}
+          icon="alert-circle-outline"
+          actionLabel={t('retry')}
+          onAction={() => {
+            setLoading(true);
+            void load().finally(() => setLoading(false));
+          }}
+        />
+      </View>
+    );
+  }
+
+  const location = [data.city, data.stadiumName].filter(Boolean).join(' · ');
+
   return (
-    <FlatList
-      data={players}
-      keyExtractor={(item) => item.id}
-      contentContainerStyle={styles.list}
-      ListHeaderComponent={<Text style={[styles.title, { color: colors.text }]}>{clubName}</Text>}
-      renderItem={({ item }) => (
-        <Pressable
-          style={({ pressed }) => [
-            styles.card,
-            { backgroundColor: colors.background, borderColor: colors.border, opacity: pressed ? 0.9 : 1 },
-          ]}
-          onPress={() => router.push(`/player/${item.id}`)}
-          accessibilityRole="button"
-          accessibilityLabel={item.name}
-        >
-          <RemoteImage path={item.imagePath} style={styles.image} />
-          <View style={styles.texts}>
-            <Text style={[styles.name, { color: colors.text }]}>{item.name}</Text>
-            <Text style={[styles.meta, { color: colors.textMuted }]}>{item.position}</Text>
-          </View>
-        </Pressable>
-      )}
-    />
+    <View style={[styles.fill, { backgroundColor: colors.surface }]}>
+      <Stack.Screen options={{ headerShown: false }} />
+      <ScrollView
+        style={styles.fill}
+        contentContainerStyle={styles.content}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={() => {
+              setRefreshing(true);
+              void load().finally(() => setRefreshing(false));
+            }}
+            tintColor={colors.link}
+          />
+        }
+      >
+        <TeamHero
+          clubName={data.clubName}
+          crestPath={data.crestPath}
+          location={location || undefined}
+          formation={data.formation}
+          playerCount={data.players.length}
+          seasonName={data.seasonName}
+          points={data.standing?.points}
+          starters={data.starters}
+          benchCount={data.benchCount}
+        />
+        <View style={styles.sections}>
+          <TeamFormationPitch formation={data.formation} slots={data.pitchSlots} />
+          <TeamSpotlight players={data.spotlight} />
+          <TeamRoster players={data.players} />
+          <TeamSeasonSummary
+            seasonName={data.seasonName}
+            standing={data.standing}
+            totals={data.totals}
+            players={data.players}
+          />
+        </View>
+      </ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  list: { padding: spacing.md, gap: spacing.sm },
-  title: { ...typography.title, marginBottom: spacing.sm },
-  card: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.md,
-    borderRadius: 12,
-    borderWidth: 1,
-    padding: spacing.sm,
-    marginBottom: spacing.sm,
-  },
-  image: { width: 84, height: 84 },
-  texts: { flex: 1 },
-  name: { ...typography.heading },
-  meta: { ...typography.caption, marginTop: spacing.xs },
+  fill: { flex: 1 },
+  content: { paddingBottom: spacing.xl, flexGrow: 1 },
+  sections: { gap: spacing.xl, marginTop: spacing.md },
 });

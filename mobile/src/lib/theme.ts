@@ -1,7 +1,7 @@
-/** Brand usklađen s web `--color-primary` (#1e3a8a). */
+/** Brand usklađen s web `--color-primary` (#1e3a8a). Dark-only app palette. */
 export const brand = {
   primary: '#1E3A8A',
-  primaryLight: '#60A5FA',
+  primaryLight: '#93C5FD',
   accent: '#2563EB',
   success: '#16A34A',
   danger: '#DC2626',
@@ -21,31 +21,23 @@ export type ColorPalette = {
   border: string;
   white: string;
   headerBg: string;
-};
-
-export const lightColors: ColorPalette = {
-  ...brand,
-  background: '#FFFFFF',
-  surface: '#F8FAFC',
-  text: '#0F172A',
-  textMuted: '#64748B',
-  border: '#E2E8F0',
-  headerBg: brand.primary,
+  /** Interaktivni tekst/ikone na tonal površinama. */
+  link: string;
 };
 
 export const darkColors: ColorPalette = {
   ...brand,
-  primaryLight: '#93C5FD',
   background: '#050A14',
   surface: '#0A1525',
   text: '#F8FAFC',
   textMuted: '#94A3B8',
   border: '#334155',
   headerBg: '#050A14',
+  link: '#93C5FD',
 };
 
-/** Default light — prefer `useTheme().colors` u ekranima. */
-export const colors = lightColors;
+/** App je dark-only — prefer `useTheme().colors` u ekranima. */
+export const colors = darkColors;
 
 export const spacing = {
   xs: 4,

@@ -1,18 +1,20 @@
 import { api } from '../../lib/api';
 import { asArray, asRecord, asString } from '../../lib/content-helpers';
+import { loadHomePlayers, type HomePlayerItem } from './load-home-players';
 
-export type HomePlayerItem = {
-  id: string;
-  name: string;
-  position: string;
-  photoPath?: string;
-};
+export type { HomePlayerItem };
 
 export type HomeLeagueRow = {
   id: string;
   clubName: string;
+  slug?: string;
   points: number;
   position: number;
+  crestPath?: string;
+  played: number;
+  goalDifference: number;
+  form: string;
+  isOwn: boolean;
 };
 
 export type HomeGalleryItem = {
@@ -20,6 +22,7 @@ export type HomeGalleryItem = {
   slug: string;
   title: string;
   coverPath?: string;
+  photoCount: number;
 };
 
 export type HomeTrophyItem = {
@@ -27,6 +30,8 @@ export type HomeTrophyItem = {
   year: string;
   name: string;
   competition?: string;
+  imagePath?: string;
+  featured: boolean;
 };
 
 export type HomeSponsorItem = {
@@ -52,42 +57,31 @@ const emptyExtras: HomeExtras = {
   sponsors: [],
 };
 
-async function loadPlayers(): Promise<HomePlayerItem[]> {
-  const { data } = await api.get('/clubs/own');
-  const club = asRecord(data);
-  const clubId = asString(club.id);
-  if (!clubId) return [];
-  const squad = await api.get(`/clubs/${clubId}/squad`);
-  return asArray(squad.data)
-    .slice(0, 4)
-    .map((entry, index) => {
-      const item = asRecord(entry);
-      const player = asRecord(item.player);
-      return {
-        id: asString(player.id, String(index)),
-        name:
-          [asString(player.firstName), asString(player.lastName)].filter(Boolean).join(' ') ||
-          asString(player.name, 'Igrač'),
-        position: asString(player.position, 'Tim'),
-        photoPath: asString(player.photoPath) || asString(player.imagePath),
-      };
-    });
-}
-
 async function loadLeague(): Promise<HomeLeagueRow[]> {
-  const seasons = await api.get('/competitions/seasons/list');
+  const [seasons, ownRes] = await Promise.all([
+    api.get('/competitions/seasons/list'),
+    api.get('/clubs/own').catch(() => ({ data: null })),
+  ]);
   const seasonId = asString(asRecord(asArray(seasons.data)[0]).id);
   if (!seasonId) return [];
+  const ownId = asString(asRecord(ownRes.data).id);
   const standings = await api.get('/statistics/standings', { params: { seasonId } });
   return asArray(standings.data)
     .slice(0, 5)
     .map((row, index) => {
       const item = asRecord(row);
+      const id = asString(item.clubId, String(index));
       return {
-        id: asString(item.clubId, String(index)),
+        id,
         clubName: asString(item.clubName, `Tim ${index + 1}`),
+        slug: asString(item.clubSlug) || undefined,
         points: Number(item.points ?? 0),
         position: index + 1,
+        crestPath: asString(item.crestPath) || undefined,
+        played: Number(item.played ?? 0),
+        goalDifference: Number(item.goalDifference ?? 0),
+        form: asString(item.form),
+        isOwn: Boolean(ownId && id === ownId),
       };
     });
 }
@@ -95,7 +89,7 @@ async function loadLeague(): Promise<HomeLeagueRow[]> {
 async function loadGallery(): Promise<HomeGalleryItem[]> {
   const { data } = await api.get('/gallery');
   return asArray(data)
-    .slice(0, 2)
+    .slice(0, 3)
     .map((item, index) => {
       const record = asRecord(item);
       const photos = asArray(record.photos);
@@ -109,6 +103,7 @@ async function loadGallery(): Promise<HomeGalleryItem[]> {
           asString(record.heroPath) ||
           asString(first.path) ||
           asString(first.imagePath),
+        photoCount: photos.length || Number(record.photoCount ?? 0),
       };
     });
 }
@@ -116,7 +111,7 @@ async function loadGallery(): Promise<HomeGalleryItem[]> {
 async function loadTrophies(): Promise<HomeTrophyItem[]> {
   const { data } = await api.get('/trophies');
   return asArray(data)
-    .slice(0, 4)
+    .slice(0, 6)
     .map((item, index) => {
       const record = asRecord(item);
       return {
@@ -124,6 +119,8 @@ async function loadTrophies(): Promise<HomeTrophyItem[]> {
         year: asString(record.year, '—'),
         name: asString(record.name) || asString(record.title, 'Trofej'),
         competition: asString(record.competition) || undefined,
+        imagePath: asString(record.imagePath) || undefined,
+        featured: Boolean(record.featured),
       };
     });
 }
@@ -145,7 +142,7 @@ async function loadSponsors(): Promise<HomeSponsorItem[]> {
 
 export async function loadHomeExtras(): Promise<HomeExtras> {
   const [players, leagueRows, gallery, trophies, sponsors] = await Promise.all([
-    loadPlayers().catch(() => [] as HomePlayerItem[]),
+    loadHomePlayers().catch(() => [] as HomePlayerItem[]),
     loadLeague().catch(() => [] as HomeLeagueRow[]),
     loadGallery().catch(() => [] as HomeGalleryItem[]),
     loadTrophies().catch(() => [] as HomeTrophyItem[]),
