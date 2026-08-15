@@ -24,6 +24,12 @@ export const APP_MODULE_DEFINITIONS: AppModuleDefinition[] = [
   { key: 'feature.membership', label: 'Članstvo', scope: SettingScope.PRIVATE, requires: [] },
   { key: 'modules.contact', label: 'Kontakt', scope: SettingScope.PUBLIC, requires: [] },
   { key: 'modules.newsletter', label: 'Newsletter', scope: SettingScope.PUBLIC, requires: [] },
+  {
+    key: 'feature.showcaseMode',
+    label: 'Prezentacija / u izradi',
+    scope: SettingScope.PRIVATE,
+    requires: [],
+  },
 ];
 
 export const APP_MODULE_KEYS = new Set(APP_MODULE_DEFINITIONS.map((m) => m.key));

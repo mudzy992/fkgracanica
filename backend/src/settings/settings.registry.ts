@@ -1,4 +1,5 @@
 import { SettingScope, SettingType } from '@prisma/client';
+import { SHOWCASE_SETTINGS } from '../showcase/showcase-settings';
 
 export interface SettingDefinition {
   key: string;
@@ -401,4 +402,5 @@ export const SETTINGS_REGISTRY: SettingDefinition[] = [
     scope: SettingScope.PRIVATE,
     description: 'Maksimalna veličina uploada (MB)',
   },
+  ...SHOWCASE_SETTINGS,
 ];

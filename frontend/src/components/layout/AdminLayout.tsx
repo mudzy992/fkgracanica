@@ -12,6 +12,7 @@ import { ErrorBoundary } from '../common/ErrorBoundary';
 import { Sheet, SheetContent, SheetHeader } from '../ui/sheet';
 import { filterNavLeaves, type AdminNavLeaf } from './admin-nav-groups';
 import { AdminSidebarNav } from './AdminSidebarNav';
+import { AdminShowcaseBanner } from './AdminShowcaseBanner';
 
 function SidebarFooter({ onLogout }: { onLogout: () => void }) {
   const { t } = useTranslation();
@@ -97,6 +98,7 @@ export function AdminLayout() {
           </div>
         </Sheet>
 
+        <AdminShowcaseBanner />
         <main className="flex-1 overflow-auto p-4 md:p-6">
           <ErrorBoundary>
             <Outlet />

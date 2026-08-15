@@ -17,7 +17,8 @@ export function SettingsModuleSection({ scope, values, draft, readOnly, onDraft 
   return (
     <ul className="divide-y divide-[var(--border-subtle)]">
       {modules.map((mod) => {
-        const current = draft[mod.key] ?? values[mod.key] ?? 'true';
+        const fallback = mod.key === 'feature.showcaseMode' ? 'false' : 'true';
+        const current = draft[mod.key] ?? values[mod.key] ?? fallback;
         const enabled = current !== 'false';
         const blockOff = getModuleToggleBlockReason(mod.key, false, merged);
         const blockOn = getModuleToggleBlockReason(mod.key, true, merged);

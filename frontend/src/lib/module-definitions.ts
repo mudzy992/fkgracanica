@@ -35,6 +35,13 @@ export const APP_MODULE_DEFINITIONS: AppModuleDefinition[] = [
   { key: 'feature.membership', label: 'Članstvo', scope: 'private', requires: [], description: 'Članarine i kartice' },
   { key: 'modules.contact', label: 'Kontakt', scope: 'public', requires: [], description: 'Kontakt forma' },
   { key: 'modules.newsletter', label: 'Newsletter', scope: 'public', requires: [], description: 'Pretplata na vijesti' },
+  {
+    key: 'feature.showcaseMode',
+    label: 'Prezentacija / u izradi',
+    scope: 'private',
+    requires: [],
+    description: 'Javnost vidi prezentaciju platforme umjesto portala. Admin, prijava i staff rade.',
+  },
 ];
 
 export const APP_MODULE_KEYS = new Set(APP_MODULE_DEFINITIONS.map((m) => m.key));

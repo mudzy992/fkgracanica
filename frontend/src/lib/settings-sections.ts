@@ -34,6 +34,13 @@ export const SETTINGS_FIELD_GROUPS: SettingsFieldGroup[] = [
     keyPrefixes: ['seo.'],
   },
   {
+    id: 'showcase',
+    title: 'Prezentacija',
+    description: 'Napomena na stranici „u izradi” / /platforma',
+    scope: 'public',
+    keyPrefixes: ['showcase.'],
+  },
+  {
     id: 'live',
     title: 'Live centar',
     description: 'Javne postavke za live stranicu',

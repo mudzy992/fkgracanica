@@ -51,12 +51,16 @@ import { HeritageAdminPage } from '../pages/admin/HeritageAdminPage';
 import { CommsAdminPage } from '../pages/admin/CommsAdminPage';
 import { NotificationsPage } from '../pages/admin/NotificationsPage';
 import { CmsDynamicPage } from '../pages/public/CmsDynamicPage';
+import { ShowcasePage } from '../pages/showcase/ShowcasePage';
+import { ShowcaseGate } from '../components/common/ShowcaseGate';
 import { RootShell } from './root-shell';
 
 const ADMIN = '/admin';
 
 export const appRouteElements = (
   <Route element={<RootShell />}>
+      <Route path="platforma" element={<ShowcasePage />} />
+      <Route element={<ShowcaseGate />}>
       <Route element={<PublicLayout />}>
         <Route index element={<HomePage />} />
         <Route element={<ModuleRoute moduleKey="modules.timeline" />}>
@@ -106,11 +110,12 @@ export const appRouteElements = (
         </Route>
       </Route>
 
-      <Route path="prijava" element={<LoginPage />} />
-
       <Route element={<ModuleRoute moduleKey="feature.live" />}>
         <Route path="live/:id" element={<LiveMatchPage />} />
       </Route>
+      </Route>
+
+      <Route path="prijava" element={<LoginPage />} />
 
       <Route path="admin/login" element={<AdminLoginPage />} />
 

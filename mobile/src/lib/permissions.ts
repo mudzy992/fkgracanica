@@ -31,6 +31,7 @@ const STAFF_KEYS = [
   'contact.read',
   'newsletter.read',
   'media.manage',
+  'cms.manage',
 ];
 
 export function hasPermission(user: User | null | undefined, key: string): boolean {

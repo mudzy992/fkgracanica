@@ -39,6 +39,7 @@ import { AnalyticsModule } from './analytics/analytics.module';
 import { CacheModule } from './cache/cache.module';
 import { JobsModule } from './jobs/jobs.module';
 import { SeoModule } from './seo/seo.module';
+import { ShowcaseModule } from './showcase/showcase.module';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 
 @Module({
@@ -87,6 +88,7 @@ import { HttpExceptionFilter } from './common/filters/http-exception.filter';
     CacheModule,
     JobsModule,
     SeoModule,
+    ShowcaseModule,
   ],
   providers: [{ provide: APP_FILTER, useClass: HttpExceptionFilter }],
 })

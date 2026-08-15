@@ -4,7 +4,10 @@ import { Pressable, StyleSheet, Text, type ColorValue } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { ScreenLoading } from '../../src/components/ScreenLoading';
 import { useAuth } from '../../src/lib/auth';
+import { isStaffUser } from '../../src/lib/permissions';
 import { useUnreadNotifications } from '../../src/hooks/use-unread-notifications';
+import { useModuleFlags } from '../../src/hooks/use-module-flags';
+import { ShowcaseScreen } from '../../src/showcase/ShowcaseScreen';
 import { useTheme } from '../../src/lib/theme-context';
 
 type IconName = keyof typeof Ionicons.glyphMap;
@@ -17,12 +20,17 @@ function tabIcon(filled: IconName, outline: IconName) {
 
 export default function TabsLayout() {
   const { t } = useTranslation();
-  const { isAuthenticated, isLoading, logout } = useAuth();
+  const { isAuthenticated, isLoading, logout, user } = useAuth();
   const { colors } = useTheme();
   const { count: unreadCount } = useUnreadNotifications();
+  const { flags, loading: flagsLoading } = useModuleFlags();
 
-  if (isLoading) {
+  if (isLoading || flagsLoading) {
     return <ScreenLoading />;
+  }
+
+  if (flags['feature.showcaseMode'] === 'true' && !isStaffUser(user)) {
+    return <ShowcaseScreen />;
   }
 
   const headerRight = () =>
