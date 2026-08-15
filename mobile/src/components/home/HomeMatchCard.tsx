@@ -1,10 +1,11 @@
+import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { RemoteImage } from '../RemoteImage';
-import { formatDateTimeBs } from '../../lib/format-date';
 import { useTheme } from '../../lib/theme-context';
 import { spacing, typography } from '../../lib/theme';
 import type { Club, Match } from '../../types/api';
+import { formatMatchDayLabel, formatMatchTime } from './format-match-display';
 import { isMatchLive } from './pick-home-matches';
 
 type Props = {
@@ -12,12 +13,11 @@ type Props = {
   onPress: () => void;
 };
 
-function TeamMark({ club }: { club: Club }) {
-  const { colors } = useTheme();
+function TeamColumn({ club, colors }: { club: Club; colors: { surface: string; text: string } }) {
   return (
     <View style={styles.team}>
       <View style={[styles.crestShell, { backgroundColor: colors.surface }]}>
-        <RemoteImage path={club.crestPath} variant="thumb" style={styles.crest} />
+        <RemoteImage path={club.crestPath} variant="medium" style={styles.crest} />
       </View>
       <Text style={[styles.teamName, { color: colors.text }]} numberOfLines={2}>
         {club.shortName ?? club.name}
@@ -27,58 +27,119 @@ function TeamMark({ club }: { club: Club }) {
 }
 
 export function HomeMatchCard({ match, onPress }: Props) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { colors } = useTheme();
   const live = isMatchLive(match);
   const showScore = live || match.status === 'FINISHED';
   const home = match.homeClub.shortName ?? match.homeClub.name;
   const away = match.awayClub.shortName ?? match.awayClub.name;
   const cta = live ? t('followLive') : t('matchDetails');
-  const label = showScore
+  const centerLabel = showScore ? `${match.homeScore} : ${match.awayScore}` : formatMatchTime(match.scheduledAt);
+  const dayLabel = formatMatchDayLabel(match.scheduledAt, i18n.language);
+  const a11y = showScore
     ? `${home} ${match.homeScore} : ${match.awayScore} ${away}`
-    : `${home} ${t('vs')} ${away}`;
+    : `${home} ${t('vs')} ${away}, ${dayLabel}`;
 
   return (
     <Pressable
-      style={({ pressed }) => [{ opacity: pressed ? 0.92 : 1 }]}
+      style={({ pressed }) => [{ opacity: pressed ? 0.94 : 1 }]}
       onPress={onPress}
       accessibilityRole="button"
-      accessibilityLabel={label}
+      accessibilityLabel={a11y}
     >
-      <View style={styles.topRow}>
+      <View style={styles.chipRow}>
         {live ? (
-          <View style={[styles.badge, { backgroundColor: colors.danger }]}>
-            <Text style={[styles.badgeText, { color: colors.white }]}>{t('liveNow')}</Text>
+          <View style={[styles.liveChip, { backgroundColor: colors.danger }]}>
+            <View style={[styles.liveDot, { backgroundColor: colors.white }]} />
+            <Text style={[styles.chipText, { color: colors.white }]}>
+              {t('liveNow')}
+              {match.minute > 0 ? ` ${match.minute}'` : ''}
+            </Text>
           </View>
-        ) : null}
+        ) : (
+          <View style={[styles.dayChip, { backgroundColor: colors.surface }]}>
+            <Text style={[styles.chipText, { color: colors.link }]}>{dayLabel}</Text>
+          </View>
+        )}
       </View>
+
       <View style={styles.scoreRow}>
-        <TeamMark club={match.homeClub} />
-        <Text style={[styles.score, { color: colors.primary }]}>
-          {showScore ? `${match.homeScore} : ${match.awayScore}` : t('vs')}
-        </Text>
-        <TeamMark club={match.awayClub} />
+        <TeamColumn club={match.homeClub} colors={colors} />
+        <View style={styles.center}>
+          <Text style={[styles.centerValue, { color: live ? colors.danger : colors.link }]}>
+            {centerLabel}
+          </Text>
+          {!showScore ? (
+            <Text style={[styles.vsHint, { color: colors.textMuted }]}>{t('vs')}</Text>
+          ) : live ? (
+            <Text style={[styles.vsHint, { color: colors.textMuted }]}>{t('liveNow')}</Text>
+          ) : null}
+        </View>
+        <TeamColumn club={match.awayClub} colors={colors} />
       </View>
-      <View style={styles.metaBlock}>
-        <Text style={[styles.meta, { color: colors.textMuted }]}>{formatDateTimeBs(match.scheduledAt)}</Text>
-        {match.venue ? <Text style={[styles.meta, { color: colors.textMuted }]}>{match.venue}</Text> : null}
+
+      {match.venue ? (
+        <View style={styles.venueRow}>
+          <Ionicons name="location-outline" size={14} color={colors.textMuted} />
+          <Text style={[styles.venue, { color: colors.textMuted }]} numberOfLines={1}>
+            {match.venue}
+          </Text>
+        </View>
+      ) : null}
+
+      <View style={[styles.cta, { backgroundColor: live ? colors.danger : colors.primary }]}>
+        <Text style={[styles.ctaText, { color: colors.white }]}>{cta}</Text>
+        <Ionicons name={live ? 'radio-outline' : 'chevron-forward'} size={18} color={colors.white} />
       </View>
-      <Text style={[styles.link, { color: colors.accent }]}>{cta}</Text>
     </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
-  topRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end' },
-  badge: { borderRadius: 8, paddingHorizontal: spacing.sm, paddingVertical: 2 },
-  badgeText: { ...typography.caption, fontWeight: '700' },
-  scoreRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: spacing.sm },
-  team: { width: 96, alignItems: 'center', gap: spacing.xs },
-  crestShell: { width: 54, height: 54, borderRadius: 16, padding: spacing.xs },
-  crest: { width: '100%', height: '100%', borderRadius: 12 },
-  teamName: { ...typography.caption, minHeight: 32, textAlign: 'center', fontWeight: '700' },
-  score: { ...typography.title, minWidth: 72, textAlign: 'center' },
-  metaBlock: { marginTop: spacing.md, alignItems: 'center' },
-  meta: { ...typography.caption, marginTop: spacing.xs },
-  link: { marginTop: spacing.sm, fontWeight: '600', textAlign: 'center' },
+  chipRow: { flexDirection: 'row', justifyContent: 'center', marginBottom: spacing.sm },
+  liveChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    borderRadius: 999,
+    paddingHorizontal: spacing.sm + 2,
+    paddingVertical: 4,
+  },
+  liveDot: { width: 6, height: 6, borderRadius: 3 },
+  dayChip: { borderRadius: 999, paddingHorizontal: spacing.sm + 2, paddingVertical: 4 },
+  chipText: { ...typography.caption, fontWeight: '800', letterSpacing: 0.4, textTransform: 'uppercase' },
+  scoreRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  team: { width: 104, alignItems: 'center', gap: spacing.xs },
+  crestShell: {
+    width: 64,
+    height: 64,
+    borderRadius: 20,
+    padding: spacing.xs + 2,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  crest: { width: '100%', height: '100%', borderRadius: 14 },
+  teamName: { ...typography.caption, minHeight: 34, textAlign: 'center', fontWeight: '700' },
+  center: { flex: 1, alignItems: 'center', paddingHorizontal: spacing.xs },
+  centerValue: { fontSize: 30, fontWeight: '800', letterSpacing: -0.5, textAlign: 'center' },
+  vsHint: { ...typography.caption, marginTop: 2, fontWeight: '700', textTransform: 'uppercase' },
+  venueRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 4,
+    marginTop: spacing.md,
+  },
+  venue: { ...typography.caption, flexShrink: 1 },
+  cta: {
+    marginTop: spacing.md,
+    minHeight: 44,
+    borderRadius: 14,
+    paddingHorizontal: spacing.md,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: spacing.xs,
+  },
+  ctaText: { ...typography.body, fontWeight: '800' },
 });

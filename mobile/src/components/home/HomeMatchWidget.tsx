@@ -1,12 +1,14 @@
+import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { RemoteImage } from '../RemoteImage';
 import { ScreenEmpty } from '../ScreenEmpty';
 import { useTheme } from '../../lib/theme-context';
 import { spacing, typography } from '../../lib/theme';
 import type { Match } from '../../types/api';
 import { HomeMatchCard } from './HomeMatchCard';
-import { HomeSectionTitle } from './HomeSectionTitle';
 import { homeInset, homeSurface } from './home-surface';
+import { isMatchLive } from './pick-home-matches';
 
 type Props = {
   featured: Match | null;
@@ -21,12 +23,18 @@ export function HomeMatchWidget({ featured, lastResult, onOpenMatch }: Props) {
   if (!featured) {
     return (
       <View>
-        <HomeSectionTitle title={t('nextMatch')} />
+        <View style={styles.header}>
+          <Text style={[styles.title, { color: colors.text }]} accessibilityRole="header">
+            {t('nextMatch')}
+          </Text>
+          <Text style={[styles.subtitle, { color: colors.textMuted }]}>{t('homeMatchSubtitle')}</Text>
+        </View>
         <ScreenEmpty message={t('noMatches')} icon="football-outline" compact />
       </View>
     );
   }
 
+  const live = isMatchLive(featured);
   const lastHome = lastResult?.homeClub.shortName ?? lastResult?.homeClub.name ?? '';
   const lastAway = lastResult?.awayClub.shortName ?? lastResult?.awayClub.name ?? '';
   const lastLabel = lastResult
@@ -35,34 +43,48 @@ export function HomeMatchWidget({ featured, lastResult, onOpenMatch }: Props) {
 
   return (
     <View>
-      <HomeSectionTitle title={t('nextMatch')} />
-      <View style={[homeSurface(colors, false), styles.block]}>
+      <View style={styles.header}>
+        <Text style={[styles.title, { color: colors.text }]} accessibilityRole="header">
+          {t('nextMatch')}
+        </Text>
+        <Text style={[styles.subtitle, { color: colors.textMuted }]}>{t('homeMatchSubtitle')}</Text>
+      </View>
+
+      <View style={[homeSurface(colors, live), styles.block]}>
+        <View style={[styles.accent, { backgroundColor: live ? colors.danger : colors.primary }]} />
         <HomeMatchCard match={featured} onPress={() => onOpenMatch(featured.id)} />
+
         {lastResult ? (
-          <>
-            <View style={[styles.divider, { backgroundColor: colors.surface }]} />
-            <Text style={[styles.lastTitle, { color: colors.textMuted }]}>{t('homeLastMatch')}</Text>
-            <Pressable
-              style={({ pressed }) => [
-                homeInset(colors),
-                styles.lastRow,
-                { opacity: pressed ? 0.9 : 1 },
-              ]}
-              onPress={() => onOpenMatch(lastResult.id)}
-              accessibilityRole="button"
-              accessibilityLabel={lastLabel}
-            >
-              <Text style={[styles.lastTeams, { color: colors.text }]} numberOfLines={1}>
-                {lastHome}
-              </Text>
-              <Text style={[styles.lastScore, { color: colors.primary }]}>
-                {lastResult.homeScore} : {lastResult.awayScore}
-              </Text>
-              <Text style={[styles.lastTeams, { color: colors.text }]} numberOfLines={1}>
-                {lastAway}
-              </Text>
-            </Pressable>
-          </>
+          <Pressable
+            style={({ pressed }) => [
+              homeInset(colors),
+              styles.lastStrip,
+              { opacity: pressed ? 0.9 : 1 },
+            ]}
+            onPress={() => onOpenMatch(lastResult.id)}
+            accessibilityRole="button"
+            accessibilityLabel={lastLabel}
+          >
+            <View style={styles.lastCopy}>
+              <Text style={[styles.lastKicker, { color: colors.textMuted }]}>{t('homeLastMatch')}</Text>
+              <View style={styles.lastTeams}>
+                <RemoteImage
+                  path={lastResult.homeClub.crestPath}
+                  variant="thumb"
+                  style={styles.lastCrest}
+                />
+                <Text style={[styles.lastScore, { color: colors.text }]}>
+                  {lastResult.homeScore} : {lastResult.awayScore}
+                </Text>
+                <RemoteImage
+                  path={lastResult.awayClub.crestPath}
+                  variant="thumb"
+                  style={styles.lastCrest}
+                />
+              </View>
+            </View>
+            <Ionicons name="chevron-forward" size={18} color={colors.textMuted} />
+          </Pressable>
         ) : null}
       </View>
     </View>
@@ -70,21 +92,27 @@ export function HomeMatchWidget({ featured, lastResult, onOpenMatch }: Props) {
 }
 
 const styles = StyleSheet.create({
-  block: { marginTop: spacing.sm },
-  divider: { height: 1, marginVertical: spacing.md },
-  lastTitle: {
-    ...typography.caption,
-    fontWeight: '800',
-    letterSpacing: 1.2,
-    textTransform: 'uppercase',
-    marginBottom: spacing.sm,
-  },
-  lastRow: {
+  header: { marginBottom: spacing.sm },
+  title: { ...typography.heading, fontWeight: '800' },
+  subtitle: { ...typography.caption, marginTop: 2 },
+  block: { overflow: 'hidden', position: 'relative' },
+  accent: { position: 'absolute', top: 0, left: 0, right: 0, height: 3 },
+  lastStrip: {
+    marginTop: spacing.md,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    gap: spacing.sm,
+    paddingVertical: spacing.sm + 2,
+    paddingHorizontal: spacing.sm + 2,
   },
-  lastTeams: { ...typography.body, flex: 1, fontWeight: '600' },
-  lastScore: { ...typography.heading, minWidth: 64, textAlign: 'center' },
+  lastCopy: { flex: 1, gap: 4 },
+  lastKicker: {
+    ...typography.caption,
+    fontWeight: '800',
+    letterSpacing: 1,
+    textTransform: 'uppercase',
+  },
+  lastTeams: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
+  lastCrest: { width: 22, height: 22, borderRadius: 6 },
+  lastScore: { ...typography.heading, fontWeight: '800', minWidth: 56, textAlign: 'center' },
 });

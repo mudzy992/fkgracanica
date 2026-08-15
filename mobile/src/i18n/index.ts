@@ -4,7 +4,11 @@ import { initReactI18next } from 'react-i18next';
 import { commonBs, commonEn } from './common';
 import { commentatorBs, commentatorEn } from './commentator-keys';
 import { homeBs, homeEn } from './home';
+import { leagueBs, leagueEn } from './league';
+import { playerBs, playerEn } from './player';
 import { staffAdminBs, staffAdminEn } from './staff-admin';
+import { clubBs, clubEn } from './club';
+import { teamBs, teamEn } from './team';
 import { writerGalleryBs, writerGalleryEn } from './writer-gallery';
 
 const LANG_KEY = 'app_language';
@@ -15,6 +19,10 @@ const bs = {
   ...staffAdminBs,
   ...writerGalleryBs,
   ...homeBs,
+  ...playerBs,
+  ...leagueBs,
+  ...teamBs,
+  ...clubBs,
 };
 
 const en: Record<keyof typeof bs, string> = {
@@ -23,6 +31,10 @@ const en: Record<keyof typeof bs, string> = {
   ...staffAdminEn,
   ...writerGalleryEn,
   ...homeEn,
+  ...playerEn,
+  ...leagueEn,
+  ...teamEn,
+  ...clubEn,
 };
 
 void i18n.use(initReactI18next).init({

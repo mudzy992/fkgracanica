@@ -8,7 +8,7 @@ import { registerPushDeepLinks } from '../src/lib/push';
 import { ThemeProvider, useTheme } from '../src/lib/theme-context';
 
 function RootStack() {
-  const { colors, isDark } = useTheme();
+  const { colors } = useTheme();
 
   useEffect(() => {
     void hydrateLanguage();
@@ -17,7 +17,7 @@ function RootStack() {
 
   return (
     <>
-      <StatusBar style={isDark ? 'light' : 'dark'} />
+      <StatusBar style="light" />
       <Stack
         screenOptions={{
           headerStyle: { backgroundColor: colors.headerBg },
@@ -31,6 +31,10 @@ function RootStack() {
         <Stack.Screen name="login" options={{ title: 'FK Gračanica' }} />
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="staff" options={{ headerShown: false }} />
+        <Stack.Screen name="team" options={{ headerShown: false }} />
+        <Stack.Screen name="league" options={{ headerShown: false }} />
+        <Stack.Screen name="player/[id]" options={{ headerShown: false }} />
+        <Stack.Screen name="clubs/[slug]" options={{ headerShown: false }} />
       </Stack>
     </>
   );
