@@ -2,4 +2,5 @@
 
 ## 2026-08-15
 
-- Inicijalni track: katalog, flag, web/mobile showcase, CTA, admin banner
+- Showcase Mode implemented + Docker frontend lock sync (React ^19.2.7, no react-native-svg)
+- Session handoff: lokalni mobile polish nije pushan
