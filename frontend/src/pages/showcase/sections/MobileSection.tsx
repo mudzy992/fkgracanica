@@ -16,7 +16,7 @@ export function MobileSection({ section, modules, index }: Props) {
     <AnimatedSection index={index} className="py-20 sm:py-28">
       <div className="mx-auto grid max-w-6xl items-center gap-12 px-4 sm:px-6 lg:grid-cols-[1fr_auto]">
         <div>
-          <SectionIntro kicker="Mobile" title={section.title} body={section.body} />
+          <SectionIntro kicker="Mobile" title={section.title} body={section.body} chapter={index} />
           <ul className="mt-8 grid gap-3 sm:grid-cols-2">
             {section.bullets?.map((item) => (
               <li key={item} className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-blue-50">

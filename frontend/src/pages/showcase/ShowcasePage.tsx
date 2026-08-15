@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { Seo } from '../../components/seo/Seo';
 import { useDynamicFavicon } from '../../hooks/use-dynamic-favicon';
 import { useShowcase } from '../../hooks/use-showcase';
@@ -46,8 +47,13 @@ export function ShowcasePage() {
   const { data, isLoading, isError } = useShowcase();
   useDynamicFavicon(data?.club.crestUrl);
 
+  useEffect(() => {
+    document.documentElement.classList.add('scroll-smooth');
+    return () => document.documentElement.classList.remove('scroll-smooth');
+  }, []);
+
   return (
-    <div className="min-h-dvh bg-[#050a14] text-white">
+    <div id="top" className="min-h-dvh bg-[#050a14] text-white">
       <Seo
         title="Platforma u izradi"
         description="Pregled digitalne platforme FK Gračanica — web, admin i mobile."

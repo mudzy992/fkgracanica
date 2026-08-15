@@ -20,13 +20,13 @@ export function CatalogSection({ section, modules, index }: Props) {
     <AnimatedSection index={index} className="py-16 sm:py-24">
       <div className="mx-auto grid max-w-6xl items-center gap-10 px-4 sm:px-6 lg:grid-cols-2">
         <div className={visual ? '' : 'lg:col-span-2'}>
-          <SectionIntro kicker="Platforma" title={section.title} body={section.body} />
+          <SectionIntro kicker="Platforma" title={section.title} body={section.body} chapter={index} />
           {section.bullets?.length ? (
             <ul className="mt-8 grid gap-3 sm:grid-cols-2">
               {section.bullets.map((item) => (
                 <li
                   key={item}
-                  className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-blue-50"
+                  className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-blue-50 transition hover:border-blue-400/30"
                 >
                   {item}
                 </li>

@@ -1,21 +1,23 @@
 import { AnimatedSection } from '../../../lib/motion/AnimatedSection';
 import { StatusBadge } from '../StatusBadge';
 import type { ShowcaseRole } from '../types';
+import { SectionIntro } from './SectionIntro';
 
 export function RolesSection({ roles, index }: { roles: ShowcaseRole[]; index: number }) {
   return (
-    <AnimatedSection index={index} className="py-16 sm:py-20">
+    <AnimatedSection id="uloge" index={index} className="py-16 sm:py-24">
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
-        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-blue-300/80">Ljudi</p>
-        <h2 className="font-display mt-2 text-3xl font-bold text-white sm:text-4xl">Uloge i zadaci</h2>
-        <p className="mt-4 max-w-3xl text-base text-blue-100/80 sm:text-lg">
-          Pet uloga. Mali klub može spojiti administratora i moderatora; komentator je obavezan na dan utakmice.
-        </p>
+        <SectionIntro
+          kicker="Ljudi"
+          title="Uloge i zadaci"
+          body="Pet uloga. Mali klub može spojiti administratora i moderatora; komentator je obavezan na dan utakmice."
+          chapter={index}
+        />
         <div className="mt-10 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {roles.map((role) => (
             <article
               key={role.id}
-              className="rounded-2xl border border-white/10 bg-white/5 p-5 shadow-[0_20px_50px_-24px_rgba(37,99,235,0.45)]"
+              className="rounded-2xl border border-white/10 bg-white/5 p-5 transition hover:border-blue-400/35 hover:bg-white/[0.08]"
             >
               <div className="flex items-start justify-between gap-2">
                 <h3 className="font-display text-lg font-semibold text-white">{role.title}</h3>

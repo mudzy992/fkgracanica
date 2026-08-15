@@ -8,6 +8,7 @@ interface Props {
   className?: string;
   variant?: 'default' | 'surface' | 'hero';
   index?: number;
+  id?: string;
 }
 
 const variants = {
@@ -16,16 +17,17 @@ const variants = {
   hero: '',
 };
 
-export function AnimatedSection({ children, className, variant = 'default', index = 0 }: Props) {
+export function AnimatedSection({ children, className, variant = 'default', index = 0, id }: Props) {
   const reduce = useReducedMotion();
-  const base = cn('relative', variants[variant], className);
+  const base = cn('relative scroll-mt-20', variants[variant], className);
   const immediate = variant === 'hero' || index === 0;
 
-  if (reduce) return <section className={base}>{children}</section>;
+  if (reduce) return <section id={id} className={base}>{children}</section>;
 
   if (immediate) {
     return (
       <motion.section
+        id={id}
         className={base}
         initial="visible"
         animate="visible"
@@ -39,6 +41,7 @@ export function AnimatedSection({ children, className, variant = 'default', inde
 
   return (
     <motion.section
+      id={id}
       className={base}
       initial="hidden"
       whileInView="visible"

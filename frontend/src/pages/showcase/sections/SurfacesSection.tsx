@@ -17,9 +17,9 @@ const SURFACES = [
 
 export function SurfacesSection({ section, index }: Props) {
   return (
-    <AnimatedSection index={index} className="py-20 sm:py-28">
+    <AnimatedSection index={index} className="py-20 sm:py-28" id="povrsine">
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
-        <SectionIntro kicker="Tri površine" title={section.title} body={section.body} />
+        <SectionIntro kicker="Tri površine" title={section.title} body={section.body} chapter={index} />
         <div className="mt-12 grid gap-8 lg:grid-cols-3">
           <figure>
             <BrowserFrame>

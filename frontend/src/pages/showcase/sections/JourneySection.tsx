@@ -18,14 +18,15 @@ export function JourneySection({ section, modules, index }: Props) {
     .filter((m): m is ShowcaseModule => !!m);
 
   return (
-    <AnimatedSection index={index} variant="surface" className="py-20 sm:py-28">
+    <AnimatedSection index={index} variant="surface" className="py-20 sm:py-28" id="put">
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
-        <SectionIntro kicker="Put navijača" title={section.title} body={section.body} />
-        <ol className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <SectionIntro kicker="Put navijača" title={section.title} body={section.body} chapter={index} />
+        <ol className="relative mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="pointer-events-none absolute top-10 right-[8%] left-[8%] hidden h-px bg-gradient-to-r from-transparent via-blue-400/40 to-transparent lg:block" />
           {STEPS.map((step) => (
             <li
               key={step.n}
-              className="relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-5"
+              className="relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-5 transition hover:border-blue-400/40 hover:bg-white/[0.08]"
             >
               <p className="font-display text-3xl font-bold text-blue-400/40">{step.n}</p>
               <p className="mt-3 text-lg font-semibold text-white">{step.title}</p>

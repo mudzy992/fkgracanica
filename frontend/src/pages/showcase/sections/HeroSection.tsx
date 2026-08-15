@@ -30,6 +30,20 @@ export function HeroSection({ club, percent }: Props) {
           <p className="mt-6 max-w-xl text-base leading-relaxed text-blue-100/70 sm:text-lg">
             Web, admin i mobile — ista platforma. Pregledaj šta klub dobija, kako izgleda i ko šta radi.
           </p>
+          <div className="mt-8 flex flex-wrap gap-3">
+            <a
+              href="#povrsine"
+              className="rounded-full bg-blue-500 px-5 py-2.5 text-sm font-semibold text-white shadow-[0_12px_32px_-10px_rgba(59,130,246,0.85)] hover:bg-blue-400"
+            >
+              Istraži platformu
+            </a>
+            <a
+              href="#kontakt"
+              className="rounded-full border border-white/20 px-5 py-2.5 text-sm font-semibold text-white hover:bg-white/10"
+            >
+              Pišite nam
+            </a>
+          </div>
           {club.launchNote ? (
             <p className="mt-6 rounded-2xl border border-blue-400/30 bg-blue-500/10 px-4 py-3 text-sm text-blue-50">
               {club.launchNote}
