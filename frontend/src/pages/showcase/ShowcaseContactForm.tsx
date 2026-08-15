@@ -2,9 +2,9 @@ import { useForm } from 'react-hook-form';
 import type { ReactNode } from 'react';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Input } from '../../../components/ui/input';
-import { Button } from '../../../components/ui/button';
-import type { ContactFormData } from '../../../components/public/contact/ContactFormPanel';
+import { Input } from '../../components/ui/input';
+import { Button } from '../../components/ui/button';
+import type { ContactFormData } from '../../components/public/contact/ContactFormPanel';
 
 const schema = z.object({
   name: z.string().min(2, 'Unesite ime (min. 2 znaka)'),
