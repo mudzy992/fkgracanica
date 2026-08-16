@@ -6,6 +6,7 @@ import { Button } from '../../components/ui/button';
 import { AdminPageShell } from '../../components/admin/AdminPageShell';
 import { adminLinkClass } from '../../lib/admin-styles';
 import { KPI_ICONS, KPI_LABELS, KPI_ROUTES } from './dashboard-kpi-config';
+import { PlatformStatusTeaser } from './platform-status/PlatformStatusTeaser';
 
 export function DashboardPage() {
   const { data, isLoading, isError, refetch } = useDashboardKpis();
@@ -24,6 +25,7 @@ export function DashboardPage() {
   return (
     <>
       <Seo title="Dashboard" />
+      <PlatformStatusTeaser />
       <AdminPageShell title="Kontrolna tabla" isLoading={isLoading}>
         <div className="grid gap-4 p-4 sm:grid-cols-2 lg:grid-cols-4">
           {data &&

@@ -27,6 +27,7 @@ import { TicketsPage } from '../pages/public/TicketsPage';
 import { LoginPage } from '../pages/public/LoginPage';
 import { AdminLoginPage } from '../pages/admin/AdminLoginPage';
 import { DashboardPage } from '../pages/admin/DashboardPage';
+import { PlatformStatusPage } from '../pages/admin/platform-status/PlatformStatusPage';
 import { SettingsPage } from '../pages/admin/SettingsPage';
 import { UsersRolesPage } from '../pages/admin/UsersRolesPage';
 import { CmsHubPage } from '../pages/admin/cms/CmsHubPage';
@@ -122,6 +123,9 @@ export const appRouteElements = (
       <Route path="admin" element={<ProtectedRoute />}>
         <Route element={<AdminLayout />}>
           <Route index element={<DashboardPage />} />
+          <Route element={<PermissionRoute permission="dashboard.read" />}>
+            <Route path="stanje" element={<PlatformStatusPage />} />
+          </Route>
           <Route element={<PermissionRoute permission="settings.read" />}>
             <Route path="settings" element={<SettingsPage />} />
           </Route>

@@ -44,6 +44,16 @@ export type ShowcasePayload = {
   roles: ShowcaseRole[];
 };
 
+export type PlatformStatusCounts = Record<ShowcaseBadge, number>;
+
+export type PlatformStatusPayload = {
+  overallPercent: number;
+  counted: number;
+  afterLaunch: number;
+  counts: PlatformStatusCounts;
+  modules: ShowcaseModule[];
+};
+
 export function isShowcaseModeOn(value: string | undefined): boolean {
   return value === 'true';
 }

@@ -6,6 +6,8 @@ import { SHOWCASE_ROLES } from './catalog-roles';
 import {
   isShowcaseModeOn,
   overallPercentFrom,
+  type PlatformStatusPayload,
+  type ShowcaseBadge,
   type ShowcasePayload,
 } from './showcase.types';
 
@@ -42,6 +44,24 @@ export class ShowcaseService {
       modules: SHOWCASE_MODULES,
       sections: SHOWCASE_SECTIONS,
       roles: SHOWCASE_ROLES,
+    };
+  }
+
+  getStatus(): PlatformStatusPayload {
+    const modules = SHOWCASE_MODULES;
+    const counted = modules.filter((m) => m.badge !== 'after_launch');
+    const count = (badge: ShowcaseBadge) => modules.filter((m) => m.badge === badge).length;
+    return {
+      overallPercent: overallPercentFrom(modules),
+      counted: counted.length,
+      afterLaunch: modules.length - counted.length,
+      counts: {
+        ready: count('ready'),
+        in_progress: count('in_progress'),
+        web_only: count('web_only'),
+        after_launch: count('after_launch'),
+      },
+      modules,
     };
   }
 }
