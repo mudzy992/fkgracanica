@@ -4,9 +4,10 @@ import { PaymentsModule } from '../payments/payments.module';
 import { MembershipService } from './membership.service';
 import { MembershipController } from './membership.controller';
 import { MembershipPublicController } from './membership-public.controller';
+import { JobsModule } from '../jobs/jobs.module';
 
 @Module({
-  imports: [AuthModule, forwardRef(() => PaymentsModule)],
+  imports: [AuthModule, forwardRef(() => PaymentsModule), JobsModule],
   controllers: [MembershipController, MembershipPublicController],
   providers: [MembershipService],
   exports: [MembershipService],

@@ -10,7 +10,7 @@ export function useOnlineTicketCheckout() {
         orderId: payload.orderId,
         provider: payload.provider,
         successUrl: `${origin}/ulaznice?paid=1&session_id={CHECKOUT_SESSION_ID}`,
-        cancelUrl: `${origin}/ulaznice`,
+        cancelUrl: `${origin}/ulaznice?cancelled=1`,
       });
       return res.data;
     },

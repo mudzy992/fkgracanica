@@ -27,6 +27,7 @@ interface Props {
   onSelect: (section: CmsPageSection) => void;
   onReorder: (ids: string[]) => void;
   onDelete: (id: string) => void;
+  onToggleEnabled?: (id: string, enabled: boolean) => void;
 }
 
 function SortableRow({
@@ -35,12 +36,14 @@ function SortableRow({
   selected,
   onSelect,
   onDelete,
+  onToggleEnabled,
 }: {
   section: CmsPageSection;
   index: number;
   selected: boolean;
   onSelect: () => void;
   onDelete: () => void;
+  onToggleEnabled?: (enabled: boolean) => void;
 }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: section.id });
   const label = widgetMeta[section.widgetType as keyof typeof widgetMeta]?.label ?? section.widgetType;
@@ -62,6 +65,17 @@ function SortableRow({
         <Badge variant="muted">{label}</Badge>
         <span className="text-xs text-text-muted">#{index + 1}</span>
       </button>
+      {onToggleEnabled && (
+        <button
+          type="button"
+          role="switch"
+          aria-checked={section.enabled}
+          onClick={() => onToggleEnabled(!section.enabled)}
+          className={`h-5 w-9 rounded-full ${section.enabled ? 'bg-success' : 'bg-text-muted/30'}`}
+        >
+          <span className={`block h-4 w-4 rounded-full bg-white transition ${section.enabled ? 'translate-x-4' : 'translate-x-0.5'}`} />
+        </button>
+      )}
       <Button size="sm" variant="outline" className="text-danger" onClick={onDelete}>
         Obriši
       </Button>
@@ -69,7 +83,7 @@ function SortableRow({
   );
 }
 
-export function CmsSortableSections({ sections, selectedId, onSelect, onReorder, onDelete }: Props) {
+export function CmsSortableSections({ sections, selectedId, onSelect, onReorder, onDelete, onToggleEnabled }: Props) {
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 6 } }),
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
@@ -99,6 +113,9 @@ export function CmsSortableSections({ sections, selectedId, onSelect, onReorder,
               selected={selectedId === s.id}
               onSelect={() => onSelect(s)}
               onDelete={() => onDelete(s.id)}
+              onToggleEnabled={
+                onToggleEnabled ? (enabled) => onToggleEnabled(s.id, enabled) : undefined
+              }
             />
           ))}
         </div>

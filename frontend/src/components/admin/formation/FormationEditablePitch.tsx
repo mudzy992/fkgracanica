@@ -5,6 +5,7 @@ import { POSITION_LABELS } from '../../../lib/player-utils';
 import { playerDndId, squadSlotDndId } from '../../../lib/formation-dnd';
 import type { ClubSquadSlot } from '../../../types/club-hub';
 import { cn } from '../../../lib/utils';
+import { mapPitchPosition } from '../../../lib/pitch-coords';
 import { PitchMarkings } from '../../public/clubs/PitchMarkings';
 
 function EditableSlot({
@@ -70,24 +71,46 @@ interface Props {
   slots: ClubSquadSlot[];
   activeSlot: ClubSquadSlot | null;
   onSlotClick: (slot: ClubSquadSlot) => void;
+  horizontal?: boolean;
+  pending?: boolean;
 }
 
-export function FormationEditablePitch({ slots, activeSlot, onSlotClick }: Props) {
+export function ResponsiveFormationEditablePitch(props: Omit<Props, 'horizontal'>) {
+  return (
+    <>
+      <div className="hidden lg:block">
+        <FormationEditablePitch {...props} />
+      </div>
+      <div className="lg:hidden">
+        <FormationEditablePitch {...props} horizontal={false} />
+      </div>
+    </>
+  );
+}
+
+export function FormationEditablePitch({ slots, activeSlot, onSlotClick, horizontal = true, pending }: Props) {
   const starters = slots.filter((s) => !s.isBench);
 
   return (
-    <div className="relative aspect-[16/9] w-full overflow-hidden rounded-2xl border border-slate-200 bg-green-700 shadow-lg">
-      <PitchMarkings horizontal />
-      {starters.map((slot) => (
-        <EditableSlot
-          key={slot.id}
-          slot={slot}
-          active={
-            activeSlot?.slotIndex === slot.slotIndex && activeSlot?.isBench === slot.isBench
-          }
-          onSlotClick={onSlotClick}
-        />
-      ))}
+    <div
+      className={`relative w-full overflow-hidden rounded-2xl border border-slate-200 bg-green-700 shadow-lg ${
+        horizontal ? 'aspect-[16/9]' : 'aspect-[3/4]'
+      } ${pending ? 'opacity-70' : ''}`}
+    >
+      <PitchMarkings horizontal={horizontal} />
+      {starters.map((slot) => {
+        const pos = mapPitchPosition(slot.positionX ?? 50, slot.positionY ?? 50, horizontal);
+        return (
+          <EditableSlot
+            key={slot.id}
+            slot={{ ...slot, positionX: pos.left, positionY: pos.top }}
+            active={
+              activeSlot?.slotIndex === slot.slotIndex && activeSlot?.isBench === slot.isBench
+            }
+            onSlotClick={onSlotClick}
+          />
+        );
+      })}
     </div>
   );
 }

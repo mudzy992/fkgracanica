@@ -90,6 +90,7 @@
     "museum": "Muzej",
     "heritage": "Baština",
     "comms": "Komunikacija",
+    "analytics": "Analitika",
     "navGroup": {
       "overview": "Pregled",
       "system": "Sistem",
@@ -128,5 +129,26 @@
     "viewAll": "Pogledaj sve",
     "markAllRead": "Označi sve pročitanim",
     "markRead": "Pročitano"
+  },
+  "news": {
+    "eyebrow": "Mediji",
+    "title": "Vijesti",
+    "subtitle": "Najnovije vijesti iz kluba i sa terena.",
+    "empty": "Nema objavljenih vijesti.",
+    "seoDesc": "Najnovije vijesti, izvještaji sa utakmica i objave FK Gračanica.",
+    "readMore": "Pročitaj više"
+  },
+  "contactPage": {
+    "seoTitle": "Kontakt",
+    "seoDesc": "Kontaktirajte FK Gračanica",
+    "eyebrow": "Podrška",
+    "title": "Kontakt",
+    "subtitle": "Pošaljite nam poruku — odgovaramo u najkraćem roku.",
+    "email": "Email",
+    "phone": "Telefon",
+    "address": "Adresa"
+  },
+  "pages": {
+    "notFound": "Stranica nije pronađena."
   }
 }

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { usePublicSettings, useContactSubmit } from '../../hooks';
 import { useAuth } from '../../lib/auth';
 import { PageContainer } from '../../components/public/PageContainer';
@@ -11,6 +12,7 @@ import {
 import { Seo } from '../../components/seo/Seo';
 
 export function ContactPage() {
+  const { t } = useTranslation();
   const [sent, setSent] = useState(false);
   const [defaults, setDefaults] = useState<Partial<ContactFormData>>({});
   const submit = useContactSubmit();
@@ -37,7 +39,7 @@ export function ContactPage() {
 
   return (
     <div className="pb-16 sm:pb-20">
-      <Seo title="Kontakt" description="Kontaktirajte FK Gračanica" />
+      <Seo title={t('contactPage.seoTitle')} description={t('contactPage.seoDesc')} />
       <ContactCinematicHero hasEmail={!!email} hasPhone={!!phone} hasAddress={!!address} />
       <PageContainer className="py-10 sm:py-12">
         <div className="grid gap-10 lg:grid-cols-2 lg:gap-14">

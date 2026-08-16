@@ -1,5 +1,7 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { Bell, Info, CheckCircle, AlertTriangle } from 'lucide-react';
 import {
   useMarkAllNotificationsRead,
   useMarkNotificationRead,
@@ -10,6 +12,8 @@ import { Seo } from '../../components/seo/Seo';
 import { Button } from '../../components/ui/button';
 import { AdminPageShell } from '../../components/admin/AdminPageShell';
 import { AdminPagination } from '../../components/admin/AdminPagination';
+
+const TYPE_ICON = { info: Info, success: CheckCircle, warning: AlertTriangle } as const;
 
 export function NotificationsPage() {
   const { t } = useTranslation();
@@ -35,25 +39,36 @@ export function NotificationsPage() {
           {items.length === 0 && (
             <p className="text-center text-sm text-text-muted">{t('notifications.empty', 'Nema obavještenja.')}</p>
           )}
-          {items.map((n) => (
-            <li
-              key={n.id}
-              className={`rounded-lg border p-4 ${n.isRead ? 'border-[var(--border-subtle)]' : 'border-accent/50 bg-surface'}`}
-            >
-              <div className="flex items-start justify-between gap-2">
-                <div>
-                  <p className="font-medium">{n.title}</p>
-                  <p className="text-sm text-text-muted">{n.body}</p>
-                  <p className="mt-1 text-xs text-text-muted">{formatDateTime(n.createdAt)}</p>
+          {items.map((n) => {
+            const Icon = TYPE_ICON[(n.type as keyof typeof TYPE_ICON) ?? 'info'] ?? Bell;
+            const deepLink = n.metadata?.path;
+            return (
+              <li
+                key={n.id}
+                className={`rounded-lg border p-4 ${n.isRead ? 'border-[var(--border-subtle)]' : 'border-accent/50 bg-surface'}`}
+              >
+                <div className="flex items-start justify-between gap-2">
+                  <div className="flex min-w-0 items-start gap-2">
+                    <Icon className="mt-0.5 h-4 w-4 shrink-0 text-text-muted" aria-hidden />
+                    <div>
+                      {deepLink ? (
+                        <Link to={deepLink} className="font-medium hover:underline">{n.title}</Link>
+                      ) : (
+                        <p className="font-medium">{n.title}</p>
+                      )}
+                      <p className="text-sm text-text-muted">{n.body}</p>
+                      <p className="mt-1 text-xs text-text-muted">{formatDateTime(n.createdAt)}</p>
+                    </div>
+                  </div>
+                  {!n.isRead && (
+                    <Button size="sm" variant="ghost" onClick={() => void markRead.mutateAsync(n.id)}>
+                      {t('notifications.markRead')}
+                    </Button>
+                  )}
                 </div>
-                {!n.isRead && (
-                  <Button size="sm" variant="ghost" onClick={() => void markRead.mutateAsync(n.id)}>
-                    {t('notifications.markRead')}
-                  </Button>
-                )}
-              </div>
-            </li>
-          ))}
+              </li>
+            );
+          })}
         </ul>
         {data?.meta && <AdminPagination meta={data.meta} page={page} onPageChange={setPage} />}
       </AdminPageShell>

@@ -15,6 +15,11 @@ export class PlayersController {
     return this.service.findAll(clubId, activeOnly === 'true');
   }
 
+  @Get(':id/matches')
+  getPublicMatches(@Param('id') id: string) {
+    return this.service.getPublicMatches(id);
+  }
+
   @Get(':id/public')
   getPublicProfile(@Param('id') id: string, @Query('seasonId') seasonId?: string) {
     return this.service.getPublicProfile(id, seasonId);

@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { Seo } from '../components/seo/Seo';
 import { SectionDivider } from '../components/public/shell/SectionDivider';
 import { AnimatedSection } from '../lib/motion/AnimatedSection';
@@ -11,6 +12,7 @@ interface Props {
 }
 
 export function PageRenderer({ slug, admin }: Props) {
+  const { t } = useTranslation();
   const { data: page, isLoading, isError } = useCmsPage(slug, admin);
   const sections = page?.sections ?? [];
 
@@ -24,7 +26,7 @@ export function PageRenderer({ slug, admin }: Props) {
   }
 
   if (isError || !page) {
-    return <p className="p-12 text-center text-text-muted">Stranica nije pronađena.</p>;
+    return <p className="p-12 text-center text-text-muted">{t('pages.notFound')}</p>;
   }
 
   return (

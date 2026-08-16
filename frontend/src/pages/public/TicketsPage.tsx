@@ -19,6 +19,7 @@ export function TicketsPage() {
   const location = useLocation();
   const [searchParams] = useSearchParams();
   const paidReturn = searchParams.get('paid') === '1';
+  const cancelled = searchParams.get('cancelled') === '1';
   const sessionId = searchParams.get('session_id');
   const { data: config } = useTicketingPublicConfig();
   const [tab, setTab] = useState<Tab>(paidReturn ? 'orders' : 'reserve');
@@ -57,6 +58,11 @@ export function TicketsPage() {
         ) : (
           <div className="space-y-4">
             <p className="text-sm text-text-muted">Prijavljeni: {user?.email}</p>
+            {cancelled && (
+              <p className="rounded-lg border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm">
+                Plaćanje je otkazano. Rezervacija je sačuvana — platite iz &quot;Moje narudžbe&quot;.
+              </p>
+            )}
             <div className="flex gap-2">
               <Button size="sm" variant={tab === 'reserve' ? 'default' : 'outline'} onClick={() => setTab('reserve')}>
                 Rezervacija

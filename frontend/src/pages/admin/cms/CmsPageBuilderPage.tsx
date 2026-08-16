@@ -95,6 +95,9 @@ export function CmsPageBuilderPage() {
                 if (editSection?.id === sid) closeEdit();
                 void deleteSection.mutateAsync(sid);
               }}
+              onToggleEnabled={(sid, enabled) => {
+                void updateSection.mutateAsync({ sectionId: sid, enabled });
+              }}
             />
           ) : (
             <p className="text-sm text-text-muted">Nema sekcija.</p>

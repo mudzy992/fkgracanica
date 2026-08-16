@@ -80,6 +80,11 @@ export function TicketsReserveForm({ onSuccess }: Props) {
           )}
         </p>
       )}
+      {availability && availability.remaining === 0 && (
+        <p className="rounded-lg border border-danger/30 bg-danger/10 px-4 py-3 text-sm text-danger">
+          Kapacitet stadiona je popunjen — ulaznice su rasprodane.
+        </p>
+      )}
 
       <div>
         <select

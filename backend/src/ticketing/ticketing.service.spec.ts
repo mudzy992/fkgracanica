@@ -2,12 +2,19 @@ import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { TicketStatus } from '@prisma/client';
 import { TicketingService } from './ticketing.service';
 import { PrismaService } from '../prisma/prisma.service';
+import { PaymentsReadinessService } from '../payments/payments-readiness.service';
+import { TicketingOrdersService } from './ticketing-orders.service';
 
 describe('TicketingService.validateTicket', () => {
   const prismaMock = {
     ticket: { findUnique: jest.fn(), update: jest.fn() },
   };
-  const service = new TicketingService(prismaMock as unknown as PrismaService);
+  const service = new TicketingService(
+    prismaMock as unknown as PrismaService,
+    {} as PaymentsReadinessService,
+    {} as TicketingOrdersService,
+    {} as import('../jobs/jobs.module').JobsService,
+  );
   const baseTicket = {
     id: 't1',
     qrCode: 'ticket_abc',

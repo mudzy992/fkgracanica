@@ -1,6 +1,7 @@
 import { useParams } from 'react-router-dom';
 import { usePlayerPublic } from '../../hooks/use-club-public';
 import { PlayerCinematicHero } from '../../components/team/PlayerCinematicHero';
+import { PlayerMatchHistory } from './team/PlayerMatchHistory';
 import { NewsSectionTitle } from '../../components/news/NewsSectionTitle';
 import { Seo } from '../../components/seo/Seo';
 import { Skeleton } from '../../components/ui/skeleton';
@@ -81,6 +82,8 @@ export function PlayerDetailPage() {
             <StatKpi label="Crveni" value={data.careerTotals?.redCards} />
           </div>
         </section>
+
+        <PlayerMatchHistory playerId={id} />
       </div>
     </div>
   );

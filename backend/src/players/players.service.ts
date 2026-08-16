@@ -62,6 +62,39 @@ export class PlayersService {
     };
   }
 
+  async getPublicMatches(id: string) {
+    const lineups = await this.prisma.matchLineup.findMany({
+      where: { playerId: id },
+      include: {
+        match: { include: { homeClub: true, awayClub: true } },
+      },
+      orderBy: { match: { scheduledAt: 'desc' } },
+      take: 40,
+    });
+    const matchIds = lineups.map((l) => l.matchId);
+    const events = await this.prisma.matchEvent.findMany({
+      where: { playerId: id, matchId: { in: matchIds } },
+      select: { matchId: true, type: true, minute: true },
+    });
+    const byMatch = new Map<string, typeof events>();
+    for (const ev of events) {
+      const list = byMatch.get(ev.matchId) ?? [];
+      list.push(ev);
+      byMatch.set(ev.matchId, list);
+    }
+    return lineups.map((row) => ({
+      matchId: row.matchId,
+      scheduledAt: row.match.scheduledAt,
+      status: row.match.status,
+      home: row.match.homeClub.name,
+      away: row.match.awayClub.name,
+      homeScore: row.match.homeScore,
+      awayScore: row.match.awayScore,
+      isStarter: row.isStarter,
+      events: byMatch.get(row.matchId) ?? [],
+    }));
+  }
+
   async create(data: Record<string, unknown>) {
     const payload = { ...data };
     if (!payload.clubId) {

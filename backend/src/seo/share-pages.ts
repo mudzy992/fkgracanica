@@ -1,0 +1,30 @@
+export const STATIC_SHARE_PAGES: Record<string, { title: string; description: string }> = {
+  '/tim': { title: 'Tim', description: 'Prva ekipa FK Gračanica — sastav, formacija i profili igrača.' },
+  '/liga': { title: 'Liga', description: 'Tabela, kola i statistika takmičenja.' },
+  '/o-klubu': { title: 'O klubu', description: 'Historija i vremenska linija FK Gračanica.' },
+  '/sponzori': { title: 'Sponzori', description: 'Partneri i sponzori FK Gračanica.' },
+  '/trofeji': { title: 'Trofeji', description: 'Pehari i priznanja kluba.' },
+  '/hall-of-fame': { title: 'Hall of Fame', description: 'Legende i zaslužni igrači FK Gračanica.' },
+  '/muzej': { title: 'Muzej', description: 'Artefakti i nasljeđe kluba.' },
+  '/clanstvo': { title: 'Članstvo', description: 'Postanite član FK Gračanica.' },
+  '/ulaznice': { title: 'Ulaznice', description: 'Rezervacija i kupovina ulaznica za domaće utakmice.' },
+  '/kontakt': { title: 'Kontakt', description: 'Kontaktirajte FK Gračanica.' },
+  '/galerija': { title: 'Galerija', description: 'Foto albumi sa utakmica i događaja.' },
+  '/pretraga': { title: 'Pretraga', description: 'Pretražite sadržaj FK Gračanica.' },
+};
+
+export const SITEMAP_STATIC_PATHS = [
+  '',
+  '/o-klubu',
+  '/vijesti',
+  '/galerija',
+  '/tim',
+  '/liga',
+  '/kontakt',
+  '/sponzori',
+  '/trofeji',
+  '/hall-of-fame',
+  '/muzej',
+  '/clanstvo',
+  '/ulaznice',
+];

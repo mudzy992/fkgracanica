@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { motion, useReducedMotion } from 'framer-motion';
 import { Mail, MapPin, Phone } from 'lucide-react';
 
@@ -17,11 +18,12 @@ function KpiChip({ icon: Icon, label }: { icon: typeof Mail; label: string }) {
 }
 
 export function ContactCinematicHero({ hasEmail, hasPhone, hasAddress }: Props) {
+  const { t } = useTranslation();
   const reduce = useReducedMotion();
   const chips = [
-    hasEmail && { icon: Mail, label: 'Email' },
-    hasPhone && { icon: Phone, label: 'Telefon' },
-    hasAddress && { icon: MapPin, label: 'Adresa' },
+    hasEmail && { icon: Mail, label: t('contactPage.email') },
+    hasPhone && { icon: Phone, label: t('contactPage.phone') },
+    hasAddress && { icon: MapPin, label: t('contactPage.address') },
   ].filter(Boolean) as { icon: typeof Mail; label: string }[];
 
   return (
@@ -38,13 +40,13 @@ export function ContactCinematicHero({ hasEmail, hasPhone, hasAddress }: Props) 
           className="text-center"
         >
           <p className="text-xs font-semibold uppercase tracking-[0.25em] text-primary-light sm:text-sm">
-            Podrška
+            {t('contactPage.eyebrow')}
           </p>
           <h1 className="font-display mt-3 text-4xl font-bold tracking-tight text-white sm:text-5xl md:text-6xl">
-            Kontakt
+            {t('contactPage.title')}
           </h1>
           <p className="mx-auto mt-4 max-w-xl text-base text-white/60 sm:text-lg">
-            Pošaljite nam poruku — odgovaramo u najkraćem roku.
+            {t('contactPage.subtitle')}
           </p>
 
           {chips.length > 0 && (

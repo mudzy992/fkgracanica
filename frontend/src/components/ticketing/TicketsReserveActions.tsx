@@ -43,32 +43,41 @@ export function TicketsReserveActions({
   const submit = async (intent: TicketPaymentIntent, provider?: PaymentProviderId) => {
     const max = intent === 'online' ? onlineMax : boxOfficeMax;
     if (quantity > max || remaining < 1) return;
-    const order = await reserve.mutateAsync({
-      matchId,
-      category: category.label,
-      categoryId: category.id,
-      price: category.price,
-      quantity,
-      paymentIntent: intent,
-    });
-    const orderId = (order as { id?: string })?.id;
-    if (intent === 'online' && orderId && provider) {
-      const res = await checkout.mutateAsync({ orderId, provider });
-      if (res.url) {
-        window.location.href = res.url;
-        return;
+    try {
+      const order = await reserve.mutateAsync({
+        matchId,
+        category: category.label,
+        categoryId: category.id,
+        price: category.price,
+        quantity,
+        paymentIntent: intent,
+      });
+      const orderId = (order as { id?: string })?.id;
+      if (intent === 'online' && orderId && provider) {
+        const res = await checkout.mutateAsync({ orderId, provider });
+        if (res.url) {
+          window.location.href = res.url;
+          return;
+        }
       }
+      onReserved(orderId);
+    } catch {
+      /* react-query stores error */
     }
-    onReserved(orderId);
   };
 
   const busy = reserve.isPending || checkout.isPending;
+  const errorMsg =
+    (reserve.error instanceof Error && reserve.error.message) ||
+    (checkout.error instanceof Error && checkout.error.message) ||
+    null;
   const onlineDisabled = busy || remaining === 0 || onlineMax < 1 || quantity > onlineMax;
   const boxOfficeDisabled = busy || remaining === 0 || boxOfficeMax < 1 || quantity > boxOfficeMax;
 
   if (boxOffice && online) {
     return (
       <div className="space-y-2">
+        {errorMsg && <p className="text-sm text-danger">{errorMsg}</p>}
         <OnlinePaymentChoice
           providers={providers}
           fullWidth
@@ -91,18 +100,23 @@ export function TicketsReserveActions({
 
   if (online) {
     return (
-      <OnlinePaymentChoice
+      <div className="space-y-2">
+        {errorMsg && <p className="text-sm text-danger">{errorMsg}</p>}
+        <OnlinePaymentChoice
         providers={providers}
         fullWidth
         disabled={onlineDisabled}
         loading={busy}
         onSelect={(provider) => void submit('online', provider)}
       />
+      </div>
     );
   }
 
   return (
-    <Button
+    <div className="space-y-2">
+      {errorMsg && <p className="text-sm text-danger">{errorMsg}</p>}
+      <Button
       type="button"
       className="w-full"
       disabled={boxOfficeDisabled || !boxOffice}
@@ -110,5 +124,6 @@ export function TicketsReserveActions({
     >
       {busy ? 'Rezervacija...' : 'Rezerviši ulaznice'}
     </Button>
+    </div>
   );
 }

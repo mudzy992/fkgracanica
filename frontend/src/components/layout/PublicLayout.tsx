@@ -14,6 +14,7 @@ import { Sheet, SheetContent, SheetHeader } from '../ui/sheet';
 import { PublicFooter } from './PublicFooter';
 import { PublicAuthButton } from './PublicAuthButton';
 import { PublicNavItems, useFallbackNavItems } from './PublicNavItems';
+import { LanguageSwitcher } from './LanguageSwitcher';
 import { PublicSiteLogo } from './PublicSiteLogo';
 import type { CmsMenuItem } from '../../cms/types';
 
@@ -74,6 +75,7 @@ export function PublicLayout() {
             <PublicNavItems items={navItems} premium />
           </nav>
           <div className="flex items-center gap-2">
+            <LanguageSwitcher className="hidden sm:block" />
             <div className="hidden lg:block">
               <PublicAuthButton />
             </div>
@@ -98,6 +100,7 @@ export function PublicLayout() {
           </div>
           <nav className="flex flex-col gap-1">
             <PublicNavItems items={navItems} onNavigate={() => setOpen(false)} mobile />
+            <LanguageSwitcher className="mt-2" />
           </nav>
           <div className="mt-6 border-t border-[var(--border-subtle)] pt-4 lg:hidden">
             <PublicAuthButton mobile onNavigate={() => setOpen(false)} />

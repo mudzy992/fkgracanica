@@ -1,15 +1,28 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
+import { JobsService } from '../jobs/jobs.module';
+import { contactAckEmail } from '../jobs/email-templates';
 import { ContactListQueryDto } from './dto/contact-list-query.dto';
 import { paginate, parsePagination } from '../common/utils/pagination.util';
 
 @Injectable()
 export class ContactService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly jobs: JobsService,
+  ) {}
 
-  create(data: { name: string; email: string; subject?: string; message: string; userId?: string }) {
-    return this.prisma.contactMessage.create({ data });
+  async create(data: { name: string; email: string; subject?: string; message: string; userId?: string }) {
+    const row = await this.prisma.contactMessage.create({ data });
+    const mail = contactAckEmail(data.name);
+    await this.jobs.enqueueEmail({
+      to: data.email,
+      subject: mail.subject,
+      body: mail.text,
+      html: mail.html,
+    });
+    return row;
   }
 
   async findAll(query: ContactListQueryDto) {

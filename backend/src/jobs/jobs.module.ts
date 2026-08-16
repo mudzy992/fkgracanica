@@ -3,7 +3,7 @@ import { Queue, Worker } from 'bullmq';
 import nodemailer from 'nodemailer';
 import { PrismaService } from '../prisma/prisma.service';
 
-type EmailPayload = { to: string; subject: string; body: string };
+export type EmailPayload = { to: string; subject: string; body: string; html?: string };
 
 @Injectable()
 export class JobsService implements OnModuleDestroy {
@@ -20,7 +20,6 @@ export class JobsService implements OnModuleDestroy {
       this.worker = null;
       return;
     }
-
     this.connection = { url };
     this.emailQueue = new Queue('email', { connection: this.connection });
     this.worker = new Worker(
@@ -39,9 +38,7 @@ export class JobsService implements OnModuleDestroy {
   }
 
   private async sendEmail(payload: EmailPayload) {
-    const smtp = await this.prisma.setting.findMany({
-      where: { key: { startsWith: 'smtp.' } },
-    });
+    const smtp = await this.prisma.setting.findMany({ where: { key: { startsWith: 'smtp.' } } });
     const settings = smtp.reduce<Record<string, string>>((acc, item) => {
       acc[item.key] = item.value;
       return acc;
@@ -50,18 +47,27 @@ export class JobsService implements OnModuleDestroy {
       this.logger.warn(`SMTP unavailable for ${payload.to}`);
       return;
     }
-    const transporter = nodemailer.createTransport({
-      host: settings['smtp.host'],
-      port: Number(settings['smtp.port'] || '587'),
-      secure: settings['smtp.secure'] === 'true',
-      auth: { user: settings['smtp.user'], pass: settings['smtp.pass'] },
-    });
-    await transporter.sendMail({
-      from: settings['smtp.from'] || settings['smtp.user'],
-      to: payload.to,
-      subject: payload.subject,
-      text: payload.body,
-    });
+    try {
+      const transporter = nodemailer.createTransport({
+        host: settings['smtp.host'],
+        port: Number(settings['smtp.port'] || '587'),
+        secure: settings['smtp.secure'] === 'true',
+        auth: { user: settings['smtp.user'], pass: settings['smtp.pass'] },
+      });
+      await transporter.sendMail({
+        from: settings['smtp.from'] || settings['smtp.user'],
+        to: payload.to,
+        subject: payload.subject,
+        text: payload.body,
+        html: payload.html,
+      });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      this.logger.warn(`SMTP fail ${payload.to}: ${message}`);
+      await this.prisma.failedEmail.create({
+        data: { to: payload.to, subject: payload.subject, error: message },
+      });
+    }
   }
 
   async onModuleDestroy() {

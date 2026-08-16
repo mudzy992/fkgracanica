@@ -17,7 +17,7 @@ export class MediaService {
 
   findFolders() {
     return this.prisma.mediaFolder.findMany({
-      include: { children: true, _count: { select: { assets: true } } },
+      include: { _count: { select: { assets: true } } },
       orderBy: { name: 'asc' },
     });
   }

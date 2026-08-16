@@ -1,6 +1,6 @@
 # HANDOFF — FK Gračanica
 
-> Ažurirano: **2026-08-15**
+> Ažurirano: **2026-08-16**
 
 ---
 
@@ -8,9 +8,9 @@
 
 | Polje | Vrijednost |
 |-------|------------|
-| **Datum** | 2026-08-15 |
+| **Datum** | 2026-08-16 |
 | **Branch** | `main` |
-| **Aktivni track** | [31_parity-to-100](./31_parity-to-100/HANDOFF.md) — **backend prvi** |
+| **Aktivni track** | [32_web-to-100](./32_web-to-100/HANDOFF.md) — web/admin done; **mobile kasnije** |
 | **Prethodno** | Showcase cinematic + audit katalog |
 | **Matrica** | `.cursor/docs/matrices/showcase-audit/` |
 
@@ -18,7 +18,7 @@
 
 ## 2. Status u jednoj rečenici
 
-Showcase na `/platforma` je cinematic s audit %; sljedeća sesija diže backend pa frontend na 100%, mobile zadnji.
+Web/admin 100% (19 ready + 3 web_only). i18n-en ~60. Mobile polish zadnji.
 
 ---
 

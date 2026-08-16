@@ -5,7 +5,10 @@ import { PrismaService } from '../prisma/prisma.service';
 import { AuthService } from '../auth/auth.service';
 import { PaymentsReadinessService } from '../payments/payments-readiness.service';
 import { generateQrCode } from '../common/utils/qr.util';
+import { JobsService } from '../jobs/jobs.module';
+import { notifyMembershipActive } from '../payments/payment-notify';
 import type { JoinMembershipDto } from './dto/join-membership.dto';
+import { resolveExpiredMany, resolveExpiredOne } from './membership-expiry.util';
 
 const userSelect = { id: true, email: true, firstName: true, lastName: true } as const;
 const includeWithUser = { user: { select: userSelect }, card: true } as const;
@@ -16,6 +19,7 @@ export class MembershipService {
     private readonly prisma: PrismaService,
     private readonly auth: AuthService,
     private readonly payments: PaymentsReadinessService,
+    private readonly jobs: JobsService,
   ) {}
 
   async joinOnline(dto: JoinMembershipDto) {
@@ -101,7 +105,7 @@ export class MembershipService {
       include: includeWithUser,
       orderBy: { createdAt: 'desc' },
     });
-    return this.resolveExpiredMany(items);
+    return resolveExpiredMany(this.prisma, items);
   }
 
   async findAll(status?: MembershipStatus) {
@@ -111,7 +115,7 @@ export class MembershipService {
       include: includeWithUser,
       orderBy: { createdAt: 'desc' },
     });
-    return this.resolveExpiredMany(items);
+    return resolveExpiredMany(this.prisma, items);
   }
 
   async activate(id: string) {
@@ -133,6 +137,7 @@ export class MembershipService {
       },
       update: {},
     });
+    await notifyMembershipActive(this.prisma, this.jobs, id);
     return { membership, card };
   }
 
@@ -157,7 +162,7 @@ export class MembershipService {
       include: includeWithUser,
     });
     if (!item) throw new NotFoundException('Članstvo nije pronađeno');
-    return this.resolveExpiredOne(item);
+    return resolveExpiredOne(this.prisma, item);
   }
 
   suspend(id: string) {
@@ -187,29 +192,5 @@ export class MembershipService {
       },
     });
     if (existing) throw new BadRequestException(message);
-  }
-
-  private async resolveExpiredMany<T extends { id: string; status: MembershipStatus; endDate: Date | null }>(
-    items: T[],
-  ): Promise<T[]> {
-    const now = new Date();
-    const expiredIds = items
-      .filter((m) => m.status === MembershipStatus.ACTIVE && m.endDate && m.endDate < now)
-      .map((m) => m.id);
-    if (!expiredIds.length) return items;
-    await this.prisma.membership.updateMany({
-      where: { id: { in: expiredIds } },
-      data: { status: MembershipStatus.EXPIRED },
-    });
-    return items.map((m) =>
-      expiredIds.includes(m.id) ? { ...m, status: MembershipStatus.EXPIRED } : m,
-    );
-  }
-
-  private async resolveExpiredOne<T extends { id: string; status: MembershipStatus; endDate: Date | null }>(
-    item: T,
-  ): Promise<T> {
-    const [resolved] = await this.resolveExpiredMany([item]);
-    return resolved;
   }
 }

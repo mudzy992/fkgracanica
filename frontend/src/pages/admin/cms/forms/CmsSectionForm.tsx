@@ -25,7 +25,7 @@ export function CmsSectionForm({ widgetType, config, onChange }: Props) {
       {widgetType === 'custom-html' && <CustomHtmlSectionForm config={config} onChange={onChange} />}
       {widgetType === 'footer-about' && <FooterAboutForm config={config} onChange={onChange} />}
       {widgetType === 'next-match' && <NextMatchSectionForm config={config} onChange={onChange} />}
-      {!['hero', 'news-feed', 'rich-text', 'footer-about', 'next-match'].includes(widgetType) && (
+      {!['hero', 'news-feed', 'rich-text', 'footer-about', 'next-match', 'custom-html'].includes(widgetType) && (
         <GenericSectionForm widgetType={widgetType} config={config} onChange={onChange} />
       )}
     </div>

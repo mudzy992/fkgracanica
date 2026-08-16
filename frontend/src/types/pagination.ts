@@ -17,4 +17,5 @@ export interface NotificationItem {
   type?: string | null;
   isRead: boolean;
   createdAt: string;
+  metadata?: { path?: string } | null;
 }

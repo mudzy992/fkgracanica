@@ -18,6 +18,11 @@ export class AnalyticsController {
     return this.service.getTeamAnalytics(seasonId);
   }
 
+  @Get('h2h')
+  getH2H(@Query('clubAId') clubAId: string, @Query('clubBId') clubBId: string) {
+    return this.service.getH2H(clubAId, clubBId);
+  }
+
   @Get('players/:playerId')
   getPlayerAnalytics(@Param('playerId') playerId: string) {
     return this.service.getPlayerAnalytics(playerId);

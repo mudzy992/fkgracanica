@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNewsCategories, usePublishedNews } from '../../hooks';
 import { asArray } from '../../lib/as-array';
 import type { NewsCategory } from '../../hooks/use-news-admin';
@@ -44,6 +45,7 @@ function NewsGridLayout({ items }: { items: NewsItem[] }) {
 }
 
 export function NewsListPage() {
+  const { t } = useTranslation();
   const [categoryId, setCategoryId] = useState<string | undefined>();
   const { data: categoriesRaw } = useNewsCategories();
   const categories = asArray<NewsCategory>(categoriesRaw);
@@ -54,11 +56,11 @@ export function NewsListPage() {
   return (
     <div className="pb-16">
       <Seo
-        title="Vijesti"
-        description="Najnovije vijesti, izvještaji sa utakmica i objave FK Gračanica."
+        title={t('news.title')}
+        description={t('news.seoDesc')}
         url="/vijesti"
       />
-      <PageHeroHeader eyebrow="Mediji" title="Vijesti" subtitle="Najnovije vijesti iz kluba i sa terena." />
+      <PageHeroHeader eyebrow={t('news.eyebrow')} title={t('news.title')} subtitle={t('news.subtitle')} />
       <PageContainer className="py-10 sm:py-12">
         <NewsCategoryFilter categories={categories} activeId={categoryId} onChange={setCategoryId} />
 
@@ -69,7 +71,7 @@ export function NewsListPage() {
             ))}
           </div>
         ) : items.length === 0 ? (
-          <EmptyState message="Nema objavljenih vijesti." />
+          <EmptyState message={t('news.empty')} />
         ) : filtered ? (
           <NewsGridLayout items={items} />
         ) : (

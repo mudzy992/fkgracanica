@@ -3,6 +3,8 @@ import Stripe from 'stripe';
 import { PrismaService } from '../../prisma/prisma.service';
 import { PaymentsReadinessService } from '../payments-readiness.service';
 import { confirmMembershipFlow, confirmTicketOrderFlow } from '../stripe-confirm.flow';
+import { notifyMembershipActive, notifyTicketPaid } from '../payment-notify';
+import { JobsService } from '../../jobs/jobs.module';
 import type { CheckoutSessionResult, PaymentProvider } from './payment-provider.interface';
 
 @Injectable()
@@ -12,6 +14,7 @@ export class StripeProvider implements PaymentProvider {
   constructor(
     private readonly prisma: PrismaService,
     private readonly readiness: PaymentsReadinessService,
+    private readonly jobs: JobsService,
   ) {}
 
   isReady() {
@@ -113,7 +116,8 @@ export class StripeProvider implements PaymentProvider {
     if (!order) throw new BadRequestException('Narudžba nije pronađena');
 
     if (session.payment_status === 'paid') {
-      await confirmTicketOrderFlow(this.prisma, meta.orderId);
+      const fresh = await confirmTicketOrderFlow(this.prisma, meta.orderId);
+      if (fresh) await notifyTicketPaid(this.prisma, this.jobs, meta.orderId);
       return { orderId: meta.orderId, status: 'paid' as const };
     }
 
@@ -138,7 +142,8 @@ export class StripeProvider implements PaymentProvider {
     if (!membership) throw new BadRequestException('Članstvo nije pronađeno');
 
     if (session.payment_status === 'paid') {
-      await confirmMembershipFlow(this.prisma, meta.membershipId);
+      const fresh = await confirmMembershipFlow(this.prisma, meta.membershipId);
+      if (fresh) await notifyMembershipActive(this.prisma, this.jobs, meta.membershipId);
       return { membershipId: meta.membershipId, status: 'ACTIVE' as const };
     }
 
@@ -164,10 +169,12 @@ export class StripeProvider implements PaymentProvider {
       if (session.payment_status !== 'paid') return { received: true };
       const meta = session.metadata ?? {};
       if (meta.type === 'tickets' && meta.orderId) {
-        await confirmTicketOrderFlow(this.prisma, meta.orderId);
+        const fresh = await confirmTicketOrderFlow(this.prisma, meta.orderId);
+        if (fresh) await notifyTicketPaid(this.prisma, this.jobs, meta.orderId);
       }
       if (meta.type === 'membership' && meta.membershipId) {
-        await confirmMembershipFlow(this.prisma, meta.membershipId);
+        const fresh = await confirmMembershipFlow(this.prisma, meta.membershipId);
+        if (fresh) await notifyMembershipActive(this.prisma, this.jobs, meta.membershipId);
       }
     }
     return { received: true };

@@ -8,6 +8,7 @@ import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
 import { AdminDataTable, AdminPageShell } from '../../components/admin/AdminPageShell';
 import { AdminPagination } from '../../components/admin/AdminPagination';
+import { api } from '../../lib/api';
 
 interface Props {
   embedded?: boolean;
@@ -33,13 +34,28 @@ export function NewsletterAdminPage({ embedded = false }: Props) {
 
   const body = (
     <>
-      <div className="border-b border-[var(--border-subtle)] p-4">
+      <div className="flex flex-wrap items-center gap-2 border-b border-[var(--border-subtle)] p-4">
         <Input
           className="max-w-xs"
           placeholder="Pretraži email..."
           value={search}
           onChange={(e) => { setSearch(e.target.value); setPage(1); }}
         />
+        <Button
+          size="sm"
+          variant="outline"
+          onClick={async () => {
+            const res = await api.get('/newsletter/export/csv', { responseType: 'blob' });
+            const url = URL.createObjectURL(res.data as Blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'newsletter.csv';
+            a.click();
+            URL.revokeObjectURL(url);
+          }}
+        >
+          Export CSV
+        </Button>
       </div>
       <AdminDataTable
         rows={rows}

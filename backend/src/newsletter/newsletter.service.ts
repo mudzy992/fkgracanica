@@ -43,4 +43,17 @@ export class NewsletterService {
       () => this.prisma.newsletterSubscriber.count({ where }),
     );
   }
+
+  async exportCsv() {
+    const rows = await this.prisma.newsletterSubscriber.findMany({
+      where: { isActive: true },
+      orderBy: { createdAt: 'desc' },
+      select: { email: true, createdAt: true },
+    });
+    const header = 'email,createdAt';
+    const body = rows
+      .map((r) => `${r.email},${r.createdAt.toISOString()}`)
+      .join('\n');
+    return `${header}\n${body}\n`;
+  }
 }

@@ -17,7 +17,7 @@ import { usePlayers } from '../../../../hooks';
 import { buildSwapAssignments, parseDndId, resolveDragAssignments, squadSlotDndId } from '../../../../lib/formation-dnd';
 import type { ClubSquadSlot } from '../../../../types/club-hub';
 import { Skeleton } from '../../../../components/ui/skeleton';
-import { FormationEditablePitch } from '../../../../components/admin/formation/FormationEditablePitch';
+import { ResponsiveFormationEditablePitch } from '../../../../components/admin/formation/FormationEditablePitch';
 import { FormationInputs } from '../../../../components/admin/formation/FormationInputs';
 import { FormationPlayerPool } from '../../../../components/admin/formation/FormationPlayerPool';
 import { FormationSlotPanel } from '../../../../components/admin/formation/FormationSlotPanel';
@@ -108,14 +108,15 @@ export function ClubFormationTab({ clubId }: { clubId: string }) {
             onApply={() => void applyFormation()}
             applying={updateFormation.isPending}
           />
-          <FormationEditablePitch
+          <ResponsiveFormationEditablePitch
             slots={data.slots}
             activeSlot={activeSlot}
             onSlotClick={setActiveSlot}
+            pending={assign.isPending}
           />
         </div>
         <div className="space-y-4">
-          {activeSlot && (
+          {activeSlot ? (
             <FormationSlotPanel
               slot={activeSlot}
               players={players ?? []}
@@ -123,6 +124,8 @@ export function ClubFormationTab({ clubId }: { clubId: string }) {
               onRemove={removePlayer}
               onClose={() => setActiveSlot(null)}
             />
+          ) : (
+            <p className="text-sm text-text-muted">Odaberite poziciju na terenu ili klupi.</p>
           )}
           <FormationPlayerPool players={poolPlayers} />
           <div>

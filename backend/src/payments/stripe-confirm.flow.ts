@@ -7,7 +7,7 @@ export async function confirmTicketOrderFlow(prisma: PrismaService, orderId: str
     include: { payment: true },
   });
   if (!order?.payment) return false;
-  if (order.status === 'paid' && order.payment.status === 'CONFIRMED') return true;
+  if (order.status === 'paid' && order.payment.status === 'CONFIRMED') return false;
 
   await prisma.$transaction([
     prisma.payment.update({
@@ -55,5 +55,5 @@ export async function confirmMembershipFlow(prisma: PrismaService, membershipId:
     },
     update: {},
   });
-  return true;
+  return membership.status !== 'ACTIVE';
 }

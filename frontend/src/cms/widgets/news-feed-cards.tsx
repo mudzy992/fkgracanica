@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { ArrowUpRight, Clock } from 'lucide-react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { stripHtml } from '../../lib/html-content';
@@ -89,6 +90,7 @@ export function NewsGridCard({ item, delay }: { item: NewsItem; delay: number })
 }
 
 export function NewsFeaturedCard({ item }: { item: NewsItem }) {
+  const { t } = useTranslation();
   const reduce = useReducedMotion();
   return (
     <motion.article
@@ -117,7 +119,7 @@ export function NewsFeaturedCard({ item }: { item: NewsItem }) {
             </h3>
             <p className="mb-4 line-clamp-2 text-white/60">{stripHtml(item.excerpt ?? '')}</p>
             <span className="inline-flex items-center gap-2 font-semibold text-primary-light">
-              Pročitaj više <ArrowUpRight size={16} />
+              {t('news.readMore')} <ArrowUpRight size={16} />
             </span>
           </div>
         </div>

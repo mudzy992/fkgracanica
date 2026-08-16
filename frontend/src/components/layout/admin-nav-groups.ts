@@ -80,6 +80,7 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
         permissions: ['competitions.manage', 'matches.manage'],
       },
       { to: '/admin/live/pending', labelKey: 'admin.livePending', permissions: ['live.approve'] },
+      { to: '/admin/analytics', labelKey: 'admin.analytics', permissions: ['analytics.read'] },
     ],
   },
   {
