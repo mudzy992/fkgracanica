@@ -12,7 +12,7 @@ export async function rebuildSeasonPlayerStatistics(
   seasonId: string,
 ) {
   const matches = await prisma.match.findMany({
-    where: { seasonId, reportStatus: MatchReportStatus.APPROVED },
+    where: { seasonCompetitionId: seasonId, reportStatus: MatchReportStatus.APPROVED },
     include: { events: true },
   });
 
@@ -26,11 +26,11 @@ export async function rebuildSeasonPlayerStatistics(
     mergePlayerSeasonAggs(seasonAgg, aggregatePlayerStatsFromMatch(match.events));
   }
 
-  await prisma.playerStatistics.deleteMany({ where: { seasonId } });
+  await prisma.playerStatistics.deleteMany({ where: { seasonCompetitionId: seasonId } });
   const rows = [...seasonAgg.values()].filter((r) => r.appearances > 0);
   if (rows.length) {
     await prisma.playerStatistics.createMany({
-      data: rows.map((r) => ({ seasonId, ...r })),
+      data: rows.map((r) => ({ seasonCompetitionId: seasonId, ...r })),
     });
   }
   return { playersUpdated: rows.length, matchesProcessed: matches.length };

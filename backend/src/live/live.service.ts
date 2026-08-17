@@ -12,6 +12,7 @@ import { RealtimeGateway } from '../realtime/realtime.gateway';
 import { StatisticsService } from '../statistics/statistics.service';
 import { applyScore, isScoringEvent } from './live-score.util';
 import { computeLiveClock, resolveEventMinute } from './live-clock.util';
+import { matchEditionInclude, withSeasonAlias } from '../matches/match-edition.util';
 
 @Injectable()
 export class LiveService {
@@ -231,9 +232,9 @@ export class LiveService {
   listPendingApproval() {
     return this.prisma.match.findMany({
       where: { reportStatus: MatchReportStatus.PENDING_APPROVAL },
-      include: { homeClub: true, awayClub: true, season: { include: { competition: true } } },
+      include: { homeClub: true, awayClub: true, ...matchEditionInclude },
       orderBy: { updatedAt: 'desc' },
-    });
+    }).then((rows) => rows.map(withSeasonAlias));
   }
 
   async approveReport(matchId: string) {

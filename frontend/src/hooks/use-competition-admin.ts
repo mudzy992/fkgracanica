@@ -101,38 +101,6 @@ export function useDeleteCompetition() {
   });
 }
 
-export function useCreateSeason() {
-  const qc = useQueryClient();
-  return useMutation({
-    mutationFn: async (body: {
-      name: string;
-      yearStart: number;
-      yearEnd: number;
-      competitionId: string;
-      isActive?: boolean;
-      clubIds?: string[];
-    }) => (await api.post('/competitions/seasons', body)).data,
-    onSuccess: () => void qc.invalidateQueries({ queryKey: ['seasons'] }),
-  });
-}
-
-export function useUpdateSeason() {
-  const qc = useQueryClient();
-  return useMutation({
-    mutationFn: async ({ id, ...body }: { id: string } & Record<string, unknown>) =>
-      (await api.patch(`/competitions/seasons/${id}`, body)).data,
-    onSuccess: () => void qc.invalidateQueries({ queryKey: ['seasons'] }),
-  });
-}
-
-export function useDeleteSeason() {
-  const qc = useQueryClient();
-  return useMutation({
-    mutationFn: async (id: string) => (await api.delete(`/competitions/seasons/${id}`)).data,
-    onSuccess: () => void qc.invalidateQueries({ queryKey: ['seasons'] }),
-  });
-}
-
 export function useCreateMatch() {
   const qc = useQueryClient();
   return useMutation({

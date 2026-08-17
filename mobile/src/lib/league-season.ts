@@ -2,9 +2,8 @@ import { asArray, asRecord, asString } from './content-helpers';
 
 export type LeagueSeasonChip = { id: string; name: string; isActive: boolean };
 
-export function mapLeagueSeasons(data: unknown): LeagueSeasonChip[] {
+export function mapCalendarSeasons(data: unknown): LeagueSeasonChip[] {
   return asArray(data)
-    .filter((entry) => Boolean(asRecord(asRecord(entry).competition).isLeague))
     .map((entry) => {
       const s = asRecord(entry);
       return {
@@ -16,6 +15,13 @@ export function mapLeagueSeasons(data: unknown): LeagueSeasonChip[] {
     .filter((s) => s.id);
 }
 
+export function leagueEditionId(calendar: unknown): string {
+  const comps = asArray(asRecord(calendar).competitions);
+  const league = comps.find((e) => Boolean(asRecord(asRecord(e).competition).isLeague));
+  const pick = league ?? comps[0];
+  return asString(asRecord(pick).id);
+}
+
 export function pickDefaultLeagueSeasonId(
   seasons: { id: string; isActive: boolean }[],
   selected?: string,
@@ -23,3 +29,6 @@ export function pickDefaultLeagueSeasonId(
   if (selected && seasons.some((s) => s.id === selected)) return selected;
   return seasons.find((s) => s.isActive)?.id ?? seasons[0]?.id ?? '';
 }
+
+/** @deprecated Use mapCalendarSeasons */
+export const mapLeagueSeasons = mapCalendarSeasons;

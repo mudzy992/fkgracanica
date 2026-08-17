@@ -1,5 +1,6 @@
 import { api } from '../../lib/api';
 import { asArray, asRecord, asString } from '../../lib/content-helpers';
+import { leagueEditionId, pickDefaultLeagueSeasonId, mapCalendarSeasons } from '../../lib/league-season';
 
 export type HomePlayerItem = {
   id: string;
@@ -14,11 +15,14 @@ export type HomePlayerItem = {
 export async function loadHomePlayers(): Promise<HomePlayerItem[]> {
   const [ownRes, seasonsRes] = await Promise.all([
     api.get('/clubs/own'),
-    api.get('/competitions/seasons/list'),
+    api.get('/seasons'),
   ]);
   const clubId = asString(asRecord(ownRes.data).id);
   if (!clubId) return [];
-  const seasonId = asString(asRecord(asArray(seasonsRes.data)[0]).id);
+  const calendars = asArray(seasonsRes.data);
+  const calendarId = pickDefaultLeagueSeasonId(mapCalendarSeasons(calendars));
+  const calendar = calendars.find((row) => asString(asRecord(row).id) === calendarId);
+  const seasonId = leagueEditionId(calendar);
   const [statsRes, playersRes] = await Promise.all([
     seasonId
       ? api.get(`/clubs/${clubId}/stats`, { params: { seasonId } })

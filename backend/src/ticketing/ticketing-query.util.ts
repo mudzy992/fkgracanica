@@ -12,9 +12,9 @@ export const ticketOrderInclude = {
           homeClub: true,
           awayClub: true,
           roundRel: { select: { id: true, number: true, name: true } },
-          season: {
+          edition: {
             select: {
-              name: true,
+              season: { select: { name: true } },
               competition: { select: { name: true } },
             },
           },

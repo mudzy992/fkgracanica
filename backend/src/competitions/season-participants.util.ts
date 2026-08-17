@@ -9,7 +9,7 @@ export async function getSeasonParticipantClubs(
   seasonId: string,
 ): Promise<StandingParticipant[]> {
   const rows = await prisma.seasonClub.findMany({
-    where: { seasonId },
+    where: { seasonCompetitionId: seasonId },
     include: { club: { select: { id: true, name: true, slug: true, crestPath: true } } },
     orderBy: { club: { name: 'asc' } },
   });
@@ -27,9 +27,9 @@ export async function syncSeasonParticipants(
   clubIds: string[],
 ) {
   const unique = [...new Set(clubIds)];
-  await tx.seasonClub.deleteMany({ where: { seasonId } });
+  await tx.seasonClub.deleteMany({ where: { seasonCompetitionId: seasonId } });
   if (!unique.length) return;
   await tx.seasonClub.createMany({
-    data: unique.map((clubId) => ({ seasonId, clubId })),
+    data: unique.map((clubId) => ({ seasonCompetitionId: seasonId, clubId })),
   });
 }

@@ -511,54 +511,66 @@ model Competition {
   isLeague  Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  seasons   Season[]
+  editions  SeasonCompetition[]
 }
 
 model Season {
+  id           String               @id @default(cuid())
+  name         String
+  yearStart    Int
+  yearEnd      Int
+  isActive     Boolean              @default(false)
+  createdAt    DateTime             @default(now())
+  updatedAt    DateTime             @updatedAt
+  competitions SeasonCompetition[]
+}
+
+model SeasonCompetition {
   id            String      @id @default(cuid())
-  name          String
-  yearStart     Int
-  yearEnd       Int
-  isActive      Boolean     @default(false)
+  seasonId      String
   competitionId String
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt
+  season        Season      @relation(fields: [seasonId], references: [id], onDelete: Cascade)
   competition   Competition @relation(fields: [competitionId], references: [id], onDelete: Cascade)
   matches       Match[]
   rounds        Round[]
   participants  SeasonClub[]
+  playerStats   PlayerStatistics[]
 
+  @@unique([seasonId, competitionId])
+  @@index([seasonId])
   @@index([competitionId])
 }
 
 model SeasonClub {
-  id        String   @id @default(cuid())
-  seasonId  String
-  clubId    String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  season    Season   @relation(fields: [seasonId], references: [id], onDelete: Cascade)
-  club      Club     @relation(fields: [clubId], references: [id], onDelete: Cascade)
+  id                   String             @id @default(cuid())
+  seasonCompetitionId  String             @map("seasonId")
+  clubId               String
+  createdAt            DateTime           @default(now())
+  updatedAt            DateTime           @updatedAt
+  edition              SeasonCompetition  @relation(fields: [seasonCompetitionId], references: [id], onDelete: Cascade)
+  club                 Club               @relation(fields: [clubId], references: [id], onDelete: Cascade)
 
-  @@unique([seasonId, clubId])
-  @@index([seasonId])
+  @@unique([seasonCompetitionId, clubId])
+  @@index([seasonCompetitionId])
   @@index([clubId])
 }
 
 model Round {
-  id        String    @id @default(cuid())
-  seasonId  String
-  number    Int
-  name      String?
-  startsAt  DateTime?
-  endsAt    DateTime?
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  season    Season    @relation(fields: [seasonId], references: [id], onDelete: Cascade)
-  matches   Match[]
+  id                   String             @id @default(cuid())
+  seasonCompetitionId  String             @map("seasonId")
+  number               Int
+  name                 String?
+  startsAt             DateTime?
+  endsAt               DateTime?
+  createdAt            DateTime           @default(now())
+  updatedAt            DateTime           @updatedAt
+  edition              SeasonCompetition  @relation(fields: [seasonCompetitionId], references: [id], onDelete: Cascade)
+  matches              Match[]
 
-  @@unique([seasonId, number])
-  @@index([seasonId])
+  @@unique([seasonCompetitionId, number])
+  @@index([seasonCompetitionId])
 }
 
 enum PlayerPosition {
@@ -658,7 +670,7 @@ enum LiveBreak {
 
 model Match {
   id              String            @id @default(cuid())
-  seasonId        String
+  seasonCompetitionId String            @map("seasonId")
   homeClubId      String
   awayClubId      String
   homeScore       Int               @default(0)
@@ -683,7 +695,7 @@ model Match {
   penaltyAwayScore    Int           @default(0)
   createdAt       DateTime          @default(now())
   updatedAt       DateTime          @updatedAt
-  season          Season            @relation(fields: [seasonId], references: [id], onDelete: Cascade)
+  edition         SeasonCompetition @relation(fields: [seasonCompetitionId], references: [id], onDelete: Cascade)
   roundRel        Round?            @relation(fields: [roundId], references: [id], onDelete: SetNull)
   homeClub        Club              @relation("HomeClub", fields: [homeClubId], references: [id])
   awayClub        Club              @relation("AwayClub", fields: [awayClubId], references: [id])
@@ -694,7 +706,7 @@ model Match {
   teamStats       TeamStatistics[]
   newsLinks       NewsMatch[]
 
-  @@index([seasonId])
+  @@index([seasonCompetitionId])
   @@index([roundId])
   @@index([status])
   @@index([scheduledAt])
@@ -776,19 +788,21 @@ model LiveComment {
 }
 
 model PlayerStatistics {
-  id         String @id @default(cuid())
-  playerId   String
-  seasonId   String
-  appearances Int   @default(0)
-  goals      Int    @default(0)
-  ownGoals   Int    @default(0)
-  assists    Int    @default(0)
-  yellowCards Int   @default(0)
-  redCards   Int    @default(0)
-  minutes    Int    @default(0)
-  player     Player @relation(fields: [playerId], references: [id], onDelete: Cascade)
+  id                   String             @id @default(cuid())
+  playerId             String
+  seasonCompetitionId  String             @map("seasonId")
+  appearances          Int                @default(0)
+  goals                Int                @default(0)
+  ownGoals             Int                @default(0)
+  assists              Int                @default(0)
+  yellowCards          Int                @default(0)
+  redCards             Int                @default(0)
+  minutes              Int                @default(0)
+  player               Player             @relation(fields: [playerId], references: [id], onDelete: Cascade)
+  edition              SeasonCompetition  @relation(fields: [seasonCompetitionId], references: [id], onDelete: Cascade)
 
-  @@unique([playerId, seasonId])
+  @@unique([playerId, seasonCompetitionId])
+  @@index([seasonCompetitionId])
 }
 
 model TeamStatistics {

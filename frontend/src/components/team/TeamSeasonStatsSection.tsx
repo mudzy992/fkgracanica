@@ -1,10 +1,10 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useClubParticipations, useClubStats } from '../../hooks/use-club-hub';
 import {
-  participationsInYear,
-  participationYearKey,
+  calendarKey,
+  participationsInCalendar,
   pickDefaultParticipation,
-  uniqueParticipationYears,
+  uniqueCalendarSeasons,
 } from '../../lib/club-participation.util';
 import { PublicPill } from '../public/PublicPill';
 import { Skeleton } from '../ui/skeleton';
@@ -13,18 +13,18 @@ import { TeamSeasonStats } from './TeamSeasonStats';
 export function TeamSeasonStatsSection({ clubId }: { clubId: string }) {
   const { data: participations } = useClubParticipations(clubId);
   const items = useMemo(() => participations ?? [], [participations]);
-  const years = useMemo(() => uniqueParticipationYears(items), [items]);
+  const years = useMemo(() => uniqueCalendarSeasons(items), [items]);
   const [yearKey, setYearKey] = useState<string>();
   const [seasonId, setSeasonId] = useState<string>();
 
   useEffect(() => {
     const def = pickDefaultParticipation(items);
-    const nextYear = def ? participationYearKey(def) : years[0];
-    setYearKey((prev) => (prev && years.includes(prev) ? prev : nextYear));
+    const nextYear = def ? calendarKey(def) : years[0]?.key;
+    setYearKey((prev) => (prev && years.some((y) => y.key === prev) ? prev : nextYear));
   }, [items, years]);
 
   const inYear = useMemo(() => {
-    const rows = yearKey ? participationsInYear(items, yearKey) : [];
+    const rows = yearKey ? participationsInCalendar(items, yearKey) : [];
     return rows.slice().sort((a, b) => {
       const league = Number(b.isLeague) - Number(a.isLeague);
       return league || a.competitionName.localeCompare(b.competitionName);
@@ -47,8 +47,8 @@ export function TeamSeasonStatsSection({ clubId }: { clubId: string }) {
       {years.length > 1 && (
         <div className="flex flex-wrap gap-2">
           {years.map((y) => (
-            <PublicPill key={y} active={y === yearKey} onClick={() => setYearKey(y)}>
-              {y}
+            <PublicPill key={y.key} active={y.key === yearKey} onClick={() => setYearKey(y.key)}>
+              {y.label}
             </PublicPill>
           ))}
         </div>

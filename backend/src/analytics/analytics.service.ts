@@ -11,7 +11,7 @@ export class AnalyticsService {
     if (!own) throw new NotFoundException('Vlastiti klub nije postavljen');
     const matches = await this.prisma.match.findMany({
       where: {
-        ...(seasonId ? { seasonId } : {}),
+        ...(seasonId ? { seasonCompetitionId: seasonId } : {}),
         OR: [{ homeClubId: own.id }, { awayClubId: own.id }],
       },
       include: { homeClub: true, awayClub: true },

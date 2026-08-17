@@ -1,6 +1,6 @@
 import { api } from '../../lib/api';
 import { asArray, asRecord, asString } from '../../lib/content-helpers';
-import { mapLeagueSeasons, pickDefaultLeagueSeasonId } from '../../lib/league-season';
+import { leagueEditionId, mapCalendarSeasons, pickDefaultLeagueSeasonId } from '../../lib/league-season';
 import { loadHomePlayers, type HomePlayerItem } from './load-home-players';
 
 export type { HomePlayerItem };
@@ -59,12 +59,15 @@ const emptyExtras: HomeExtras = {
 };
 
 async function loadLeague(): Promise<HomeLeagueRow[]> {
-  const [seasons, ownRes] = await Promise.all([
-    api.get('/competitions/seasons/list'),
+  const [seasonsRes, ownRes] = await Promise.all([
+    api.get('/seasons'),
     api.get('/clubs/own').catch(() => ({ data: null })),
   ]);
-  const seasons = mapLeagueSeasons(seasons.data);
-  const seasonId = pickDefaultLeagueSeasonId(seasons);
+  const calendars = asArray(seasonsRes.data);
+  const seasons = mapCalendarSeasons(calendars);
+  const calendarId = pickDefaultLeagueSeasonId(seasons);
+  const calendar = calendars.find((row) => asString(asRecord(row).id) === calendarId);
+  const seasonId = leagueEditionId(calendar);
   if (!seasonId) return [];
   const ownId = asString(asRecord(ownRes.data).id);
   const standings = await api.get('/statistics/standings', { params: { seasonId } });

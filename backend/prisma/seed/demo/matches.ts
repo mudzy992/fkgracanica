@@ -24,8 +24,8 @@ function nextWeek(): Date {
 
 async function ensureRound(prisma: SeedPrisma, seasonId: string, number: number) {
   return prisma.round.upsert({
-    where: { seasonId_number: { seasonId, number } },
-    create: { seasonId, number, name: roundName(number) },
+    where: { seasonCompetitionId_number: { seasonCompetitionId: seasonId, number } },
+    create: { seasonCompetitionId: seasonId, number, name: roundName(number) },
     update: {},
   });
 }
@@ -45,7 +45,7 @@ async function createMatchIfMissing(
   const round = await ensureRound(prisma, ctx.seasonId, data.round);
   const existing = await prisma.match.findFirst({
     where: {
-      seasonId: ctx.seasonId,
+      seasonCompetitionId: ctx.seasonId,
       homeClubId: ctx.ownClubId,
       awayClubId: ctx.opponentClubId,
       round: data.round,
@@ -60,7 +60,7 @@ async function createMatchIfMissing(
 
   await prisma.match.create({
     data: {
-      seasonId: ctx.seasonId,
+      seasonCompetitionId: ctx.seasonId,
       homeClubId: ctx.ownClubId,
       awayClubId: ctx.opponentClubId,
       round: data.round,

@@ -39,9 +39,10 @@ describe('Live center (e2e)', () => {
       (m) => m.status === 'SCHEDULED',
     );
     if (!scheduled) {
-      const seasons = await request(app.getHttpServer()).get('/api/v1/competitions/seasons/list');
+      const seasons = await request(app.getHttpServer()).get('/api/v1/seasons');
       const clubs = await request(app.getHttpServer()).get('/api/v1/clubs');
-      const seasonId = (seasons.body as { id: string }[])[0]?.id;
+      const calendar = (seasons.body as { competitions?: { id: string }[] }[])[0];
+      const seasonId = calendar?.competitions?.[0]?.id;
       const clubIds = (clubs.body as { id: string }[]).slice(0, 2).map((c) => c.id);
       if (!seasonId || clubIds.length < 2) {
         throw new Error('Missing season/clubs for live e2e');

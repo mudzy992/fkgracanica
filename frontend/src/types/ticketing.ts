@@ -26,6 +26,7 @@ export interface TicketMatch {
   round?: number | null;
   roundRel?: { id?: string; number?: number; name?: string | null } | null;
   season?: { name?: string; competition?: { name?: string } } | null;
+  edition?: { season?: { name?: string } | null; competition?: { name?: string } | null } | null;
   homeClub?: TicketMatchClub;
   awayClub?: TicketMatchClub;
 }

@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { CompetitionsService } from './competitions.service';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
@@ -13,11 +13,6 @@ export class CompetitionsController {
   @Get()
   findCompetitions() {
     return this.service.findCompetitions();
-  }
-
-  @Get('seasons/list')
-  findSeasons(@Query('competitionId') competitionId?: string) {
-    return this.service.findSeasons(competitionId);
   }
 
   @Post()
@@ -42,29 +37,5 @@ export class CompetitionsController {
   @ApiBearerAuth()
   removeCompetition(@Param('id') id: string) {
     return this.service.removeCompetition(id);
-  }
-
-  @Post('seasons')
-  @UseGuards(JwtAuthGuard, PermissionsGuard)
-  @RequirePermissions('competitions.manage')
-  @ApiBearerAuth()
-  createSeason(@Body() body: { name: string; yearStart: number; yearEnd: number; competitionId: string; isActive?: boolean; clubIds?: string[] }) {
-    return this.service.createSeason(body);
-  }
-
-  @Patch('seasons/:id')
-  @UseGuards(JwtAuthGuard, PermissionsGuard)
-  @RequirePermissions('competitions.manage')
-  @ApiBearerAuth()
-  updateSeason(@Param('id') id: string, @Body() body: Record<string, unknown> & { clubIds?: string[] }) {
-    return this.service.updateSeason(id, body);
-  }
-
-  @Delete('seasons/:id')
-  @UseGuards(JwtAuthGuard, PermissionsGuard)
-  @RequirePermissions('competitions.manage')
-  @ApiBearerAuth()
-  removeSeason(@Param('id') id: string) {
-    return this.service.removeSeason(id);
   }
 }

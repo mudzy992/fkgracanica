@@ -18,19 +18,19 @@ export class RoundsService {
   async findBySeason(seasonId: string) {
     await this.syncLegacyRounds(seasonId);
     return this.prisma.round.findMany({
-      where: { seasonId },
+      where: { seasonCompetitionId: seasonId },
       include: { _count: { select: { matches: true } } },
       orderBy: { number: 'asc' },
-    });
+    }).then((rows) => rows.map((r) => ({ ...r, seasonId: r.seasonCompetitionId })));
   }
 
   async create(data: RoundInput) {
-    await this.ensureSeason(data.seasonId);
+    await this.ensureEdition(data.seasonId);
     this.validateNumber(data.number);
     const name = data.name?.trim() || roundDefaultName(data.number);
     return this.prisma.round.create({
       data: {
-        seasonId: data.seasonId,
+        seasonCompetitionId: data.seasonId,
         number: data.number,
         name,
         startsAt: data.startsAt ? new Date(data.startsAt) : null,
@@ -77,13 +77,13 @@ export class RoundsService {
         'Kolo ima povezane utakmice. Koristite cascade brisanje da uklonite kolo i sve povezane podatke.',
       );
     }
-    return cascadeDeleteRound(this.prisma, id, round.seasonId);
+    return cascadeDeleteRound(this.prisma, id, round.seasonCompetitionId);
   }
 
   /** Links legacy `Match.round` integers to Round rows (idempotent). */
   async syncLegacyRounds(seasonId: string) {
     const legacy = await this.prisma.match.findMany({
-      where: { seasonId, round: { not: null }, roundId: null },
+      where: { seasonCompetitionId: seasonId, round: { not: null }, roundId: null },
       select: { id: true, round: true },
     });
     if (!legacy.length) return;
@@ -91,12 +91,12 @@ export class RoundsService {
     const numbers = [...new Set(legacy.map((m) => m.round!))];
     for (const number of numbers) {
       const round = await this.prisma.round.upsert({
-        where: { seasonId_number: { seasonId, number } },
-        create: { seasonId, number, name: roundDefaultName(number) },
+        where: { seasonCompetitionId_number: { seasonCompetitionId: seasonId, number } },
+        create: { seasonCompetitionId: seasonId, number, name: roundDefaultName(number) },
         update: {},
       });
       await this.prisma.match.updateMany({
-        where: { seasonId, round: number, roundId: null },
+        where: { seasonCompetitionId: seasonId, round: number, roundId: null },
         data: { roundId: round.id },
       });
     }
@@ -108,8 +108,8 @@ export class RoundsService {
     }
   }
 
-  private ensureSeason(seasonId: string) {
-    return this.prisma.season.findUnique({ where: { id: seasonId } }).then((s) => {
+  private ensureEdition(seasonId: string) {
+    return this.prisma.seasonCompetition.findUnique({ where: { id: seasonId } }).then((s) => {
       if (!s) throw new NotFoundException('Sezona nije pronađena.');
       return s;
     });

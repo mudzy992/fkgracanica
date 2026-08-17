@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { findDefaultLeagueSeason } from '../competitions/league-season.util';
+import { findDefaultLeagueEdition } from '../competitions/league-season.util';
 
 @Injectable()
 export class PlayersService {
@@ -25,9 +25,12 @@ export class PlayersService {
   }
 
   async getPublicProfile(id: string, seasonId?: string) {
-    const season = seasonId
-      ? await this.prisma.season.findUnique({ where: { id: seasonId } })
-      : await findDefaultLeagueSeason(this.prisma);
+    const edition = seasonId
+      ? await this.prisma.seasonCompetition.findUnique({
+          where: { id: seasonId },
+          include: { season: true },
+        })
+      : await findDefaultLeagueEdition(this.prisma);
 
     const player = await this.prisma.player.findUnique({
       where: { id },
@@ -38,9 +41,9 @@ export class PlayersService {
     if (!player) return null;
 
     const seasonStats =
-      season &&
+      edition &&
       (await this.prisma.playerStatistics.findUnique({
-        where: { playerId_seasonId: { playerId: id, seasonId: season.id } },
+        where: { playerId_seasonCompetitionId: { playerId: id, seasonCompetitionId: edition.id } },
       }));
 
     const career = await this.prisma.playerStatistics.aggregate({
@@ -57,7 +60,7 @@ export class PlayersService {
 
     return {
       ...player,
-      season: season ? { id: season.id, name: season.name } : null,
+      season: edition ? { id: edition.id, name: edition.season.name } : null,
       seasonStats: seasonStats ?? null,
       careerTotals: career._sum,
     };

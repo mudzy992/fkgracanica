@@ -1,5 +1,6 @@
 export type ClubParticipation = {
   seasonId: string;
+  calendarSeasonId?: string;
   seasonName: string;
   yearStart: number;
   yearEnd: number;
@@ -25,22 +26,24 @@ export function pickDefaultParticipation(
   return [...pool].sort((a, b) => b.yearStart - a.yearStart)[0];
 }
 
-export function participationYearKey(p: ClubParticipation): string {
-  return `${p.yearStart}/${p.yearEnd}`;
+export function calendarKey(p: ClubParticipation): string {
+  return p.calendarSeasonId ?? `${p.yearStart}/${p.yearEnd}`;
 }
 
-export function uniqueParticipationYears(items: ClubParticipation[]): string[] {
-  const seen = new Map<string, number>();
-  for (const p of items) {
-    const key = participationYearKey(p);
-    if (!seen.has(key)) seen.set(key, p.yearStart);
-  }
-  return [...seen.entries()].sort((a, b) => b[1] - a[1]).map(([key]) => key);
-}
-
-export function participationsInYear(
+export function uniqueCalendarSeasons(
   items: ClubParticipation[],
-  yearKey: string,
+): { key: string; label: string; yearStart: number }[] {
+  const seen = new Map<string, { key: string; label: string; yearStart: number }>();
+  for (const p of items) {
+    const key = calendarKey(p);
+    if (!seen.has(key)) seen.set(key, { key, label: p.seasonName, yearStart: p.yearStart });
+  }
+  return [...seen.values()].sort((a, b) => b.yearStart - a.yearStart);
+}
+
+export function participationsInCalendar(
+  items: ClubParticipation[],
+  key: string,
 ): ClubParticipation[] {
-  return items.filter((p) => participationYearKey(p) === yearKey);
+  return items.filter((p) => calendarKey(p) === key);
 }

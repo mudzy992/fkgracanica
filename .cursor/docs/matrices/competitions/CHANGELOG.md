@@ -1,5 +1,11 @@
 # Competitions Changelog
 
+## 2026-08-17 (season as parent)
+
+- Kalendarska `Season` je roditelj; `SeasonCompetition` nosi učesnike, kola, utakmice i player stats
+- Admin: lista sezona → takmičenja u sezoni → hub kola na izdanju
+- Public `/liga`, naslovna, `/tim`: calendar + edition umjesto grupisanja po godini
+
 ## 2026-08-17 (season/competition pickers)
 
 - `/tim` statistike: filter po sezoni (godine) i takmičenju, default aktivna liga

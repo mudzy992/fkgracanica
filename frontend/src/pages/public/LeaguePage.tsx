@@ -9,40 +9,42 @@ import { LeagueNextMatch } from '../../components/public/league/LeagueNextMatch'
 import { useMatches, useOwnClub, useSeasons, useStandings, useTopAssists, useTopScorers } from '../../hooks';
 import { useRounds } from '../../hooks/use-rounds';
 import { computePositionChanges, maxFinishedRound } from '../../lib/league-position.util';
-import { filterLeagueSeasons, pickDefaultSeasonId, type SeasonOption } from '../../lib/season-utils';
+import {
+  leagueEdition,
+  pickDefaultCalendarId,
+  type CalendarSeason,
+} from '../../lib/season-utils';
 import { Seo } from '../../components/seo/Seo';
 import { Skeleton } from '../../components/ui/skeleton';
 
 export function LeaguePage() {
   const { data: ownClub } = useOwnClub();
   const { data: seasons, isLoading: sl } = useSeasons();
-  const seasonOptions = useMemo(
-    () => filterLeagueSeasons((seasons as SeasonOption[] | undefined) ?? []),
-    [seasons],
-  );
-  const [seasonId, setSeasonId] = useState<string | undefined>();
+  const calendars = useMemo(() => (seasons as CalendarSeason[] | undefined) ?? [], [seasons]);
+  const [calendarId, setCalendarId] = useState<string | undefined>();
   const [upToRound, setUpToRound] = useState<number | null>(null);
 
   useEffect(() => {
-    if (!seasonOptions.length) return;
-    setSeasonId((prev) =>
-      prev && seasonOptions.some((s) => s.id === prev) ? prev : pickDefaultSeasonId(seasonOptions),
+    if (!calendars.length) return;
+    setCalendarId((prev) =>
+      prev && calendars.some((s) => s.id === prev) ? prev : pickDefaultCalendarId(calendars),
     );
-  }, [seasonOptions]);
+  }, [calendars]);
 
-  useEffect(() => setUpToRound(null), [seasonId]);
+  useEffect(() => setUpToRound(null), [calendarId]);
 
-  const activeSeason = seasonOptions.find((s) => s.id === seasonId);
-  const { data: rounds } = useRounds(seasonId);
-  const { data: standings, isLoading: stl } = useStandings(seasonId, upToRound);
-  const { data: scorers, isLoading: scl } = useTopScorers(seasonId);
-  const { data: assists, isLoading: acl } = useTopAssists(seasonId);
-  const { data: matches, isLoading: ml } = useMatches(seasonId);
+  const activeSeason = calendars.find((s) => s.id === calendarId);
+  const editionId = leagueEdition(activeSeason)?.id;
+  const { data: rounds } = useRounds(editionId);
+  const { data: standings, isLoading: stl } = useStandings(editionId, upToRound);
+  const { data: scorers, isLoading: scl } = useTopScorers(editionId);
+  const { data: assists, isLoading: acl } = useTopAssists(editionId);
+  const { data: matches, isLoading: ml } = useMatches(editionId);
 
   const maxRound = useMemo(() => maxFinishedRound(matches ?? []), [matches]);
   const movementRound = upToRound ?? maxRound;
   const prevRound = movementRound > 1 ? movementRound - 1 : null;
-  const { data: prevStandings } = useStandings(seasonId, prevRound);
+  const { data: prevStandings } = useStandings(editionId, prevRound);
 
   const positionChanges = useMemo(() => {
     if (!prevRound || !prevStandings?.length || !standings?.length) return undefined;
@@ -71,9 +73,9 @@ export function LeaguePage() {
       <div className="mx-auto max-w-6xl space-y-14 px-4 pt-10 sm:px-6 sm:space-y-16">
         {!sl && (
           <LeagueFilterBar
-            seasons={seasonOptions}
-            seasonId={seasonId}
-            onSeasonChange={setSeasonId}
+            seasons={calendars}
+            seasonId={calendarId}
+            onSeasonChange={setCalendarId}
             rounds={rounds ?? []}
             upToRound={upToRound}
             onRoundChange={setUpToRound}

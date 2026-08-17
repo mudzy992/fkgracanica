@@ -15,7 +15,7 @@ export async function getSeasonLeaders(
   limit = 10,
 ): Promise<LeaderRow[]> {
   const stats = await prisma.playerStatistics.findMany({
-    where: { seasonId, [field]: { gt: 0 } },
+    where: { seasonCompetitionId: seasonId, [field]: { gt: 0 } },
     include: { player: { select: { id: true, firstName: true, lastName: true } } },
     orderBy: { [field]: 'desc' },
     take: limit,

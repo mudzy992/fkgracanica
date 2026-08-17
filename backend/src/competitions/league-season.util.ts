@@ -30,10 +30,14 @@ export async function ensureSingleLeagueCompetition(tx: Tx, exceptId?: string) {
   });
 }
 
-export async function findDefaultLeagueSeason(prisma: Db) {
-  const seasons = await prisma.season.findMany({
+export async function findDefaultLeagueEdition(prisma: Db) {
+  const editions = await prisma.seasonCompetition.findMany({
     where: { competition: { isLeague: true } },
-    orderBy: { yearStart: 'desc' },
+    include: { season: true, competition: true },
+    orderBy: { season: { yearStart: 'desc' } },
   });
-  return seasons.find((s) => s.isActive) ?? seasons[0] ?? null;
+  return editions.find((e) => e.season.isActive) ?? editions[0] ?? null;
 }
+
+/** @deprecated Use findDefaultLeagueEdition — returns the league SeasonCompetition. */
+export const findDefaultLeagueSeason = findDefaultLeagueEdition;

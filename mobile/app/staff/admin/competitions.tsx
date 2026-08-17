@@ -26,30 +26,16 @@ export default function AdminCompetitionsScreen() {
   const { t } = useTranslation();
   const { colors } = useTheme();
   const router = useRouter();
-  const [comps, setComps] = useState<Row[]>([]);
   const [seasons, setSeasons] = useState<Row[]>([]);
-  const [selectedComp, setSelectedComp] = useState('');
+  const [selectedSeason, setSelectedSeason] = useState('');
   const [values, setValues] = useState<Record<string, string>>({ name: '', yearStart: '', yearEnd: '' });
-  const [mode, setMode] = useState<'comp' | 'season' | null>(null);
+  const [mode, setMode] = useState<'season' | 'edition' | null>(null);
   const [editId, setEditId] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
 
-  const loadComps = useCallback(async () => {
+  const loadSeasons = useCallback(async () => {
     try {
-      const { data } = await api.get('/competitions');
-      setComps(asArray(data).map((r) => asRecord(r)));
-    } catch {
-      setComps([]);
-    }
-  }, []);
-
-  const loadSeasons = useCallback(async (competitionId: string) => {
-    if (!competitionId) {
-      setSeasons([]);
-      return;
-    }
-    try {
-      const { data } = await api.get(`/competitions/seasons/list?competitionId=${encodeURIComponent(competitionId)}`);
+      const { data } = await api.get('/seasons');
       setSeasons(asArray(data).map((r) => asRecord(r)));
     } catch {
       setSeasons([]);
@@ -57,21 +43,13 @@ export default function AdminCompetitionsScreen() {
   }, []);
 
   useEffect(() => {
-    void loadComps();
-  }, [loadComps]);
+    void loadSeasons();
+  }, [loadSeasons]);
 
-  useEffect(() => {
-    void loadSeasons(selectedComp);
-  }, [selectedComp, loadSeasons]);
-
-  const openComp = (row?: Row) => {
-    setMode('comp');
-    setEditId(row ? asString(row.id) : null);
-    setValues({ name: row ? asString(row.name) : '', yearStart: '', yearEnd: '' });
-  };
+  const selected = seasons.find((s) => asString(s.id) === selectedSeason);
+  const editions = asArray(selected?.competitions).map((r) => asRecord(r));
 
   const openSeason = (row?: Row) => {
-    if (!selectedComp) return;
     setMode('season');
     setEditId(row ? asString(row.id) : null);
     setValues({
@@ -81,6 +59,13 @@ export default function AdminCompetitionsScreen() {
     });
   };
 
+  const openEdition = () => {
+    if (!selectedSeason) return;
+    setMode('edition');
+    setEditId(null);
+    setValues({ name: '', yearStart: '', yearEnd: '' });
+  };
+
   const handleSave = async () => {
     if (!values.name.trim()) {
       Alert.alert(t('competitions'), t('validationRequired'));
@@ -88,22 +73,18 @@ export default function AdminCompetitionsScreen() {
     }
     setSaving(true);
     try {
-      if (mode === 'comp') {
-        const body = { name: values.name.trim() };
-        if (editId) await api.patch(`/competitions/${editId}`, body);
-        else await api.post('/competitions', body);
-        await loadComps();
-      } else if (mode === 'season' && selectedComp) {
+      if (mode === 'season') {
         const body = {
           name: values.name.trim(),
           yearStart: Number(values.yearStart),
           yearEnd: Number(values.yearEnd),
-          competitionId: selectedComp,
         };
-        if (editId) await api.patch(`/competitions/seasons/${editId}`, body);
-        else await api.post('/competitions/seasons', body);
-        await loadSeasons(selectedComp);
+        if (editId) await api.patch(`/seasons/${editId}`, body);
+        else await api.post('/seasons', body);
+      } else if (mode === 'edition' && selectedSeason) {
+        await api.post(`/seasons/${selectedSeason}/competitions`, { name: values.name.trim() });
       }
+      await loadSeasons();
       setMode(null);
     } catch {
       Alert.alert(t('error'), t('saveFailed'));
@@ -117,34 +98,35 @@ export default function AdminCompetitionsScreen() {
       <Screen padded={false}>
         <View style={[styles.header, { borderBottomColor: colors.border }]}>
           <Text style={[typography.heading, { color: colors.text }]}>{t('competitions')}</Text>
-          <PrimaryButton label={t('addCompetition')} onPress={() => openComp()} />
+          <PrimaryButton label={t('addSeason')} onPress={() => openSeason()} />
         </View>
         <FlatList
-          data={comps}
+          data={seasons}
           keyExtractor={(item, i) => asString(item.id, String(i))}
           contentContainerStyle={styles.list}
-          ListEmptyComponent={<ScreenEmpty message={t('noItems')} />}
+          ListEmptyComponent={<ScreenEmpty message={t('noSeasons')} />}
           ListHeaderComponent={
-            selectedComp ? (
+            selected ? (
               <View style={styles.seasonBlock}>
                 <View style={styles.seasonHead}>
-                  <Text style={[typography.body, { color: colors.text, fontWeight: '600' }]}>{t('seasons')}</Text>
-                  <PrimaryButton label={t('addSeason')} onPress={() => openSeason()} />
+                  <Text style={[typography.body, { color: colors.text, fontWeight: '600' }]}>{t('competitions')}</Text>
+                  <PrimaryButton label={t('addCompetition')} onPress={openEdition} />
                 </View>
-                {seasons.length === 0 ? <ScreenEmpty message={t('noSeasons')} /> : null}
-                {seasons.map((s) => (
+                {editions.length === 0 ? <ScreenEmpty message={t('noItems')} /> : null}
+                {editions.map((e) => (
                   <Pressable
-                    key={asString(s.id)}
+                    key={asString(e.id)}
                     onPress={() =>
                       router.push({
                         pathname: '/staff/admin/matches',
-                        params: { seasonId: asString(s.id) },
+                        params: { seasonId: asString(e.id) },
                       })
                     }
-                    onLongPress={() => openSeason(s)}
                     style={[styles.row, { borderColor: colors.border, backgroundColor: colors.background }]}
                   >
-                    <Text style={{ color: colors.text, flex: 1 }}>{asString(s.name)}</Text>
+                    <Text style={{ color: colors.text, flex: 1 }}>
+                      {asString(asRecord(e.competition).name, asString(e.id))}
+                    </Text>
                     <Text style={{ color: colors.primary }}>{t('matches')}</Text>
                   </Pressable>
                 ))}
@@ -153,12 +135,12 @@ export default function AdminCompetitionsScreen() {
           }
           renderItem={({ item }) => (
             <Pressable
-              onPress={() => setSelectedComp(asString(item.id))}
-              onLongPress={() => openComp(item)}
+              onPress={() => setSelectedSeason(asString(item.id))}
+              onLongPress={() => openSeason(item)}
               style={[
                 styles.row,
                 {
-                  borderColor: selectedComp === asString(item.id) ? colors.primary : colors.border,
+                  borderColor: selectedSeason === asString(item.id) ? colors.primary : colors.border,
                   backgroundColor: colors.background,
                 },
               ]}

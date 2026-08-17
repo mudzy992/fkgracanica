@@ -1,14 +1,10 @@
 import { useEffect, useMemo, useState } from 'react';
 import {
   useCreateCompetition,
-  useCreateSeason,
   useUpdateCompetition,
-  useUpdateSeason,
 } from '../../hooks/use-competition-admin';
-import { useCompetitions, useClubs } from '../../hooks';
+import { useCreateSeason, useUpdateSeason } from '../../hooks/use-season-admin';
 import { AdminFormSheet } from '../../components/admin/AdminFormSheet';
-import { SeasonClubPicker } from '../../components/admin/SeasonClubPicker';
-import { EntitySelect } from '../../components/admin/EntitySelect';
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
 import { Switch } from '../../components/ui/switch';
@@ -20,19 +16,12 @@ interface Competition {
   isLeague?: boolean;
 }
 
-interface SeasonParticipant {
-  clubId: string;
-  club: { id: string; name: string; slug: string };
-}
-
 interface Season {
   id: string;
   name: string;
   yearStart: number;
   yearEnd: number;
-  competitionId: string;
   isActive?: boolean;
-  participants?: SeasonParticipant[];
 }
 
 type Mode = 'competition' | 'season' | null;
@@ -52,29 +41,16 @@ export function CompetitionsAdminFormSheet({
   editCompetition,
   editSeason,
 }: Props) {
-  const { data: competitions } = useCompetitions();
-  const { data: clubs } = useClubs();
   const createComp = useCreateCompetition();
   const updateComp = useUpdateCompetition();
   const createSeason = useCreateSeason();
   const updateSeason = useUpdateSeason();
   const [name, setName] = useState('');
   const [yearStart, setYearStart] = useState(new Date().getFullYear());
-  const [yearEnd, setYearEnd] = useState(new Date().getFullYear());
-  const [competitionId, setCompetitionId] = useState('');
+  const [yearEnd, setYearEnd] = useState(new Date().getFullYear() + 1);
   const [isActive, setIsActive] = useState(true);
-  const [clubIds, setClubIds] = useState<string[]>([]);
   const [isLeague, setIsLeague] = useState(false);
   const [error, setError] = useState('');
-
-  const compOptions = useMemo(
-    () => ((competitions as Competition[] | undefined) ?? []).map((c) => ({ id: c.id, label: c.name })),
-    [competitions],
-  );
-  const clubOptions = useMemo(
-    () => ((clubs as { id: string; name: string; isOwnClub?: boolean }[] | undefined) ?? []),
-    [clubs],
-  );
 
   const editingSeasonId = editSeason?.id ?? null;
   const editingCompetitionId = editCompetition?.id ?? null;
@@ -88,23 +64,10 @@ export function CompetitionsAdminFormSheet({
     } else if (mode === 'season') {
       setName(editSeason?.name ?? '');
       setYearStart(editSeason?.yearStart ?? new Date().getFullYear());
-      setYearEnd(editSeason?.yearEnd ?? new Date().getFullYear());
-      setCompetitionId(editSeason?.competitionId ?? compOptions[0]?.id ?? '');
+      setYearEnd(editSeason?.yearEnd ?? new Date().getFullYear() + 1);
       setIsActive(editSeason?.isActive ?? true);
-      if (editSeason) {
-        setClubIds(editSeason.participants?.map((p) => p.clubId) ?? []);
-      } else {
-        setClubIds(clubOptions.map((c) => c.id));
-      }
     }
-    // Init samo pri otvaranju / promjeni entiteta — ne na svaki render ili refetch
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [open, mode, editingCompetitionId, editingSeasonId]);
-
-  useEffect(() => {
-    if (!open || mode !== 'season' || editSeason || !clubOptions.length) return;
-    setClubIds((prev) => (prev.length ? prev : clubOptions.map((c) => c.id)));
-  }, [open, mode, editSeason, clubOptions]);
+  }, [open, mode, editingCompetitionId, editingSeasonId, editCompetition, editSeason]);
 
   const save = async () => {
     try {
@@ -113,18 +76,13 @@ export function CompetitionsAdminFormSheet({
         if (editCompetition) await updateComp.mutateAsync({ id: editCompetition.id, name, isLeague });
         else await createComp.mutateAsync({ name, isLeague });
       } else if (mode === 'season') {
-        if (!clubIds.length) {
-          setError('Odaberite barem jednog učesnika sezone.');
-          return;
-        }
-        const body = { name, yearStart, yearEnd, competitionId, isActive, clubIds };
+        const body = { name, yearStart, yearEnd, isActive };
         if (editSeason) await updateSeason.mutateAsync({ id: editSeason.id, ...body });
         else await createSeason.mutateAsync(body);
       }
       onOpenChange(false);
     } catch (err) {
-      const msg = err instanceof Error ? err.message : 'Spremanje nije uspjelo.';
-      setError(msg);
+      setError(err instanceof Error ? err.message : 'Spremanje nije uspjelo.');
     }
   };
 
@@ -152,15 +110,8 @@ export function CompetitionsAdminFormSheet({
         )}
         {mode === 'season' && (
           <>
-            <EntitySelect
-              label="Takmičenje"
-              value={competitionId}
-              onChange={setCompetitionId}
-              options={compOptions}
-            />
             <Input type="number" value={yearStart} onChange={(e) => setYearStart(Number(e.target.value))} placeholder="Godina početka" />
             <Input type="number" value={yearEnd} onChange={(e) => setYearEnd(Number(e.target.value))} placeholder="Godina kraja" />
-            <SeasonClubPicker clubs={clubOptions} value={clubIds} onChange={setClubIds} />
             <div className="flex items-center justify-between gap-3">
               <span className="text-sm font-medium">Aktivna sezona</span>
               <Switch checked={isActive} onCheckedChange={setIsActive} />

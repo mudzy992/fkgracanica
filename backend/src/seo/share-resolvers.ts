@@ -41,7 +41,7 @@ export class ShareResolvers {
   async fromMatch(id: string, live: boolean, defaults: SiteDefaults): Promise<PackInput> {
     const match = await this.prisma.match.findUnique({
       where: { id },
-      include: { homeClub: true, awayClub: true, season: { include: { competition: true } } },
+      include: { homeClub: true, awayClub: true, edition: { include: { competition: true, season: true } } },
     });
     const url = live ? `/live/${id}` : `/utakmice/${id}`;
     if (!match) return { title: 'Utakmica', description: defaults.description, url };
@@ -57,7 +57,7 @@ export class ShareResolvers {
         away: match.awayClub,
         scheduledAt: match.scheduledAt,
         venue: match.venue,
-        competition: match.season?.competition?.name,
+        competition: match.edition?.competition?.name,
         status: match.status,
         homeScore: match.homeScore,
         awayScore: match.awayScore,

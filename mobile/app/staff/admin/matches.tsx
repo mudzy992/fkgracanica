@@ -16,7 +16,7 @@ import { RequirePermission } from '../../../src/components/RequirePermission';
 import { Screen } from '../../../src/components/primitives/Screen';
 import { ScreenEmpty } from '../../../src/components/ScreenEmpty';
 import { api } from '../../../src/lib/api';
-import { asArray, asRecord, asString } from '../../../src/lib/content-helpers';
+import { flattenSeasonEditions } from '../../../src/lib/flatten-editions';
 import { useTheme } from '../../../src/lib/theme-context';
 import { typography } from '../../../src/lib/theme';
 
@@ -41,12 +41,12 @@ export default function AdminMatchesScreen() {
   const loadMeta = useCallback(async () => {
     try {
       const [seasonsRes, clubsRes] = await Promise.all([
-        api.get('/competitions/seasons/list'),
+        api.get('/seasons'),
         api.get('/clubs'),
       ]);
-      const seasonList = asArray(seasonsRes.data).map((s) => ({
-        id: asString(asRecord(s).id),
-        name: asString(asRecord(s).name),
+      const seasonList = flattenSeasonEditions(seasonsRes.data).map((s) => ({
+        id: s.id,
+        name: s.name,
       }));
       setSeasons(seasonList);
       setClubs(asArray(clubsRes.data).map((c) => ({ id: asString(asRecord(c).id), name: asString(asRecord(c).name) })));

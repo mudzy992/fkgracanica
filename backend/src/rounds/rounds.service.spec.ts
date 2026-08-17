@@ -22,20 +22,20 @@ describe('RoundsService.remove', () => {
   beforeEach(() => jest.clearAllMocks());
 
   it('deletes empty round without cascade', async () => {
-    prismaMock.round.findUnique.mockResolvedValue({ id: 'r1', seasonId: 's1', number: 1 });
+    prismaMock.round.findUnique.mockResolvedValue({ id: 'r1', seasonCompetitionId: 's1', number: 1 });
     prismaMock.match.count.mockResolvedValue(0);
     prismaMock.round.delete.mockResolvedValue({ id: 'r1' });
     await expect(service.remove('r1', false)).resolves.toEqual({ id: 'r1' });
   });
 
   it('rejects delete when matches exist without cascade', async () => {
-    prismaMock.round.findUnique.mockResolvedValue({ id: 'r1', seasonId: 's1', number: 1 });
+    prismaMock.round.findUnique.mockResolvedValue({ id: 'r1', seasonCompetitionId: 's1', number: 1 });
     prismaMock.match.count.mockResolvedValue(2);
     await expect(service.remove('r1', false)).rejects.toBeInstanceOf(BadRequestException);
   });
 
   it('cascade deletes round with matches', async () => {
-    prismaMock.round.findUnique.mockResolvedValue({ id: 'r1', seasonId: 's1', number: 1 });
+    prismaMock.round.findUnique.mockResolvedValue({ id: 'r1', seasonCompetitionId: 's1', number: 1 });
     prismaMock.match.count.mockResolvedValue(2);
     (cascadeDeleteRound as jest.Mock).mockResolvedValue({ deletedMatches: 2, statsRebuilt: true });
     await expect(service.remove('r1', true)).resolves.toEqual({ deletedMatches: 2, statsRebuilt: true });
@@ -43,7 +43,7 @@ describe('RoundsService.remove', () => {
   });
 
   it('returns delete impact', async () => {
-    prismaMock.round.findUnique.mockResolvedValue({ id: 'r1', seasonId: 's1', number: 1 });
+    prismaMock.round.findUnique.mockResolvedValue({ id: 'r1', seasonCompetitionId: 's1', number: 1 });
     (getRoundDeleteImpact as jest.Mock).mockResolvedValue({ matchCount: 1, approvedReportCount: 0 });
     await expect(service.getDeleteImpact('r1')).resolves.toEqual({ matchCount: 1, approvedReportCount: 0 });
   });

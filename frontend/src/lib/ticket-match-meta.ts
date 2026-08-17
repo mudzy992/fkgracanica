@@ -9,11 +9,11 @@ export function ticketRoundLabel(match?: TicketMatch): string | undefined {
 }
 
 export function ticketCompetitionName(match?: TicketMatch): string | undefined {
-  return match?.season?.competition?.name || undefined;
+  return match?.season?.competition?.name || match?.edition?.competition?.name || undefined;
 }
 
 export function ticketSeasonName(match?: TicketMatch): string | undefined {
-  return match?.season?.name || undefined;
+  return match?.season?.name || match?.edition?.season?.name || undefined;
 }
 
 export function ticketMetaLine(match?: TicketMatch): string | undefined {

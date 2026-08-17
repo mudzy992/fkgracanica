@@ -43,6 +43,7 @@ import { TimelineAdminPage } from '../pages/admin/TimelineAdminPage';
 import { ClubsListPage } from '../pages/admin/club-hub/ClubsListPage';
 import { ClubHubPage } from '../pages/admin/club-hub/ClubHubPage';
 import { CompetitionsAdminPage } from '../pages/admin/CompetitionsAdminPage';
+import { CalendarSeasonPage } from '../pages/admin/CalendarSeasonPage';
 import { SeasonHubPage } from '../pages/admin/competition-hub/SeasonHubPage';
 import { MatchReportPage } from '../pages/admin/MatchReportPage';
 import { CommentatorPage } from '../pages/admin/CommentatorPage';
@@ -168,6 +169,8 @@ export const appRouteElements = (
           </Route>
           <Route element={<ModuleRoute moduleKey="modules.competitions" redirectTo={ADMIN} />}>
             <Route path="competitions" element={<CompetitionsAdminPage />} />
+            <Route path="seasons/:seasonId" element={<CalendarSeasonPage />} />
+            <Route path="seasons/:seasonId/competitions/:editionId" element={<SeasonHubPage />} />
             <Route path="competitions/seasons/:seasonId" element={<SeasonHubPage />} />
             <Route path="rounds" element={<Navigate to="/admin/competitions" replace />} />
             <Route path="matches" element={<Navigate to="/admin/competitions" replace />} />

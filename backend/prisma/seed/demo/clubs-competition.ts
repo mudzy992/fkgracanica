@@ -52,28 +52,29 @@ export async function seedClubsAndCompetition(prisma: SeedPrisma): Promise<DemoC
     });
   }
 
-  let season = await prisma.season.findFirst({
-    where: { competitionId: competition.id, name: '2025/2026' },
+  let calendar = await prisma.season.findFirst({ where: { yearStart: 2025, yearEnd: 2026 } });
+  if (!calendar) {
+    calendar = await prisma.season.create({
+      data: { name: '2025/2026', yearStart: 2025, yearEnd: 2026, isActive: true },
+    });
+  }
+
+  let edition = await prisma.seasonCompetition.findUnique({
+    where: { seasonId_competitionId: { seasonId: calendar.id, competitionId: competition.id } },
   });
-  if (!season) {
-    season = await prisma.season.create({
-      data: {
-        name: '2025/2026',
-        yearStart: 2025,
-        yearEnd: 2026,
-        isActive: true,
-        competitionId: competition.id,
-      },
+  if (!edition) {
+    edition = await prisma.seasonCompetition.create({
+      data: { seasonId: calendar.id, competitionId: competition.id },
     });
   }
 
   await prisma.seasonClub.createMany({
     data: [
-      { seasonId: season.id, clubId: ownClub.id },
-      { seasonId: season.id, clubId: opponent.id },
+      { seasonCompetitionId: edition.id, clubId: ownClub.id },
+      { seasonCompetitionId: edition.id, clubId: opponent.id },
     ],
     skipDuplicates: true,
   });
 
-  return { ownClubId: ownClub.id, opponentClubId: opponent.id, seasonId: season.id };
+  return { ownClubId: ownClub.id, opponentClubId: opponent.id, seasonId: edition.id };
 }

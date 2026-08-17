@@ -1,6 +1,6 @@
 import { api } from '../../lib/api';
 import { asArray, asRecord, asString } from '../../lib/content-helpers';
-import { mapLeagueSeasons, pickDefaultLeagueSeasonId } from '../../lib/league-season';
+import { leagueEditionId, mapCalendarSeasons, pickDefaultLeagueSeasonId } from '../../lib/league-season';
 import type { HomeLeagueRow } from '../home/load-home-extras';
 
 export type LeagueSeasonOption = { id: string; name: string };
@@ -104,14 +104,17 @@ function roundsPlayed(matches: unknown[]): number {
 
 export async function loadLeagueScreen(seasonId?: string): Promise<LeagueScreenData> {
   const [seasonsRes, ownRes] = await Promise.all([
-    api.get('/competitions/seasons/list'),
+    api.get('/seasons'),
     api.get('/clubs/own').catch(() => ({ data: null })),
   ]);
-  const seasons = mapLeagueSeasons(seasonsRes.data);
+  const calendars = asArray(seasonsRes.data);
+  const seasons = mapCalendarSeasons(calendars);
   const activeId = pickDefaultLeagueSeasonId(seasons, seasonId);
+  const calendar = calendars.find((row) => asString(asRecord(row).id) === activeId);
   const seasonName = seasons.find((s) => s.id === activeId)?.name ?? '';
   const ownId = asString(asRecord(ownRes.data).id);
-  if (!activeId) {
+  const editionId = leagueEditionId(calendar);
+  if (!editionId) {
     return {
       seasons,
       seasonId: '',
@@ -125,10 +128,10 @@ export async function loadLeagueScreen(seasonId?: string): Promise<LeagueScreenD
     };
   }
   const [standingsRes, matchesRes, scorersRes, assistsRes] = await Promise.all([
-    api.get('/statistics/standings', { params: { seasonId: activeId } }),
-    api.get('/matches', { params: { seasonId: activeId } }),
-    api.get('/statistics/top-scorers', { params: { seasonId: activeId } }),
-    api.get('/statistics/top-assists', { params: { seasonId: activeId } }),
+    api.get('/statistics/standings', { params: { seasonId: editionId } }),
+    api.get('/matches', { params: { seasonId: editionId } }),
+    api.get('/statistics/top-scorers', { params: { seasonId: editionId } }),
+    api.get('/statistics/top-assists', { params: { seasonId: editionId } }),
   ]);
   const standings = mapStandings(standingsRes.data, ownId);
   const matches = mapMatches(matchesRes.data);

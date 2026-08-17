@@ -257,7 +257,7 @@ export function useCompetitions() {
 export function useSeasons() {
   return useQuery({
     queryKey: ['seasons'],
-    queryFn: async () => asArray((await api.get('/competitions/seasons/list')).data),
+    queryFn: async () => asArray((await api.get('/seasons')).data),
   });
 }
 

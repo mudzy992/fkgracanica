@@ -9,12 +9,13 @@ import { resolveEffectiveMatchLineup } from './match-squad-lineup.util';
 import { assertManualFinish, assertRetrospectiveCreate, isRetrospectiveMatch } from './match-retrospective.util';
 import { resolveMatchVenue } from './match-venue.util';
 import { assertManualMatchStatus } from './update-match.dto';
+import { matchEditionInclude, withSeasonAlias } from './match-edition.util';
 
 const matchInclude = {
   homeClub: true,
   awayClub: true,
   roundRel: { select: { id: true, number: true, name: true } },
-  season: { include: { competition: true } },
+  ...matchEditionInclude,
 } as const;
 
 type MatchInput = {
@@ -39,12 +40,12 @@ export class MatchesService {
   findAll(seasonId?: string, roundId?: string) {
     return this.prisma.match.findMany({
       where: {
-        ...(seasonId ? { seasonId } : {}),
+        ...(seasonId ? { seasonCompetitionId: seasonId } : {}),
         ...(roundId ? { roundId } : {}),
       },
       include: matchInclude,
       orderBy: [{ scheduledAt: 'desc' }],
-    });
+    }).then((rows) => rows.map(withSeasonAlias));
   }
 
   async findOne(id: string) {
@@ -65,7 +66,7 @@ export class MatchesService {
       match.awayClubId,
       match.lineup,
     )) as typeof match.lineup;
-    return match;
+    return withSeasonAlias(match);
   }
 
   async create(data: MatchInput) {
@@ -75,7 +76,7 @@ export class MatchesService {
     const round = await resolveMatchRoundFields(this.prisma, data.roundId);
     if (isResolvedRound(round) && round.roundId) {
       const r = await this.prisma.round.findUnique({ where: { id: round.roundId } });
-      if (r && r.seasonId !== data.seasonId) {
+      if (r && r.seasonCompetitionId !== data.seasonId) {
         throw new BadRequestException('Kolo ne pripada odabranoj sezoni.');
       }
     }
@@ -87,7 +88,7 @@ export class MatchesService {
     const venue = await resolveMatchVenue(this.prisma, data.homeClubId, data.venue);
     return this.prisma.match.create({
       data: {
-        seasonId: data.seasonId,
+        seasonCompetitionId: data.seasonId,
         homeClubId: data.homeClubId,
         awayClubId: data.awayClubId,
         scheduledAt: new Date(data.scheduledAt),
@@ -99,7 +100,7 @@ export class MatchesService {
         ...roundToMatchCreateInput(round),
       },
       include: matchInclude,
-    });
+    }).then(withSeasonAlias);
   }
 
   async update(id: string, data: Partial<MatchInput>) {
@@ -136,14 +137,14 @@ export class MatchesService {
         : {};
     if (isResolvedRound(round) && round.roundId) {
       const r = await this.prisma.round.findUnique({ where: { id: round.roundId } });
-      const seasonId = data.seasonId ?? existing.seasonId;
-      if (r && r.seasonId !== seasonId) {
+      const seasonId = data.seasonId ?? existing.seasonCompetitionId;
+      if (r && r.seasonCompetitionId !== seasonId) {
         throw new BadRequestException('Kolo ne pripada sezoni utakmice.');
       }
     }
 
     const patch: Prisma.MatchUpdateInput = {
-      ...(data.seasonId ? { season: { connect: { id: data.seasonId } } } : {}),
+      ...(data.seasonId ? { edition: { connect: { id: data.seasonId } } } : {}),
       ...(data.homeClubId ? { homeClub: { connect: { id: data.homeClubId } } } : {}),
       ...(data.awayClubId ? { awayClub: { connect: { id: data.awayClubId } } } : {}),
       ...(data.venue !== undefined ? { venue: data.venue } : {}),
@@ -160,14 +161,14 @@ export class MatchesService {
       await assertSingleScheduledHomeMatch(this.prisma, homeClubId, id);
     }
 
-    return this.prisma.match.update({ where: { id }, data: patch, include: matchInclude });
+    return this.prisma.match.update({ where: { id }, data: patch, include: matchInclude }).then(withSeasonAlias);
   }
 
   async remove(id: string) {
     const match = await this.prisma.match.findUnique({ where: { id } });
     if (!match) throw new NotFoundException('Utakmica nije pronađena');
     const needsRebuild = match.reportStatus === MatchReportStatus.APPROVED;
-    const seasonId = match.seasonId;
+    const seasonId = match.seasonCompetitionId;
     await this.prisma.match.delete({ where: { id } });
     if (needsRebuild) {
       await this.statistics.rebuildSeasonPlayerStatistics(seasonId);

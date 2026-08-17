@@ -23,7 +23,7 @@ export class StatisticsService {
   async recalculateForMatch(matchId: string) {
     const match = await this.prisma.match.findUnique({
       where: { id: matchId },
-      include: { events: true, season: true, lineup: true, teamStats: true },
+      include: { events: true, edition: true, lineup: true, teamStats: true },
     });
     if (!match || match.reportStatus !== MatchReportStatus.APPROVED) {
       return { skipped: true, reason: 'Match not approved' };
@@ -54,11 +54,11 @@ export class StatisticsService {
 
       await this.prisma.playerStatistics.upsert({
         where: {
-          playerId_seasonId: { playerId, seasonId: match.seasonId },
+          playerId_seasonCompetitionId: { playerId, seasonCompetitionId: match.seasonCompetitionId },
         },
         create: {
           playerId,
-          seasonId: match.seasonId,
+          seasonCompetitionId: match.seasonCompetitionId,
           appearances: 1,
           goals,
           ownGoals,
@@ -162,7 +162,7 @@ export class StatisticsService {
 
   getPlayerStats(playerId: string, seasonId?: string) {
     return this.prisma.playerStatistics.findMany({
-      where: { playerId, ...(seasonId ? { seasonId } : {}) },
+      where: { playerId, ...(seasonId ? { seasonCompetitionId: seasonId } : {}) },
     });
   }
 
@@ -173,7 +173,7 @@ export class StatisticsService {
   async getStandings(seasonId: string, upToRound?: number) {
     const [matches, participants] = await Promise.all([
       this.prisma.match.findMany({
-        where: { seasonId, status: MatchStatus.FINISHED },
+        where: { seasonCompetitionId: seasonId, status: MatchStatus.FINISHED },
         include: {
           homeClub: { select: { name: true, slug: true, crestPath: true } },
           awayClub: { select: { name: true, slug: true, crestPath: true } },

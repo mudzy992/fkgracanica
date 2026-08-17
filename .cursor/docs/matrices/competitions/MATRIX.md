@@ -3,36 +3,38 @@
 ## Hierarchy
 
 ```
-Competition 1—n Season 1—n Round
-                         1—n Match
-Season 1—n SeasonClub n—1 Club
+Season (calendar) 1—n SeasonCompetition (edition)
+Competition (catalog) 1—n SeasonCompetition
+SeasonCompetition 1—n Round 1—n Match
+SeasonCompetition 1—n SeasonClub n—1 Club
+SeasonCompetition 1—n PlayerStatistics
 ```
 
-Sezona je dijete takmičenja. Ista kalendarska sezona (npr. 2025/2026) = više `Season` redova pod različitim takmičenjima.
+Kalendarska sezona je roditelj. Katalog takmičenja (`name`, `slug`, `isLeague`) nema kola. Unique `(seasonId, competitionId)`.
 
 ## Season.isActive
 
-- Više sezona istog takmičenja smije biti aktivno (preklapanje, npr. 2025/26 i 2026/27).
-- Aktivacija nove sezone **ne** gasi susjedne.
+- Više kalendarskih sezona smije biti aktivno (preklapanje).
 - Default prikaz: aktivna sezona, zatim `yearStart desc`.
+- Ligaško izdanje = `SeasonCompetition` gdje `competition.isLeague` unutar odabrane sezone.
 
 ## Competition.isLeague
 
-- Boolean, default `false`. Najviše jedno takmičenje smije biti ligaško.
+- Boolean, default `false`. Najviše jedno takmičenje u katalogu smije biti ligaško.
 - Postavljanje `isLeague: true` skida flag sa ostalih (`ensureSingleLeagueCompetition`).
 - Ligaško → `/liga`, tabela na naslovnoj, mobile liga/home snippet.
-- Ostala takmičenja → klubska stranica (`participations` tabovi).
+- Ostala takmičenja → tabovi izdanja iste sezone / klubska stranica.
 
 ## Public surfaces
 
-| Surface | Season source |
+| Surface | Source |
 |---|---|
-| `/liga`, `LeaguePage` | samo `competition.isLeague` |
-| Naslovna `LeagueTableWidget` | default aktivna ligaška sezona; tabovi ostalih takmičenja istog `yearStart/yearEnd` |
-| Mobile `/league` + home snippet | `mapLeagueSeasons` |
-| `/tim` statistike | sezona (godine) + takmičenje; default aktivna liga |
-| Klub public | participacije; tab Kola (izbor kola) + Tabela |
-| Player public stats | `findDefaultLeagueSeason` |
+| `/liga`, `LeaguePage` | calendar picker; standings iz ligaškog izdanja |
+| Naslovna `LeagueTableWidget` | aktivna calendar sezona; tabovi = izdanja (liga prva) |
+| Mobile `/league` + home snippet | calendar + `leagueEditionId` |
+| `/tim` statistike | calendar + edition; default aktivna liga |
+| Klub public | participacije (`seasonId` = edition id) |
+| Player public stats | `findDefaultLeagueEdition` |
 
 ## Match finish (bez live)
 
