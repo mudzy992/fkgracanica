@@ -33,8 +33,8 @@ export function ticketStatusLabel(status: TicketStatus | string): string {
 }
 
 export function ticketStatusVariant(status: string): 'default' | 'success' | 'muted' | 'danger' {
-  if (status === 'PAID_AT_BOX_OFFICE') return 'success';
-  if (status === 'RESERVED') return 'default';
+  if (status === 'PAID_AT_BOX_OFFICE' || status === 'ACTIVE') return 'success';
+  if (status === 'RESERVED' || status === 'PENDING') return 'default';
   if (status === 'USED') return 'muted';
   if (status === 'CANCELLED') return 'danger';
   return 'muted';
