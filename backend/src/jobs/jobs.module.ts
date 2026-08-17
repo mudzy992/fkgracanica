@@ -3,6 +3,8 @@ import { Queue, Worker } from 'bullmq';
 import nodemailer from 'nodemailer';
 import { PrismaService } from '../prisma/prisma.service';
 import { tallyCampaignEmail } from '../newsletter/newsletter-campaign-tally';
+import { RealtimeGateway } from '../realtime/realtime.gateway';
+import { RealtimeModule } from '../realtime/realtime.module';
 
 export type EmailPayload = {
   to: string;
@@ -19,7 +21,10 @@ export class JobsService implements OnModuleDestroy {
   private readonly emailQueue: Queue | null;
   private readonly worker: Worker | null;
 
-  constructor(private readonly prisma: PrismaService) {
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly realtime: RealtimeGateway,
+  ) {
     const url = process.env.REDIS_URL;
     if (!url) {
       this.connection = null;
@@ -59,7 +64,7 @@ export class JobsService implements OnModuleDestroy {
     }, {});
     if (!settings['smtp.host'] || !settings['smtp.user'] || !settings['smtp.pass']) {
       this.logger.warn(`SMTP unavailable for ${payload.to}`);
-      await tallyCampaignEmail(this.prisma, payload.campaignId, false);
+      await this.tally(payload.campaignId, false);
       return;
     }
     try {
@@ -76,15 +81,20 @@ export class JobsService implements OnModuleDestroy {
         text: payload.body,
         html: payload.html,
       });
-      await tallyCampaignEmail(this.prisma, payload.campaignId, true);
+      await this.tally(payload.campaignId, true);
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
       this.logger.warn(`SMTP fail ${payload.to}: ${message}`);
       await this.prisma.failedEmail.create({
         data: { to: payload.to, subject: payload.subject, error: message },
       });
-      await tallyCampaignEmail(this.prisma, payload.campaignId, false);
+      await this.tally(payload.campaignId, false);
     }
+  }
+
+  private async tally(campaignId: string | undefined, ok: boolean) {
+    const snap = await tallyCampaignEmail(this.prisma, campaignId, ok);
+    if (snap) this.realtime.emitNewsletterCampaign(snap);
   }
 
   async onModuleDestroy() {
@@ -94,6 +104,7 @@ export class JobsService implements OnModuleDestroy {
 }
 
 @Module({
+  imports: [RealtimeModule],
   providers: [JobsService],
   exports: [JobsService],
 })

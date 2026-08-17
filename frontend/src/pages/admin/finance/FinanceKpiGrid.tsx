@@ -13,11 +13,16 @@ function Stat({ label, hint, value }: { label: string; hint: string; value: stri
 
 export function FinanceKpiGrid({ data }: { data: FinanceSummary }) {
   return (
-    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
       <Stat
         label="Ulaznice"
         value={formatKm(data.tickets.sum)}
         hint={`${data.tickets.count} transakcija`}
+      />
+      <Stat
+        label="Sezonske karte"
+        value={formatKm(data.seasonPass.sum)}
+        hint={`${data.seasonPass.count} karata`}
       />
       <Stat
         label="Članarine (procjena)"
@@ -27,7 +32,7 @@ export function FinanceKpiGrid({ data }: { data: FinanceSummary }) {
       <Stat
         label="Ukupno"
         value={formatKm(data.totalSum)}
-        hint="Ulaznice + procjena članarina"
+        hint="Ulaznice + sezona + procjena članarina"
       />
       <Stat
         label="Period"

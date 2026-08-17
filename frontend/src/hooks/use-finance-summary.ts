@@ -7,6 +7,7 @@ export type FinanceSummary = {
   from: string;
   to: string;
   tickets: { count: number; sum: number };
+  seasonPass: { count: number; sum: number };
   membership: { count: number; sum: number; estimated: true };
   totalSum: number;
   byProvider: FinanceBucket[];

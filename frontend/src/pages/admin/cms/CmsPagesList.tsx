@@ -6,6 +6,7 @@ import { Seo } from '../../../components/seo/Seo';
 import { Badge } from '../../../components/ui/badge';
 import { Button } from '../../../components/ui/button';
 import { AdminDataTable, AdminPageShell } from '../../../components/admin/AdminPageShell';
+import { contentStatusLabel } from '../../../lib/content-status-labels';
 import type { CmsPage } from '../../../cms/types';
 
 interface Props {
@@ -50,7 +51,9 @@ export function CmsPagesList({ onCreate }: Props) {
               key: 'status',
               header: 'Status',
               render: (r) => (
-                <Badge variant={r.status === 'PUBLISHED' ? 'success' : 'muted'}>{r.status}</Badge>
+                <Badge variant={r.status === 'PUBLISHED' ? 'success' : 'muted'}>
+                  {contentStatusLabel(r.status)}
+                </Badge>
               ),
             },
             {

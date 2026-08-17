@@ -10,10 +10,15 @@ export class CreateNewsletterCampaignDto {
   @ApiProperty()
   @IsString()
   @MinLength(1)
-  htmlBody!: string;
+  textBody!: string;
 
   @ApiPropertyOptional()
   @IsOptional()
   @IsString()
-  textBody?: string;
+  ctaLabel?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  ctaUrl?: string;
 }

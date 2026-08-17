@@ -14,7 +14,7 @@ import { isPastDatetime } from '../../../lib/match-retrospective';
 import { resolveClubVenue } from '../../../lib/club-venue';
 import { getApiErrorMessage } from '../../../lib/api-error';
 import { parseScheduledAt, toLocalDatetime } from './match-form-datetime';
-import { canSendManualStatus, clampScore, editableStatuses, matchStatusOptions } from './match-form-status';
+import { canSendManualStatus, clampScore, editableStatuses, matchStatusLabels, matchStatusOptions } from './match-form-status';
 import { MatchFinishedReadOnly } from './MatchFinishedReadOnly';
 import { MatchHighlightsEditor } from './MatchHighlightsEditor';
 import { MatchScoreInputs } from './MatchScoreInputs';
@@ -132,7 +132,7 @@ export function MatchFormSheet({ open, onOpenChange, edit, seasonId, roundId }: 
       <div className="space-y-4">
         {isLiveLocked && (
           <div className="flex items-center gap-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-900">
-            <Badge variant="danger">{edit?.status}</Badge>
+            <Badge variant="danger">{edit?.status ? matchStatusLabels[edit.status] : ''}</Badge>
             <span>Status i rezultat se mijenjaju u komentator panelu.</span>
           </div>
         )}

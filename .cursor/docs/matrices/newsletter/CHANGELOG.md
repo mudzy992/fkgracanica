@@ -1,5 +1,10 @@
 # Newsletter changelog
 
+## 2026-08-17 (template + socket)
+
+- Draft: `textBody` + opciono CTA; HTML template na serveru.
+- Preview endpoint. Socket `newsletter:campaign` za live brojke.
+
 ## 2026-08-17
 
 - Kampanje: `NewsletterCampaign` draft → SENDING → SENT/FAILED.

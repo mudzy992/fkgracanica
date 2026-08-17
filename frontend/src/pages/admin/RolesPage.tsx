@@ -139,10 +139,7 @@ export function RolesPage({ embedded = false }: Props) {
           {permList.map((p) => (
             <label key={p.key} className="flex cursor-pointer items-start gap-2 text-sm">
               <input type="checkbox" checked={selected.includes(p.key)} onChange={() => toggle(p.key)} className="mt-1" />
-              <span>
-                <span className="font-mono text-xs">{p.key}</span>
-                {p.description && <span className="block text-text-muted">{p.description}</span>}
-              </span>
+              <span className="font-medium">{p.description ?? p.key}</span>
             </label>
           ))}
         </div>

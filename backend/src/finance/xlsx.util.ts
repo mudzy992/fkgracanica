@@ -39,6 +39,7 @@ const CONTENT_TYPES = `<?xml version="1.0" encoding="UTF-8"?>
 <Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/>
 <Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>
 <Override PartName="/xl/worksheets/sheet2.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>
+<Override PartName="/xl/worksheets/sheet3.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>
 </Types>`;
 
 const ROOT_RELS = `<?xml version="1.0" encoding="UTF-8"?>
@@ -50,6 +51,7 @@ const WB_RELS = `<?xml version="1.0" encoding="UTF-8"?>
 <Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
 <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/>
 <Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet2.xml"/>
+<Relationship Id="rId3" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet3.xml"/>
 </Relationships>`;
 
 const WORKBOOK = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
@@ -57,11 +59,16 @@ const WORKBOOK = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
  xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">
 <sheets>
 <sheet name="Ulaznice" sheetId="1" r:id="rId1"/>
-<sheet name="Clanstvo" sheetId="2" r:id="rId2"/>
+<sheet name="Sezona" sheetId="2" r:id="rId2"/>
+<sheet name="Clanstvo" sheetId="3" r:id="rId3"/>
 </sheets>
 </workbook>`;
 
-export function buildFinanceXlsx(tickets: string[][], membership: string[][]): Buffer {
+export function buildFinanceXlsx(
+  tickets: string[][],
+  season: string[][],
+  membership: string[][],
+): Buffer {
   const utf8 = (xml: string) => Buffer.from(xml, 'utf8');
   return zipStore([
     { name: '[Content_Types].xml', data: utf8(CONTENT_TYPES) },
@@ -69,6 +76,7 @@ export function buildFinanceXlsx(tickets: string[][], membership: string[][]): B
     { name: 'xl/workbook.xml', data: utf8(WORKBOOK) },
     { name: 'xl/_rels/workbook.xml.rels', data: utf8(WB_RELS) },
     { name: 'xl/worksheets/sheet1.xml', data: utf8(sheetXml(tickets)) },
-    { name: 'xl/worksheets/sheet2.xml', data: utf8(sheetXml(membership)) },
+    { name: 'xl/worksheets/sheet2.xml', data: utf8(sheetXml(season)) },
+    { name: 'xl/worksheets/sheet3.xml', data: utf8(sheetXml(membership)) },
   ]);
 }

@@ -972,6 +972,8 @@ model NewsletterCampaign {
   subject     String
   htmlBody    String                    @db.Text
   textBody    String                    @db.Text
+  ctaLabel    String?
+  ctaUrl      String?                   @db.VarChar(500)
   status      NewsletterCampaignStatus  @default(DRAFT)
   sentAt      DateTime?
   sentCount   Int                       @default(0)

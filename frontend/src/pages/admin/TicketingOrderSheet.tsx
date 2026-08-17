@@ -7,6 +7,7 @@ import {
   ticketStatusVariant,
   canShowTicketQr,
 } from '../../lib/ticketing-status';
+import { paymentStatusLabel } from './finance/finance-labels';
 import {
   useAdminCancelTicketingOrder,
   useConfirmTicketingPayment,
@@ -72,7 +73,7 @@ export function TicketingOrderSheet({ order, open, onOpenChange, canManage }: Pr
           {o.payment && (
             <div>
               <dt className="text-text-muted">Plaćanje</dt>
-              <dd>{o.payment.status}</dd>
+              <dd>{paymentStatusLabel(o.payment.status)}</dd>
             </div>
           )}
         </dl>

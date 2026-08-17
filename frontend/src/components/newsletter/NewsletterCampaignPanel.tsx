@@ -1,19 +1,17 @@
-import { useState } from 'react';
 import { usePrivateSettings } from '../../hooks';
 import { hasPermission } from '../../lib/permissions';
 import { useAuth } from '../../lib/auth';
 import { formatDateTime } from '../../lib/utils';
 import { useConfirm } from '../../hooks/use-confirm';
 import {
-  useCreateNewsletterCampaign,
   useNewsletterCampaigns,
+  useNewsletterCampaignRealtime,
   useSendNewsletterCampaign,
   type NewsletterCampaign,
 } from '../../hooks/use-newsletter-campaigns';
+import { NewsletterCampaignComposer } from './NewsletterCampaignComposer';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
-import { Input } from '../ui/input';
-import { Textarea } from '../ui/textarea';
 import { AdminDataTable } from '../admin/AdminPageShell';
 
 const STATUS: Record<NewsletterCampaign['status'], string> = {
@@ -23,25 +21,21 @@ const STATUS: Record<NewsletterCampaign['status'], string> = {
   FAILED: 'Neuspjelo',
 };
 
+function campaignCounts(row: NewsletterCampaign) {
+  const pending = Math.max(0, row.targetCount - row.sentCount - row.failCount);
+  if (row.status === 'DRAFT') return '—';
+  return `poslano ${row.sentCount}/${row.targetCount} · čeka ${pending} · fail ${row.failCount}`;
+}
+
 export function NewsletterCampaignPanel() {
   const { user } = useAuth();
   const canManage = hasPermission(user?.permissions, 'newsletter.manage');
   const { data: settings } = usePrivateSettings();
   const blastOn = settings?.['newsletter.blastEnabled'] === 'true';
   const { data: campaigns, isLoading } = useNewsletterCampaigns();
-  const create = useCreateNewsletterCampaign();
+  useNewsletterCampaignRealtime();
   const send = useSendNewsletterCampaign();
   const { confirm, dialog } = useConfirm();
-  const [subject, setSubject] = useState('');
-  const [htmlBody, setHtmlBody] = useState('');
-  const [preview, setPreview] = useState<string | null>(null);
-
-  const onCreate = async () => {
-    if (!subject.trim() || !htmlBody.trim()) return;
-    await create.mutateAsync({ subject: subject.trim(), htmlBody });
-    setSubject('');
-    setHtmlBody('');
-  };
 
   const onSend = async (row: NewsletterCampaign) => {
     const ok = await confirm({
@@ -60,28 +54,7 @@ export function NewsletterCampaignPanel() {
           Slanje je isključeno. Uključi <strong>newsletter.blastEnabled</strong> u SMTP postavkama.
         </p>
       )}
-      {canManage && (
-        <div className="space-y-2 rounded-lg border border-[var(--border-subtle)] p-4">
-          <Input placeholder="Naslov" value={subject} onChange={(e) => setSubject(e.target.value)} />
-          <Textarea
-            rows={8}
-            placeholder="HTML tijelo poruke"
-            value={htmlBody}
-            onChange={(e) => setHtmlBody(e.target.value)}
-          />
-          <div className="flex flex-wrap gap-2">
-            <Button size="sm" variant="outline" onClick={() => setPreview(htmlBody)} disabled={!htmlBody}>
-              Pregled
-            </Button>
-            <Button size="sm" onClick={() => void onCreate()} disabled={create.isPending || !subject.trim() || !htmlBody.trim()}>
-              Spremi nacrt
-            </Button>
-          </div>
-          {preview !== null && (
-            <iframe title="Pregled" sandbox="" className="h-48 w-full rounded border border-[var(--border-subtle)] bg-white" srcDoc={preview} />
-          )}
-        </div>
-      )}
+      {canManage && <NewsletterCampaignComposer />}
       <AdminDataTable
         rows={campaigns ?? []}
         empty={isLoading ? 'Učitavanje…' : 'Nema kampanja.'}
@@ -90,9 +63,29 @@ export function NewsletterCampaignPanel() {
           {
             key: 'status',
             header: 'Status',
-            render: (r) => <Badge variant={r.status === 'SENT' ? 'success' : r.status === 'FAILED' ? 'danger' : 'muted'}>{STATUS[r.status]}</Badge>,
+            render: (r) => (
+              <Badge variant={r.status === 'SENT' ? 'success' : r.status === 'FAILED' ? 'danger' : 'muted'}>
+                {STATUS[r.status]}
+              </Badge>
+            ),
           },
-          { key: 'counts', header: 'Brojke', render: (r) => `${r.sentCount}/${r.targetCount} (fail ${r.failCount})` },
+          {
+            key: 'counts',
+            header: 'Brojke',
+            render: (r) => (
+              <div className="min-w-[160px]">
+                <p className="text-xs">{campaignCounts(r)}</p>
+                {r.status === 'SENDING' && r.targetCount > 0 && (
+                  <div className="mt-1 h-1.5 overflow-hidden rounded bg-[var(--border-subtle)]">
+                    <div
+                      className="h-full bg-primary"
+                      style={{ width: `${Math.min(100, ((r.sentCount + r.failCount) / r.targetCount) * 100)}%` }}
+                    />
+                  </div>
+                )}
+              </div>
+            ),
+          },
           { key: 'date', header: 'Kreirano', render: (r) => formatDateTime(r.createdAt) },
           {
             key: 'actions',

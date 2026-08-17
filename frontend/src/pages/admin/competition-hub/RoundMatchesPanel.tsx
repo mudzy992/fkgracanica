@@ -8,6 +8,7 @@ import { useAuth } from '../../../lib/auth';
 import { canEditReport } from '../../../lib/match-report';
 import { isRetrospectiveMatch } from '../../../lib/match-retrospective';
 import { hasPermission } from '../../../lib/permissions';
+import { matchStatusLabel } from '../../../lib/match-status-label';
 import { formatDateTime } from '../../../lib/utils';
 import { Badge } from '../../../components/ui/badge';
 import { Button } from '../../../components/ui/button';
@@ -88,7 +89,9 @@ export function RoundMatchesPanel({ seasonId, roundId, canManage }: Props) {
             key: 'status',
             header: 'Status',
             render: (r) => (
-              <Badge variant={r.status === 'SCHEDULED' ? 'default' : 'muted'}>{r.status}</Badge>
+              <Badge variant={r.status === 'SCHEDULED' ? 'default' : 'muted'}>
+                {matchStatusLabel(r.status)}
+              </Badge>
             ),
           },
           { key: 'date', header: 'Datum', render: (r) => formatDateTime(r.scheduledAt) },

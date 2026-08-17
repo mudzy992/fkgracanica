@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useAuditLog } from '../../hooks';
+import { auditActionLabel } from '../../lib/audit-action-labels';
 import { formatDateTime } from '../../lib/utils';
 import { Seo } from '../../components/seo/Seo';
 import { Input } from '../../components/ui/input';
@@ -34,7 +35,7 @@ export function AuditPage() {
         <AdminDataTable
           rows={entries}
           columns={[
-            { key: 'action', header: 'Akcija', render: (r) => r.action },
+            { key: 'action', header: 'Akcija', render: (r) => auditActionLabel(r.action) },
             { key: 'actor', header: 'Korisnik', render: (r) => r.actor?.email ?? '—' },
             { key: 'entity', header: 'Entitet', render: (r) => r.entity ?? '—' },
             { key: 'date', header: 'Datum', render: (r) => formatDateTime(r.createdAt) },

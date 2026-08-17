@@ -27,6 +27,12 @@ export class NewsletterCampaignsController {
     return this.service.create(dto, user.id);
   }
 
+  @Post('preview')
+  @RequirePermissions('newsletter.manage')
+  preview(@Body() dto: CreateNewsletterCampaignDto) {
+    return this.service.preview(dto);
+  }
+
   @Post(':id/send')
   @RequirePermissions('newsletter.manage')
   send(@Param('id') id: string) {

@@ -1,4 +1,10 @@
-import type { Bucket, FinanceQuery, MembershipExportRow, TicketExportRow } from './finance.types';
+import type {
+  Bucket,
+  FinanceQuery,
+  MembershipExportRow,
+  SeasonPassExportRow,
+  TicketExportRow,
+} from './finance.types';
 
 const STATUSES = ['PENDING_BOX_OFFICE', 'PENDING_ONLINE', 'CONFIRMED', 'REFUNDED', 'CANCELLED'] as const;
 
@@ -48,6 +54,25 @@ export function includeMembership(status?: string, provider?: string) {
   return !status || status === 'CONFIRMED';
 }
 
+export function seasonPassStatusFilter(paymentStatus?: string) {
+  if (!paymentStatus) return undefined;
+  if (paymentStatus === 'CONFIRMED') return 'ACTIVE' as const;
+  if (paymentStatus === 'REFUNDED') return 'REFUNDED' as const;
+  if (paymentStatus === 'CANCELLED') return 'CANCELLED' as const;
+  if (paymentStatus === 'PENDING_ONLINE' || paymentStatus === 'PENDING_BOX_OFFICE') {
+    return 'PENDING' as const;
+  }
+  return undefined;
+}
+
+export function seasonPassFinanceStatus(status: string, provider: string) {
+  if (status === 'ACTIVE') return 'CONFIRMED';
+  if (status === 'PENDING') {
+    return provider === 'box_office' ? 'PENDING_BOX_OFFICE' : 'PENDING_ONLINE';
+  }
+  return status;
+}
+
 export function iso(d: Date) {
   return d.toISOString();
 }
@@ -80,6 +105,22 @@ export function membershipSheet(rows: MembershipExportRow[]): string[][] {
       r.status,
       r.email,
       'Nema Payment reda; annualPrice',
+    ]),
+  ];
+}
+
+export function seasonPassSheet(rows: SeasonPassExportRow[]): string[][] {
+  const header = ['Datum', 'ID', 'Iznos', 'Status', 'Provider', 'Naziv', 'Email'];
+  return [
+    header,
+    ...rows.map((r) => [
+      r.updatedAt.toISOString(),
+      r.id,
+      String(r.amount),
+      r.status,
+      r.provider,
+      r.label,
+      r.email,
     ]),
   ];
 }

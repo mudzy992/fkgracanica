@@ -9,7 +9,7 @@ Admin izvještaj uplata. Nije sportska analitika (`/admin/analytics`).
 | Endpoint | Opis |
 |----------|------|
 | `GET /finance/summary?from&to&provider&status` | Broj/suma po provideru i statusu |
-| `GET /finance/export.xlsx?...` | Sheet Ulaznice + sheet Clanstvo |
+| `GET /finance/export.xlsx?...` | Sheet Ulaznice + Sezona + Clanstvo |
 | `GET /finance/export.pdf?...` | Jednostrani sažetak |
 
 Filter `from`/`to` na `Payment.createdAt` (ulaznice) i `Membership.updatedAt` (članarine). Default: 1. jan tekuće godine → danas.
@@ -19,9 +19,10 @@ Filter `from`/`to` na `Payment.createdAt` (ulaznice) i `Membership.updatedAt` (�
 | Sheet | Izvor | Iznos |
 |-------|--------|-------|
 | Ulaznice | `Payment` + order.user | `Payment.amount` |
+| Sezona | `SeasonPass` (updatedAt) | `SeasonPass.price` |
 | Clanstvo | `Membership` status ACTIVE | `membership.annualPrice` (procjena) |
 
-Nema `LedgerEntry`. Članstvo nema `Payment` red — rupa zabilježena. Ako je `provider` filter set, članarine se isključuju. Status filter: članarine samo uz prazan ili `CONFIRMED`.
+Nema `LedgerEntry`. Članstvo nema `Payment` red — rupa zabilježena. Sezonska karta također nema `Payment`; iznos je `SeasonPass.price`. Ako je `provider` filter set, članarine se isključuju (sezona ostaje jer ima `paymentProvider`). Status `CONFIRMED` → pass `ACTIVE`.
 
 ## RBAC
 

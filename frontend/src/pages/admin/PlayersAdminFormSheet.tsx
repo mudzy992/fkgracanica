@@ -7,6 +7,7 @@ import { MediaPicker } from '../../components/admin/MediaPicker';
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
 import { Switch } from '../../components/ui/switch';
+import { playerPositionLabel } from '../../lib/player-utils';
 import type { Player } from '../../types';
 
 const POSITIONS = ['GK', 'DEF', 'MID', 'FWD'];
@@ -94,7 +95,9 @@ export function PlayersAdminFormSheet({ open, onOpenChange, edit, clubId: fixedC
           className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
         >
           {POSITIONS.map((p) => (
-            <option key={p} value={p}>{p}</option>
+            <option key={p} value={p}>
+              {playerPositionLabel(p)}
+            </option>
           ))}
         </select>
         <Input type="number" value={number} onChange={(e) => setNumber(e.target.value)} placeholder="Broj dresa" />

@@ -16,6 +16,11 @@ export const POSITION_GROUP_LABELS: Record<(typeof POSITION_ORDER)[number], stri
   FWD: 'Napad',
 };
 
+export function playerPositionLabel(position?: string | null): string {
+  if (!position) return '—';
+  return POSITION_LABELS[position as keyof typeof POSITION_LABELS] ?? position;
+}
+
 export function groupPlayersByPosition(players: Player[]) {
   return POSITION_ORDER.map((position) => ({
     position,

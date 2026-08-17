@@ -4,6 +4,7 @@ import { useLiveClock } from '../../../hooks/use-live-clock';
 import { formatLiveMinute } from '../../../lib/live-clock';
 import { isPenaltiesPhase, stoppageHalfIndex } from '../../../lib/match-live-phase';
 import type { Match } from '../../../types';
+import { matchStatusLabel } from '../../../lib/match-status-label';
 import { Button } from '../../../components/ui/button';
 import { Input } from '../../../components/ui/input';
 import { Badge } from '../../../components/ui/badge';
@@ -35,7 +36,7 @@ export function CommentatorClockBar({ match }: { match: Match }) {
           <div className="flex items-center gap-2">
             <CommentatorStreamDialog match={match} />
             <Badge variant={match.status === 'LIVE' ? 'danger' : 'muted'} className="text-[10px]">
-              {match.status}
+              {matchStatusLabel(match.status)}
             </Badge>
           </div>
           <span className="text-xl font-bold tabular-nums sm:text-2xl">

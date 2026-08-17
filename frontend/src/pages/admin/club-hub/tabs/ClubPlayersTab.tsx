@@ -5,6 +5,7 @@ import { useDeletePlayer } from '../../../../hooks/use-competition-admin';
 import { useAuth } from '../../../../lib/auth';
 import { hasPermission } from '../../../../lib/permissions';
 import { useConfirm } from '../../../../hooks/use-confirm';
+import { playerPositionLabel } from '../../../../lib/player-utils';
 import { Badge } from '../../../../components/ui/badge';
 import { Button } from '../../../../components/ui/button';
 import { AdminDataTable } from '../../../../components/admin/AdminPageShell';
@@ -55,7 +56,7 @@ export function ClubPlayersTab({ clubId }: { clubId: string }) {
               </span>
             ),
           },
-          { key: 'position', header: 'Pozicija', render: (r) => r.position ?? '—' },
+          { key: 'position', header: 'Pozicija', render: (r) => playerPositionLabel(r.position) },
           { key: 'number', header: 'Broj', render: (r) => r.number ?? '—' },
           {
             key: 'actions',

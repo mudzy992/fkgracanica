@@ -6,11 +6,9 @@ import {
 import { PrismaService } from '../prisma/prisma.service';
 import { JobsService } from '../jobs/jobs.module';
 import type { CreateNewsletterCampaignDto } from './dto/create-newsletter-campaign.dto';
-import {
-  htmlToText,
-  newsletterPublicOrigin,
-  withUnsubscribeFooter,
-} from './newsletter-campaign.util';
+import { newsletterPublicOrigin, unsubscribeUrl } from './newsletter-campaign.util';
+import { renderNewsletterHtml } from './newsletter-email.template';
+import { mediaPublicUrl } from '../seo/seo-url.util';
 
 @Injectable()
 export class NewsletterCampaignService {
@@ -27,12 +25,22 @@ export class NewsletterCampaignService {
     });
   }
 
-  create(dto: CreateNewsletterCampaignDto, userId: string) {
+  async preview(dto: CreateNewsletterCampaignDto) {
+    const brand = await this.brand();
+    return { html: this.render(dto, brand, unsubscribeUrl(newsletterPublicOrigin(), 'preview')) };
+  }
+
+  async create(dto: CreateNewsletterCampaignDto, userId: string) {
+    const textBody = dto.textBody.trim();
+    const brand = await this.brand();
+    const htmlBody = this.render(dto, brand, unsubscribeUrl(newsletterPublicOrigin(), 'preview'));
     return this.prisma.newsletterCampaign.create({
       data: {
         subject: dto.subject.trim(),
-        htmlBody: dto.htmlBody,
-        textBody: dto.textBody?.trim() || htmlToText(dto.htmlBody),
+        textBody,
+        htmlBody,
+        ctaLabel: dto.ctaLabel?.trim() || null,
+        ctaUrl: dto.ctaUrl?.trim() || null,
         createdById: userId,
       },
     });
@@ -57,16 +65,50 @@ export class NewsletterCampaignService {
     });
 
     const origin = newsletterPublicOrigin();
+    const brand = await this.brand();
+    const dto = {
+      subject: campaign.subject,
+      textBody: campaign.textBody,
+      ctaLabel: campaign.ctaLabel ?? undefined,
+      ctaUrl: campaign.ctaUrl ?? undefined,
+    };
     for (const sub of subs) {
       this.jobs.enqueueEmailLater({
         to: sub.email,
         subject: campaign.subject,
         body: campaign.textBody,
-        html: withUnsubscribeFooter(campaign.htmlBody, origin, sub.unsubscribeToken),
+        html: this.render(dto, brand, unsubscribeUrl(origin, sub.unsubscribeToken)),
         campaignId: id,
       });
     }
     return this.prisma.newsletterCampaign.findUniqueOrThrow({ where: { id } });
+  }
+
+  private render(
+    dto: CreateNewsletterCampaignDto,
+    brand: { clubName: string; crestUrl?: string },
+    unsub: string,
+  ) {
+    return renderNewsletterHtml({
+      clubName: brand.clubName,
+      crestUrl: brand.crestUrl,
+      subject: dto.subject.trim(),
+      textBody: dto.textBody.trim(),
+      ctaLabel: dto.ctaLabel,
+      ctaUrl: dto.ctaUrl,
+      unsubscribeUrl: unsub,
+    });
+  }
+
+  private async brand() {
+    const rows = await this.prisma.setting.findMany({
+      where: { key: { in: ['club.name', 'club.crestUrl'] } },
+    });
+    const map = Object.fromEntries(rows.map((r) => [r.key, r.value]));
+    return {
+      clubName: map['club.name']?.trim() || 'FK Gračanica',
+      crestUrl: mediaPublicUrl(map['club.crestUrl'] || null, 'medium'),
+    };
   }
 
   private async assertBlastEnabled() {

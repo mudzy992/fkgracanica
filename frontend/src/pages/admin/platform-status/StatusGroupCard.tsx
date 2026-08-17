@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardHeader, CardTitle } from '../../../components/ui/card';
 import type { ShowcaseModule } from '../../showcase/types';
-import { BAR_CLASS } from './group-meta';
+import { BAR_CLASS, SURFACE_LABELS } from './group-meta';
 
 function ModuleRow({ mod }: { mod: ShowcaseModule }) {
   return (
@@ -18,7 +18,7 @@ function ModuleRow({ mod }: { mod: ShowcaseModule }) {
       </div>
       <p className="mt-1.5 text-xs leading-relaxed text-text-muted">{mod.summary}</p>
       <p className="mt-1 text-[10px] uppercase tracking-wider text-text-muted/80">
-        {mod.surfaces.join(' · ')}
+        {mod.surfaces.map((s) => SURFACE_LABELS[s]).join(' · ')}
       </p>
     </li>
   );

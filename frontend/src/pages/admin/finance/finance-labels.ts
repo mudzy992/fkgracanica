@@ -5,6 +5,7 @@ export const PAYMENT_STATUS_LABELS: Record<string, string> = {
   REFUNDED: 'Povraćeno',
   CANCELLED: 'Otkazano',
   ACTIVE: 'Aktivno članstvo',
+  PENDING: 'Na čekanju',
 };
 
 export const PAYMENT_STATUS_OPTIONS = [

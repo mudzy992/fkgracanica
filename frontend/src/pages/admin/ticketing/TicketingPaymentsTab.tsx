@@ -92,7 +92,7 @@ export function TicketingPaymentsTab() {
       </div>
 
       <div>
-        <label className="mb-1 block text-sm text-text-muted">Default provider</label>
+        <label className="mb-1 block text-sm text-text-muted">Zadani servis plaćanja</label>
         <select
           className="flex h-10 w-full rounded-lg border border-[var(--border-subtle)] bg-background px-3 text-sm"
           value={defaultProvider}

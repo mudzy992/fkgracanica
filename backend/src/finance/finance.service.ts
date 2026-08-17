@@ -7,11 +7,19 @@ import {
   membershipSheet,
   parseFinanceRange,
   parseFinanceStatus,
+  seasonPassSheet,
+  seasonPassStatusFilter,
   ticketSheet,
 } from './finance-query.util';
 import { buildFinancePdf } from './pdf.util';
 import { buildFinanceXlsx } from './xlsx.util';
-import type { FinanceBundle, FinanceQuery, MembershipExportRow, TicketExportRow } from './finance.types';
+import type {
+  FinanceBundle,
+  FinanceQuery,
+  MembershipExportRow,
+  SeasonPassExportRow,
+  TicketExportRow,
+} from './finance.types';
 
 @Injectable()
 export class FinanceService {
@@ -24,7 +32,11 @@ export class FinanceService {
 
   async exportXlsx(query: FinanceQuery) {
     const bundle = await this.load(query);
-    return buildFinanceXlsx(ticketSheet(bundle.tickets), membershipSheet(bundle.membership));
+    return buildFinanceXlsx(
+      ticketSheet(bundle.tickets),
+      seasonPassSheet(bundle.seasonPass),
+      membershipSheet(bundle.membership),
+    );
   }
 
   async exportPdf(query: FinanceQuery) {
@@ -33,6 +45,7 @@ export class FinanceService {
     const lines = [
       `Period: ${s.from.slice(0, 10)} - ${s.to.slice(0, 10)}`,
       `Ulaznice: ${s.tickets.count} / ${km(s.tickets.sum)}`,
+      `Sezona: ${s.seasonPass.count} / ${km(s.seasonPass.sum)}`,
       `Clanstvo (procjena): ${s.membership.count} / ${km(s.membership.sum)}`,
       `Ukupno: ${km(s.totalSum)}`,
       '',
@@ -52,6 +65,7 @@ export class FinanceService {
     if (status && typeof status === 'object') throw new BadRequestException(status.error);
     const provider = query.provider?.trim() || undefined;
     const tickets = await this.loadTickets(range.from, range.to, provider, status);
+    const seasonPass = await this.loadSeasonPasses(range.from, range.to, provider, status);
     const membership = includeMembership(status, provider)
       ? await this.loadMembership(range.from, range.to)
       : [];
@@ -59,8 +73,9 @@ export class FinanceService {
       from: range.from,
       to: range.to,
       tickets,
+      seasonPass,
       membership,
-      summary: buildFinanceSummary(range.from, range.to, tickets, membership),
+      summary: buildFinanceSummary(range.from, range.to, tickets, membership, seasonPass),
     };
   }
 
@@ -87,6 +102,33 @@ export class FinanceService {
       method: p.method,
       orderId: p.orderId,
       email: p.order.user.email,
+    }));
+  }
+
+  private async loadSeasonPasses(
+    from: Date,
+    to: Date,
+    provider?: string,
+    status?: string,
+  ): Promise<SeasonPassExportRow[]> {
+    const passStatus = seasonPassStatusFilter(status);
+    const rows = await this.prisma.seasonPass.findMany({
+      where: {
+        updatedAt: { gte: from, lte: to },
+        ...(provider ? { paymentProvider: provider } : {}),
+        ...(passStatus ? { status: passStatus } : {}),
+      },
+      include: { user: { select: { email: true } } },
+      orderBy: { updatedAt: 'asc' },
+    });
+    return rows.map((p) => ({
+      id: p.id,
+      updatedAt: p.updatedAt,
+      amount: Number(p.price),
+      status: p.status,
+      provider: p.paymentProvider,
+      label: p.label,
+      email: p.user.email,
     }));
   }
 

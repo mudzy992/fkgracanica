@@ -85,6 +85,33 @@ export class RealtimeGateway
     return { ok: true };
   }
 
+  @SubscribeMessage('newsletter:join')
+  handleNewsletterJoin(@ConnectedSocket() client: Socket) {
+    if (!client.data.userId) return { ok: false };
+    client.join('newsletter');
+    return { ok: true };
+  }
+
+  @SubscribeMessage('newsletter:leave')
+  handleNewsletterLeave(@ConnectedSocket() client: Socket) {
+    client.leave('newsletter');
+    return { ok: true };
+  }
+
+  emitNewsletterCampaign(payload: {
+    id: string;
+    status: string;
+    sentCount: number;
+    failCount: number;
+    targetCount: number;
+  }) {
+    if (!this.server) {
+      this.logger.warn('Socket nije spreman — preskačem newsletter:campaign');
+      return;
+    }
+    this.server.to('newsletter').emit('newsletter:campaign', payload);
+  }
+
   emitSettingsChanged(scope: string, settings: Record<string, string>) {
     this.server.emit('settings:changed', { scope, settings });
   }

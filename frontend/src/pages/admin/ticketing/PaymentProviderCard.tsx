@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import { Badge } from '../../../components/ui/badge';
 import { Input } from '../../../components/ui/input';
 import { Switch } from '../../../components/ui/switch';
@@ -37,6 +38,15 @@ export function PaymentProviderCard({ id, label, gate, settings, onSet }: Props)
   );
 }
 
+function Field({ label, children }: { label: string; children: ReactNode }) {
+  return (
+    <div>
+      <p className="mb-1 text-xs text-text-muted">{label}</p>
+      {children}
+    </div>
+  );
+}
+
 function StripeFields({
   settings,
   onSet,
@@ -46,23 +56,26 @@ function StripeFields({
 }) {
   return (
     <div className="space-y-2">
-      <Input
-        placeholder="Publishable key"
-        value={settings['payments.stripe.publishableKey'] ?? ''}
-        onChange={(e) => onSet('payments.stripe.publishableKey', e.target.value)}
-      />
-      <Input
-        placeholder="Secret key"
-        type="password"
-        value={settings['payments.stripe.secretKey'] ?? ''}
-        onChange={(e) => onSet('payments.stripe.secretKey', e.target.value)}
-      />
-      <Input
-        placeholder="Webhook secret"
-        type="password"
-        value={settings['payments.stripe.webhookSecret'] ?? ''}
-        onChange={(e) => onSet('payments.stripe.webhookSecret', e.target.value)}
-      />
+      <Field label="Javni ključ (publishable)">
+        <Input
+          value={settings['payments.stripe.publishableKey'] ?? ''}
+          onChange={(e) => onSet('payments.stripe.publishableKey', e.target.value)}
+        />
+      </Field>
+      <Field label="Tajni ključ">
+        <Input
+          type="password"
+          value={settings['payments.stripe.secretKey'] ?? ''}
+          onChange={(e) => onSet('payments.stripe.secretKey', e.target.value)}
+        />
+      </Field>
+      <Field label="Webhook tajna">
+        <Input
+          type="password"
+          value={settings['payments.stripe.webhookSecret'] ?? ''}
+          onChange={(e) => onSet('payments.stripe.webhookSecret', e.target.value)}
+        />
+      </Field>
     </div>
   );
 }
@@ -76,35 +89,41 @@ function PaypalFields({
 }) {
   return (
     <div className="space-y-2">
-      <Input
-        placeholder="Client ID"
-        value={settings['payments.paypal.clientId'] ?? ''}
-        onChange={(e) => onSet('payments.paypal.clientId', e.target.value)}
-      />
-      <Input
-        placeholder="Client secret"
-        type="password"
-        value={settings['payments.paypal.clientSecret'] ?? ''}
-        onChange={(e) => onSet('payments.paypal.clientSecret', e.target.value)}
-      />
-      <select
-        className="flex h-10 w-full rounded-lg border border-[var(--border-subtle)] bg-background px-3 text-sm"
-        value={settings['payments.paypal.mode'] || 'sandbox'}
-        onChange={(e) => onSet('payments.paypal.mode', e.target.value)}
-      >
-        <option value="sandbox">sandbox</option>
-        <option value="live">live</option>
-      </select>
-      <Input
-        placeholder="Currency (default EUR)"
-        value={settings['payments.paypal.currency'] ?? 'EUR'}
-        onChange={(e) => onSet('payments.paypal.currency', e.target.value)}
-      />
-      <Input
-        placeholder="Webhook ID (opciono)"
-        value={settings['payments.paypal.webhookId'] ?? ''}
-        onChange={(e) => onSet('payments.paypal.webhookId', e.target.value)}
-      />
+      <Field label="Client ID">
+        <Input
+          value={settings['payments.paypal.clientId'] ?? ''}
+          onChange={(e) => onSet('payments.paypal.clientId', e.target.value)}
+        />
+      </Field>
+      <Field label="Client secret">
+        <Input
+          type="password"
+          value={settings['payments.paypal.clientSecret'] ?? ''}
+          onChange={(e) => onSet('payments.paypal.clientSecret', e.target.value)}
+        />
+      </Field>
+      <Field label="Režim">
+        <select
+          className="flex h-10 w-full rounded-lg border border-[var(--border-subtle)] bg-background px-3 text-sm"
+          value={settings['payments.paypal.mode'] || 'sandbox'}
+          onChange={(e) => onSet('payments.paypal.mode', e.target.value)}
+        >
+          <option value="sandbox">Test (sandbox)</option>
+          <option value="live">Produkcija</option>
+        </select>
+      </Field>
+      <Field label="Valuta (zadano EUR)">
+        <Input
+          value={settings['payments.paypal.currency'] ?? 'EUR'}
+          onChange={(e) => onSet('payments.paypal.currency', e.target.value)}
+        />
+      </Field>
+      <Field label="Webhook ID (opciono)">
+        <Input
+          value={settings['payments.paypal.webhookId'] ?? ''}
+          onChange={(e) => onSet('payments.paypal.webhookId', e.target.value)}
+        />
+      </Field>
     </div>
   );
 }
@@ -118,25 +137,29 @@ function MonriFields({
 }) {
   return (
     <div className="space-y-2">
-      <Input
-        placeholder="Merchant key"
-        value={settings['payments.monri.merchantKey'] ?? ''}
-        onChange={(e) => onSet('payments.monri.merchantKey', e.target.value)}
-      />
-      <Input
-        placeholder="Authenticity token"
-        type="password"
-        value={settings['payments.monri.authenticationKey'] ?? ''}
-        onChange={(e) => onSet('payments.monri.authenticationKey', e.target.value)}
-      />
-      <select
-        className="flex h-10 w-full rounded-lg border border-[var(--border-subtle)] bg-background px-3 text-sm"
-        value={settings['payments.monri.mode'] || 'test'}
-        onChange={(e) => onSet('payments.monri.mode', e.target.value)}
-      >
-        <option value="test">test</option>
-        <option value="live">live</option>
-      </select>
+      <Field label="Merchant key">
+        <Input
+          value={settings['payments.monri.merchantKey'] ?? ''}
+          onChange={(e) => onSet('payments.monri.merchantKey', e.target.value)}
+        />
+      </Field>
+      <Field label="Authenticity token">
+        <Input
+          type="password"
+          value={settings['payments.monri.authenticationKey'] ?? ''}
+          onChange={(e) => onSet('payments.monri.authenticationKey', e.target.value)}
+        />
+      </Field>
+      <Field label="Režim">
+        <select
+          className="flex h-10 w-full rounded-lg border border-[var(--border-subtle)] bg-background px-3 text-sm"
+          value={settings['payments.monri.mode'] || 'test'}
+          onChange={(e) => onSet('payments.monri.mode', e.target.value)}
+        >
+          <option value="test">Test</option>
+          <option value="live">Produkcija</option>
+        </select>
+      </Field>
     </div>
   );
 }
