@@ -1,5 +1,9 @@
 import { MatchReportStatus, MatchStatus } from '@prisma/client';
-import { assertRetrospectiveCreate, isRetrospectiveMatch } from './match-retrospective.util';
+import {
+  assertManualFinish,
+  assertRetrospectiveCreate,
+  isRetrospectiveMatch,
+} from './match-retrospective.util';
 
 describe('match-retrospective.util', () => {
   it('detects retrospective match', () => {
@@ -50,5 +54,43 @@ describe('match-retrospective.util', () => {
         scheduledAt: past,
       }),
     ).toThrow('unesite rezultat');
+  });
+
+  it('allows SCHEDULED to FINISHED with past date and scores', () => {
+    const past = new Date(Date.now() - 86_400_000).toISOString();
+    expect(() =>
+      assertManualFinish({
+        nextStatus: MatchStatus.FINISHED,
+        existingStatus: MatchStatus.SCHEDULED,
+        scheduledAt: past,
+        homeScore: 2,
+        awayScore: 1,
+      }),
+    ).not.toThrow();
+  });
+
+  it('rejects FINISHED while match is still in the future', () => {
+    expect(() =>
+      assertManualFinish({
+        nextStatus: MatchStatus.FINISHED,
+        existingStatus: MatchStatus.SCHEDULED,
+        scheduledAt: new Date(Date.now() + 86_400_000).toISOString(),
+        homeScore: 1,
+        awayScore: 0,
+      }),
+    ).toThrow('datum u prošlosti');
+  });
+
+  it('rejects finishing a LIVE match via admin update', () => {
+    const past = new Date(Date.now() - 86_400_000).toISOString();
+    expect(() =>
+      assertManualFinish({
+        nextStatus: MatchStatus.FINISHED,
+        existingStatus: MatchStatus.LIVE,
+        scheduledAt: past,
+        homeScore: 1,
+        awayScore: 0,
+      }),
+    ).toThrow('komentator');
   });
 });

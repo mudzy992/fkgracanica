@@ -3,15 +3,34 @@ import { MatchStatus } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { computeStandings } from '../statistics/standings.util';
 import { getSeasonParticipantClubs } from '../competitions/season-participants.util';
+import { findDefaultLeagueSeason } from '../competitions/league-season.util';
 
 @Injectable()
 export class ClubStatsService {
   constructor(private readonly prisma: PrismaService) {}
 
+  async listClubParticipations(clubId: string) {
+    const rows = await this.prisma.seasonClub.findMany({
+      where: { clubId },
+      include: { season: { include: { competition: true } } },
+      orderBy: [{ season: { yearStart: 'desc' } }],
+    });
+    return rows.map((r) => ({
+      seasonId: r.season.id,
+      seasonName: r.season.name,
+      yearStart: r.season.yearStart,
+      yearEnd: r.season.yearEnd,
+      isActive: r.season.isActive,
+      competitionId: r.season.competition.id,
+      competitionName: r.season.competition.name,
+      isLeague: r.season.competition.isLeague,
+    }));
+  }
+
   async getClubSeasonStats(clubId: string, seasonId?: string) {
     const season = seasonId
       ? await this.prisma.season.findUnique({ where: { id: seasonId } })
-      : await this.prisma.season.findFirst({ where: { isActive: true }, orderBy: { yearStart: 'desc' } });
+      : await findDefaultLeagueSeason(this.prisma);
     if (!season) return { season: null, standing: null, players: [] };
 
     const [matches, participants] = await Promise.all([

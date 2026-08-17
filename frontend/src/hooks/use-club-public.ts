@@ -2,12 +2,14 @@ import { useQuery } from '@tanstack/react-query';
 import { api } from '../lib/api';
 import type { Club, Player } from '../types';
 import type { ClubSeasonStats, ClubSquadResponse, Stadium } from '../types/club-hub';
+import type { ClubParticipation } from '../lib/club-participation.util';
 
 export interface ClubPublicProfile {
   club: Club;
   stadium: Stadium | null;
   squad: ClubSquadResponse;
   seasonStats: ClubSeasonStats;
+  participations: ClubParticipation[];
   players: Player[];
 }
 

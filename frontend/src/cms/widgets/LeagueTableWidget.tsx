@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { useOwnClub, useSeasons, useStandings } from '../../hooks';
+import { filterLeagueSeasons, pickDefaultSeasonId, type SeasonOption } from '../../lib/season-utils';
 import { LeagueStandingsMobile } from '../../components/public/league/LeagueStandingsMobile';
 import { LeagueStandingsTable } from '../../components/public/league/LeagueStandingsTable';
 import { WidgetSectionHeaderBlock } from '../../components/public/shell/WidgetSectionHeaderBlock';
@@ -13,7 +14,9 @@ export function LeagueTableWidget({ config }: Props) {
   const { t } = useTranslation();
   const { data: ownClub } = useOwnClub();
   const { data: seasons, isLoading: sl } = useSeasons();
-  const seasonId = (seasons as { id: string }[] | undefined)?.[0]?.id;
+  const seasonId = pickDefaultSeasonId(
+    filterLeagueSeasons((seasons as SeasonOption[] | undefined) ?? []),
+  );
   const { data: standings, isLoading: stl } = useStandings(seasonId);
   const rows = standings ?? [];
 

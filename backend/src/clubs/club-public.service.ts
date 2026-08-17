@@ -20,10 +20,11 @@ export class ClubPublicService {
     });
     if (!club) throw new NotFoundException('Klub nije pronađen.');
 
-    const [squad, seasonStats, stadium] = await Promise.all([
+    const [squad, seasonStats, stadium, participations] = await Promise.all([
       this.squad.getSquad(club.id),
       this.stats.getClubSeasonStats(club.id),
       this.stadium.getByClubId(club.id),
+      this.stats.listClubParticipations(club.id),
     ]);
 
     const players = await this.prisma.player.findMany({
@@ -31,6 +32,6 @@ export class ClubPublicService {
       orderBy: [{ number: 'asc' }, { lastName: 'asc' }],
     });
 
-    return { club, stadium, squad, seasonStats, players };
+    return { club, stadium, squad, seasonStats, participations, players };
   }
 }

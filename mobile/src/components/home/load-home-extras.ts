@@ -1,5 +1,6 @@
 import { api } from '../../lib/api';
 import { asArray, asRecord, asString } from '../../lib/content-helpers';
+import { mapLeagueSeasons, pickDefaultLeagueSeasonId } from '../../lib/league-season';
 import { loadHomePlayers, type HomePlayerItem } from './load-home-players';
 
 export type { HomePlayerItem };
@@ -62,7 +63,8 @@ async function loadLeague(): Promise<HomeLeagueRow[]> {
     api.get('/competitions/seasons/list'),
     api.get('/clubs/own').catch(() => ({ data: null })),
   ]);
-  const seasonId = asString(asRecord(asArray(seasons.data)[0]).id);
+  const seasons = mapLeagueSeasons(seasons.data);
+  const seasonId = pickDefaultLeagueSeasonId(seasons);
   if (!seasonId) return [];
   const ownId = asString(asRecord(ownRes.data).id);
   const standings = await api.get('/statistics/standings', { params: { seasonId } });

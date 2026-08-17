@@ -85,6 +85,12 @@ export function CompetitionsAdminPage() {
           columns={[
             { key: 'name', header: 'Naziv', render: (r) => r.name },
             { key: 'slug', header: 'Slug', render: (r) => r.slug },
+            {
+              key: 'league',
+              header: 'Liga',
+              render: (r) =>
+                r.isLeague ? <Badge variant="success">Liga</Badge> : <Badge variant="muted">Ostalo</Badge>,
+            },
             ...(canManage
               ? [{
                   key: 'actions',

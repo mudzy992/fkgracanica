@@ -39,7 +39,7 @@ export function ClubPublicPage() {
   );
 
   const competitionsOn = isModuleEnabled(moduleFlags, 'modules.competitions');
-  const showCompetition = competitionsOn && !!seasonStats?.season?.id;
+  const showCompetition = competitionsOn && (data?.participations?.length ?? 0) > 0;
   const hasSquad = (squad?.slots.length ?? 0) > 0;
 
   if (isLoading) {
@@ -84,8 +84,7 @@ export function ClubPublicPage() {
         {showCompetition && (
           <ClubCompetitionTabs
             clubId={club.id}
-            seasonId={seasonStats.season?.id}
-            seasonName={seasonStats.season?.name}
+            participations={data.participations ?? []}
           />
         )}
 

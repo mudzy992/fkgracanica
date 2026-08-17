@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import { useClubs } from '../../../hooks';
 import { useCreateMatch, useUpdateMatch } from '../../../hooks/use-competition-admin';
 import { useAuth } from '../../../lib/auth';
-import { canEditReport } from '../../../lib/match-report';
 import { hasPermission } from '../../../lib/permissions';
 import { AdminFormSheet } from '../../../components/admin/AdminFormSheet';
 import { EntitySelect } from '../../../components/admin/EntitySelect';
@@ -11,9 +10,13 @@ import { Button } from '../../../components/ui/button';
 import { Input } from '../../../components/ui/input';
 import { Badge } from '../../../components/ui/badge';
 import type { Match, MatchStatus } from '../../../types';
-import { isPastDatetime, isRetrospectiveMatch } from '../../../lib/match-retrospective';
+import { isPastDatetime } from '../../../lib/match-retrospective';
 import { resolveClubVenue } from '../../../lib/club-venue';
 import { getApiErrorMessage } from '../../../lib/api-error';
+import { parseScheduledAt, toLocalDatetime } from './match-form-datetime';
+import { canSendManualStatus, clampScore, editableStatuses, matchStatusOptions } from './match-form-status';
+import { MatchFinishedReadOnly } from './MatchFinishedReadOnly';
+import { MatchScoreInputs } from './MatchScoreInputs';
 
 interface Props {
   open: boolean;
@@ -21,22 +24,6 @@ interface Props {
   edit: Match | null;
   seasonId: string;
   roundId: string;
-}
-
-const editableStatuses: MatchStatus[] = ['SCHEDULED', 'POSTPONED', 'CANCELLED'];
-
-function toLocalDatetime(iso?: string) {
-  if (!iso) return '';
-  const d = new Date(iso);
-  if (Number.isNaN(d.getTime())) return '';
-  const pad = (n: number) => String(n).padStart(2, '0');
-  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
-}
-
-function parseScheduledAt(value: string) {
-  const d = new Date(value);
-  if (Number.isNaN(d.getTime())) return null;
-  return d.toISOString();
 }
 
 export function MatchFormSheet({ open, onOpenChange, edit, seasonId, roundId }: Props) {
@@ -71,13 +58,9 @@ export function MatchFormSheet({ open, onOpenChange, edit, seasonId, roundId }: 
     setAwayClubId(edit?.awayClubId ?? edit?.awayClub?.id ?? '');
     setVenue(edit?.venue ?? resolveClubVenue(edit?.homeClub) ?? '');
     setScheduledAt(toLocalDatetime(edit?.scheduledAt) || toLocalDatetime(new Date().toISOString()));
-    if (edit?.status && editableStatuses.includes(edit.status)) {
-      setStatus(edit.status);
-    } else if (isLiveLocked) {
-      setStatus(edit!.status);
-    } else {
-      setStatus('SCHEDULED');
-    }
+    if (edit?.status && editableStatuses.includes(edit.status)) setStatus(edit.status);
+    else if (isLiveLocked) setStatus(edit!.status);
+    else setStatus('SCHEDULED');
     setHomeScore(edit?.homeScore ?? 0);
     setAwayScore(edit?.awayScore ?? 0);
     setIsPastMatch(false);
@@ -94,12 +77,14 @@ export function MatchFormSheet({ open, onOpenChange, edit, seasonId, roundId }: 
       setError('Unesite ispravan datum i vrijeme.');
       return;
     }
-    if (!edit && isPastMatch && !isPastDatetime(scheduledIso)) {
-      setError('Utakmica u prošlosti mora imati datum prije današnjeg dana.');
+    const finishing = Boolean(edit) ? status === 'FINISHED' : isPastMatch;
+    if (finishing && !isPastDatetime(scheduledIso)) {
+      setError('Završena utakmica mora imati datum u prošlosti.');
       return;
     }
     try {
       setError('');
+      const scores = { homeScore: clampScore(homeScore), awayScore: clampScore(awayScore) };
       if (edit) {
         const body: Record<string, unknown> = {
           homeClubId,
@@ -108,10 +93,9 @@ export function MatchFormSheet({ open, onOpenChange, edit, seasonId, roundId }: 
           scheduledAt: scheduledIso,
           roundId: edit.roundId ?? roundId,
         };
-        if (!isLiveLocked && editableStatuses.includes(status)) {
+        if (canSendManualStatus(status, isLiveLocked)) {
           body.status = status;
-          body.homeScore = Math.max(0, Math.floor(Number(homeScore)) || 0);
-          body.awayScore = Math.max(0, Math.floor(Number(awayScore)) || 0);
+          Object.assign(body, scores);
         }
         await update.mutateAsync({ id: edit.id, ...body });
       } else {
@@ -122,13 +106,7 @@ export function MatchFormSheet({ open, onOpenChange, edit, seasonId, roundId }: 
           venue: venue || null,
           scheduledAt: scheduledIso,
           roundId,
-          ...(isPastMatch
-            ? {
-                status: 'FINISHED',
-                homeScore: Math.max(0, Math.floor(Number(homeScore)) || 0),
-                awayScore: Math.max(0, Math.floor(Number(awayScore)) || 0),
-              }
-            : { status: 'SCHEDULED' }),
+          ...(isPastMatch ? { status: 'FINISHED' as const, ...scores } : { status: 'SCHEDULED' }),
         });
       }
       onOpenChange(false);
@@ -137,23 +115,14 @@ export function MatchFormSheet({ open, onOpenChange, edit, seasonId, roundId }: 
     }
   };
 
-  if (isFinished && edit && !isRetrospectiveMatch(edit)) {
+  if (isFinished && edit) {
     return (
-      <AdminFormSheet open={open} onOpenChange={onOpenChange} title="Utakmica (završena)">
-        <div className="space-y-3 text-sm">
-          <p>
-            <strong>{edit.homeClub?.name}</strong> {edit.homeScore}:{edit.awayScore}{' '}
-            <strong>{edit.awayClub?.name}</strong>
-          </p>
-          <p className="text-text-muted">{edit.venue ?? '—'} · {toLocalDatetime(edit.scheduledAt).replace('T', ' ')}</p>
-          <p className="text-text-muted">Završena utakmica se ne može uređivati.</p>
-          {canLive && canEditReport(edit) && (
-            <Link to={`/admin/matches/${edit.id}/report`}>
-              <Button type="button" variant="default" size="sm">Uredi izvještaj</Button>
-            </Link>
-          )}
-        </div>
-      </AdminFormSheet>
+      <MatchFinishedReadOnly
+        open={open}
+        onOpenChange={onOpenChange}
+        match={edit}
+        canLive={canLive}
+      />
     );
   }
 
@@ -163,7 +132,7 @@ export function MatchFormSheet({ open, onOpenChange, edit, seasonId, roundId }: 
         {isLiveLocked && (
           <div className="flex items-center gap-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-900">
             <Badge variant="danger">{edit?.status}</Badge>
-            <span>Status i rezultat se mijenjaju u komentator panelu. Ovdje možete izmijeniti datum, stadion i klubove.</span>
+            <span>Status i rezultat se mijenjaju u komentator panelu.</span>
           </div>
         )}
         <EntitySelect label="Domaći" value={homeClubId} onChange={onHomeClubChange} options={clubOptions} />
@@ -185,28 +154,13 @@ export function MatchFormSheet({ open, onOpenChange, edit, seasonId, roundId }: 
               Utakmica u prošlosti (već odigrana)
             </label>
             {isPastMatch && (
-              <div className="grid grid-cols-2 gap-2">
-                <div>
-                  <label className="mb-1 block text-xs text-text-muted">Golovi domaćih</label>
-                  <Input
-                    type="number"
-                    min={0}
-                    step={1}
-                    value={homeScore}
-                    onChange={(e) => setHomeScore(Math.max(0, Math.floor(Number(e.target.value)) || 0))}
-                  />
-                </div>
-                <div>
-                  <label className="mb-1 block text-xs text-text-muted">Golovi gostiju</label>
-                  <Input
-                    type="number"
-                    min={0}
-                    step={1}
-                    value={awayScore}
-                    onChange={(e) => setAwayScore(Math.max(0, Math.floor(Number(e.target.value)) || 0))}
-                  />
-                </div>
-              </div>
+              <MatchScoreInputs
+                labeled
+                homeScore={homeScore}
+                awayScore={awayScore}
+                onHome={setHomeScore}
+                onAway={setAwayScore}
+              />
             )}
           </>
         )}
@@ -216,32 +170,17 @@ export function MatchFormSheet({ open, onOpenChange, edit, seasonId, roundId }: 
               label="Status"
               value={status}
               onChange={(v: string) => setStatus(v as MatchStatus)}
-              options={editableStatuses.map((s) => ({ id: s, label: s }))}
+              options={matchStatusOptions()}
             />
             <p className="text-xs text-text-muted">
-              Za LIVE koristite dugme Live → „Započni utakmicu” u komentator panelu.
+              Završenu utakmicu unesite rezultatom ovdje. LIVE ide preko komentatora.
             </p>
             {canLive && (
               <Link to={`/admin/live/${edit.id}`}>
                 <Button type="button" variant="outline" size="sm">Otvori komentator</Button>
               </Link>
             )}
-            <div className="grid grid-cols-2 gap-2">
-              <Input
-                type="number"
-                min={0}
-                step={1}
-                value={homeScore}
-                onChange={(e) => setHomeScore(Math.max(0, Math.floor(Number(e.target.value)) || 0))}
-              />
-              <Input
-                type="number"
-                min={0}
-                step={1}
-                value={awayScore}
-                onChange={(e) => setAwayScore(Math.max(0, Math.floor(Number(e.target.value)) || 0))}
-              />
-            </div>
+            <MatchScoreInputs homeScore={homeScore} awayScore={awayScore} onHome={setHomeScore} onAway={setAwayScore} />
           </>
         )}
         {error && <p className="text-sm text-danger">{error}</p>}

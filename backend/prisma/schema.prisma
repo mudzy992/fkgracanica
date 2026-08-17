@@ -508,6 +508,7 @@ model Competition {
   id        String   @id @default(cuid())
   name      String
   slug      String   @unique
+  isLeague  Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   seasons   Season[]

@@ -5,10 +5,17 @@ export interface SeasonOption {
   yearStart?: number;
   yearEnd?: number;
   competitionId?: string;
+  competition?: { id?: string; name?: string; isLeague?: boolean };
+}
+
+export function filterLeagueSeasons(seasons: SeasonOption[]): SeasonOption[] {
+  return seasons.filter((s) => s.competition?.isLeague);
 }
 
 export function pickDefaultSeasonId(seasons: SeasonOption[]): string | undefined {
-  return seasons.find((s) => s.isActive)?.id ?? seasons[0]?.id;
+  const active = seasons.filter((s) => s.isActive);
+  const pool = active.length ? active : seasons;
+  return pool[0]?.id;
 }
 
 export function seasonLabel(season: SeasonOption): string {

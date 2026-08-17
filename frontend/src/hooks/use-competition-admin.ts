@@ -79,7 +79,7 @@ export function useDeleteClub() {
 export function useCreateCompetition() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: async (body: { name: string }) => (await api.post('/competitions', body)).data,
+    mutationFn: async (body: { name: string; isLeague?: boolean }) => (await api.post('/competitions', body)).data,
     onSuccess: () => void qc.invalidateQueries({ queryKey: ['competitions'] }),
   });
 }
@@ -87,7 +87,7 @@ export function useCreateCompetition() {
 export function useUpdateCompetition() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: async ({ id, ...body }: { id: string; name?: string }) =>
+    mutationFn: async ({ id, ...body }: { id: string; name?: string; isLeague?: boolean }) =>
       (await api.patch(`/competitions/${id}`, body)).data,
     onSuccess: () => void qc.invalidateQueries({ queryKey: ['competitions'] }),
   });

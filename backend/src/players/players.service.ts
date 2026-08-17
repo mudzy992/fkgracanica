@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { findDefaultLeagueSeason } from '../competitions/league-season.util';
 
 @Injectable()
 export class PlayersService {
@@ -26,7 +27,7 @@ export class PlayersService {
   async getPublicProfile(id: string, seasonId?: string) {
     const season = seasonId
       ? await this.prisma.season.findUnique({ where: { id: seasonId } })
-      : await this.prisma.season.findFirst({ where: { isActive: true }, orderBy: { yearStart: 'desc' } });
+      : await findDefaultLeagueSeason(this.prisma);
 
     const player = await this.prisma.player.findUnique({
       where: { id },

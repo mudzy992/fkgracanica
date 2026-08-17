@@ -1,12 +1,15 @@
 import { useTranslation } from 'react-i18next';
 import { useSeasons, useStandings } from '../../../hooks';
+import { filterLeagueSeasons, pickDefaultSeasonId, type SeasonOption } from '../../../lib/season-utils';
 import { Card, CardContent } from '../../../components/ui/card';
 import { Skeleton } from '../../../components/ui/skeleton';
 
 export function LeagueTable() {
   const { t } = useTranslation();
   const { data: seasons, isLoading: sl } = useSeasons();
-  const seasonId = (seasons as { id: string }[] | undefined)?.[0]?.id;
+  const seasonId = pickDefaultSeasonId(
+    filterLeagueSeasons((seasons as SeasonOption[] | undefined) ?? []),
+  );
   const { data: standings, isLoading: stl } = useStandings(seasonId);
   const isLoading = sl || stl;
 

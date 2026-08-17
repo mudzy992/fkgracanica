@@ -9,14 +9,17 @@ import { LeagueNextMatch } from '../../components/public/league/LeagueNextMatch'
 import { useMatches, useOwnClub, useSeasons, useStandings, useTopAssists, useTopScorers } from '../../hooks';
 import { useRounds } from '../../hooks/use-rounds';
 import { computePositionChanges, maxFinishedRound } from '../../lib/league-position.util';
-import { pickDefaultSeasonId, type SeasonOption } from '../../lib/season-utils';
+import { filterLeagueSeasons, pickDefaultSeasonId, type SeasonOption } from '../../lib/season-utils';
 import { Seo } from '../../components/seo/Seo';
 import { Skeleton } from '../../components/ui/skeleton';
 
 export function LeaguePage() {
   const { data: ownClub } = useOwnClub();
   const { data: seasons, isLoading: sl } = useSeasons();
-  const seasonOptions = useMemo(() => (seasons as SeasonOption[] | undefined) ?? [], [seasons]);
+  const seasonOptions = useMemo(
+    () => filterLeagueSeasons((seasons as SeasonOption[] | undefined) ?? []),
+    [seasons],
+  );
   const [seasonId, setSeasonId] = useState<string | undefined>();
   const [upToRound, setUpToRound] = useState<number | null>(null);
 

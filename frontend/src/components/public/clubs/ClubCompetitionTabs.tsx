@@ -1,8 +1,13 @@
-import { useMemo, useState, type ReactNode } from 'react';
+import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { useMatches } from '../../../hooks';
 import { useStandings } from '../../../hooks/use-competition-admin';
 import { useRounds } from '../../../hooks/use-rounds';
 import { matchRoundNumber, roundLabel } from '../../../lib/round-utils';
+import {
+  participationLabel,
+  pickDefaultParticipation,
+  type ClubParticipation,
+} from '../../../lib/club-participation.util';
 import { cn } from '../../../lib/utils';
 import { NewsSectionTitle } from '../../news/NewsSectionTitle';
 import { LeagueStandingsMobile } from '../league/LeagueStandingsMobile';
@@ -14,8 +19,7 @@ type Tab = 'lastRound' | 'standings';
 
 interface Props {
   clubId: string;
-  seasonId?: string;
-  seasonName?: string;
+  participations: ClubParticipation[];
 }
 
 function TabPill({
@@ -43,8 +47,18 @@ function TabPill({
   );
 }
 
-export function ClubCompetitionTabs({ clubId, seasonId, seasonName }: Props) {
+export function ClubCompetitionTabs({ clubId, participations }: Props) {
   const [tab, setTab] = useState<Tab>('lastRound');
+  const [seasonId, setSeasonId] = useState<string | undefined>();
+  const selected = participations.find((p) => p.seasonId === seasonId);
+
+  useEffect(() => {
+    const next = pickDefaultParticipation(participations);
+    setSeasonId((prev) =>
+      prev && participations.some((p) => p.seasonId === prev) ? prev : next?.seasonId,
+    );
+  }, [participations]);
+
   const { data: rounds, isLoading: rl } = useRounds(seasonId);
   const { data: matches, isLoading: ml } = useMatches(seasonId);
   const { data: standings, isLoading: sl } = useStandings(seasonId);
@@ -63,15 +77,29 @@ export function ClubCompetitionTabs({ clubId, seasonId, seasonName }: Props) {
     });
   }, [matches, lastRound]);
 
-  if (!seasonId) return null;
+  if (!participations.length || !seasonId) return null;
 
   return (
     <section>
-      <NewsSectionTitle>Takmičenje</NewsSectionTitle>
+      <NewsSectionTitle>Takmičenja</NewsSectionTitle>
+
+      {participations.length > 1 && (
+        <div className="mb-4 flex flex-wrap gap-2">
+          {participations.map((p) => (
+            <TabPill
+              key={p.seasonId}
+              active={p.seasonId === seasonId}
+              onClick={() => setSeasonId(p.seasonId)}
+            >
+              {participationLabel(p)}
+            </TabPill>
+          ))}
+        </div>
+      )}
 
       <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
-        {seasonName && (
-          <p className="text-sm text-white/50">{seasonName}</p>
+        {selected && (
+          <p className="text-sm text-white/50">{participationLabel(selected)}</p>
         )}
         <div className="flex flex-wrap gap-2">
           <TabPill active={tab === 'lastRound'} onClick={() => setTab('lastRound')}>

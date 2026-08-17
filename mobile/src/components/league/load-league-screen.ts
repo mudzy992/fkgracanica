@@ -1,5 +1,6 @@
 import { api } from '../../lib/api';
 import { asArray, asRecord, asString } from '../../lib/content-helpers';
+import { mapLeagueSeasons, pickDefaultLeagueSeasonId } from '../../lib/league-season';
 import type { HomeLeagueRow } from '../home/load-home-extras';
 
 export type LeagueSeasonOption = { id: string; name: string };
@@ -106,11 +107,8 @@ export async function loadLeagueScreen(seasonId?: string): Promise<LeagueScreenD
     api.get('/competitions/seasons/list'),
     api.get('/clubs/own').catch(() => ({ data: null })),
   ]);
-  const seasons = asArray(seasonsRes.data).map((entry) => {
-    const s = asRecord(entry);
-    return { id: asString(s.id), name: asString(s.name, 'Sezona') };
-  }).filter((s) => s.id);
-  const activeId = seasonId && seasons.some((s) => s.id === seasonId) ? seasonId : seasons[0]?.id ?? '';
+  const seasons = mapLeagueSeasons(seasonsRes.data);
+  const activeId = pickDefaultLeagueSeasonId(seasons, seasonId);
   const seasonName = seasons.find((s) => s.id === activeId)?.name ?? '';
   const ownId = asString(asRecord(ownRes.data).id);
   if (!activeId) {

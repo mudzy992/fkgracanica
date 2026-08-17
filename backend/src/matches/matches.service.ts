@@ -6,7 +6,7 @@ import { assertDistinctClubs, isResolvedRound, resolveMatchRoundFields, roundToM
 import { assertSingleScheduledHomeMatch } from './match-scheduling.util';
 import { validateMatchLineup, type LineupSlotInput } from './match-lineup.util';
 import { resolveEffectiveMatchLineup } from './match-squad-lineup.util';
-import { assertRetrospectiveCreate, isRetrospectiveMatch } from './match-retrospective.util';
+import { assertManualFinish, assertRetrospectiveCreate, isRetrospectiveMatch } from './match-retrospective.util';
 import { resolveMatchVenue } from './match-venue.util';
 import { assertManualMatchStatus } from './update-match.dto';
 
@@ -118,6 +118,13 @@ export class MatchesService {
         'Status LIVE/HALFTIME mijenja se isključivo preko Live komentatora.',
       );
     }
+    assertManualFinish({
+      nextStatus: data.status,
+      existingStatus: existing.status,
+      scheduledAt: data.scheduledAt ?? existing.scheduledAt,
+      homeScore: data.homeScore,
+      awayScore: data.awayScore,
+    });
 
     const homeClubId = data.homeClubId ?? existing.homeClubId;
     const awayClubId = data.awayClubId ?? existing.awayClubId;
@@ -142,6 +149,7 @@ export class MatchesService {
       ...(data.venue !== undefined ? { venue: data.venue } : {}),
       ...(data.scheduledAt ? { scheduledAt: new Date(data.scheduledAt) } : {}),
       ...(data.status ? { status: data.status } : {}),
+      ...(data.status === MatchStatus.FINISHED && existing.minute === 0 ? { minute: 90 } : {}),
       ...(data.homeScore !== undefined ? { homeScore: data.homeScore } : {}),
       ...(data.awayScore !== undefined ? { awayScore: data.awayScore } : {}),
       ...roundToMatchUpdateInput(round),

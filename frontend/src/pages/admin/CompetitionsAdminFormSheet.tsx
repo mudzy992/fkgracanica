@@ -17,6 +17,7 @@ interface Competition {
   id: string;
   name: string;
   slug: string;
+  isLeague?: boolean;
 }
 
 interface SeasonParticipant {
@@ -63,6 +64,7 @@ export function CompetitionsAdminFormSheet({
   const [competitionId, setCompetitionId] = useState('');
   const [isActive, setIsActive] = useState(true);
   const [clubIds, setClubIds] = useState<string[]>([]);
+  const [isLeague, setIsLeague] = useState(false);
   const [error, setError] = useState('');
 
   const compOptions = useMemo(
@@ -82,6 +84,7 @@ export function CompetitionsAdminFormSheet({
     setError('');
     if (mode === 'competition') {
       setName(editCompetition?.name ?? '');
+      setIsLeague(editCompetition?.isLeague ?? false);
     } else if (mode === 'season') {
       setName(editSeason?.name ?? '');
       setYearStart(editSeason?.yearStart ?? new Date().getFullYear());
@@ -107,8 +110,8 @@ export function CompetitionsAdminFormSheet({
     try {
       setError('');
       if (mode === 'competition') {
-        if (editCompetition) await updateComp.mutateAsync({ id: editCompetition.id, name });
-        else await createComp.mutateAsync({ name });
+        if (editCompetition) await updateComp.mutateAsync({ id: editCompetition.id, name, isLeague });
+        else await createComp.mutateAsync({ name, isLeague });
       } else if (mode === 'season') {
         if (!clubIds.length) {
           setError('Odaberite barem jednog učesnika sezone.');
@@ -138,6 +141,15 @@ export function CompetitionsAdminFormSheet({
     <AdminFormSheet open={open} onOpenChange={onOpenChange} title={title}>
       <div className="space-y-4">
         <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Naziv *" />
+        {mode === 'competition' && (
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <span className="text-sm font-medium">Ligaško takmičenje</span>
+              <p className="text-xs text-text-muted">Prikazuje se na /liga i tabeli na naslovnoj.</p>
+            </div>
+            <Switch checked={isLeague} onCheckedChange={setIsLeague} />
+          </div>
+        )}
         {mode === 'season' && (
           <>
             <EntitySelect

@@ -24,7 +24,7 @@ export class CompetitionsController {
   @UseGuards(JwtAuthGuard, PermissionsGuard)
   @RequirePermissions('competitions.manage')
   @ApiBearerAuth()
-  createCompetition(@Body() body: { name: string }) {
+  createCompetition(@Body() body: { name: string; isLeague?: boolean }) {
     return this.service.createCompetition(body);
   }
 
@@ -32,7 +32,7 @@ export class CompetitionsController {
   @UseGuards(JwtAuthGuard, PermissionsGuard)
   @RequirePermissions('competitions.manage')
   @ApiBearerAuth()
-  updateCompetition(@Param('id') id: string, @Body() body: Record<string, unknown>) {
+  updateCompetition(@Param('id') id: string, @Body() body: { name?: string; isLeague?: boolean }) {
     return this.service.updateCompetition(id, body);
   }
 

@@ -43,7 +43,12 @@ export async function seedClubsAndCompetition(prisma: SeedPrisma): Promise<DemoC
   let competition = await prisma.competition.findUnique({ where: { slug: 'druga-liga-fbih' } });
   if (!competition) {
     competition = await prisma.competition.create({
-      data: { name: 'Druga liga FBiH', slug: 'druga-liga-fbih' },
+      data: { name: 'Druga liga FBiH', slug: 'druga-liga-fbih', isLeague: true },
+    });
+  } else if (!competition.isLeague) {
+    competition = await prisma.competition.update({
+      where: { id: competition.id },
+      data: { isLeague: true },
     });
   }
 
