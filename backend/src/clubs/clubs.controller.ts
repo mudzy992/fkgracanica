@@ -51,6 +51,11 @@ export class ClubsController {
     return this.stats.getClubSeasonStats(id, seasonId);
   }
 
+  @Get(':id/participations')
+  listParticipations(@Param('id') id: string) {
+    return this.stats.listClubParticipations(id);
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.service.findOne(id);

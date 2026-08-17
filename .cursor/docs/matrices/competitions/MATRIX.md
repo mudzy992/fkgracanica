@@ -28,9 +28,10 @@ Sezona je dijete takmičenja. Ista kalendarska sezona (npr. 2025/2026) = više `
 | Surface | Season source |
 |---|---|
 | `/liga`, `LeaguePage` | samo `competition.isLeague` |
-| Naslovna `LeagueTable` / `LeagueTableWidget` | `pickDefaultSeasonId(filterLeagueSeasons)` |
+| Naslovna `LeagueTableWidget` | default aktivna ligaška sezona; tabovi ostalih takmičenja istog `yearStart/yearEnd` |
 | Mobile `/league` + home snippet | `mapLeagueSeasons` |
-| Klub public | sve `SeasonClub` participacije; default aktivna liga |
+| `/tim` statistike | sezona (godine) + takmičenje; default aktivna liga |
+| Klub public | participacije; tab Kola (izbor kola) + Tabela |
 | Player public stats | `findDefaultLeagueSeason` |
 
 ## Match finish (bez live)

@@ -5,7 +5,7 @@ import { TeamCinematicHero } from '../../components/team/TeamCinematicHero';
 import { TeamFormationSection } from '../../components/team/TeamFormationSection';
 import { TeamSpotlight } from '../../components/team/TeamSpotlight';
 import { TeamRosterSections } from '../../components/team/TeamRosterSections';
-import { TeamSeasonStats } from '../../components/team/TeamSeasonStats';
+import { TeamSeasonStatsSection } from '../../components/team/TeamSeasonStatsSection';
 import { spotlightPlayers, statsByPlayerId } from '../../components/team/team-stats-utils';
 import { Seo } from '../../components/seo/Seo';
 import { Skeleton } from '../../components/ui/skeleton';
@@ -14,7 +14,7 @@ import type { Stadium } from '../../types/club-hub';
 export function FirstTeamPage() {
   const { data: ownClub, isLoading: clubLoading } = useOwnClub();
   const { data: squad, isLoading: squadLoading } = useClubSquad(ownClub?.id ?? '');
-  const { data: stats, isLoading: statsLoading } = useClubStats(ownClub?.id ?? '');
+  const { data: stats } = useClubStats(ownClub?.id ?? '');
 
   const bench = useMemo(
     () => squad?.slots.filter((s) => s.isBench && s.player) ?? [],
@@ -62,11 +62,9 @@ export function FirstTeamPage() {
           <p className="py-20 text-center text-text-muted">Kadar trenutno nije objavljen.</p>
         )}
 
-        {statsLoading ? (
-          <Skeleton className="h-48 rounded-2xl" />
-        ) : (
-          <TeamSeasonStats stats={stats} />
-        )}
+        {ownClub?.id ? (
+          <TeamSeasonStatsSection clubId={ownClub.id} />
+        ) : null}
       </div>
     </div>
   );

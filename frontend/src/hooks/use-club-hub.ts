@@ -3,6 +3,7 @@ import { api } from '../lib/api';
 import { asArray } from '../lib/as-array';
 import type { Club } from '../types';
 import type { ClubSeasonStats, ClubSquadResponse, Stadium } from '../types/club-hub';
+import type { ClubParticipation } from '../lib/club-participation.util';
 
 export function useClub(id: string) {
   return useQuery({
@@ -33,6 +34,15 @@ export function useClubStats(clubId: string, seasonId?: string) {
     queryKey: ['clubs', clubId, 'stats', seasonId],
     queryFn: async () =>
       (await api.get<ClubSeasonStats>(`/clubs/${clubId}/stats`, { params: { seasonId } })).data,
+    enabled: !!clubId,
+  });
+}
+
+export function useClubParticipations(clubId: string) {
+  return useQuery({
+    queryKey: ['clubs', clubId, 'participations'],
+    queryFn: async () =>
+      (await api.get<ClubParticipation[]>(`/clubs/${clubId}/participations`)).data,
     enabled: !!clubId,
   });
 }
