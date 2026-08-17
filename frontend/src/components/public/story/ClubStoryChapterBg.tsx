@@ -15,7 +15,7 @@ export function ClubStoryChapterBg({ imageUrl }: Props) {
     <div ref={ref} className="story-grain absolute inset-0 overflow-hidden">
       {imageUrl ? (
         <motion.div className="absolute -inset-[12%]" style={{ y }}>
-          <img src={imageUrl} alt="" className="h-full w-full object-cover" aria-hidden />
+          <img src={imageUrl} alt="" className="h-full w-full object-cover grayscale" aria-hidden />
         </motion.div>
       ) : (
         <div className="absolute inset-0 bg-[image:var(--gradient-page-hero)]" />
