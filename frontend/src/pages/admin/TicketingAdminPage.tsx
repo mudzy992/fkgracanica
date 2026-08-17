@@ -6,11 +6,13 @@ import { AdminPageShell } from '../../components/admin/AdminPageShell';
 import { TicketingOrdersTab } from './ticketing/TicketingOrdersTab';
 import { TicketingSettingsTab } from './ticketing/TicketingSettingsTab';
 import { TicketingPaymentsTab } from './ticketing/TicketingPaymentsTab';
+import { TicketingSeasonTab } from './ticketing/TicketingSeasonTab';
 
-type Tab = 'orders' | 'settings' | 'payments';
+type Tab = 'orders' | 'settings' | 'payments' | 'season';
 
 const TABS: { key: Tab; label: string }[] = [
   { key: 'orders', label: 'Narudžbe' },
+  { key: 'season', label: 'Sezona' },
   { key: 'settings', label: 'Postavke' },
   { key: 'payments', label: 'Online plaćanje' },
 ];
@@ -41,6 +43,7 @@ export function TicketingAdminPage() {
         }
       >
         {tab === 'orders' && <TicketingOrdersTab />}
+        {tab === 'season' && <TicketingSeasonTab />}
         {tab === 'settings' && <TicketingSettingsTab />}
         {tab === 'payments' && <TicketingPaymentsTab />}
       </AdminPageShell>

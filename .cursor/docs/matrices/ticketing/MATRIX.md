@@ -18,11 +18,13 @@ pending → paid → (refund_requested) → refunded
 ## Capacity
 
 - Global: `ticketing.stadiumCapacity` setting (default 5000)
-- `GET /ticketing/matches/:matchId/availability` — sold, remaining, member discount %
+- `GET /ticketing/matches/:matchId/availability` — sold, passes, remaining
+- Occupied = prodati ticketi + ACTIVE/PENDING sezonske karte sezone
 
 ## Settings (ulaznice)
 
 - `ticketing.ticketCardBackground` — putanja u media; backdrop (PNG transparent → crna podloga, `object-contain`)
+- `ticketing.seasonPassPrice` / `ticketing.seasonPassLabel` — sezonska karta (vidi [seasonal-tickets](../seasonal-tickets/MATRIX.md))
 
 ## Digitalna ulaznica (prikaz)
 
@@ -59,9 +61,10 @@ pending → paid → (refund_requested) → refunded
 
 ## QR validation
 
-- `POST /ticketing/validate` with `{ qrCode }` — RBAC `ticketing.manage`
+- `POST /ticketing/validate` with `{ qrCode, matchId? }` — RBAC `ticketing.manage`
+- Ticket path pa SeasonPass; pass treba `matchId` (sljedeća domaća)
 - Admin: `TicketingValidatePanel` na tabu Narudžbe
-- Rejects: RESERVED (nije plaćeno), USED, CANCELLED
+- Rejects: RESERVED (nije plaćeno), USED, CANCELLED; pass već skeniran za utakmicu
 
 ## Payment
 
@@ -74,7 +77,8 @@ pending → paid → (refund_requested) → refunded
 | Tab | Sadržaj |
 |-----|---------|
 | Narudžbe | Filteri, validate QR, potvrdi uplatu, povrat, detalj |
-| Postavke | Kapacitet, popust, kategorije CRUD, toggle blagajna |
+| Sezona | Lista SeasonPass + blagajna issue po emailu |
+| Postavke | Kapacitet, popust, sezona cijena/label, kategorije CRUD, toggle blagajna |
 | Online plaćanje | Toggle online ulaznice/članstvo, provideri, Stripe keys |
 
 **Napomena:** ticketing/payment ključevi nisu u globalnom `/admin/settings` — samo `modules.ticketing` i `feature.membership` ostaju tamo kao feature flagovi.

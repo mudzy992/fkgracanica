@@ -4,6 +4,7 @@ import { Button } from '../../../components/ui/button';
 import { canEditReport } from '../../../lib/match-report';
 import type { Match } from '../../../types';
 import { toLocalDatetime } from './match-form-datetime';
+import { MatchHighlightsEditor } from './MatchHighlightsEditor';
 
 interface Props {
   open: boolean;
@@ -29,6 +30,7 @@ export function MatchFinishedReadOnly({ open, onOpenChange, match, canLive }: Pr
             <Button type="button" variant="default" size="sm">Uredi izvještaj</Button>
           </Link>
         )}
+        <MatchHighlightsEditor matchId={match.id} />
       </div>
     </AdminFormSheet>
   );

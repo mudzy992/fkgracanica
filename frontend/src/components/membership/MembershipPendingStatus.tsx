@@ -28,8 +28,8 @@ export function MembershipPendingStatus({
 
       {onlineAllowed ? (
         <p className="text-sm text-text-muted">
-          Vaša uplata je zaprimljena. Klub će potvrditi članstvo u najkraćem roku — tada ćete ovdje vidjeti
-          digitalnu člansku karticu s QR kodom.
+          Dovršite online uplatu da aktivirate članstvo. Nakon potvrde ovdje ćete vidjeti digitalnu
+          člansku karticu s QR kodom.
         </p>
       ) : (
         <p className="text-sm text-text-muted">

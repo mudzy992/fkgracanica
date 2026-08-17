@@ -23,6 +23,11 @@ export class NewsletterController {
     return this.service.unsubscribe(dto.email);
   }
 
+  @Get('unsubscribe')
+  unsubscribeByToken(@Query('token') token: string) {
+    return this.service.unsubscribeByToken(token ?? '');
+  }
+
   @Get()
   @UseGuards(JwtAuthGuard, PermissionsGuard)
   @RequirePermissions('newsletter.read')

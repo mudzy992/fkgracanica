@@ -20,6 +20,7 @@ export const PERMISSIONS = [
   { key: 'club-timeline.manage', description: 'Upravljanje historijom kluba' },
   { key: 'contact.read', description: 'Pregled kontakt poruka' },
   { key: 'newsletter.read', description: 'Pregled newsletter pretplatnika' },
+  { key: 'newsletter.manage', description: 'Slanje newsletter kampanja' },
   { key: 'clubs.manage', description: 'Upravljanje klubovima' },
   { key: 'players.manage', description: 'Upravljanje igračima' },
   { key: 'competitions.manage', description: 'Upravljanje takmičenjima' },
@@ -33,6 +34,7 @@ export const PERMISSIONS = [
   { key: 'museum.manage', description: 'Upravljanje muzejom' },
   { key: 'analytics.read', description: 'Pregled analitike' },
   { key: 'dashboard.read', description: 'Pregled dashboard KPI' },
+  { key: 'finance.read', description: 'Pregled finansijskih izvještaja' },
 ] as const;
 
 export type PermissionKey = (typeof PERMISSIONS)[number]['key'];

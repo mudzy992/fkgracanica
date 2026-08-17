@@ -7,6 +7,8 @@ import { JobsModule } from '../jobs/jobs.module';
 import { StripeProvider } from './providers/stripe.provider';
 import { PaypalProvider } from './providers/paypal.provider';
 import { MonriProvider } from './providers/monri.provider';
+import { PaypalOps } from './paypal-ops';
+import { MonriOps } from './monri-ops';
 
 @Module({
   imports: [forwardRef(() => MembershipModule), JobsModule],
@@ -16,7 +18,9 @@ import { MonriProvider } from './providers/monri.provider';
     PaymentsService,
     StripeProvider,
     PaypalProvider,
+    PaypalOps,
     MonriProvider,
+    MonriOps,
   ],
   exports: [PaymentsReadinessService, PaymentsService],
 })

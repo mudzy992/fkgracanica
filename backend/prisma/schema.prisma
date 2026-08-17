@@ -32,6 +32,8 @@ model User {
   memberships      Membership[]
   ticketOrders     TicketOrder[]
   contactMessages  ContactMessage[]
+  newsletterCampaigns NewsletterCampaign[]
+  seasonPasses     SeasonPass[]
   matchEvents      MatchEvent[]      @relation("EventCreator")
   liveComments     LiveComment[]
 
@@ -523,6 +525,7 @@ model Season {
   createdAt    DateTime             @default(now())
   updatedAt    DateTime             @updatedAt
   competitions SeasonCompetition[]
+  seasonPasses SeasonPass[]
 }
 
 model SeasonCompetition {
@@ -705,11 +708,27 @@ model Match {
   tickets         Ticket[]
   teamStats       TeamStatistics[]
   newsLinks       NewsMatch[]
+  highlights      MatchHighlight[]
+  seasonAdmissions SeasonPassAdmission[]
 
   @@index([seasonCompetitionId])
   @@index([roundId])
   @@index([status])
   @@index([scheduledAt])
+}
+
+model MatchHighlight {
+  id           String   @id @default(cuid())
+  matchId      String
+  title        String
+  youtubeUrl   String   @db.VarChar(512)
+  startSeconds Int?
+  sortOrder    Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  match        Match    @relation(fields: [matchId], references: [id], onDelete: Cascade)
+
+  @@index([matchId])
 }
 
 enum MatchEventType {
@@ -934,8 +953,75 @@ model ContactMessage {
 }
 
 model NewsletterSubscriber {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  isActive  Boolean  @default(true)
-  createdAt DateTime @default(now())
+  id               String   @id @default(cuid())
+  email            String   @unique
+  isActive         Boolean  @default(true)
+  unsubscribeToken String   @unique @default(cuid())
+  createdAt        DateTime @default(now())
+}
+
+enum NewsletterCampaignStatus {
+  DRAFT
+  SENDING
+  SENT
+  FAILED
+}
+
+model NewsletterCampaign {
+  id          String                    @id @default(cuid())
+  subject     String
+  htmlBody    String                    @db.Text
+  textBody    String                    @db.Text
+  status      NewsletterCampaignStatus  @default(DRAFT)
+  sentAt      DateTime?
+  sentCount   Int                       @default(0)
+  failCount   Int                       @default(0)
+  targetCount Int                       @default(0)
+  createdAt   DateTime                  @default(now())
+  updatedAt   DateTime                  @updatedAt
+  createdById String?
+  createdBy   User?                     @relation(fields: [createdById], references: [id], onDelete: SetNull)
+
+  @@index([status])
+  @@index([createdById])
+}
+
+enum SeasonPassStatus {
+  PENDING
+  ACTIVE
+  CANCELLED
+  REFUNDED
+}
+
+model SeasonPass {
+  id              String           @id @default(cuid())
+  userId          String
+  seasonId        String
+  label           String
+  price           Decimal          @db.Decimal(10, 2)
+  qrCode          String           @unique
+  status          SeasonPassStatus @default(PENDING)
+  paymentProvider String           @default("box_office")
+  externalId      String?
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  user            User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  season          Season           @relation(fields: [seasonId], references: [id], onDelete: Cascade)
+  admissions      SeasonPassAdmission[]
+
+  @@unique([userId, seasonId])
+  @@index([seasonId, status])
+  @@index([externalId])
+}
+
+model SeasonPassAdmission {
+  id        String     @id @default(cuid())
+  passId    String
+  matchId   String
+  scannedAt DateTime   @default(now())
+  pass      SeasonPass @relation(fields: [passId], references: [id], onDelete: Cascade)
+  match     Match      @relation(fields: [matchId], references: [id], onDelete: Cascade)
+
+  @@unique([passId, matchId])
+  @@index([matchId])
 }

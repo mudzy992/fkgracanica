@@ -1,5 +1,10 @@
 # Ticketing Changelog
 
+## 2026-08-17 (season pass)
+
+- Kapacitet uključuje sezonske karte; validate `{ qrCode, matchId? }`
+- Settings `ticketing.seasonPassPrice` / `ticketing.seasonPassLabel`
+
 ## 2026-06-29 (sales modes UX)
 
 - `paymentIntent` na reserve: `box_office` | `online`

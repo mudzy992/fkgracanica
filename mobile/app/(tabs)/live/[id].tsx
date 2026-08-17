@@ -8,6 +8,7 @@ import { ScreenLoading } from '../../../src/components/ScreenLoading';
 import { useLiveMatch } from '../../../src/hooks/use-live-match';
 import { useTheme } from '../../../src/lib/theme-context';
 import { spacing } from '../../../src/lib/theme';
+import { MatchHighlightsList } from '../../../src/components/MatchHighlightsList';
 
 export default function LiveMatchScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -45,6 +46,11 @@ export default function LiveMatchScreen() {
       </View>
       {match.venue ? <Text style={[styles.venue, { color: colors.textMuted }]}>{match.venue}</Text> : null}
       <LiveEventList events={match.events ?? []} connected={connected} />
+      <MatchHighlightsList
+        highlights={match.highlights}
+        textColor={colors.text}
+        accentColor={colors.primary}
+      />
     </ScrollView>
   );
 }

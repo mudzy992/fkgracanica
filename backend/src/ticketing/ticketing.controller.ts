@@ -71,8 +71,8 @@ export class TicketingController {
   @Post('validate')
   @UseGuards(PermissionsGuard)
   @RequirePermissions('ticketing.manage')
-  validate(@Body('qrCode') qrCode: string) {
-    return this.service.validateTicket(qrCode);
+  validate(@Body() body: { qrCode: string; matchId?: string }) {
+    return this.service.validateTicket(body.qrCode, body.matchId);
   }
 
   @Post('orders/:orderId/confirm-payment')

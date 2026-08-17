@@ -8,6 +8,7 @@ import { RequireAuth } from '../../src/components/RequireAuth';
 import { ScreenEmpty } from '../../src/components/ScreenEmpty';
 import { ScreenLoading } from '../../src/components/ScreenLoading';
 import { TicketOrderCard } from '../../src/components/TicketOrderCard';
+import { SeasonPassStrip } from '../../src/components/SeasonPassStrip';
 import { useTheme } from '../../src/lib/theme-context';
 import { spacing, typography } from '../../src/lib/theme';
 import type { Ticket, TicketOrder } from '../../src/types/api';
@@ -97,6 +98,7 @@ function TicketsBody() {
           </Pressable>
         ))}
       </View>
+      <SeasonPassStrip onShowQr={setQrValue} onBuy={() => router.push('/tickets-buy')} />
       <Pressable
         style={[styles.buyBtn, { backgroundColor: colors.primary }]}
         onPress={() => router.push('/tickets-buy')}

@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
 import { useRegisterMembership } from '../../hooks/use-membership';
 import { useOnlineMembershipCheckout } from '../../hooks/use-online-checkout';
 import { useAuth } from '../../lib/auth';
@@ -8,8 +7,8 @@ import { OnlinePaymentChoice } from '../payments/OnlinePaymentChoice';
 import { MembershipJoinForm } from './MembershipJoinForm';
 import { MembershipBoxOfficeInfo } from './MembershipBoxOfficeInfo';
 import { MembershipCardPanel } from './MembershipCardPanel';
+import { MembershipInactivePanel } from './MembershipInactivePanel';
 import { MembershipPendingStatus } from './MembershipPendingStatus';
-import { membershipStatusLabel } from '../../lib/membership-status';
 import { Skeleton } from '../ui/skeleton';
 import type { MembershipRow } from '../../types/membership';
 import type { PaymentProviderId } from '../../types/payment-provider';
@@ -49,6 +48,7 @@ export function MembershipPurchasePanel({
   const annualPrice = config?.membershipAnnualPrice ?? 0;
   const current = memberships?.length ? pickCurrent(memberships) : undefined;
   const busy = register.isPending || checkout.isPending;
+  const canPayOnline = !!onlineAllowed && annualPrice > 0 && providers.length > 0;
 
   const payOnline = async (membershipId: string, provider: PaymentProviderId) => {
     const res = await checkout.mutateAsync({ membershipId, amount: annualPrice, provider });
@@ -92,24 +92,6 @@ export function MembershipPurchasePanel({
     );
   }
 
-  if (paymentCancelled) {
-    return (
-      <div className="space-y-3">
-        <p className="text-sm text-text-muted">Online uplata je otkazana. Možete pokušati ponovo.</p>
-        {current?.status === 'PENDING' && (
-          <MembershipPendingStatus
-            onlineAllowed={!!onlineAllowed}
-            userEmail={user?.email}
-            showPayButton
-            providers={providers}
-            onPayOnline={(p) => void payOnline(current.id, p)}
-            payLoading={checkout.isPending}
-          />
-        )}
-      </div>
-    );
-  }
-
   if (isAuthenticated && current?.status === 'ACTIVE') {
     return (
       <div className="space-y-4">
@@ -125,35 +107,34 @@ export function MembershipPurchasePanel({
 
   if (isAuthenticated && current?.status === 'PENDING') {
     return (
-      <MembershipPendingStatus onlineAllowed={!!onlineAllowed} userEmail={user?.email} />
+      <div className="space-y-3">
+        {paymentCancelled && (
+          <p className="text-sm text-text-muted">Online uplata je otkazana. Možete pokušati ponovo.</p>
+        )}
+        <MembershipPendingStatus
+          onlineAllowed={!!onlineAllowed}
+          userEmail={user?.email}
+          showPayButton={canPayOnline}
+          providers={providers}
+          onPayOnline={(p) => void payOnline(current.id, p)}
+          payLoading={checkout.isPending}
+        />
+      </div>
     );
   }
 
   if (isAuthenticated && current && ['SUSPENDED', 'EXPIRED', 'CANCELLED'].includes(current.status)) {
     return (
-      <div className="space-y-4">
-        {current.card && <MembershipCardPanel membership={current} />}
-        {current.status === 'EXPIRED' && onlineAllowed && annualPrice > 0 ? (
-          <>
-            <p className="text-sm text-text-muted">Članstvo je isteklo. Obnovite ga online.</p>
-            <OnlinePaymentChoice
-              providers={providers}
-              fullWidth
-              disabled={busy}
-              loading={busy}
-              onSelect={(p) => void payOnline(current.id, p)}
-            />
-          </>
-        ) : (
-          <p className="text-sm text-text-muted">
-            Vaše članstvo je {membershipStatusLabel(current.status).toLowerCase()}. Kontaktirajte klub putem{' '}
-            <Link to="/kontakt" className="text-primary underline">
-              kontakt forme
-            </Link>
-            .
-          </p>
-        )}
-      </div>
+      <MembershipInactivePanel
+        current={current}
+        onlineAllowed={!!onlineAllowed}
+        annualPrice={annualPrice}
+        providers={providers}
+        busy={busy}
+        onPay={(p) => void payOnline(current.id, p)}
+        onRejoin={() => void register.mutateAsync()}
+        registerError={register.isError}
+      />
     );
   }
 

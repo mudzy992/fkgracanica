@@ -72,6 +72,10 @@ async function fetchShareMeta(path) {
 }
 
 const app = express();
+app.use((req, res, next) => {
+  if (req.path === '/sw.js') res.setHeader('Cache-Control', 'no-cache');
+  next();
+});
 app.use(express.static(dist, { index: false, maxAge: '1d' }));
 
 app.get(/.*/, async (req, res, next) => {

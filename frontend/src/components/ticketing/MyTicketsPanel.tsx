@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { useMyTicketOrders } from '../../hooks/use-ticketing';
+import { useMyTicketOrders, useMySeasonPass } from '../../hooks/use-ticketing';
 import {
   filterTicketOrders,
   ticketOrderFilterLabels,
@@ -9,6 +9,7 @@ import {
 import { groupTicketsByMatch, type MatchTicketGroup } from '../../lib/group-tickets-by-match';
 import { MatchTicketsSummaryCard } from './MatchTicketsSummaryCard';
 import { MatchTicketsDialog } from './MatchTicketsDialog';
+import { SeasonPassCard } from './SeasonPassCard';
 import { Button } from '../ui/button';
 import { Skeleton } from '../ui/skeleton';
 
@@ -20,6 +21,7 @@ interface Props {
 
 export function MyTicketsPanel({ paymentSuccess }: Props) {
   const { data: orders, isLoading } = useMyTicketOrders();
+  const { data: season } = useMySeasonPass();
   const [filter, setFilter] = useState<TicketOrderFilter>('active');
   const [selected, setSelected] = useState<MatchTicketGroup | null>(null);
   const filtered = filterTicketOrders(orders ?? [], filter);
@@ -46,6 +48,13 @@ export function MyTicketsPanel({ paymentSuccess }: Props) {
           <p className="rounded-lg border border-success/30 bg-success/10 px-4 py-3 text-sm text-success">
             Uplata je uspješna. Vaše ulaznice su aktivirane.
           </p>
+        )}
+
+        {season?.pass?.status === 'ACTIVE' && (
+          <div className="space-y-2">
+            <h4 className="text-sm font-semibold text-text">Sezonska karta</h4>
+            <SeasonPassCard pass={season.pass} />
+          </div>
         )}
 
         <div className="flex flex-wrap gap-2">

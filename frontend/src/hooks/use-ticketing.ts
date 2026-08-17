@@ -75,3 +75,36 @@ export function useCancelMyTicketOrder() {
     onSuccess: () => void qc.invalidateQueries({ queryKey: ['ticketing', 'orders'] }),
   });
 }
+
+export function useMySeasonPass() {
+  return useQuery({
+    queryKey: ['ticketing', 'season-pass', 'me'],
+    queryFn: async () =>
+      (await api.get<{
+        offer: {
+          season: { id: string; name: string } | null;
+          price: number;
+          label: string;
+          available: boolean;
+          salesModes: { boxOffice: boolean; online: boolean };
+        };
+        pass: {
+          id: string;
+          status: string;
+          label: string;
+          price: string;
+          qrCode: string;
+          season?: { name: string };
+        } | null;
+      }>('/ticketing/season-pass/me')).data,
+  });
+}
+
+export function useOpenSeasonPass() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async () =>
+      (await api.post<{ id: string; status: string }>('/ticketing/season-pass/open')).data,
+    onSuccess: () => void qc.invalidateQueries({ queryKey: ['ticketing', 'season-pass'] }),
+  });
+}

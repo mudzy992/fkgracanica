@@ -1,21 +1,30 @@
 import { CameraView, useCameraPermissions } from 'expo-camera';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Alert, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { RequirePermission } from '../../../src/components/RequirePermission';
 import { Screen } from '../../../src/components/primitives/Screen';
 import { useTheme } from '../../../src/lib/theme-context';
 import { spacing, typography } from '../../../src/lib/theme';
 import { api } from '../../../src/lib/api';
+import type { TicketingConfig } from '../../../src/types/api';
 
 export default function AdminValidateScreen() {
   const { colors } = useTheme();
   const [permission, requestPermission] = useCameraPermissions();
   const [qrCode, setQrCode] = useState('');
   const [result, setResult] = useState('');
+  const [matchId, setMatchId] = useState<string | undefined>();
+
+  useEffect(() => {
+    void api
+      .get<TicketingConfig>('/ticketing/config')
+      .then(({ data }) => setMatchId(data.activeTicketMatch?.id))
+      .catch(() => undefined);
+  }, []);
 
   const validate = async (value = qrCode) => {
     if (!value) return;
-    const { data } = await api.post('/ticketing/validate', { qrCode: value });
+    const { data } = await api.post('/ticketing/validate', { qrCode: value, matchId });
     setResult(JSON.stringify(data));
   };
 

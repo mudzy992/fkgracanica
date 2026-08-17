@@ -110,6 +110,7 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
     items: [
       { to: '/admin/membership', labelKey: 'admin.membership', permissions: ['membership.manage'] },
       { to: '/admin/ticketing', labelKey: 'admin.ticketing', permissions: ['ticketing.manage'] },
+      { to: '/admin/finance', labelKey: 'admin.finance', permissions: ['finance.read'] },
     ],
   },
 ];

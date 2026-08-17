@@ -12,12 +12,14 @@ import { PageHeroHeader } from '../../components/public/shell/PageHeroHeader';
 import { Seo } from '../../components/seo/Seo';
 import { Skeleton } from '../../components/ui/skeleton';
 import { useAuth } from '../../lib/auth';
+import { parsePaymentProvider } from '../../lib/payment-providers';
 
 export function MembershipPage() {
   const { isAuthenticated, isLoading: authLoading } = useAuth();
   const [searchParams] = useSearchParams();
   const paidReturn = searchParams.get('paid') === '1';
-  const sessionId = searchParams.get('session_id');
+  const sessionId = searchParams.get('session_id') || searchParams.get('token');
+  const provider = parsePaymentProvider(searchParams.get('provider'));
   const paymentCancelled = searchParams.get('cancelled') === '1';
   const { data: config, isLoading: configLoading } = useTicketingPublicConfig();
   const { data: memberships, isLoading: membershipLoading } = useMyMembership();
@@ -26,6 +28,7 @@ export function MembershipPage() {
   const { confirming, activated } = useMembershipPaymentReturn({
     paid: paidReturn,
     sessionId,
+    provider,
     enabled: isAuthenticated && !authLoading,
   });
   useClearPaymentParams(!confirming && (activated || !paidReturn || !sessionId));

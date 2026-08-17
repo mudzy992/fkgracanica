@@ -114,7 +114,9 @@ function MembershipBody() {
         ? t('membershipExpired')
         : latest?.status === 'SUSPENDED'
           ? t('membershipSuspended')
-          : t('noMembership');
+          : latest?.status === 'CANCELLED'
+            ? t('membershipCancelled')
+            : t('noMembership');
 
   return (
     <ScreenEmpty

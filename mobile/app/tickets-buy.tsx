@@ -6,6 +6,7 @@ import { RequireAuth } from '../src/components/RequireAuth';
 import { ScreenEmpty } from '../src/components/ScreenEmpty';
 import { ScreenLoading } from '../src/components/ScreenLoading';
 import { TicketReserveForm } from '../src/components/TicketReserveForm';
+import { SeasonPassBuyCard } from '../src/components/SeasonPassBuyCard';
 import { api } from '../src/lib/api';
 import { formatDateTimeBs } from '../src/lib/format-date';
 import { useTheme } from '../src/lib/theme-context';
@@ -99,6 +100,7 @@ function TicketsBuyBody() {
         data={matches}
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.list}
+        ListHeaderComponent={<SeasonPassBuyCard />}
         ListEmptyComponent={<ScreenEmpty message={t('noMatches')} icon="football-outline" />}
         renderItem={({ item }) => (
           <Pressable
@@ -120,6 +122,7 @@ function TicketsBuyBody() {
 
   return (
     <ScrollView keyboardShouldPersistTaps="handled">
+      <SeasonPassBuyCard />
       <TicketReserveForm
         categories={categories}
         availability={availability}

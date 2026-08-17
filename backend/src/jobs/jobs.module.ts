@@ -2,8 +2,15 @@ import { Injectable, Logger, Module, OnModuleDestroy } from '@nestjs/common';
 import { Queue, Worker } from 'bullmq';
 import nodemailer from 'nodemailer';
 import { PrismaService } from '../prisma/prisma.service';
+import { tallyCampaignEmail } from '../newsletter/newsletter-campaign-tally';
 
-export type EmailPayload = { to: string; subject: string; body: string; html?: string };
+export type EmailPayload = {
+  to: string;
+  subject: string;
+  body: string;
+  html?: string;
+  campaignId?: string;
+};
 
 @Injectable()
 export class JobsService implements OnModuleDestroy {
@@ -25,8 +32,15 @@ export class JobsService implements OnModuleDestroy {
     this.worker = new Worker(
       'email',
       async (job) => this.sendEmail(job.data as EmailPayload),
-      { connection: this.connection },
+      { connection: this.connection, limiter: { max: 10, duration: 60_000 } },
     );
+  }
+
+  enqueueEmailLater(payload: EmailPayload) {
+    void this.enqueueEmail(payload).catch((error) => {
+      const message = error instanceof Error ? error.message : String(error);
+      this.logger.warn(`enqueue fail ${payload.to}: ${message}`);
+    });
   }
 
   async enqueueEmail(payload: EmailPayload) {
@@ -45,6 +59,7 @@ export class JobsService implements OnModuleDestroy {
     }, {});
     if (!settings['smtp.host'] || !settings['smtp.user'] || !settings['smtp.pass']) {
       this.logger.warn(`SMTP unavailable for ${payload.to}`);
+      await tallyCampaignEmail(this.prisma, payload.campaignId, false);
       return;
     }
     try {
@@ -61,12 +76,14 @@ export class JobsService implements OnModuleDestroy {
         text: payload.body,
         html: payload.html,
       });
+      await tallyCampaignEmail(this.prisma, payload.campaignId, true);
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
       this.logger.warn(`SMTP fail ${payload.to}: ${message}`);
       await this.prisma.failedEmail.create({
         data: { to: payload.to, subject: payload.subject, error: message },
       });
+      await tallyCampaignEmail(this.prisma, payload.campaignId, false);
     }
   }
 

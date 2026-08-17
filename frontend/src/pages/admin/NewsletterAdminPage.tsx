@@ -9,6 +9,7 @@ import { Input } from '../../components/ui/input';
 import { AdminDataTable, AdminPageShell } from '../../components/admin/AdminPageShell';
 import { AdminPagination } from '../../components/admin/AdminPagination';
 import { api } from '../../lib/api';
+import { NewsletterCampaignPanel } from '../../components/newsletter/NewsletterCampaignPanel';
 
 interface Props {
   embedded?: boolean;
@@ -17,6 +18,7 @@ interface Props {
 export function NewsletterAdminPage({ embedded = false }: Props) {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
+  const [tab, setTab] = useState<'list' | 'campaigns'>('list');
   const { data, isLoading } = useNewsletterSubscribers({ page, search: search || undefined });
   const unsubscribe = useUnsubscribeNewsletter();
   const { confirm, dialog } = useConfirm();
@@ -34,6 +36,18 @@ export function NewsletterAdminPage({ embedded = false }: Props) {
 
   const body = (
     <>
+      <div className="flex flex-wrap gap-2 border-b border-[var(--border-subtle)] px-4 pt-4">
+        <Button size="sm" variant={tab === 'list' ? 'default' : 'outline'} onClick={() => setTab('list')}>
+          Pretplatnici
+        </Button>
+        <Button size="sm" variant={tab === 'campaigns' ? 'default' : 'outline'} onClick={() => setTab('campaigns')}>
+          Kampanje
+        </Button>
+      </div>
+      {tab === 'campaigns' ? (
+        <NewsletterCampaignPanel />
+      ) : (
+        <>
       <div className="flex flex-wrap items-center gap-2 border-b border-[var(--border-subtle)] p-4">
         <Input
           className="max-w-xs"
@@ -83,6 +97,8 @@ export function NewsletterAdminPage({ embedded = false }: Props) {
         ]}
       />
       {data?.meta && <AdminPagination meta={data.meta} page={page} onPageChange={setPage} />}
+        </>
+      )}
     </>
   );
 

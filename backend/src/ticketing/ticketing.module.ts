@@ -6,12 +6,19 @@ import { TicketingService } from './ticketing.service';
 import { TicketingConfigService } from './ticketing-config.service';
 import { TicketingOrdersService } from './ticketing-orders.service';
 import { TicketingController } from './ticketing.controller';
+import { SeasonPassController } from './season-pass.controller';
+import { SeasonPassService } from './season-pass.service';
 import { PublicMatchController, TicketingPublicController } from './ticketing-public.controller';
 
 @Module({
   imports: [SettingsModule, PaymentsModule, JobsModule],
-  controllers: [TicketingController, TicketingPublicController, PublicMatchController],
-  providers: [TicketingService, TicketingConfigService, TicketingOrdersService],
-  exports: [TicketingService, TicketingConfigService],
+  controllers: [
+    TicketingController,
+    SeasonPassController,
+    TicketingPublicController,
+    PublicMatchController,
+  ],
+  providers: [TicketingService, TicketingConfigService, TicketingOrdersService, SeasonPassService],
+  exports: [TicketingService, TicketingConfigService, SeasonPassService],
 })
 export class TicketingModule {}

@@ -9,7 +9,7 @@ import { resolveEffectiveMatchLineup } from './match-squad-lineup.util';
 import { assertManualFinish, assertRetrospectiveCreate, isRetrospectiveMatch } from './match-retrospective.util';
 import { resolveMatchVenue } from './match-venue.util';
 import { assertManualMatchStatus } from './update-match.dto';
-import { matchEditionInclude, withSeasonAlias } from './match-edition.util';
+import { matchDetailInclude, matchEditionInclude, withSeasonAlias } from './match-edition.util';
 
 const matchInclude = {
   homeClub: true,
@@ -51,12 +51,7 @@ export class MatchesService {
   async findOne(id: string) {
     const match = await this.prisma.match.findUnique({
       where: { id },
-      include: {
-        ...matchInclude,
-        events: { orderBy: { minute: 'asc' }, include: { player: true, relatedPlayer: true } },
-        lineup: { include: { player: true, club: true } },
-        liveComments: { orderBy: { createdAt: 'asc' } },
-      },
+      include: { ...matchInclude, ...matchDetailInclude },
     });
     if (!match) throw new NotFoundException('Utakmica nije pronađena');
     match.lineup = (await resolveEffectiveMatchLineup(

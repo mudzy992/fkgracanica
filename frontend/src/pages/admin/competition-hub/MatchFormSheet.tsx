@@ -16,6 +16,7 @@ import { getApiErrorMessage } from '../../../lib/api-error';
 import { parseScheduledAt, toLocalDatetime } from './match-form-datetime';
 import { canSendManualStatus, clampScore, editableStatuses, matchStatusOptions } from './match-form-status';
 import { MatchFinishedReadOnly } from './MatchFinishedReadOnly';
+import { MatchHighlightsEditor } from './MatchHighlightsEditor';
 import { MatchScoreInputs } from './MatchScoreInputs';
 
 interface Props {
@@ -184,6 +185,7 @@ export function MatchFormSheet({ open, onOpenChange, edit, seasonId, roundId }: 
           </>
         )}
         {error && <p className="text-sm text-danger">{error}</p>}
+        {edit ? <MatchHighlightsEditor matchId={edit.id} /> : null}
         <Button
           onClick={() => void save()}
           disabled={!homeClubId || !awayClubId || !scheduledAt || create.isPending || update.isPending}

@@ -8,6 +8,7 @@ import { TicketingOrdersService } from './ticketing-orders.service';
 describe('TicketingService.validateTicket', () => {
   const prismaMock = {
     ticket: { findUnique: jest.fn(), update: jest.fn() },
+    seasonPass: { findUnique: jest.fn() },
   };
   const service = new TicketingService(
     prismaMock as unknown as PrismaService,
@@ -26,6 +27,7 @@ describe('TicketingService.validateTicket', () => {
 
   it('throws NotFound when QR unknown', async () => {
     prismaMock.ticket.findUnique.mockResolvedValue(null);
+    prismaMock.seasonPass.findUnique.mockResolvedValue(null);
     await expect(service.validateTicket('missing')).rejects.toThrow(NotFoundException);
   });
 

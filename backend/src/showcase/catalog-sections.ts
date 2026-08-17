@@ -49,11 +49,11 @@ export const SHOWCASE_SECTIONS: ShowcaseSection[] = [
   {
     id: 'membership-tickets',
     title: 'Članstvo i ulaznice',
-    body: 'Lansiranje ide sa Stripe online plaćanjem i blagajnom. PayPal i Monri dolaze poslije lansiranja — nisu blokada.',
+    body: 'Stripe, PayPal i Monri online, plus blagajna.',
     bullets: [
       'Članarina: prijava, odobrenje, digitalna kartica + QR',
       'Ulaznice samo za domaće utakmice, kategorije (uključujući VIP)',
-      'Online (Stripe) i/ili rezervacija za blagajnu',
+      'Online (Stripe, PayPal ili Monri) i/ili rezervacija za blagajnu',
       'QR validacija na mobile staff ekranu',
     ],
     moduleIds: ['membership', 'ticketing', 'paypal', 'monri'],
@@ -100,7 +100,7 @@ export const SHOWCASE_SECTIONS: ShowcaseSection[] = [
     bullets: [
       'Spremno — radi u produkciji, ide u lansiranje',
       'U toku — postoji, dorađuje se (npr. mobile polish)',
-      'Poslije lansiranja — PayPal, Monri, PWA, Excel izvještaji, newsletter kampanje',
+      'Poslije lansiranja — newsletter kampanje, sezonske ulaznice',
     ],
   },
   {

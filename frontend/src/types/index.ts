@@ -182,6 +182,7 @@ export interface Match {
   reportStatus?: MatchReportStatus;
   youtubeUrl?: string | null;
   liveStreamUrl?: string | null;
+  highlights?: MatchHighlight[];
   minute: number;
   clockStartedAt?: string | null;
   matchPeriod?: MatchPeriod | null;
@@ -199,6 +200,15 @@ export interface Match {
   lineup?: MatchLineup[];
   liveComments?: LiveComment[];
   season?: { name: string; competition?: { name: string } };
+}
+
+export interface MatchHighlight {
+  id: string;
+  matchId: string;
+  title: string;
+  youtubeUrl: string;
+  startSeconds?: number | null;
+  sortOrder: number;
 }
 
 export interface MatchEvent {

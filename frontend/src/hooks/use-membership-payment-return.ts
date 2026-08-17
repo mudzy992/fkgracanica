@@ -1,18 +1,24 @@
 import { useCallback } from 'react';
 import { useConfirmMembershipSession } from './use-confirm-membership-session';
 import { usePaymentSessionReturn } from './use-payment-session-return';
+import type { PaymentProviderId } from '../types/payment-provider';
 
 const MEMBERSHIP_ME_KEY = ['membership', 'me'] as const;
 
 interface Options {
   paid: boolean;
   sessionId: string | null;
+  provider?: PaymentProviderId;
   enabled: boolean;
 }
 
-export function useMembershipPaymentReturn({ paid, sessionId, enabled }: Options) {
+export function useMembershipPaymentReturn({ paid, sessionId, provider, enabled }: Options) {
   const { mutateAsync } = useConfirmMembershipSession();
-  const confirm = useCallback((id: string) => mutateAsync(id), [mutateAsync]);
+  const confirm = useCallback(
+    (id: string) =>
+      mutateAsync({ sessionId: id, provider, returnUrl: window.location.href }),
+    [mutateAsync, provider],
+  );
   const isActivated = useCallback((res: { status: string }) => res.status === 'ACTIVE', []);
 
   return usePaymentSessionReturn({

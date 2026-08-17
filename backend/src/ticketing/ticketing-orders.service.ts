@@ -13,11 +13,11 @@ import {
   type TicketPaymentIntent,
 } from './ticketing-sales.util';
 import {
-  countSoldForMatch,
   getMemberDiscountPercent,
   getStadiumCapacity,
   ticketOrderInclude,
 } from './ticketing-query.util';
+import { occupiedForMatch } from './season-pass-capacity.util';
 
 @Injectable()
 export class TicketingOrdersService {
@@ -67,8 +67,8 @@ export class TicketingOrdersService {
     const discount = await getMemberDiscountPercent(this.prisma, userId);
     const unitPrice = discount > 0 ? cat.price * (1 - discount / 100) : cat.price;
     const capacity = await getStadiumCapacity(this.prisma);
-    const sold = await countSoldForMatch(this.prisma, matchId);
-    if (sold + qty > capacity) throw new BadRequestException('Kapacitet stadiona je popunjen');
+    const occupied = await occupiedForMatch(this.prisma, matchId);
+    if (occupied.occupied + qty > capacity) throw new BadRequestException('Kapacitet stadiona je popunjen');
 
     const total = new Prisma.Decimal(unitPrice * qty);
     return this.prisma.ticketOrder.create({

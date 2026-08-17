@@ -5,6 +5,10 @@ import { useAuth } from '../../lib/auth';
 import { hasPermission } from '../../lib/permissions';
 import { formatDate } from '../../lib/utils';
 import {
+  canActivateMembership,
+  canCancelMembership,
+  canRenewMembership,
+  canSuspendMembership,
   membershipStatusLabel,
   membershipStatusVariant,
   membershipUserName,
@@ -135,7 +139,7 @@ export function MembershipAdminPage() {
                     <Button size="sm" variant="outline" onClick={() => setSelected(r)}>
                       Detalj
                     </Button>
-                    {(r.status === 'PENDING' || r.status === 'SUSPENDED') && (
+                    {canActivateMembership(r.status) && (
                       <Button
                         size="sm"
                         disabled={activate.isPending}
@@ -144,27 +148,27 @@ export function MembershipAdminPage() {
                         Aktiviraj
                       </Button>
                     )}
-                    {r.status === 'ACTIVE' && (
-                      <>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          disabled={renew.isPending}
-                          onClick={() => void askAction('Obnoviti članstvo?', r.id, renew.mutateAsync)}
-                        >
-                          Obnovi
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          disabled={suspend.isPending}
-                          onClick={() => void askAction('Suspendovati članstvo?', r.id, suspend.mutateAsync)}
-                        >
-                          Suspenduj
-                        </Button>
-                      </>
+                    {canRenewMembership(r.status) && (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        disabled={renew.isPending}
+                        onClick={() => void askAction('Obnoviti članstvo?', r.id, renew.mutateAsync)}
+                      >
+                        Obnovi
+                      </Button>
                     )}
-                    {r.status !== 'CANCELLED' && (
+                    {canSuspendMembership(r.status) && (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        disabled={suspend.isPending}
+                        onClick={() => void askAction('Suspendovati članstvo?', r.id, suspend.mutateAsync)}
+                      >
+                        Suspenduj
+                      </Button>
+                    )}
+                    {canCancelMembership(r.status) && (
                       <Button
                         size="sm"
                         variant="ghost"

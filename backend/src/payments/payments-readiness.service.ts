@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { toProviderGate, type PaymentProviderId, type ProviderGate } from './provider-gate.util';
 
-export type PaymentProviderId = 'stripe' | 'paypal' | 'monri';
+export type { PaymentProviderId, ProviderGate };
 
 @Injectable()
 export class PaymentsReadinessService {
@@ -21,7 +22,7 @@ export class PaymentsReadinessService {
     return value === 'true' || value === '1';
   }
 
-  async isProviderReady(provider: PaymentProviderId): Promise<boolean> {
+  async hasProviderKeys(provider: PaymentProviderId): Promise<boolean> {
     if (provider === 'stripe') {
       const [enabled, secret, publishable] = await Promise.all([
         this.getPrivate('payments.stripe.enabled'),
@@ -46,6 +47,15 @@ export class PaymentsReadinessService {
     return this.isTruthy(enabled) && !!merchantKey.trim() && !!authKey.trim();
   }
 
+  async getProviderGate(provider: PaymentProviderId): Promise<ProviderGate> {
+    return toProviderGate(provider, await this.hasProviderKeys(provider));
+  }
+
+  /** Checkout spreman (ključevi + implementacija). */
+  async isProviderReady(provider: PaymentProviderId): Promise<boolean> {
+    return (await this.getProviderGate(provider)).checkoutReady;
+  }
+
   async getReadyProviders(): Promise<PaymentProviderId[]> {
     const ids: PaymentProviderId[] = ['stripe', 'paypal', 'monri'];
     const ready = await Promise.all(
@@ -61,8 +71,7 @@ export class PaymentsReadinessService {
   }
 
   async isOnlinePaymentsReady(): Promise<boolean> {
-    const ready = await this.getReadyProviders();
-    return ready.length > 0;
+    return (await this.getReadyProviders()).length > 0;
   }
 
   async getSalesModes(): Promise<{

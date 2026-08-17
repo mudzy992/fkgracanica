@@ -2,6 +2,7 @@ import type { PrismaService } from '../prisma/prisma.service';
 import type { JobsService } from '../jobs/jobs.module';
 import {
   membershipConfirmEmail,
+  seasonPassConfirmEmail,
   ticketConfirmEmail,
 } from '../jobs/email-templates';
 
@@ -43,6 +44,25 @@ export async function notifyMembershipActive(
   const mail = membershipConfirmEmail(name);
   await jobs.enqueueEmail({
     to: membership.user.email,
+    subject: mail.subject,
+    body: mail.text,
+    html: mail.html,
+  });
+}
+
+export async function notifySeasonPassActive(
+  prisma: PrismaService,
+  jobs: JobsService,
+  passId: string,
+) {
+  const pass = await prisma.seasonPass.findUnique({
+    where: { id: passId },
+    include: { user: { select: { email: true } } },
+  });
+  if (!pass?.user?.email) return;
+  const mail = seasonPassConfirmEmail(pass.label);
+  await jobs.enqueueEmail({
+    to: pass.user.email,
     subject: mail.subject,
     body: mail.text,
     html: mail.html,

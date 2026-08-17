@@ -1,18 +1,24 @@
 import { useCallback } from 'react';
 import { useConfirmTicketSession } from './use-confirm-ticket-session';
 import { usePaymentSessionReturn } from './use-payment-session-return';
+import type { PaymentProviderId } from '../types/payment-provider';
 
 const TICKET_ORDERS_KEY = ['ticketing', 'orders'] as const;
 
 interface Options {
   paid: boolean;
   sessionId: string | null;
+  provider?: PaymentProviderId;
   enabled: boolean;
 }
 
-export function useTicketPaymentReturn({ paid, sessionId, enabled }: Options) {
+export function useTicketPaymentReturn({ paid, sessionId, provider, enabled }: Options) {
   const { mutateAsync } = useConfirmTicketSession();
-  const confirm = useCallback((id: string) => mutateAsync(id), [mutateAsync]);
+  const confirm = useCallback(
+    (id: string) =>
+      mutateAsync({ sessionId: id, provider, returnUrl: window.location.href }),
+    [mutateAsync, provider],
+  );
   const isActivated = useCallback((res: { status: string }) => res.status === 'paid', []);
 
   return usePaymentSessionReturn({

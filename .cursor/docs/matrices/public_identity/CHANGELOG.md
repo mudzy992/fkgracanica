@@ -1,5 +1,9 @@
 # Public Identity Changelog
 
+## 2026-08-17
+- `/o-klubu` dokumentar: cold open, full-bleed scene, HUD, coda (`/tim`, `/clanstvo`)
+- Uklonjen zigzag timeline (rail + mobile snap kartice)
+
 ## 2026-06-26 (dark mode)
 - Dark tokens: gradient-hero/surface, glass-bg, shadow-premium, ring-focus
 - Semantic borders via `--border-subtle` (UI primitives + public pages)

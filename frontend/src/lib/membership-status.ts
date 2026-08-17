@@ -24,3 +24,19 @@ export function membershipStatusVariant(
   if (status === 'SUSPENDED' || status === 'EXPIRED') return 'danger';
   return 'muted';
 }
+
+export function canActivateMembership(status: MembershipStatus) {
+  return status === 'PENDING' || status === 'SUSPENDED' || status === 'EXPIRED' || status === 'CANCELLED';
+}
+
+export function canRenewMembership(status: MembershipStatus) {
+  return status === 'ACTIVE' || status === 'EXPIRED';
+}
+
+export function canSuspendMembership(status: MembershipStatus) {
+  return status === 'ACTIVE';
+}
+
+export function canCancelMembership(status: MembershipStatus) {
+  return status !== 'CANCELLED';
+}

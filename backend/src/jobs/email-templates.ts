@@ -20,3 +20,8 @@ export function ticketConfirmEmail(detail: string) {
   const text = `Vaša narudžba ulaznica je potvrđena. ${detail}`;
   return { subject: 'Ulaznice — potvrda', text, html: wrapEmailHtml('Ulaznice', text) };
 }
+
+export function seasonPassConfirmEmail(label: string) {
+  const text = `Vaša ${label} je aktivna. Pokažite QR kod na ulazu na svakoj domaćoj utakmici.`;
+  return { subject: 'Sezonska karta — potvrda', text, html: wrapEmailHtml('Sezonska karta', text) };
+}

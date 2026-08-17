@@ -3,27 +3,30 @@
 ## Javno
 
 - CMS widget `newsletter` na landing stranicama
-- `POST /newsletter/subscribe` — email upsert, `isActive: true`
-- `POST /newsletter/unsubscribe` — deaktivacija
+- `POST /newsletter/subscribe` — email upsert, `isActive: true`, `unsubscribeToken`
+- `POST /newsletter/unsubscribe` — deaktivacija po emailu
+- `GET /newsletter/unsubscribe?token=` — odjava iz maila; FE `/newsletter/unsubscribe`
 
-## Admin (`/admin/newsletter`)
+## Admin (`/admin/comms?tab=newsletter`)
 
-- Paginirana lista pretplatnika + pretraga po emailu
-- Status badge: Aktivan / Neaktivan
-- Akcija: Odjavi (admin unsubscribe)
+- Tab pretplatnici: lista, CSV, odjava
+- Tab kampanje: draft, preview, send, historija, brojke
+
+## Kampanje
+
+| Endpoint | Auth | Opis |
+|----------|------|------|
+| `GET /newsletter/campaigns` | `newsletter.read` | Historija |
+| `POST /newsletter/campaigns` | `newsletter.manage` | Draft |
+| `POST /newsletter/campaigns/:id/send` | `newsletter.manage` | Enqueue po aktivnom pretplatniku |
+
+Send nije sync HTTP loop. Queue `email` limiter 10/min. `newsletter.blastEnabled` default false.
 
 ## RBAC
 
-- `newsletter.read` — pregled liste
-- `PermissionRoute` na `/admin/newsletter` + API guard
-
-## Napomene
-
-- Nema slanja kampanja (email blast) — samo pretplate i admin pregled
-- Duplikat email → reaktivacija putem subscribe
-- `NewsletterEmailDto` — `@IsEmail()` na subscribe/unsubscribe
+- `newsletter.read` — lista pretplatnika + historija kampanja
+- `newsletter.manage` — draft + send
 
 ## Changelog
 
-- 2026-06-30: Polish — email validacija, widget error state, `PermissionRoute`
-- 2026-06-29: Gate #16 READY_FOR_REVIEW — widget + admin lista
+Vidi `CHANGELOG.md`.

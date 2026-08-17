@@ -1,4 +1,4 @@
-type Kind = 'tickets' | 'membership';
+type Kind = 'tickets' | 'membership' | 'season';
 
 function key(kind: Kind, sessionId: string) {
   return `fk_confirm_${kind}:${sessionId}`;

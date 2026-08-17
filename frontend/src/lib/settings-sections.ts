@@ -51,7 +51,7 @@ export const SETTINGS_FIELD_GROUPS: SettingsFieldGroup[] = [
     id: 'smtp',
     title: 'Email (SMTP)',
     scope: 'private',
-    keyPrefixes: ['smtp.'],
+    keyPrefixes: ['smtp.', 'newsletter.blastEnabled'],
   },
   {
     id: 'system',

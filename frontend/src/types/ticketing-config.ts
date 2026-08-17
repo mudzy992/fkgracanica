@@ -26,16 +26,21 @@ export interface TicketingPublicConfig {
   modulesTicketing: boolean;
   modulesMembership: boolean;
   ticketCardBackground: string | null;
+  seasonPassPrice: number;
+  seasonPassLabel: string;
+  seasonPassAvailable: boolean;
 }
+
+export type ProviderGate = { keysOk: boolean; checkoutReady: boolean };
 
 export interface TicketingAdminConfig {
   settings: Record<string, string>;
   salesModes: TicketingSalesModes;
   onlineReady: boolean;
   providerStatus: {
-    stripe: boolean;
-    paypal: boolean;
-    monri: boolean;
+    stripe: ProviderGate;
+    paypal: ProviderGate;
+    monri: ProviderGate;
     defaultProvider: string;
   };
   categories: TicketCategory[];

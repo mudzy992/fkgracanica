@@ -4,7 +4,9 @@ import { PrismaService } from '../../prisma/prisma.service';
 import { PaymentsReadinessService } from '../payments-readiness.service';
 import { confirmMembershipFlow, confirmTicketOrderFlow } from '../stripe-confirm.flow';
 import { notifyMembershipActive, notifyTicketPaid } from '../payment-notify';
+import { applyStripePaidMeta, confirmStripeSeasonPass } from '../stripe-paid.util';
 import { JobsService } from '../../jobs/jobs.module';
+import { createSimpleStripeCheckout } from '../stripe-checkout.util';
 import type { CheckoutSessionResult, PaymentProvider } from './payment-provider.interface';
 
 @Injectable()
@@ -82,24 +84,34 @@ export class StripeProvider implements PaymentProvider {
     cancelUrl: string,
   ): Promise<CheckoutSessionResult> {
     const stripe = await this.client();
-    const session = await stripe.checkout.sessions.create({
-      mode: 'payment',
-      success_url: successUrl,
-      cancel_url: cancelUrl,
-      line_items: [
-        {
-          quantity: 1,
-          price_data: {
-            currency: 'bam',
-            unit_amount: Math.round(amount * 100),
-            product_data: { name: 'Članstvo FK Gračanica' },
-          },
-        },
-      ],
+    return createSimpleStripeCheckout(stripe, {
+      amount,
+      name: 'Članstvo FK Gračanica',
+      successUrl,
+      cancelUrl,
       metadata: { membershipId, type: 'membership' },
     });
-    if (!session.url) throw new BadRequestException('Stripe session nije kreiran');
-    return { url: session.url, sessionId: session.id, provider: 'stripe' };
+  }
+
+  async createSeasonPassCheckout(
+    passId: string,
+    amount: number,
+    successUrl: string,
+    cancelUrl: string,
+  ): Promise<CheckoutSessionResult> {
+    const stripe = await this.client();
+    const created = await createSimpleStripeCheckout(stripe, {
+      amount,
+      name: 'Sezonska karta FK Gračanica',
+      successUrl,
+      cancelUrl,
+      metadata: { passId, type: 'season_pass' },
+    });
+    await this.prisma.seasonPass.update({
+      where: { id: passId },
+      data: { paymentProvider: 'stripe', externalId: created.sessionId },
+    });
+    return created;
   }
 
   async confirmTicketSession(sessionId: string, userId: string) {
@@ -154,6 +166,12 @@ export class StripeProvider implements PaymentProvider {
     };
   }
 
+  async confirmSeasonPassSession(sessionId: string, userId: string) {
+    const stripe = await this.client();
+    const session = await stripe.checkout.sessions.retrieve(sessionId);
+    return confirmStripeSeasonPass(this.prisma, this.jobs, session, userId, sessionId);
+  }
+
   async handleWebhook(rawBody: Buffer, signature: string) {
     const secretRow = await this.prisma.setting.findUnique({
       where: { key: 'payments.stripe.webhookSecret' },
@@ -167,15 +185,7 @@ export class StripeProvider implements PaymentProvider {
     if (event.type === 'checkout.session.completed') {
       const session = event.data.object as Stripe.Checkout.Session;
       if (session.payment_status !== 'paid') return { received: true };
-      const meta = session.metadata ?? {};
-      if (meta.type === 'tickets' && meta.orderId) {
-        const fresh = await confirmTicketOrderFlow(this.prisma, meta.orderId);
-        if (fresh) await notifyTicketPaid(this.prisma, this.jobs, meta.orderId);
-      }
-      if (meta.type === 'membership' && meta.membershipId) {
-        const fresh = await confirmMembershipFlow(this.prisma, meta.membershipId);
-        if (fresh) await notifyMembershipActive(this.prisma, this.jobs, meta.membershipId);
-      }
+      await applyStripePaidMeta(this.prisma, this.jobs, session.metadata ?? {}, session.id);
     }
     return { received: true };
   }

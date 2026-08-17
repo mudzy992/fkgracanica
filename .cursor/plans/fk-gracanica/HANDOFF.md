@@ -41,7 +41,7 @@ Flag `feature.showcaseMode` default OFF.
 1. **Backend 100%:** analytics H2H/agregacija, email HTML/fail log, SEO share crawler, newsletter lista.
 2. **Frontend 100%:** i18n-en, analytics UI, OG, media-tree.
 3. **Mobile polish** iz GAPS P0–P2 — tek nakon 1–2.
-4. After_launch ne dirati: PayPal, Monri, PWA, Excel, newsletter blast.
+4. After_launch: [33](./33_after-launch-to-100/HANDOFF.md) — faza 2 PayPal done. Sljedeće: faza 3 Monri.
 
 ---
 

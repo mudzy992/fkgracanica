@@ -1,5 +1,5 @@
 ---
-description: Responsive javni web, skica, timeline, grb i premium landing pravila
+description: Responsive javni web, skica, o-klubu dokumentar, grb i premium landing pravila
 alwaysApply: true
 globs: "frontend/src/**/*.{tsx,ts,css}"
 ---
@@ -16,9 +16,11 @@ globs: "frontend/src/**/*.{tsx,ts,css}"
 - `≥ lg`: horizontalna (`aspect-[16/9]`)
 - Koristiti `ResponsiveFormationPitch` wrapper na svim stranicama sa skicom
 
-## Timeline mobilni (`/o-klubu`)
-- Bez linije i tačaka na `< lg`
-- Scroll-snap kartice (`snap-y snap-mandatory`)
+## O klubu (`/o-klubu`)
+- Dokumentar: cold open + full-bleed scene (window scroll), ne kartice na liniji
+- HUD: desktop godine desno; `< lg` donja traka chipova (`overflow-x-auto`)
+- Bez vertikalne linije, tačaka i nested snap scroller-a
+- `prefers-reduced-motion`: bez parallaxa i bounce chevrona
 
 ## Grb
 - `club.crestUrl` (PNG) → header logo + dynamic favicon

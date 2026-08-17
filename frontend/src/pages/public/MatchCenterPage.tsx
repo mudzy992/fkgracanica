@@ -10,13 +10,11 @@ import { MatchCenterToolbar } from '../../components/match/MatchCenterToolbar';
 import { MatchEventsSection } from '../../components/match/MatchEventsSection';
 import { PageContainer } from '../../components/public/PageContainer';
 import { Seo } from '../../components/seo/Seo';
-import { VideoEmbed } from '../../components/public/VideoEmbed';
+import { MatchHighlights } from '../../components/match/MatchHighlights';
 import { MatchReportApproval } from '../../components/match/MatchReportApproval';
 import { MatchLineupSection, MatchRelatedNewsSection } from '../../components/match/MatchCenterSections';
 import { MatchStatisticsSection } from '../../components/match/MatchStatisticsSection';
 import { Skeleton } from '../../components/ui/skeleton';
-import { NewsSectionTitle } from '../../components/news/NewsSectionTitle';
-import { Reveal } from '../../lib/motion/Reveal';
 
 export function MatchCenterPage() {
   const { id } = useParams<{ id: string }>();
@@ -99,16 +97,7 @@ export function MatchCenterPage() {
           statusLabel={matchStatusLabel(data.status)}
         />
 
-        {data.youtubeUrl && (
-          <section className="mt-10 sm:mt-12">
-            <Reveal>
-              <NewsSectionTitle>Snimak</NewsSectionTitle>
-            </Reveal>
-            <div className="mt-2 overflow-hidden rounded-2xl border border-white/10">
-              <VideoEmbed url={data.youtubeUrl} title="Snimak utakmice" />
-            </div>
-          </section>
-        )}
+        <MatchHighlights streamUrl={data.youtubeUrl} highlights={data.highlights} />
 
         <MatchLineupSection match={data} />
         <MatchStatisticsSection match={data} stats={matchStats} loading={msl} />

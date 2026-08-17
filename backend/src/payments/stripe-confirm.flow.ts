@@ -1,4 +1,5 @@
 import { generateQrCode } from '../common/utils/qr.util';
+import { isConfirmable } from '../membership/membership-lifecycle.util';
 import type { PrismaService } from '../prisma/prisma.service';
 
 export async function confirmTicketOrderFlow(prisma: PrismaService, orderId: string): Promise<boolean> {
@@ -25,7 +26,7 @@ export async function confirmTicketOrderFlow(prisma: PrismaService, orderId: str
 
 export async function confirmMembershipFlow(prisma: PrismaService, membershipId: string): Promise<boolean> {
   const membership = await prisma.membership.findUnique({ where: { id: membershipId } });
-  if (!membership) return false;
+  if (!membership || !isConfirmable(membership.status)) return false;
 
   if (membership.status === 'ACTIVE') {
     const base =

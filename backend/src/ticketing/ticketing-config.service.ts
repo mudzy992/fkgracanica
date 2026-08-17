@@ -3,6 +3,7 @@ import { MatchStatus } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { SettingsService } from '../settings/settings.service';
 import { PaymentsReadinessService } from '../payments/payments-readiness.service';
+import { PAYMENTS_ADMIN_KEYS } from '../payments/payments-settings';
 import {
   activeTicketCategories,
   DEFAULT_TICKET_CATEGORIES,
@@ -10,7 +11,7 @@ import {
   type TicketCategoryDef,
 } from './ticket-categories.util';
 
-const TICKETING_ADMIN_KEYS = [
+const TICKETING_CORE_KEYS = [
   'ticketing.stadiumCapacity',
   'ticketing.memberDiscountPercent',
   'ticketing.maxBoxOfficeTicketsPerUser',
@@ -18,20 +19,13 @@ const TICKETING_ADMIN_KEYS = [
   'ticketing.ticketCardBackground',
   'ticketing.onlineEnabled',
   'ticketing.boxOfficeEnabled',
+  'ticketing.seasonPassPrice',
+  'ticketing.seasonPassLabel',
   'membership.onlineEnabled',
   'membership.annualPrice',
-  'payments.stripe.enabled',
-  'payments.stripe.secretKey',
-  'payments.stripe.webhookSecret',
-  'payments.stripe.publishableKey',
-  'payments.paypal.enabled',
-  'payments.paypal.clientId',
-  'payments.paypal.clientSecret',
-  'payments.monri.enabled',
-  'payments.monri.merchantKey',
-  'payments.monri.authenticationKey',
-  'payments.defaultProvider',
 ] as const;
+
+const TICKETING_ADMIN_KEYS = [...TICKETING_CORE_KEYS, ...PAYMENTS_ADMIN_KEYS];
 
 @Injectable()
 export class TicketingConfigService {
@@ -56,6 +50,9 @@ export class TicketingConfigService {
     );
     const membershipOnline =
       (await this.payments.isMembershipOnlineAllowed()) && salesModes.onlineReady;
+    const offerSeason = await this.prisma.season.findFirst({ where: { isActive: true } });
+    const seasonPassPrice = Number(publicSettings['ticketing.seasonPassPrice']) || 0;
+    const seasonPassLabel = publicSettings['ticketing.seasonPassLabel'] || 'Sezonska karta';
     const priv = await this.settings.getPrivate();
     const activeTicketMatch = await this.findActiveScheduledHomeMatch();
     return {
@@ -73,6 +70,10 @@ export class TicketingConfigService {
       membershipOnlineEnabled: membershipOnline,
       modulesTicketing: publicSettings['modules.ticketing'] !== 'false',
       modulesMembership: priv['feature.membership'] !== 'false',
+      seasonPassPrice,
+      seasonPassLabel,
+      seasonPassAvailable:
+        !!offerSeason && seasonPassPrice > 0 && (salesModes.online || salesModes.boxOffice),
     };
   }
 
@@ -103,9 +104,9 @@ export class TicketingConfigService {
 
   private async getProviderStatus() {
     const [stripe, paypal, monri, defaultProvider] = await Promise.all([
-      this.payments.isProviderReady('stripe'),
-      this.payments.isProviderReady('paypal'),
-      this.payments.isProviderReady('monri'),
+      this.payments.getProviderGate('stripe'),
+      this.payments.getProviderGate('paypal'),
+      this.payments.getProviderGate('monri'),
       this.payments.getDefaultProvider(),
     ]);
     return { stripe, paypal, monri, defaultProvider };
@@ -118,13 +119,15 @@ export class TicketingConfigService {
       'ticketing.maxBoxOfficeTicketsPerUser',
       'ticketing.categories',
       'ticketing.ticketCardBackground',
+      'ticketing.seasonPassPrice',
+      'ticketing.seasonPassLabel',
       'membership.annualPrice',
       'payments.stripe.publishableKey',
     ]);
     const pub: Record<string, string> = {};
     const priv: Record<string, string> = {};
     for (const [key, value] of Object.entries(updates)) {
-      if (!TICKETING_ADMIN_KEYS.includes(key as (typeof TICKETING_ADMIN_KEYS)[number])) continue;
+      if (!TICKETING_ADMIN_KEYS.includes(key)) continue;
       if (publicKeys.has(key)) pub[key] = value;
       else priv[key] = value;
     }

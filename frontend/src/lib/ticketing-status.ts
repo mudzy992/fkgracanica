@@ -25,6 +25,9 @@ export function ticketStatusLabel(status: TicketStatus | string): string {
     USED: 'Iskorišteno',
     CANCELLED: 'Otkazano',
     REFUND_REQUESTED: 'Povrat',
+    ADMITTED: 'Ulaz odobren',
+    ACTIVE: 'Aktivna',
+    PENDING: 'Na čekanju',
   };
   return labels[status] ?? status;
 }

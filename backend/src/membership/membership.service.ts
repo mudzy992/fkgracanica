@@ -9,6 +9,16 @@ import { JobsService } from '../jobs/jobs.module';
 import { notifyMembershipActive } from '../payments/payment-notify';
 import type { JoinMembershipDto } from './dto/join-membership.dto';
 import { resolveExpiredMany, resolveExpiredOne } from './membership-expiry.util';
+import {
+  assertCanActivate,
+  assertCanCancel,
+  assertCanRenew,
+  assertCanSuspend,
+  assertNoPendingOrActive,
+  isPayable,
+  openPendingMembership,
+  requireMembership,
+} from './membership-lifecycle.util';
 
 const userSelect = { id: true, email: true, firstName: true, lastName: true } as const;
 const includeWithUser = { user: { select: userSelect }, card: true } as const;
@@ -50,7 +60,7 @@ export class MembershipService {
       },
     });
 
-    await this.assertNoPendingOrActive(user.id);
+    await assertNoPendingOrActive(this.prisma, user.id);
     const membership = await this.prisma.membership.create({
       data: { userId: user.id, status: MembershipStatus.PENDING },
     });
@@ -64,10 +74,7 @@ export class MembershipService {
       where: { id: membershipId, userId },
     });
     if (!membership) throw new NotFoundException('Članstvo nije pronađeno');
-    const payable = (
-      [MembershipStatus.PENDING, MembershipStatus.ACTIVE, MembershipStatus.EXPIRED] as MembershipStatus[]
-    ).includes(membership.status);
-    if (!payable) {
+    if (!isPayable(membership.status)) {
       throw new BadRequestException('Ovo članstvo nije dostupno za online uplatu');
     }
     return membership;
@@ -82,19 +89,13 @@ export class MembershipService {
 
   async register(userId: string) {
     await this.assertMembershipModuleEnabled();
-    await this.assertNoPendingOrActive(userId, 'Već imate aktivno ili čekajuće članstvo');
-    return this.prisma.membership.create({
-      data: { userId, status: MembershipStatus.PENDING },
-    });
+    return openPendingMembership(this.prisma, userId, 'Već imate aktivno ili čekajuće članstvo');
   }
 
   async createForUser(email: string, activate = false) {
     const user = await this.prisma.user.findUnique({ where: { email } });
     if (!user) throw new NotFoundException('Korisnik nije pronađen');
-    await this.assertNoPendingOrActive(user.id);
-    const membership = await this.prisma.membership.create({
-      data: { userId: user.id, status: MembershipStatus.PENDING },
-    });
+    const membership = await openPendingMembership(this.prisma, user.id);
     if (activate) await this.activate(membership.id);
     return this.findOne(membership.id);
   }
@@ -119,6 +120,8 @@ export class MembershipService {
   }
 
   async activate(id: string) {
+    const current = await requireMembership(this.prisma, id);
+    assertCanActivate(current.status);
     const membership = await this.prisma.membership.update({
       where: { id },
       data: {
@@ -142,11 +145,8 @@ export class MembershipService {
   }
 
   async renew(id: string) {
-    const membership = await this.prisma.membership.findUnique({ where: { id } });
-    if (!membership) throw new NotFoundException('Članstvo nije pronađeno');
-    if (membership.status !== MembershipStatus.ACTIVE) {
-      throw new BadRequestException('Samo aktivno članstvo se može obnoviti');
-    }
+    const membership = await requireMembership(this.prisma, id);
+    assertCanRenew(membership.status);
     const base = membership.endDate && membership.endDate > new Date() ? membership.endDate : new Date();
     const endDate = new Date(base.getTime() + 365 * 24 * 60 * 60 * 1000);
     return this.prisma.membership.update({
@@ -165,7 +165,9 @@ export class MembershipService {
     return resolveExpiredOne(this.prisma, item);
   }
 
-  suspend(id: string) {
+  async suspend(id: string) {
+    const membership = await requireMembership(this.prisma, id);
+    assertCanSuspend(membership.status);
     return this.prisma.membership.update({
       where: { id },
       data: { status: MembershipStatus.SUSPENDED },
@@ -173,24 +175,13 @@ export class MembershipService {
     });
   }
 
-  cancel(id: string) {
+  async cancel(id: string) {
+    const membership = await requireMembership(this.prisma, id);
+    assertCanCancel(membership.status);
     return this.prisma.membership.update({
       where: { id },
       data: { status: MembershipStatus.CANCELLED },
       include: { card: true },
     });
-  }
-
-  private async assertNoPendingOrActive(
-    userId: string,
-    message = 'Korisnik već ima aktivno ili čekajuće članstvo',
-  ) {
-    const existing = await this.prisma.membership.findFirst({
-      where: {
-        userId,
-        status: { in: [MembershipStatus.PENDING, MembershipStatus.ACTIVE] },
-      },
-    });
-    if (existing) throw new BadRequestException(message);
   }
 }

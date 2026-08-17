@@ -1,5 +1,16 @@
 # Changelog — Membership
 
+## 2026-08-17
+
+- `CANCELLED`/`EXPIRED` reuse na `register` / admin `Novi član` → isti id, `PENDING`
+- Admin **Aktiviraj** na CANCELLED/EXPIRED; **Obnovi** na EXPIRED
+- `/clanstvo`: CANCELLED online pay / offline re-join; SUSPENDED i dalje kontakt; QR samo ACTIVE
+- PENDING copy više ne tvrdi da je uplata zaprimljena; pay retry uvijek kad je online
+- `confirmMembershipFlow` ignoriše `SUSPENDED`; payable uključuje `CANCELLED`
+- Mobile user/staff usklađeni s web akcijama
+- Dashboard `members` isključuje `CANCELLED`
+- E2E: cancel → register reuse; cancel → activate
+
 ## 2026-06-29 (d)
 
 - `MembershipPendingStatus`: PENDING = uplata zaprimljena, bez „Plati online” dugmeta (retry samo na `?cancelled=1`)
@@ -19,7 +30,7 @@
 ## 2026-06-29
 
 - Gate #13 APPROVED: admin lista (filteri, renew, detail sheet), javna `/clanstvo` (status + QR kartica)
-- v1 bez admin manual-add člana (opcionalni backlog) i bez hard delete — **Otkaži** (`CANCELLED`) je standard za audit trag
+- Bez hard delete — **Otkaži** (`CANCELLED`) je standard za audit trag (od 2026-08-17 reverzibilan)
 - Backend: duplicate register guard, `?status` filter, lazy `EXPIRED` resolve
 - E2E: duplicate register → 400
 

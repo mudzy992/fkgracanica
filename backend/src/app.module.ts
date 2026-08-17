@@ -36,6 +36,7 @@ import { PaymentsModule } from './payments/payments.module';
 import { HallOfFameModule } from './hall-of-fame/hall-of-fame.module';
 import { MuseumModule } from './museum/museum.module';
 import { AnalyticsModule } from './analytics/analytics.module';
+import { FinanceModule } from './finance/finance.module';
 import { CacheModule } from './cache/cache.module';
 import { JobsModule } from './jobs/jobs.module';
 import { SeoModule } from './seo/seo.module';
@@ -85,6 +86,7 @@ import { HttpExceptionFilter } from './common/filters/http-exception.filter';
     HallOfFameModule,
     MuseumModule,
     AnalyticsModule,
+    FinanceModule,
     CacheModule,
     JobsModule,
     SeoModule,

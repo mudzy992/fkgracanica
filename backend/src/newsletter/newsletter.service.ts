@@ -25,6 +25,21 @@ export class NewsletterService {
     });
   }
 
+  async unsubscribeByToken(token: string) {
+    const value = token.trim();
+    if (!value) throw new NotFoundException('Link za odjavu nije validan');
+    const row = await this.prisma.newsletterSubscriber.findUnique({
+      where: { unsubscribeToken: value },
+    });
+    if (!row) throw new NotFoundException('Link za odjavu nije validan');
+    if (!row.isActive) return { ok: true as const };
+    await this.prisma.newsletterSubscriber.update({
+      where: { id: row.id },
+      data: { isActive: false },
+    });
+    return { ok: true as const };
+  }
+
   async findAll(query: NewsletterListQueryDto) {
     const params = parsePagination(query);
     const where: Prisma.NewsletterSubscriberWhereInput = {};

@@ -78,12 +78,38 @@ export function useAdminCancelTicketingOrder() {
 
 export function useValidateTicket() {
   return useMutation({
-    mutationFn: async (qrCode: string) =>
-      (await api.post('/ticketing/validate', { qrCode })).data as {
+    mutationFn: async (payload: { qrCode: string; matchId?: string }) =>
+      (await api.post('/ticketing/validate', payload)).data as {
         id: string;
+        kind?: 'ticket' | 'pass';
         status: string;
         category: string;
         match?: { homeClub?: { name: string }; awayClub?: { name: string } };
       },
+  });
+}
+
+export function useSeasonPassAdminList() {
+  return useQuery({
+    queryKey: ['ticketing', 'season-pass', 'admin'],
+    queryFn: async () =>
+      asArray<{
+        id: string;
+        status: string;
+        label: string;
+        price: string;
+        createdAt: string;
+        user: { email: string; firstName: string | null; lastName: string | null };
+        season: { name: string };
+      }>((await api.get('/ticketing/season-pass/admin')).data),
+  });
+}
+
+export function useIssueSeasonPass() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (email: string) =>
+      (await api.post('/ticketing/season-pass/admin/issue', { email })).data,
+    onSuccess: () => void qc.invalidateQueries({ queryKey: ['ticketing', 'season-pass'] }),
   });
 }

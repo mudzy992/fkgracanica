@@ -4,6 +4,8 @@ import { Badge } from '../../../components/ui/badge';
 import { Button } from '../../../components/ui/button';
 import { Input } from '../../../components/ui/input';
 import { Switch } from '../../../components/ui/switch';
+import { PaymentProviderCard } from './PaymentProviderCard';
+import { PaymentProviderHints } from './PaymentProviderHints';
 
 const PROVIDERS = [
   { id: 'stripe', label: 'Stripe' },
@@ -44,6 +46,11 @@ export function TicketingPaymentsTab() {
   if (isLoading || !data) return <p className="p-4 text-sm text-text-muted">Učitavanje...</p>;
 
   const canEnableOnline = data.onlineReady;
+  const gates = {
+    stripe: data.providerStatus.stripe,
+    paypal: data.providerStatus.paypal,
+    monri: data.providerStatus.monri,
+  };
 
   return (
     <div className="space-y-6 p-4">
@@ -54,16 +61,7 @@ export function TicketingPaymentsTab() {
         </Badge>
       </div>
 
-      <div className="rounded-lg border border-[var(--border-subtle)] bg-surface/50 p-4 text-sm text-text-muted">
-        <p className="font-medium text-text">Stripe test (demo)</p>
-        <p className="mt-2">
-          U Stripe Dashboardu uključite Test mode i unesite pk_test i sk_test ključeve. Test kartica:{' '}
-          <strong>4242 4242 4242 4242</strong>.
-        </p>
-        <p className="mt-2 text-xs">
-          Webhook lokalno: stripe listen --forward-to localhost:3000/payments/webhooks/stripe
-        </p>
-      </div>
+      <PaymentProviderHints />
 
       <label className={`flex items-center gap-2 text-sm ${!canEnableOnline ? 'opacity-60' : ''}`}>
         <Switch
@@ -74,7 +72,10 @@ export function TicketingPaymentsTab() {
         Online kupovina ulaznica
       </label>
       {!canEnableOnline && (
-        <p className="text-xs text-text-muted">Popunite i omogućite barem jednog providera ispod.</p>
+        <p className="text-xs text-text-muted">
+          Omogućite Stripe (jedini checkout koji radi). PayPal/Monri ključevi se spremaju, naplata
+          još nije spojena.
+        </p>
       )}
 
       <label className={`flex items-center gap-2 text-sm ${!canEnableOnline ? 'opacity-60' : ''}`}>
@@ -106,40 +107,14 @@ export function TicketingPaymentsTab() {
       </div>
 
       {PROVIDERS.map((p) => (
-        <div key={p.id} className="rounded-lg border border-[var(--border-subtle)] p-4">
-          <div className="mb-3 flex items-center justify-between">
-            <h3 className="font-medium">{p.label}</h3>
-            <Badge variant={data.providerStatus[p.id] ? 'success' : 'muted'}>
-              {data.providerStatus[p.id] ? 'OK' : 'Nedostaje'}
-            </Badge>
-          </div>
-          <label className="mb-3 flex items-center gap-2 text-sm">
-            <Switch
-              checked={settings[`payments.${p.id}.enabled`] === 'true'}
-              onCheckedChange={(v) => set(`payments.${p.id}.enabled`, String(v))}
-            />
-            Omogućen
-          </label>
-          {p.id === 'stripe' && (
-            <div className="space-y-2">
-              <Input placeholder="Publishable key" value={settings['payments.stripe.publishableKey'] ?? ''} onChange={(e) => set('payments.stripe.publishableKey', e.target.value)} />
-              <Input placeholder="Secret key" type="password" value={settings['payments.stripe.secretKey'] ?? ''} onChange={(e) => set('payments.stripe.secretKey', e.target.value)} />
-              <Input placeholder="Webhook secret" type="password" value={settings['payments.stripe.webhookSecret'] ?? ''} onChange={(e) => set('payments.stripe.webhookSecret', e.target.value)} />
-            </div>
-          )}
-          {p.id === 'paypal' && (
-            <div className="space-y-2">
-              <Input placeholder="Client ID" value={settings['payments.paypal.clientId'] ?? ''} onChange={(e) => set('payments.paypal.clientId', e.target.value)} />
-              <Input placeholder="Client secret" type="password" value={settings['payments.paypal.clientSecret'] ?? ''} onChange={(e) => set('payments.paypal.clientSecret', e.target.value)} />
-            </div>
-          )}
-          {p.id === 'monri' && (
-            <div className="space-y-2">
-              <Input placeholder="Merchant key" value={settings['payments.monri.merchantKey'] ?? ''} onChange={(e) => set('payments.monri.merchantKey', e.target.value)} />
-              <Input placeholder="Authentication key" type="password" value={settings['payments.monri.authenticationKey'] ?? ''} onChange={(e) => set('payments.monri.authenticationKey', e.target.value)} />
-            </div>
-          )}
-        </div>
+        <PaymentProviderCard
+          key={p.id}
+          id={p.id}
+          label={p.label}
+          gate={gates[p.id]}
+          settings={settings}
+          onSet={set}
+        />
       ))}
 
       <Button onClick={onSave} disabled={save.isPending}>

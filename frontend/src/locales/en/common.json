@@ -80,6 +80,7 @@
     "livePending": "Live approval",
     "membership": "Membership",
     "ticketing": "Ticketing",
+    "finance": "Finance",
     "contact": "Contact",
     "newsletter": "Newsletter",
     "hallOfFame": "Hall of Fame",
@@ -87,6 +88,7 @@
     "heritage": "Heritage",
     "comms": "Communication",
     "analytics": "Analytics",
+    "finance": "Finance",
     "navGroup": {
       "overview": "Overview",
       "system": "System",
@@ -146,5 +148,13 @@
   },
   "pages": {
     "notFound": "Page not found."
+  },
+  "match": {
+    "fullStream": "Full match",
+    "highlights": "Video highlights",
+    "addHighlight": "Add clip",
+    "highlightTitle": "Clip title",
+    "highlightStart": "Start (seconds, optional)",
+    "highlightSaveError": "Could not save clip."
   }
 }

@@ -6,7 +6,7 @@ import {
 } from '../lib/payment-session';
 
 interface Options<T> {
-  kind: 'tickets' | 'membership';
+  kind: 'tickets' | 'membership' | 'season';
   paid: boolean;
   sessionId: string | null;
   enabled: boolean;

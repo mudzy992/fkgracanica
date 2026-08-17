@@ -2,17 +2,20 @@ import { useState } from 'react';
 import { Link, useLocation, useSearchParams } from 'react-router-dom';
 import { useTicketingPublicConfig } from '../../hooks/use-ticketing';
 import { useTicketPaymentReturn } from '../../hooks/use-ticket-payment-return';
+import { useSeasonPassPaymentReturn } from '../../hooks/use-season-pass-payment-return';
 import { useClearPaymentParams } from '../../hooks/use-clear-payment-params';
 import { useAuth } from '../../lib/auth';
+import { parsePaymentProvider } from '../../lib/payment-providers';
 import { MyTicketsPanel } from '../../components/ticketing/MyTicketsPanel';
 import { TicketsReserveForm } from '../../components/ticketing/TicketsReserveForm';
+import { SeasonPassPanel } from '../../components/ticketing/SeasonPassPanel';
 import { FormShell } from '../../components/public/forms/FormShell';
 import { PageHeroHeader } from '../../components/public/shell/PageHeroHeader';
 import { Seo } from '../../components/seo/Seo';
 import { Button } from '../../components/ui/button';
 import { Skeleton } from '../../components/ui/skeleton';
 
-type Tab = 'reserve' | 'orders';
+type Tab = 'reserve' | 'orders' | 'season';
 
 export function TicketsPage() {
   const { isAuthenticated, isLoading, user } = useAuth();
@@ -20,15 +23,27 @@ export function TicketsPage() {
   const [searchParams] = useSearchParams();
   const paidReturn = searchParams.get('paid') === '1';
   const cancelled = searchParams.get('cancelled') === '1';
-  const sessionId = searchParams.get('session_id');
+  const sessionId = searchParams.get('session_id') || searchParams.get('token');
+  const provider = parsePaymentProvider(searchParams.get('provider'));
+  const kind = searchParams.get('kind');
+  const isSeason = kind === 'season';
   const { data: config } = useTicketingPublicConfig();
-  const [tab, setTab] = useState<Tab>(paidReturn ? 'orders' : 'reserve');
+  const [tab, setTab] = useState<Tab>(paidReturn ? (isSeason ? 'season' : 'orders') : 'reserve');
 
-  const { confirming, activated } = useTicketPaymentReturn({
-    paid: paidReturn,
+  const ticketReturn = useTicketPaymentReturn({
+    paid: paidReturn && !isSeason,
     sessionId,
-    enabled: isAuthenticated && !isLoading,
+    provider,
+    enabled: isAuthenticated && !isLoading && !isSeason,
   });
+  const seasonReturn = useSeasonPassPaymentReturn({
+    paid: paidReturn && isSeason,
+    sessionId,
+    provider,
+    enabled: isAuthenticated && !isLoading && isSeason,
+  });
+  const confirming = ticketReturn.confirming || seasonReturn.confirming;
+  const activated = isSeason ? seasonReturn.activated : ticketReturn.activated;
   useClearPaymentParams(!confirming && (activated || !paidReturn || !sessionId));
 
   if (isLoading || confirming) return <Skeleton className="mx-auto mt-12 h-64 max-w-xl" />;
@@ -70,12 +85,23 @@ export function TicketsPage() {
               <Button size="sm" variant={tab === 'orders' ? 'default' : 'outline'} onClick={() => setTab('orders')}>
                 Moje narudžbe
               </Button>
+              {config?.seasonPassAvailable || tab === 'season' ? (
+                <Button size="sm" variant={tab === 'season' ? 'default' : 'outline'} onClick={() => setTab('season')}>
+                  Sezona
+                </Button>
+              ) : null}
             </div>
 
             {tab === 'reserve' ? (
               <TicketsReserveForm onSuccess={() => setTab('orders')} />
+            ) : tab === 'season' ? (
+              <SeasonPassPanel
+                config={config}
+                paymentSuccess={paidReturn && isSeason && activated}
+                paymentCancelled={cancelled && isSeason}
+              />
             ) : (
-              <MyTicketsPanel paymentSuccess={paidReturn && activated} />
+              <MyTicketsPanel paymentSuccess={paidReturn && !isSeason && activated} />
             )}
 
             {tab === 'reserve' && sales?.boxOffice && !sales?.online && (

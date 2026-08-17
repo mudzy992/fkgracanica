@@ -70,4 +70,47 @@ describe('Membership card (e2e)', () => {
 
     expect(duplicate.status).toBe(400);
   });
+
+  async function latestMembership() {
+    const mine = await request(app.getHttpServer())
+      .get('/api/v1/membership/me')
+      .set('Authorization', `Bearer ${accessToken}`);
+    expect(mine.status).toBe(200);
+    const items = mine.body as { id: string; status: string }[];
+    return items.find((m) => m.status === 'ACTIVE') ?? items[0];
+  }
+
+  it('cancel → register reuses same membership as PENDING', async () => {
+    const current = await latestMembership();
+    if (!current) throw new Error('membership missing');
+
+    const cancelled = await request(app.getHttpServer())
+      .patch(`/api/v1/membership/${current.id}/cancel`)
+      .set('Authorization', `Bearer ${accessToken}`);
+    expect(cancelled.status).toBe(200);
+    expect(cancelled.body.status).toBe('CANCELLED');
+
+    const registered = await request(app.getHttpServer())
+      .post('/api/v1/membership/register')
+      .set('Authorization', `Bearer ${accessToken}`);
+    expect(registered.status).toBe(201);
+    expect(registered.body.id).toBe(current.id);
+    expect(registered.body.status).toBe('PENDING');
+  });
+
+  it('cancel → activate restores ACTIVE', async () => {
+    const current = await latestMembership();
+    if (!current) throw new Error('membership missing');
+
+    const cancelled = await request(app.getHttpServer())
+      .patch(`/api/v1/membership/${current.id}/cancel`)
+      .set('Authorization', `Bearer ${accessToken}`);
+    expect(cancelled.status).toBe(200);
+
+    const activated = await request(app.getHttpServer())
+      .patch(`/api/v1/membership/${current.id}/activate`)
+      .set('Authorization', `Bearer ${accessToken}`);
+    expect(activated.status).toBe(200);
+    expect(activated.body.membership.status).toBe('ACTIVE');
+  });
 });

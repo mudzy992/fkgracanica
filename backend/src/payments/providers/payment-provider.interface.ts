@@ -14,4 +14,10 @@ export interface PaymentProvider {
     successUrl: string,
     cancelUrl: string,
   ): Promise<CheckoutSessionResult>;
+  createSeasonPassCheckout(
+    passId: string,
+    amount: number,
+    successUrl: string,
+    cancelUrl: string,
+  ): Promise<CheckoutSessionResult>;
 }

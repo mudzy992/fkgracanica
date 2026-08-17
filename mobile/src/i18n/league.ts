@@ -10,6 +10,8 @@ export const leagueBs = {
   leagueTopScorers: 'Najbolji strijelci',
   leagueTopAssists: 'Asistencije',
   leagueBackHome: 'Početna',
+  matchHighlights: 'Video sažeci',
+  openHighlight: 'Otvori na YouTube',
 } as const;
 
 export const leagueEn: Record<keyof typeof leagueBs, string> = {
@@ -24,4 +26,6 @@ export const leagueEn: Record<keyof typeof leagueBs, string> = {
   leagueTopScorers: 'Top scorers',
   leagueTopAssists: 'Assists',
   leagueBackHome: 'Home',
+  matchHighlights: 'Video highlights',
+  openHighlight: 'Open on YouTube',
 };

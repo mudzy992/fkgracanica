@@ -44,7 +44,14 @@ Redoslijed za kasnije trackove. Ne radi PayPal/Monri/PWA/Excel/newsletter blast 
 ## Namjerno van 100% sada
 
 `cms-builder`, `formation-dnd`, `media-tree` = web_only.  
-`paypal`, `monri`, `newsletter-campaigns`, `financial-export`, `pwa`, `seasonal-tickets`, `video-highlights`, `play-store` = after_launch.
+`paypal` = ready (2026-08-17).  
+`monri` = ready (2026-08-17).  
+`financial-export` = ready (2026-08-17).  
+`pwa` = ready (2026-08-17).  
+`video-highlights` = ready (2026-08-17).  
+`newsletter-campaigns` = ready (2026-08-17).  
+`seasonal-tickets` = ready (2026-08-17).  
+`play-store` = after_launch.
 
 ## Upisano u katalog
 

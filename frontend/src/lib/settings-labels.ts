@@ -9,6 +9,7 @@ export const SETTINGS_LABELS: Record<string, string> = {
   'seo.description': 'SEO opis',
   'smtp.host': 'SMTP host',
   'smtp.port': 'SMTP port',
+  'newsletter.blastEnabled': 'Newsletter kampanje (bulk slanje)',
   'live.prematchAudioUrl': 'YouTube URL — pre-match audio (live centar)',
   'upload.maxSizeMb': 'Maks. upload (MB)',
 };
@@ -16,6 +17,8 @@ export const SETTINGS_LABELS: Record<string, string> = {
 export const SETTINGS_DESCRIPTIONS: Record<string, string> = {
   'live.prematchAudioUrl':
     'Pozadinska muzika na /live/:id dok je utakmica zakazana (SCHEDULED). Unesite YouTube link — audio se pušta automatski.',
+  'newsletter.blastEnabled':
+    'Uključi slanje newsletter kampanja na sve aktivne pretplatnike. Default isključeno. SMTP mora biti podešen.',
 };
 
 export function settingLabel(key: string): string {

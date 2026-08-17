@@ -60,6 +60,14 @@ export type Match = {
   homeClub: Club;
   awayClub: Club;
   events?: MatchEvent[];
+  highlights?: MatchHighlight[];
+};
+
+export type MatchHighlight = {
+  id: string;
+  title: string;
+  youtubeUrl: string;
+  startSeconds?: number | null;
 };
 
 export type MatchEvent = {
@@ -136,6 +144,29 @@ export type MatchAvailability = {
 export type TicketingConfig = {
   categories: TicketCategory[];
   salesModes?: { boxOffice: boolean; online: boolean };
+  readyProviders?: string[];
+  seasonPassPrice?: number;
+  seasonPassLabel?: string;
+  seasonPassAvailable?: boolean;
+  activeTicketMatch?: Match | null;
+};
+
+export type SeasonPassMine = {
+  offer: {
+    season: { id: string; name: string } | null;
+    price: number;
+    label: string;
+    available: boolean;
+    salesModes: { boxOffice: boolean; online: boolean };
+  };
+  pass: {
+    id: string;
+    status: string;
+    label: string;
+    price: string;
+    qrCode: string;
+    season?: { name: string };
+  } | null;
 };
 
 export type NewsComment = {

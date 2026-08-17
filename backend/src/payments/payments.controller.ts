@@ -1,4 +1,4 @@
-import { Body, Controller, Headers, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Headers, Post, Query, Req, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import type { RawBodyRequest } from '@nestjs/common';
 import type { Request } from 'express';
@@ -58,14 +58,36 @@ export class PaymentsController {
     );
   }
 
+  @Post('checkout/season-pass')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  checkoutSeasonPass(
+    @CurrentUser() user: AuthUser,
+    @Body()
+    body: {
+      passId: string;
+      successUrl: string;
+      cancelUrl: string;
+      provider?: 'stripe' | 'paypal' | 'monri';
+    },
+  ) {
+    return this.service.checkoutSeasonPass(
+      body.passId,
+      body.successUrl,
+      body.cancelUrl,
+      user.id,
+      body.provider,
+    );
+  }
+
   @Post('membership/confirm-session')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   confirmMembershipSession(
     @CurrentUser() user: AuthUser,
-    @Body() body: { sessionId: string },
+    @Body() body: { sessionId: string; provider?: 'stripe' | 'paypal' | 'monri'; returnUrl?: string },
   ) {
-    return this.service.confirmMembershipSession(body.sessionId, user.id);
+    return this.service.confirmMembershipSession(body.sessionId, user.id, body.provider, body.returnUrl);
   }
 
   @Post('tickets/confirm-session')
@@ -73,9 +95,19 @@ export class PaymentsController {
   @ApiBearerAuth()
   confirmTicketSession(
     @CurrentUser() user: AuthUser,
-    @Body() body: { sessionId: string },
+    @Body() body: { sessionId: string; provider?: 'stripe' | 'paypal' | 'monri'; returnUrl?: string },
   ) {
-    return this.service.confirmTicketSession(body.sessionId, user.id);
+    return this.service.confirmTicketSession(body.sessionId, user.id, body.provider, body.returnUrl);
+  }
+
+  @Post('season-pass/confirm-session')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  confirmSeasonPassSession(
+    @CurrentUser() user: AuthUser,
+    @Body() body: { sessionId: string; provider?: 'stripe' | 'paypal' | 'monri'; returnUrl?: string },
+  ) {
+    return this.service.confirmSeasonPassSession(body.sessionId, user.id, body.provider, body.returnUrl);
   }
 
   @Post('webhooks/stripe')
@@ -85,5 +117,31 @@ export class PaymentsController {
   ) {
     const raw = req.rawBody ?? Buffer.from('');
     return this.service.handleStripeWebhook(raw, signature ?? '');
+  }
+
+  @Post('webhooks/paypal')
+  paypalWebhook(@Req() req: RawBodyRequest<Request>) {
+    const raw = req.rawBody ?? Buffer.from('');
+    return this.service.handlePaypalWebhook(raw, req.headers as Record<string, string | string[] | undefined>);
+  }
+
+  @Get('monri/form')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  getMonriForm(
+    @CurrentUser() user: AuthUser,
+    @Query('sessionId') sessionId: string,
+    @Query('origin') origin: string,
+  ) {
+    return this.service.getMonriForm(sessionId, user.id, origin || '');
+  }
+
+  @Post('webhooks/monri')
+  monriWebhook(@Req() req: RawBodyRequest<Request>) {
+    const raw = req.rawBody ?? Buffer.from('');
+    return this.service.handleMonriWebhook(
+      raw,
+      req.headers as Record<string, string | string[] | undefined>,
+    );
   }
 }

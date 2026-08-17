@@ -84,6 +84,7 @@
     "matches": "Utakmice",
     "membership": "Članstvo",
     "ticketing": "Ulaznice",
+    "finance": "Finansije",
     "contact": "Kontakt",
     "newsletter": "Newsletter",
     "hallOfFame": "Hall of Fame",
@@ -150,5 +151,13 @@
   },
   "pages": {
     "notFound": "Stranica nije pronađena."
+  },
+  "match": {
+    "fullStream": "Snimak",
+    "highlights": "Video sažeci",
+    "addHighlight": "Dodaj klip",
+    "highlightTitle": "Naslov klipa",
+    "highlightStart": "Početak (sekunde, opcionalno)",
+    "highlightSaveError": "Klip nije spremljen."
   }
 }

@@ -10,6 +10,17 @@ import { spacing, typography } from '../../../src/lib/theme';
 type MembershipItem = { id: string; name: string; status: string };
 type ActionKind = 'activate' | 'suspend' | 'renew' | 'cancel';
 
+function actionsForStatus(status: string): ActionKind[] {
+  const actions: ActionKind[] = [];
+  if (status === 'PENDING' || status === 'SUSPENDED' || status === 'EXPIRED' || status === 'CANCELLED') {
+    actions.push('activate');
+  }
+  if (status === 'ACTIVE' || status === 'EXPIRED') actions.push('renew');
+  if (status === 'ACTIVE') actions.push('suspend');
+  if (status !== 'CANCELLED') actions.push('cancel');
+  return actions;
+}
+
 export default function AdminMembershipScreen() {
   const { t } = useTranslation();
   const { colors } = useTheme();
@@ -61,7 +72,7 @@ export default function AdminMembershipScreen() {
             <Text style={[styles.name, { color: colors.text }]}>{item.name}</Text>
             <Text style={[styles.meta, { color: colors.textMuted }]}>{item.status}</Text>
             <View style={styles.actions}>
-              {(['activate', 'renew', 'suspend', 'cancel'] as const).map((kind) => (
+              {actionsForStatus(item.status).map((kind) => (
                 <Pressable
                   key={kind}
                   style={[styles.button, { backgroundColor: colors.surface }]}

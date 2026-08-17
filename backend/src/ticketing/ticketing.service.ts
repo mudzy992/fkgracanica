@@ -6,11 +6,12 @@ import { TicketingOrdersService } from './ticketing-orders.service';
 import { JobsService } from '../jobs/jobs.module';
 import { notifyTicketPaid } from '../payments/payment-notify';
 import {
-  countSoldForMatch,
   getMemberDiscountPercent,
   getStadiumCapacity,
   ticketOrderInclude,
 } from './ticketing-query.util';
+import { occupiedForMatch } from './season-pass-capacity.util';
+import { validateSeasonPass } from './season-pass-validate.util';
 import {
   countUserActiveTicketsForMatch,
   getMaxBoxOfficeTicketsPerUser,
@@ -62,12 +63,12 @@ export class TicketingService {
     return this.orders.cancelOrder(orderId, userId);
   }
 
-  async validateTicket(qrCode: string) {
+  async validateTicket(qrCode: string, matchId?: string) {
     const ticket = await this.prisma.ticket.findUnique({
       where: { qrCode },
       include: { match: { include: { homeClub: true, awayClub: true } } },
     });
-    if (!ticket) throw new NotFoundException('Ulaznica nije pronađena');
+    if (!ticket) return validateSeasonPass(this.prisma, qrCode, matchId);
     if (ticket.status === TicketStatus.USED) {
       throw new BadRequestException('Ulaznica je već iskorištena');
     }
@@ -84,7 +85,7 @@ export class TicketingService {
       where: { id: ticket.id },
       data: { status: TicketStatus.USED },
       include: { match: { include: { homeClub: true, awayClub: true } } },
-    });
+    }).then((row) => ({ kind: 'ticket' as const, ...row }));
   }
 
   async getMatchAvailability(matchId: string, userId?: string) {
@@ -97,7 +98,7 @@ export class TicketingService {
       throw new BadRequestException('Ulaznice nisu dostupne za ovu utakmicu');
     }
     const capacity = await getStadiumCapacity(this.prisma);
-    const sold = await countSoldForMatch(this.prisma, matchId);
+    const occupied = await occupiedForMatch(this.prisma, matchId);
     const memberDiscountPercent = userId ? await getMemberDiscountPercent(this.prisma, userId) : 0;
     const sales = await this.payments.getSalesModes();
     let userTickets = 0;
@@ -113,8 +114,9 @@ export class TicketingService {
     return {
       matchId,
       capacity,
-      sold,
-      remaining: Math.max(0, capacity - sold),
+      sold: occupied.sold,
+      passes: occupied.passes,
+      remaining: Math.max(0, capacity - occupied.occupied),
       memberDiscountPercent,
       userTickets,
       maxPerUser,

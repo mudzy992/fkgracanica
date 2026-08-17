@@ -17,7 +17,18 @@ export class DashboardService {
       ticketsSold,
     ] = await Promise.all([
       this.prisma.user.count({ where: { deletedAt: null } }),
-      this.prisma.membership.count(),
+      this.prisma.membership.count({
+        where: {
+          status: {
+            in: [
+              MembershipStatus.ACTIVE,
+              MembershipStatus.PENDING,
+              MembershipStatus.SUSPENDED,
+              MembershipStatus.EXPIRED,
+            ],
+          },
+        },
+      }),
       this.prisma.membership.count({ where: { status: MembershipStatus.ACTIVE } }),
       this.prisma.news.count({ where: { status: ContentStatus.PUBLISHED } }),
       this.prisma.match.count(),

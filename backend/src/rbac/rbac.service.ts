@@ -2,18 +2,24 @@ import {
   BadRequestException,
   Injectable,
   NotFoundException,
+  OnModuleInit,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { AuditService } from '../audit/audit.service';
+import { syncPermissions } from './sync-permissions';
 
 export const SYSTEM_ROLES = ['Administrator', 'Moderator', 'Writer', 'Komentator', 'Član'];
 
 @Injectable()
-export class RbacService {
+export class RbacService implements OnModuleInit {
   constructor(
     private readonly prisma: PrismaService,
     private readonly audit: AuditService,
   ) {}
+
+  onModuleInit() {
+    return syncPermissions(this.prisma);
+  }
 
   findRoles() {
     return this.prisma.role.findMany({
