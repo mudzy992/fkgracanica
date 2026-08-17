@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import { api } from '../../src/lib/api';
 import { QrCodeView } from '../../src/components/QrCodeView';
+import { MemberHomeStrip } from '../../src/components/membership/MemberHomeStrip';
 import { RequireAuth } from '../../src/components/RequireAuth';
 import { ScreenEmpty } from '../../src/components/ScreenEmpty';
 import { ScreenLoading } from '../../src/components/ScreenLoading';
@@ -90,6 +91,7 @@ function MembershipBody() {
         }
       >
         <Text style={[styles.title, { color: colors.primary }]}>{t('membershipCard')}</Text>
+        <MemberHomeStrip memberships={memberships} />
         <View style={[styles.card, { backgroundColor: colors.background, borderColor: colors.border }]}>
           <Text style={[styles.label, { color: colors.textMuted }]}>{t('cardNumber')}</Text>
           <Text style={[styles.value, { color: colors.text }]}>{active.card.cardNumber}</Text>
@@ -119,12 +121,28 @@ function MembershipBody() {
             : t('noMembership');
 
   return (
-    <ScreenEmpty
-      message={statusMsg}
-      icon="id-card-outline"
-      actionLabel={canRegister(latest?.status) ? (registering ? t('loading') : t('registerMembership')) : undefined}
-      onAction={canRegister(latest?.status) ? () => void onRegister() : undefined}
-    />
+    <ScrollView
+      style={[styles.container, { backgroundColor: colors.surface }]}
+      contentContainerStyle={styles.content}
+      refreshControl={
+        <RefreshControl
+          refreshing={refreshing}
+          onRefresh={() => {
+            setRefreshing(true);
+            void loadMembership().finally(() => setRefreshing(false));
+          }}
+        />
+      }
+    >
+      <MemberHomeStrip memberships={memberships} />
+      <ScreenEmpty
+        compact
+        message={statusMsg}
+        icon="id-card-outline"
+        actionLabel={canRegister(latest?.status) ? (registering ? t('loading') : t('registerMembership')) : undefined}
+        onAction={canRegister(latest?.status) ? () => void onRegister() : undefined}
+      />
+    </ScrollView>
   );
 }
 

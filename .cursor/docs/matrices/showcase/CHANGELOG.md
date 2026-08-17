@@ -1,5 +1,11 @@
 # Showcase Changelog
 
+## 2026-08-17
+
+- Role `home[]` tačke u katalogu (šta vidi na početnom ekranu)
+- Web: writer/komentator/moderator home na `/admin`; član strip na `/clanstvo`
+- Mobile: staff hub brojači, writer/komentator/moderator strip, član home strip
+
 ## 2026-08-15 (audit)
 
 - Checklist: `showcase-audit/`. Katalog % **upisan** (mobile-polish 69, mobile-staff 70, analytics 42, seo 74, pwa 22).

@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { Alert } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { RequirePermission } from '../../src/components/RequirePermission';
+import { CountStrip } from '../../src/components/staff/CountStrip';
 import { Screen } from '../../src/components/primitives/Screen';
 import { SectionHeader } from '../../src/components/primitives/SectionHeader';
 import { WriterForm, type NewsCategory } from '../../src/components/writer/WriterForm';
@@ -148,7 +149,15 @@ export default function WriterScreen() {
       <Screen scroll>
         <SectionHeader title={t('writer')} subtitle={t('writerHint')} />
         {mode === 'list' ? (
-          <WriterList items={items} onSelect={openEdit} onCreate={openCreate} />
+          <>
+            <CountStrip
+              items={[
+                { label: t('drafts'), value: items.filter((i) => i.status === 'DRAFT').length },
+                { label: t('pendingReview'), value: items.filter((i) => i.status === 'PENDING').length },
+              ]}
+            />
+            <WriterList items={items} onSelect={openEdit} onCreate={openCreate} />
+          </>
         ) : (
           <WriterForm
             title={title}

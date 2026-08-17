@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useTheme } from '../../lib/theme-context';
 import { commentatorStyles as styles } from './commentator-styles';
 
-export type MatchOption = { id: string; title: string };
+export type MatchOption = { id: string; title: string; status?: string; reportStatus?: string };
 
 type Props = {
   matches: MatchOption[];

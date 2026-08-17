@@ -11,10 +11,12 @@ import { CommentatorMatchSelector, type MatchOption } from '../../src/components
 import { CommentatorReportPanel } from '../../src/components/staff/CommentatorReportPanel';
 import { CommentatorStoppagePanel } from '../../src/components/staff/CommentatorStoppagePanel';
 import { CommentatorStreamPanel } from '../../src/components/staff/CommentatorStreamPanel';
+import { CountStrip } from '../../src/components/staff/CountStrip';
 import { createLiveActionRunner } from '../../src/components/staff/commentator-api';
 import { api } from '../../src/lib/api';
 import { getApiErrorMessage } from '../../src/lib/api-error';
 import { asArray, asRecord, asString } from '../../src/lib/content-helpers';
+import { deskCounts } from '../../src/lib/desk-counts';
 import { spacing } from '../../src/lib/theme';
 
 export default function CommentatorScreen() {
@@ -35,6 +37,8 @@ export default function CommentatorScreen() {
         return {
           id: asString(item.id, String(index)),
           title: `${asString(asRecord(item.homeClub).name, t('commentatorHome'))} ${t('vs')} ${asString(asRecord(item.awayClub).name, t('commentatorAway'))}`,
+          status: asString(item.status),
+          reportStatus: asString(item.reportStatus),
         };
       });
       setMatches(items);
@@ -49,10 +53,21 @@ export default function CommentatorScreen() {
     void load();
   }, [load]);
 
+  const desk = deskCounts(
+    matches.map((m) => ({ status: m.status ?? '', reportStatus: m.reportStatus })),
+  );
+
   return (
     <RequirePermission permission="live.manage" returnTo="/staff/commentator">
       <Screen scroll contentStyle={{ gap: spacing.md }}>
         <SectionHeader title={t('commentatorTitle')} subtitle={t('commentatorSubtitle')} />
+        <CountStrip
+          items={[
+            { label: t('liveNow'), value: desk.live },
+            { label: t('scheduledMatches'), value: desk.scheduled },
+            { label: t('reportsPending'), value: desk.reports },
+          ]}
+        />
         <CommentatorMatchSelector matches={matches} selectedId={selectedId} onSelect={setSelectedId} />
         {selectedId ? (
           <>

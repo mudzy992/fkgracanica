@@ -28,7 +28,7 @@ export const SHOWCASE_MODULES: ShowcaseModule[] = [
   m('cms', 'CMS stranice', 100, 'ready', WA, 'Public web render spreman. Builder je cms-builder; mobile text je zaseban red.'),
   m('media', 'Medijska biblioteka', 100, 'ready', WA, 'Folderi, upload, renditions na webu. Tree UI je media-tree; mobile upload zaseban red.'),
   m('rbac', 'Korisnici i uloge', 100, 'ready', W, 'Pet uloga, permission keys na webu. Mobile create/delete je zaseban red.'),
-  m('dashboard', 'Admin dashboard', 100, 'ready', W, 'Web KPI + /admin/stanje. Mobile dashboard je zaseban red; chart je analytics.'),
+  m('dashboard', 'Role dashboardi', 100, 'ready', W, 'Admin KPI; writer/komentator/moderator home na /admin; član na /clanstvo. Mobile staff hub je zaseban red.'),
   m('audit', 'Audit log', 100, 'ready', W, 'Web filteri i paginacija. Mobile limit 50 je zaseban red.'),
   m('contact', 'Kontakt', 100, 'ready', W, 'Web forma, inbox, adresa. Mobile mapa je zaseban red.'),
   m('membership', 'Članstvo', 100, 'ready', W, 'Prijava, kartica, QR, Stripe/blagajna na webu. Mobile vizual kartice je zaseban red.'),

@@ -1,4 +1,6 @@
 import { Link } from 'react-router-dom';
+import { useAuth } from '../../lib/auth';
+import { resolveStaffHome } from '../../lib/staff-home';
 import { useDashboardKpis } from '../../hooks';
 import { Seo } from '../../components/seo/Seo';
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/card';
@@ -7,8 +9,11 @@ import { AdminPageShell } from '../../components/admin/AdminPageShell';
 import { adminLinkClass } from '../../lib/admin-styles';
 import { KPI_ICONS, KPI_LABELS, KPI_ROUTES } from './dashboard-kpi-config';
 import { PlatformStatusTeaser } from './platform-status/PlatformStatusTeaser';
+import { CommentatorHome } from './homes/CommentatorHome';
+import { ModeratorHome } from './homes/ModeratorHome';
+import { WriterHome } from './homes/WriterHome';
 
-export function DashboardPage() {
+function AdminKpiDashboard() {
   const { data, isLoading, isError, refetch } = useDashboardKpis();
 
   if (isError) {
@@ -42,14 +47,16 @@ export function DashboardPage() {
                   </CardHeader>
                   <CardContent>
                     <p className="text-3xl font-bold tabular-nums text-primary-light">{value}</p>
-                    {href && (
-                      <p className={`mt-3 text-xs ${adminLinkClass}`}>Otvori modul →</p>
-                    )}
+                    {href && <p className={`mt-3 text-xs ${adminLinkClass}`}>Otvori modul →</p>}
                   </CardContent>
                 </Card>
               );
               return href ? (
-                <Link key={key} to={href} className="block rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-light">
+                <Link
+                  key={key}
+                  to={href}
+                  className="block rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-light"
+                >
                   {inner}
                 </Link>
               ) : (
@@ -60,4 +67,13 @@ export function DashboardPage() {
       </AdminPageShell>
     </>
   );
+}
+
+export function DashboardPage() {
+  const { user } = useAuth();
+  const kind = resolveStaffHome(user?.permissions);
+  if (kind === 'moderator') return <ModeratorHome />;
+  if (kind === 'commentator') return <CommentatorHome />;
+  if (kind === 'writer') return <WriterHome />;
+  return <AdminKpiDashboard />;
 }

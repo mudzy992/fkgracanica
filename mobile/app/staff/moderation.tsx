@@ -5,6 +5,7 @@ import { RequireAuth } from '../../src/components/RequireAuth';
 import { ScreenEmpty } from '../../src/components/ScreenEmpty';
 import { Screen } from '../../src/components/primitives/Screen';
 import { SectionHeader } from '../../src/components/primitives/SectionHeader';
+import { CountStrip } from '../../src/components/staff/CountStrip';
 import { api } from '../../src/lib/api';
 import { asArray, asRecord, asString } from '../../src/lib/content-helpers';
 import { useAuth } from '../../src/lib/auth';
@@ -14,6 +15,15 @@ import { spacing, typography } from '../../src/lib/theme';
 
 type PendingItem = { id: string; title: string };
 type Kind = 'news' | 'gallery' | 'live';
+
+function pendingTitle(raw: unknown, fallback: string): string {
+  const item = asRecord(raw);
+  const titled = asString(item.title);
+  if (titled) return titled;
+  const home = asString(asRecord(item.homeClub).name);
+  const away = asString(asRecord(item.awayClub).name);
+  return home || away ? `${home} ${String(item.homeScore ?? 0)}:${String(item.awayScore ?? 0)} ${away}` : fallback;
+}
 
 export default function ModerationScreen() {
   const { t } = useTranslation();
@@ -30,9 +40,9 @@ export default function ModerationScreen() {
         api.get('/gallery', { params: { status: 'PENDING' } }),
         api.get('/live/pending'),
       ]);
-      setNews(asArray(newsRes.data).map((item, i) => ({ id: asString(asRecord(item).id, String(i)), title: asString(asRecord(item).title, 'Vijest') })));
-      setGallery(asArray(galleryRes.data).map((item, i) => ({ id: asString(asRecord(item).id, String(i)), title: asString(asRecord(item).title, 'Galerija') })));
-      setLive(asArray(liveRes.data).map((item, i) => ({ id: asString(asRecord(item).id, String(i)), title: asString(asRecord(item).title, 'Live report') })));
+      setNews(asArray(newsRes.data).map((item, i) => ({ id: asString(asRecord(item).id, String(i)), title: pendingTitle(item, 'Vijest') })));
+      setGallery(asArray(galleryRes.data).map((item, i) => ({ id: asString(asRecord(item).id, String(i)), title: pendingTitle(item, 'Galerija') })));
+      setLive(asArray(liveRes.data).map((item, i) => ({ id: asString(asRecord(item).id, String(i)), title: pendingTitle(item, 'Live report') })));
     } catch {
       setNews([]);
       setGallery([]);
@@ -97,9 +107,16 @@ export default function ModerationScreen() {
     <RequireAuth returnTo="/staff/moderation">
       <Screen scroll>
         <SectionHeader title={t('moderator')} subtitle={t('pendingQueue')} />
-        <Block title={t('newsPending')} items={news} kind="news" />
-        <Block title={t('galleryPending')} items={gallery} kind="gallery" />
-        <Block title={t('livePending')} items={live} kind="live" />
+        <CountStrip
+          items={[
+            { label: t('newsPending'), value: news.length },
+            { label: t('galleryPending'), value: gallery.length },
+            { label: t('livePending'), value: live.length },
+          ]}
+        />
+        <Block title={`${t('newsPending')} (${news.length})`} items={news} kind="news" />
+        <Block title={`${t('galleryPending')} (${gallery.length})`} items={gallery} kind="gallery" />
+        <Block title={`${t('livePending')} (${live.length})`} items={live} kind="live" />
       </Screen>
     </RequireAuth>
   );

@@ -5,6 +5,7 @@ import { SectionHeader } from '../../src/components/primitives/SectionHeader';
 import { ListRow } from '../../src/components/primitives/ListRow';
 import { RequireAuth } from '../../src/components/RequireAuth';
 import { ScreenEmpty } from '../../src/components/ScreenEmpty';
+import { useStaffQueueCounts } from '../../src/hooks/use-staff-queue-counts';
 import { useAuth } from '../../src/lib/auth';
 import { hasPermission, isStaffUser } from '../../src/lib/permissions';
 
@@ -12,6 +13,7 @@ function StaffHubBody() {
   const { t } = useTranslation();
   const router = useRouter();
   const { user } = useAuth();
+  const counts = useStaffQueueCounts(user);
 
   if (!isStaffUser(user)) {
     return <ScreenEmpty message="Nemate staff pristup." icon="lock-closed-outline" />;
@@ -23,8 +25,9 @@ function StaffHubBody() {
       {hasPermission(user, 'news.submit') || hasPermission(user, 'news.manage') ? (
         <ListRow
           title={t('writer')}
-          subtitle={t('writerHint')}
+          subtitle={`${counts.drafts} ${t('drafts')} · ${counts.newsPending} ${t('pendingReview')}`}
           icon="create-outline"
+          rightText={String(counts.drafts + counts.newsPending)}
           onPress={() => router.push('/staff/writer')}
         />
       ) : null}
@@ -38,24 +41,26 @@ function StaffHubBody() {
       ) : null}
       {hasPermission(user, 'live.manage') ? (
         <ListRow
-          title="Komentator"
-          subtitle="Live desk i događaji utakmice"
+          title={t('commentatorTitle')}
+          subtitle={`${counts.liveNow} ${t('liveNow')} · ${counts.scheduled} ${t('scheduledMatches')}`}
           icon="mic-outline"
+          rightText={String(counts.liveNow)}
           onPress={() => router.push('/staff/commentator')}
         />
       ) : null}
       {hasPermission(user, 'news.approve') || hasPermission(user, 'gallery.approve') || hasPermission(user, 'live.approve') ? (
         <ListRow
-          title="Moderator"
-          subtitle="Approve queue i pending sadržaj"
+          title={t('moderator')}
+          subtitle={`${counts.newsPending} · ${counts.galleryPending} · ${counts.livePending}`}
           icon="shield-checkmark-outline"
+          rightText={String(counts.newsPending + counts.galleryPending + counts.livePending)}
           onPress={() => router.push('/staff/moderation')}
         />
       ) : null}
       {hasPermission(user, 'users.read') || hasPermission(user, 'settings.read') || hasPermission(user, 'ticketing.manage') ? (
         <ListRow
-          title="Administrator"
-          subtitle="Korisnici, postavke, validacija, inbox"
+          title={t('adminHub')}
+          subtitle={t('adminHubHint')}
           icon="briefcase-outline"
           onPress={() => router.push('/staff/admin')}
         />

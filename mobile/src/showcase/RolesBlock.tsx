@@ -1,10 +1,12 @@
 import { StyleSheet, Text, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { useTheme } from '../lib/theme-context';
 import { spacing, typography } from '../lib/theme';
 import type { ShowcaseRole } from './types';
 
 export function RolesBlock({ roles }: { roles: ShowcaseRole[] }) {
   const { colors } = useTheme();
+  const { t } = useTranslation();
 
   return (
     <View style={styles.wrap}>
@@ -18,6 +20,16 @@ export function RolesBlock({ roles }: { roles: ShowcaseRole[] }) {
               • {task}
             </Text>
           ))}
+          {role.home?.length ? (
+            <>
+              <Text style={[styles.homeLabel, { color: colors.textMuted }]}>{t('homeOnScreen')}</Text>
+              {role.home.map((item) => (
+                <Text key={item} style={[styles.task, { color: colors.text }]}>
+                  • {item}
+                </Text>
+              ))}
+            </>
+          ) : null}
         </View>
       ))}
     </View>
@@ -31,4 +43,5 @@ const styles = StyleSheet.create({
   title: { fontSize: 16, fontWeight: '700' },
   who: { ...typography.caption },
   task: { ...typography.caption, lineHeight: 20 },
+  homeLabel: { ...typography.caption, marginTop: spacing.sm, fontWeight: '700', textTransform: 'uppercase' },
 });

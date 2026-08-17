@@ -17,7 +17,21 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
   {
     labelKey: 'admin.navGroup.overview',
     items: [
-      { to: '/admin', labelKey: 'admin.dashboard', end: true, permissions: ['dashboard.read'] },
+      {
+        to: '/admin',
+        labelKey: 'admin.dashboard',
+        end: true,
+        permissions: [
+          'dashboard.read',
+          'news.submit',
+          'news.manage',
+          'gallery.manage',
+          'live.manage',
+          'news.approve',
+          'gallery.approve',
+          'live.approve',
+        ],
+      },
       { to: '/admin/stanje', labelKey: 'admin.stanje', permissions: ['dashboard.read'] },
       {
         to: '/',

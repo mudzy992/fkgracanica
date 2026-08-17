@@ -23,6 +23,7 @@ export type ShowcaseRole = {
   title: string;
   who: string;
   tasks: string[];
+  home: string[];
 };
 
 export type ShowcaseClub = {

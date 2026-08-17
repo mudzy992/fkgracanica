@@ -74,7 +74,7 @@ export const SHOWCASE_SECTIONS: ShowcaseSection[] = [
     title: 'Uprava i operativa',
     body: 'Dashboard, korisnici, moduli, audit. Klub pali i gasi cijele segmente (vijesti, live, ulaznice) iz postavki.',
     bullets: [
-      'KPI kartice i posljednje aktivnosti',
+      'KPI kartice za administratora; writer/komentator/moderator imaju svoj početni ekran',
       'Upravljanje korisnicima i dozvolama',
       'Privatne postavke: SMTP, plaćanja, feature flagovi',
       'Audit svake bitne akcije',

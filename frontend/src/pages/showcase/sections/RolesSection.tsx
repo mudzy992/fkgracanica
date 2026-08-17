@@ -31,6 +31,20 @@ export function RolesSection({ roles, index }: { roles: ShowcaseRole[]; index: n
                   </li>
                 ))}
               </ul>
+              {role.home?.length ? (
+                <>
+                  <p className="mt-5 text-[10px] font-semibold uppercase tracking-[0.18em] text-emerald-300/80">
+                    Na početnom ekranu
+                  </p>
+                  <ul className="mt-2 space-y-2 text-sm text-blue-50">
+                    {role.home.map((item) => (
+                      <li key={item} className="border-l-2 border-emerald-400/40 pl-3">
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                </>
+              ) : null}
             </article>
           ))}
         </div>

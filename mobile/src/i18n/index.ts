@@ -9,6 +9,7 @@ import { playerBs, playerEn } from './player';
 import { staffAdminBs, staffAdminEn } from './staff-admin';
 import { clubBs, clubEn } from './club';
 import { teamBs, teamEn } from './team';
+import { roleHomeBs, roleHomeEn } from './role-home';
 import { writerGalleryBs, writerGalleryEn } from './writer-gallery';
 
 const LANG_KEY = 'app_language';
@@ -18,6 +19,7 @@ const bs = {
   ...commentatorBs,
   ...staffAdminBs,
   ...writerGalleryBs,
+  ...roleHomeBs,
   ...homeBs,
   ...playerBs,
   ...leagueBs,
@@ -30,6 +32,7 @@ const en: Record<keyof typeof bs, string> = {
   ...commentatorEn,
   ...staffAdminEn,
   ...writerGalleryEn,
+  ...roleHomeEn,
   ...homeEn,
   ...playerEn,
   ...leagueEn,

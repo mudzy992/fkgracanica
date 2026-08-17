@@ -13,6 +13,8 @@
 
 `GET /public/showcase` — javno. Payload: `modeOn`, `overallPercent`, `club`, `modules`, `sections`, `roles`.
 
+`roles[].home` — tačke početnog ekrana po ulozi (član `/clanstvo`, ostali `/admin`).
+
 `overallPercent` = aritmetička sredina modula s badge `ready` | `in_progress` | `web_only`.
 
 ## Web

@@ -11,6 +11,11 @@ export const SHOWCASE_ROLES: ShowcaseRole[] = [
       'CMS naslovna i meni',
       'Uključivanje režima „u izradi” / lansiranje portala',
     ],
+    home: [
+      'KPI: korisnici, članovi, vijesti, ulaznice',
+      'Stanje platforme i prečice u module',
+      'Settings Registry i korisnici',
+    ],
   },
   {
     id: 'moderator',
@@ -20,6 +25,12 @@ export const SHOWCASE_ROLES: ShowcaseRole[] = [
       'Odobrava vijesti, galerije i live izvještaje',
       'Uređuje sadržaj; ne dira Settings Registry',
       'Prati kontakt inbox i newsletter listu',
+    ],
+    home: [
+      'Vijesti na odobrenju',
+      'Galerije na odobrenju',
+      'Live izvještaji nakon utakmice',
+      'Prečica u inbox',
     ],
   },
   {
@@ -31,6 +42,11 @@ export const SHOWCASE_ROLES: ShowcaseRole[] = [
       'Predaje na odobrenje (Pending)',
       'Ne objavljuje samostalno',
     ],
+    home: [
+      'Nacrti vijesti',
+      'Predato na odobrenje',
+      'Nova vijest / novi album',
+    ],
   },
   {
     id: 'komentator',
@@ -41,6 +57,11 @@ export const SHOWCASE_ROLES: ShowcaseRole[] = [
       'Semafor i opciono YouTube stream',
       'Po završetku predaje izvještaj na odobrenje',
     ],
+    home: [
+      'Utakmice uživo i zakazane',
+      'Otvori desk (semafor, događaji, stream)',
+      'Izvještaji za predaju',
+    ],
   },
   {
     id: 'clan',
@@ -50,6 +71,11 @@ export const SHOWCASE_ROLES: ShowcaseRole[] = [
       'Profil, komentari na vijestima',
       'Članarina i digitalna kartica',
       'Kupovina ili rezervacija ulaznica',
+    ],
+    home: [
+      'Status članarine i digitalna kartica + QR',
+      'Sljedeća utakmica i ulaznice',
+      'Nepročitane obavijesti',
     ],
   },
 ];
