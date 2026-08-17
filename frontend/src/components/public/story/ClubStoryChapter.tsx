@@ -23,7 +23,7 @@ export function ClubStoryChapter({ event }: Props) {
       <ClubStoryChapterBg imageUrl={imageUrl} />
       <p
         aria-hidden
-        className="font-display pointer-events-none absolute -left-2 top-24 select-none text-[clamp(4.5rem,16vw,10rem)] font-bold leading-none text-white/10 sm:top-20"
+        className="font-display pointer-events-none absolute -left-2 top-24 z-[1] select-none text-[clamp(4.5rem,16vw,10rem)] font-bold leading-none text-white/25 drop-shadow-[0_2px_18px_rgba(0,0,0,0.55)] sm:top-20"
       >
         {event.year}
       </p>
