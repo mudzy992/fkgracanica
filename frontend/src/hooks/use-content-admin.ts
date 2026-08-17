@@ -22,7 +22,7 @@ export function useCreateGallery() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (body: { title: string; description?: string }) =>
-      (await api.post('/gallery', body)).data,
+      (await api.post<GalleryItem>('/gallery', body)).data,
     onSuccess: () => void qc.invalidateQueries({ queryKey: ['gallery'] }),
   });
 }

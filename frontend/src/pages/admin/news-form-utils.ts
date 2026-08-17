@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { stripHtml } from '../../lib/html-content';
+import type { Control, FieldErrors, UseFormRegister, UseFormSetValue, UseFormWatch } from 'react-hook-form';
 
 export const newsFormSchema = z.object({
   title: z.string().min(3, 'Naslov je obavezan'),
@@ -19,6 +20,14 @@ export const newsFormSchema = z.object({
 });
 
 export type NewsFormData = z.infer<typeof newsFormSchema>;
+
+export type NewsEditorFieldsProps = {
+  register: UseFormRegister<NewsFormData>;
+  control: Control<NewsFormData>;
+  watch: UseFormWatch<NewsFormData>;
+  setValue: UseFormSetValue<NewsFormData>;
+  errors: FieldErrors<NewsFormData>;
+};
 
 export const emptyNewsForm: NewsFormData = {
   title: '',

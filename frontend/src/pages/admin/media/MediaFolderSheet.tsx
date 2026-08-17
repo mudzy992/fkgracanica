@@ -10,7 +10,7 @@ interface Props {
   onSelect: (id?: string) => void;
   newName: string;
   onNewNameChange: (v: string) => void;
-  onCreate: () => void;
+  onCreate?: () => void;
   isCreating?: boolean;
   onRename?: (id: string, name: string) => void;
   onDelete?: (id: string, name: string) => void;

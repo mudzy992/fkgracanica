@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { ContentStatus, MembershipStatus } from '@prisma/client';
+import { ContentStatus, MatchReportStatus, MembershipStatus } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
@@ -15,6 +15,11 @@ export class DashboardService {
       matches,
       goals,
       ticketsSold,
+      pendingNews,
+      pendingGalleries,
+      pendingLive,
+      pendingMemberships,
+      unreadInbox,
     ] = await Promise.all([
       this.prisma.user.count({ where: { deletedAt: null } }),
       this.prisma.membership.count({
@@ -36,6 +41,11 @@ export class DashboardService {
         where: { type: { in: ['GOAL', 'PENALTY_SCORED'] } },
       }),
       this.prisma.ticket.count({ where: { status: { not: 'CANCELLED' } } }),
+      this.prisma.news.count({ where: { status: ContentStatus.PENDING } }),
+      this.prisma.gallery.count({ where: { status: ContentStatus.PENDING } }),
+      this.prisma.match.count({ where: { reportStatus: MatchReportStatus.PENDING_APPROVAL } }),
+      this.prisma.membership.count({ where: { status: MembershipStatus.PENDING } }),
+      this.prisma.contactMessage.count({ where: { isRead: false } }),
     ]);
     return {
       users,
@@ -45,6 +55,11 @@ export class DashboardService {
       matches,
       goals,
       ticketsSold,
+      pendingNews,
+      pendingGalleries,
+      pendingLive,
+      pendingMemberships,
+      unreadInbox,
     };
   }
 }

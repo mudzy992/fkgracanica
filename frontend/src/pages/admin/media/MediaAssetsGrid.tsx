@@ -12,8 +12,8 @@ interface Props {
   isSelected: (id: string) => boolean;
   onToggleSelect: (id: string) => void;
   onCopy: (path: string) => void;
-  onDelete: (id: string, filename: string) => void;
-  onEdit: (asset: MediaAsset) => void;
+  onDelete?: (id: string, filename: string) => void;
+  onEdit?: (asset: MediaAsset) => void;
 }
 
 function truncateName(name: string, max = 18) {
@@ -53,7 +53,7 @@ export function MediaAssetsGrid({
             <button
               type="button"
               className="relative block w-full"
-              onClick={() => (selectionMode ? onToggleSelect(asset.id) : onEdit(asset))}
+              onClick={() => (selectionMode ? onToggleSelect(asset.id) : onEdit?.(asset))}
             >
               <img
                 src={mediaUrl(asset.thumbPath ?? asset.originalPath, 'thumb')}
@@ -78,16 +78,18 @@ export function MediaAssetsGrid({
               <p className="text-[10px] text-text-muted">{Math.round(asset.size / 1024)} KB</p>
               {!selectionMode && (
                 <div className="flex gap-1">
-                  <Button
-                    type="button"
-                    size="sm"
-                    variant="ghost"
-                    className="h-7 flex-1 px-1"
-                    onClick={() => onEdit(asset)}
-                    aria-label="Uredi"
-                  >
-                    <Pencil className="h-3.5 w-3.5" />
-                  </Button>
+                  {onEdit ? (
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="ghost"
+                      className="h-7 flex-1 px-1"
+                      onClick={() => onEdit(asset)}
+                      aria-label="Uredi"
+                    >
+                      <Pencil className="h-3.5 w-3.5" />
+                    </Button>
+                  ) : null}
                   <Button
                     type="button"
                     size="sm"
@@ -101,16 +103,18 @@ export function MediaAssetsGrid({
                       <span className="sr-only">Kopirano</span>
                     )}
                   </Button>
-                  <Button
-                    type="button"
-                    size="sm"
-                    variant="ghost"
-                    className="h-7 flex-1 px-1 text-danger"
-                    onClick={() => void onDelete(asset.id, asset.filename)}
-                    aria-label="Obriši"
-                  >
-                    <Trash2 className="h-3.5 w-3.5" />
-                  </Button>
+                  {onDelete ? (
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="ghost"
+                      className="h-7 flex-1 px-1 text-danger"
+                      onClick={() => void onDelete(asset.id, asset.filename)}
+                      aria-label="Obriši"
+                    >
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </Button>
+                  ) : null}
                 </div>
               )}
             </div>

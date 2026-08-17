@@ -12,7 +12,7 @@ export type HomeKpi = {
 
 export function HomeKpiGrid({ items }: { items: HomeKpi[] }) {
   return (
-    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
       {items.map((item) => {
         const inner = (
           <Card className="h-full border-[var(--border-subtle)] bg-surface/50 transition-colors hover:border-primary/25 hover:bg-surface/80">

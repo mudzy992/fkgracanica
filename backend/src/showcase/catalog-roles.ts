@@ -12,9 +12,9 @@ export const SHOWCASE_ROLES: ShowcaseRole[] = [
       'Uključivanje režima „u izradi” / lansiranje portala',
     ],
     home: [
-      'KPI: korisnici, članovi, vijesti, ulaznice',
-      'Stanje platforme i prečice u module',
-      'Settings Registry i korisnici',
+      'Queue: članarine, vijesti, live izvještaji, inbox',
+      'Zdravlje: članstva, ulaznice, objavljene vijesti',
+      'Brze akcije: CMS, korisnici, postavke',
     ],
   },
   {
@@ -27,10 +27,9 @@ export const SHOWCASE_ROLES: ShowcaseRole[] = [
       'Prati kontakt inbox i newsletter listu',
     ],
     home: [
-      'Vijesti na odobrenju',
-      'Galerije na odobrenju',
-      'Live izvještaji nakon utakmice',
-      'Prečica u inbox',
+      'Vijesti, galerije i live na odobrenju',
+      'Inbox nepročitano',
+      'Brzo odobri iz queue liste',
     ],
   },
   {
@@ -43,9 +42,9 @@ export const SHOWCASE_ROLES: ShowcaseRole[] = [
       'Ne objavljuje samostalno',
     ],
     home: [
-      'Nacrti vijesti',
-      'Predato na odobrenje',
-      'Nova vijest / novi album',
+      'Nacrti, pending, objavljene, albumi',
+      'Mape i upload slika u biblioteku',
+      'Nova vijest / novi album; objavu radi moderator',
     ],
   },
   {
@@ -58,9 +57,9 @@ export const SHOWCASE_ROLES: ShowcaseRole[] = [
       'Po završetku predaje izvještaj na odobrenje',
     ],
     home: [
-      'Utakmice uživo i zakazane',
-      'Otvori desk (semafor, događaji, stream)',
-      'Izvještaji za predaju',
+      'Uživo, zakazane, izvještaji za predaju',
+      'Desk lista utakmica',
+      'Brzi ulaz u semafor i javni live',
     ],
   },
   {

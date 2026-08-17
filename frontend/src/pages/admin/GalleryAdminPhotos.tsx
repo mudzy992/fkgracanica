@@ -21,31 +21,46 @@ export function GalleryAdminPhotos({ galleryId, photos }: Props) {
     void reorder.mutateAsync({ galleryId, photoIds: ids });
   };
 
+  if (!photos.length) {
+    return <p className="text-sm text-text-muted">Još nema fotografija. Dodajte slike ili mapu.</p>;
+  }
+
   return (
-    <div className="space-y-2">
+    <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
       {photos.map((p, index) => (
-        <div key={p.id} className="flex items-center gap-2 rounded-lg border border-slate-200 p-2">
-          <img src={mediaUrl(p.path, 'thumb')} alt="" className="h-12 w-12 rounded object-cover" />
-          <span className="min-w-0 flex-1 truncate text-sm">{p.caption ?? p.path}</span>
-          <Button variant="ghost" size="icon" disabled={index === 0} onClick={() => move(index, -1)}>
-            <ArrowUp className="h-4 w-4" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            disabled={index === photos.length - 1}
-            onClick={() => move(index, 1)}
-          >
-            <ArrowDown className="h-4 w-4" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => void removePhoto.mutateAsync({ galleryId, photoId: p.id })}
-          >
-            <Trash2 className="h-4 w-4 text-danger" />
-          </Button>
-        </div>
+        <figure
+          key={p.id}
+          className="group relative overflow-hidden rounded-2xl border border-[var(--border-subtle)] bg-surface/40"
+        >
+          <img
+            src={mediaUrl(p.path, 'medium')}
+            alt={p.caption ?? ''}
+            className="aspect-square w-full object-cover"
+          />
+          <figcaption className="truncate px-2 py-1.5 text-xs text-text-muted">
+            {p.caption ?? p.path.split('/').pop()}
+          </figcaption>
+          <div className="absolute top-2 right-2 flex gap-1 rounded-lg bg-background/90 p-0.5 opacity-0 transition group-hover:opacity-100">
+            <Button variant="ghost" size="icon" disabled={index === 0} onClick={() => move(index, -1)}>
+              <ArrowUp className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              disabled={index === photos.length - 1}
+              onClick={() => move(index, 1)}
+            >
+              <ArrowDown className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => void removePhoto.mutateAsync({ galleryId, photoId: p.id })}
+            >
+              <Trash2 className="h-4 w-4 text-danger" />
+            </Button>
+          </div>
+        </figure>
       ))}
     </div>
   );

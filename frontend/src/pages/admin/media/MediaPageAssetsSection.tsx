@@ -16,12 +16,12 @@ interface Props {
   isSelected: (id: string) => boolean;
   onToggleSelect: (id: string) => void;
   onCopy: (path: string) => void;
-  onReplace: (id: string) => void;
-  onDelete: (id: string, filename: string) => void;
-  onEdit: (asset: MediaAsset) => void;
+  onReplace?: (id: string) => void;
+  onDelete?: (id: string, filename: string) => void;
+  onEdit?: (asset: MediaAsset) => void;
   onClearSelection: () => void;
   onExitSelection: () => void;
-  onConfirmBulkDelete: (count: number) => Promise<boolean>;
+  onConfirmBulkDelete?: (count: number) => Promise<boolean>;
   meta?: PaginationMeta;
   page: number;
   onPageChange: (page: number) => void;
@@ -73,7 +73,7 @@ export function MediaPageAssetsSection({
         onDelete={onDelete}
         onEdit={onEdit}
       />
-      {selectedCount > 0 && (
+      {selectedCount > 0 && onConfirmBulkDelete ? (
         <div className="px-3 sm:px-4">
           <MediaBulkActionBar
             selectedIds={selectedIds}
@@ -83,7 +83,7 @@ export function MediaPageAssetsSection({
             onConfirmDelete={onConfirmBulkDelete}
           />
         </div>
-      )}
+      ) : null}
       {meta && (
         <div className="pb-safe">
           <AdminPagination meta={meta} page={page} onPageChange={onPageChange} />

@@ -13,9 +13,9 @@ interface Props {
   isSelected: (id: string) => boolean;
   onToggleSelect: (id: string) => void;
   onCopy: (path: string) => void;
-  onReplace: (id: string) => void;
-  onDelete: (id: string, filename: string) => void;
-  onEdit: (asset: MediaAsset) => void;
+  onReplace?: (id: string) => void;
+  onDelete?: (id: string, filename: string) => void;
+  onEdit?: (asset: MediaAsset) => void;
 }
 
 export function MediaAssetsTable({
@@ -65,13 +65,13 @@ export function MediaAssetsTable({
           header: 'Akcije',
           render: (r: MediaAsset) => (
             <div className="flex flex-wrap gap-1">
-              <Button size="sm" variant="outline" onClick={() => onEdit(r)}>Uredi</Button>
+              {onEdit ? <Button size="sm" variant="outline" onClick={() => onEdit(r)}>Uredi</Button> : null}
               <Button size="sm" variant="outline" onClick={() => onCopy(r.originalPath)}>
                 <Copy className="mr-1 h-3 w-3" />
                 {copied === r.originalPath ? 'Kopirano' : 'URL'}
               </Button>
-              <Button size="sm" variant="outline" onClick={() => onReplace(r.id)}>Zamijeni</Button>
-              <Button size="sm" variant="ghost" onClick={() => void onDelete(r.id, r.filename)}>Obriši</Button>
+              {onReplace ? <Button size="sm" variant="outline" onClick={() => onReplace(r.id)}>Zamijeni</Button> : null}
+              {onDelete ? <Button size="sm" variant="ghost" onClick={() => void onDelete(r.id, r.filename)}>Obriši</Button> : null}
             </div>
           ),
         }]

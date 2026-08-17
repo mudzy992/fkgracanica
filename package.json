@@ -21,6 +21,7 @@
     "build": "npm run build -w backend && npm run build -w frontend",
     "db:migrate": "npm run prisma:migrate -w backend",
     "db:seed": "npm run prisma:seed -w backend",
+    "db:seed:rbac": "npm run prisma:seed:rbac -w backend",
     "db:generate": "npm run prisma:generate -w backend"
   }
 }

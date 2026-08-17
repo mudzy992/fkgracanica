@@ -6,6 +6,11 @@ export const KPI_LABELS: Record<string, string> = {
   matches: 'Utakmice',
   goals: 'Golovi',
   ticketsSold: 'Prodane ulaznice',
+  pendingNews: 'Vijesti na odobrenju',
+  pendingGalleries: 'Galerije na odobrenju',
+  pendingLive: 'Live izvještaji',
+  pendingMemberships: 'Članarine na čekanju',
+  unreadInbox: 'Nepročitan inbox',
 };
 
 export function kpiLabel(key: string): string {

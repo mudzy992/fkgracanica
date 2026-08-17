@@ -16,7 +16,9 @@ import { CmsPageBuilderPage } from '../pages/admin/cms/CmsPageBuilderPage';
 import { MediaPage } from '../pages/admin/MediaPage';
 import { AuditPage } from '../pages/admin/AuditPage';
 import { NewsAdminPage } from '../pages/admin/NewsAdminPage';
+import { NewsEditorPage } from '../pages/admin/news/NewsEditorPage';
 import { GalleryAdminPage } from '../pages/admin/GalleryAdminPage';
+import { GalleryEditorPage } from '../pages/admin/gallery/GalleryEditorPage';
 import { SponsorsAdminPage } from '../pages/admin/SponsorsAdminPage';
 import { TrophiesAdminPage } from '../pages/admin/TrophiesAdminPage';
 import { TimelineAdminPage } from '../pages/admin/TimelineAdminPage';
@@ -83,9 +85,13 @@ export const appRouteElements = (
           </Route>
           <Route element={<ModuleRoute moduleKey="modules.news" redirectTo={ADMIN} />}>
             <Route path="news" element={<NewsAdminPage />} />
+            <Route path="news/new" element={<NewsEditorPage />} />
+            <Route path="news/:id/edit" element={<NewsEditorPage />} />
           </Route>
           <Route element={<ModuleRoute moduleKey="modules.gallery" redirectTo={ADMIN} />}>
             <Route path="gallery" element={<GalleryAdminPage />} />
+            <Route path="gallery/new" element={<GalleryEditorPage />} />
+            <Route path="gallery/:id/edit" element={<GalleryEditorPage />} />
           </Route>
           <Route element={<ModuleRoute moduleKey="modules.sponsors" redirectTo={ADMIN} />}>
             <Route path="sponsors" element={<SponsorsAdminPage />} />

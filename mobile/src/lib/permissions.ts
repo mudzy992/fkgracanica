@@ -30,6 +30,8 @@ const STAFF_KEYS = [
   'analytics.read',
   'contact.read',
   'newsletter.read',
+  'media.read',
+  'media.upload',
   'media.manage',
   'cms.manage',
 ];

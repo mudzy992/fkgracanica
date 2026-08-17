@@ -59,7 +59,7 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
     labelKey: 'admin.navGroup.content',
     items: [
       { to: '/admin/cms', labelKey: 'admin.cms', permissions: ['cms.manage'] },
-      { to: '/admin/media', labelKey: 'admin.media', permissions: ['media.manage'] },
+      { to: '/admin/media', labelKey: 'admin.media', permissions: ['media.manage', 'media.read', 'media.upload'] },
       {
         to: '/admin/news',
         labelKey: 'admin.news',

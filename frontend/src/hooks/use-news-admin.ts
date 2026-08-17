@@ -81,6 +81,14 @@ export function useDeleteNews() {
   });
 }
 
+export function useNewsById(id?: string) {
+  return useQuery({
+    queryKey: ['news', 'id', id],
+    queryFn: async () => (await api.get<NewsItem>(`/news/${id}`)).data,
+    enabled: !!id,
+  });
+}
+
 export function useCreateNewsCategory() {
   const qc = useQueryClient();
   return useMutation({

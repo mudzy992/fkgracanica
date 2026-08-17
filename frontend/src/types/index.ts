@@ -278,6 +278,11 @@ export interface DashboardKpis {
   matches: number;
   goals: number;
   ticketsSold: number;
+  pendingNews: number;
+  pendingGalleries: number;
+  pendingLive: number;
+  pendingMemberships: number;
+  unreadInbox: number;
 }
 
 export interface SearchResults {

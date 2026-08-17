@@ -16,8 +16,8 @@ import { Seo } from '../../components/seo/Seo';
 import { Badge } from '../../components/ui/badge';
 import { Button } from '../../components/ui/button';
 import { AdminDataTable, AdminPageShell } from '../../components/admin/AdminPageShell';
-import { NewsAdminFormSheet } from './NewsAdminFormSheet';
 import { NewsCategoriesDialog } from './NewsCategoriesDialog';
+import { contentStatusLabel } from '../../lib/content-status-labels';
 import type { ContentStatus, NewsItem } from '../../types';
 
 function statusVariant(status: ContentStatus): 'default' | 'success' | 'muted' {
@@ -39,20 +39,8 @@ export function NewsAdminPage() {
   const updateStatus = useUpdateNewsStatus();
   const submitReview = useSubmitNewsForReview();
   const deleteNews = useDeleteNews();
-  const [formOpen, setFormOpen] = useState(false);
-  const [editItem, setEditItem] = useState<NewsItem | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<NewsItem | null>(null);
   const [categoriesOpen, setCategoriesOpen] = useState(false);
-
-  const openCreate = () => {
-    setEditItem(null);
-    setFormOpen(true);
-  };
-
-  const openEdit = (item: NewsItem) => {
-    setEditItem(item);
-    setFormOpen(true);
-  };
 
   const publish = (item: NewsItem) => {
     void updateStatus.mutateAsync({ id: item.id, status: 'PUBLISHED' });
@@ -91,7 +79,9 @@ export function NewsAdminPage() {
                 Kategorije
               </Button>
             )}
-            <Button onClick={openCreate}>Nova vijest</Button>
+            <Link to="/admin/news/new">
+              <Button>Nova vijest</Button>
+            </Link>
           </div>
         }
       >
@@ -99,7 +89,9 @@ export function NewsAdminPage() {
           rows={asArray<NewsItem>(data)}
           empty="Nema vijesti — kreirajte prvu."
           columns={[
-            { key: 'title', header: 'Naslov', render: (r) => r.title },
+            { key: 'title', header: 'Naslov', render: (r) => (
+              <Link to={`/admin/news/${r.id}/edit`} className="font-medium hover:underline">{r.title}</Link>
+            ) },
             {
               key: 'category',
               header: 'Kategorija',
@@ -108,16 +100,18 @@ export function NewsAdminPage() {
             {
               key: 'status',
               header: 'Status',
-              render: (r) => <Badge variant={statusVariant(r.status)}>{r.status}</Badge>,
+              render: (r) => (
+                <Badge variant={statusVariant(r.status)}>{contentStatusLabel(r.status)}</Badge>
+              ),
             },
             {
               key: 'actions',
               header: 'Akcije',
               render: (r) => (
                 <div className="flex flex-wrap gap-2">
-                  <Button size="sm" variant="outline" onClick={() => openEdit(r)}>
-                    Uredi
-                  </Button>
+                  <Link to={`/admin/news/${r.id}/edit`}>
+                    <Button size="sm" variant="outline">Uredi</Button>
+                  </Link>
                   {r.status === 'DRAFT' && canSubmit && !canApprove && (
                     <Button size="sm" variant="outline" onClick={() => submit(r)} disabled={submitReview.isPending}>
                       Predaj na pregled
@@ -155,11 +149,6 @@ export function NewsAdminPage() {
         />
       </AdminPageShell>
       <NewsCategoriesDialog open={categoriesOpen} onOpenChange={setCategoriesOpen} />
-      <NewsAdminFormSheet
-        open={formOpen}
-        onOpenChange={setFormOpen}
-        item={editItem}
-      />
       <ConfirmDialog
         open={!!deleteTarget}
         onOpenChange={(o) => !o && setDeleteTarget(null)}

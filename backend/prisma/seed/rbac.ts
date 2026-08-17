@@ -14,12 +14,14 @@ const ROLE_PERMISSIONS: Record<string, string[]> = {
   Moderator: [
     'dashboard.read', 'news.manage', 'news.approve', 'gallery.manage', 'gallery.approve',
     'sponsors.manage', 'trophies.manage', 'club-timeline.manage', 'contact.read',
-    'newsletter.read', 'newsletter.manage', 'cms.manage', 'media.manage', 'matches.manage', 'statistics.manage',
+    'newsletter.read', 'newsletter.manage', 'cms.manage',
+    'media.read', 'media.upload', 'media.manage',
+    'matches.manage', 'statistics.manage',
     'live.approve', 'hall-of-fame.manage', 'museum.manage', 'analytics.read',
     'players.manage', 'clubs.manage', 'competitions.manage', 'ticketing.manage', 'membership.manage',
     'live.manage',
   ],
-  Writer: ['news.manage', 'news.submit', 'gallery.manage'],
+  Writer: ['news.manage', 'news.submit', 'gallery.manage', 'media.read', 'media.upload'],
   Komentator: ['live.manage', 'matches.manage'],
   Član: [],
 };

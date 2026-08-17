@@ -1,63 +1,22 @@
-import type { Control, FieldErrors, UseFormRegister, UseFormSetValue, UseFormWatch } from 'react-hook-form';
-import { asArray } from '../../lib/as-array';
 import { Controller } from 'react-hook-form';
-import { EntitySelect } from '../../components/admin/EntitySelect';
-import { MediaPicker } from '../../components/admin/MediaPicker';
-import { RichTextEditor } from '../../components/admin/RichTextEditor';
-import { SlugField } from '../../components/admin/SlugField';
-import { useNewsCategories } from '../../hooks/use-news-admin';
-import type { NewsCategory } from '../../hooks/use-news-admin';
-import { Input } from '../../components/ui/input';
-import { Textarea } from '../../components/ui/textarea';
-import type { GalleryItem, Match, Player } from '../../types';
-import { formatDate } from '../../lib/utils';
-import type { NewsFormData } from './news-form-utils';
+import { asArray } from '../../../lib/as-array';
+import { EntitySelect } from '../../../components/admin/EntitySelect';
+import { SlugField } from '../../../components/admin/SlugField';
+import { useNewsCategories, type NewsCategory } from '../../../hooks/use-news-admin';
+import { Input } from '../../../components/ui/input';
+import { Textarea } from '../../../components/ui/textarea';
+import { formatDate } from '../../../lib/utils';
+import type { GalleryItem, Match, Player } from '../../../types';
+import type { NewsEditorFieldsProps } from '../news-form-utils';
 
-interface Props {
-  register: UseFormRegister<NewsFormData>;
-  control: Control<NewsFormData>;
-  watch: UseFormWatch<NewsFormData>;
-  setValue: UseFormSetValue<NewsFormData>;
-  errors: FieldErrors<NewsFormData>;
-}
-
-export function NewsAdminFormFields({ register, control, watch, setValue, errors }: Props) {
+export function NewsEditorMeta({ register, control, watch, setValue }: NewsEditorFieldsProps) {
   const { data: categoriesRaw } = useNewsCategories();
   const categories = asArray<NewsCategory>(categoriesRaw);
   const title = watch('title');
 
   return (
-    <div className="space-y-4">
-      <div>
-        <label className="mb-1 block text-sm font-medium">Naslov</label>
-        <Input {...register('title')} />
-        {errors.title && <p className="mt-1 text-xs text-danger">{errors.title.message}</p>}
-      </div>
+    <aside className="space-y-4 rounded-2xl border border-[var(--border-subtle)] bg-surface/40 p-4 lg:sticky lg:top-4">
       <SlugField title={title} value={watch('slug')} onChange={(v) => setValue('slug', v)} />
-      <div>
-        <label className="mb-1 block text-sm font-medium">Uvod</label>
-        <Textarea rows={2} {...register('excerpt')} />
-      </div>
-      <div>
-        <label className="mb-1 block text-sm font-medium">Sadržaj</label>
-        <Controller
-          name="content"
-          control={control}
-          render={({ field }) => <RichTextEditor value={field.value} onChange={field.onChange} />}
-        />
-        {errors.content && <p className="mt-1 text-xs text-danger">{errors.content.message}</p>}
-      </div>
-        <Controller
-          name="coverPath"
-          control={control}
-          render={({ field: coverField }) => (
-            <MediaPicker value={coverField.value} onSelect={coverField.onChange} />
-          )}
-        />
-      <div>
-        <label className="mb-1 block text-sm font-medium">Video URL</label>
-        <Input {...register('videoUrl')} placeholder="https://..." />
-      </div>
       <div>
         <label className="mb-1 block text-sm font-medium">Kategorija</label>
         <select
@@ -75,6 +34,10 @@ export function NewsAdminFormFields({ register, control, watch, setValue, errors
       <div>
         <label className="mb-1 block text-sm font-medium">Tagovi (zarezom)</label>
         <Input {...register('tagsCsv')} placeholder="transfer, utakmica" />
+      </div>
+      <div>
+        <label className="mb-1 block text-sm font-medium">Video URL</label>
+        <Input {...register('videoUrl')} placeholder="https://..." />
       </div>
       <div>
         <label className="mb-1 block text-sm font-medium">SEO naslov</label>
@@ -142,6 +105,6 @@ export function NewsAdminFormFields({ register, control, watch, setValue, errors
           )}
         />
       </div>
-    </div>
+    </aside>
   );
 }

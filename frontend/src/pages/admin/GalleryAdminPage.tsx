@@ -1,5 +1,5 @@
-import { useState } from 'react';
 import { Pencil, Plus, Trash2 } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import {
   useDeleteGallery,
   useGalleryAdminList,
@@ -12,7 +12,7 @@ import { Seo } from '../../components/seo/Seo';
 import { Badge } from '../../components/ui/badge';
 import { Button } from '../../components/ui/button';
 import { AdminDataTable, AdminPageShell } from '../../components/admin/AdminPageShell';
-import { GalleryAdminFormSheet } from './GalleryAdminFormSheet';
+import { contentStatusLabel } from '../../lib/content-status-labels';
 import type { GalleryItem } from '../../types';
 
 export function GalleryAdminPage() {
@@ -23,8 +23,6 @@ export function GalleryAdminPage() {
   const publish = useUpdateGalleryStatus();
   const remove = useDeleteGallery();
   const { confirm, dialog } = useConfirm();
-  const [open, setOpen] = useState(false);
-  const [edit, setEdit] = useState<GalleryItem | null>(null);
 
   const onDelete = async (item: GalleryItem) => {
     const ok = await confirm({
@@ -45,27 +43,39 @@ export function GalleryAdminPage() {
         isLoading={isLoading}
         actions={
           canManage ? (
-            <Button size="sm" onClick={() => { setEdit(null); setOpen(true); }}>
-              <Plus className="mr-1 h-4 w-4" />
-              Nova
-            </Button>
+            <Link to="/admin/gallery/new">
+              <Button size="sm">
+                <Plus className="mr-1 h-4 w-4" />
+                Nova
+              </Button>
+            </Link>
           ) : undefined
         }
       >
         <AdminDataTable
           rows={data ?? []}
           columns={[
-            { key: 'title', header: 'Naslov', render: (r) => r.title },
-            { key: 'status', header: 'Status', render: (r) => <Badge>{r.status}</Badge> },
+            {
+              key: 'title',
+              header: 'Naslov',
+              render: (r) => (
+                <Link to={`/admin/gallery/${r.id}/edit`} className="font-medium hover:underline">
+                  {r.title}
+                </Link>
+              ),
+            },
+            { key: 'status', header: 'Status', render: (r) => <Badge>{contentStatusLabel(r.status)}</Badge> },
             {
               key: 'actions',
               header: 'Akcije',
               render: (r) => (
                 <div className="flex gap-1">
                   {canManage && (
-                    <Button variant="ghost" size="icon" onClick={() => { setEdit(r); setOpen(true); }}>
-                      <Pencil className="h-4 w-4" />
-                    </Button>
+                    <Link to={`/admin/gallery/${r.id}/edit`}>
+                      <Button variant="ghost" size="icon">
+                        <Pencil className="h-4 w-4" />
+                      </Button>
+                    </Link>
                   )}
                   {canApprove && r.status !== 'PUBLISHED' && (
                     <Button size="sm" variant="outline" onClick={() => void publish.mutateAsync({ id: r.id, status: 'PUBLISHED' })}>
@@ -83,11 +93,6 @@ export function GalleryAdminPage() {
           ]}
         />
       </AdminPageShell>
-      <GalleryAdminFormSheet
-        open={open}
-        onOpenChange={(o) => { setOpen(o); if (!o) setEdit(null); }}
-        edit={edit}
-      />
     </>
   );
 }

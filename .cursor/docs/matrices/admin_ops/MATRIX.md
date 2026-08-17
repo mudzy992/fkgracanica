@@ -22,10 +22,12 @@
 - `ModuleRoute` guard na javnim i admin rutama; CMS meni filtriran po modulu
 - Tabovi po grupama unutar Javne/Privatne; `GET /settings/module-flags` za routing
 
-## Dashboard (`/admin` → Dashboard)
+## Dashboard (`/admin` → role home)
 
-- KPI kartice: korisnici, članovi, vijesti, utakmice, golovi, ulaznice
-- API: `GET /dashboard/kpis`
+- Resolver: `settings.read`/`users.read` → AdminHome; approve keys → ModeratorHome; `live.manage` → CommentatorHome; else WriterHome
+- Admin queue: pending članarine/vijesti/live + unread inbox; health: članstva, ulaznice, objavljene vijesti
+- Writer/komentator/moderator: KPI samo njihovog posla + brze akcije + radna lista
+- API: `GET /dashboard/kpis` (`pendingNews`, `pendingGalleries`, `pendingLive`, `pendingMemberships`, `unreadInbox`)
 
 ## Notifikacije (`/admin/notifications`)
 
@@ -41,6 +43,7 @@
 
 ## Changelog
 
+- 2026-08-17: Role homes + queue/health KPI; vijesti/galerija full-page editori
 - 2026-06-30: Premium landing 1:1 (fkt-newdesign ref) — widgeti, hero, header scroll, footer
 - 2026-06-30: Audit na `settings.update`; FE PermissionRoute za `/admin/audit`
 - 2026-06-30: Postavke — tabovi po grupama, ModuleRoute guard, module-flags API, CMS nav filter

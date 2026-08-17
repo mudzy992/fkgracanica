@@ -13,9 +13,10 @@ interface Props {
   value: string;
   onChange: (html: string) => void;
   className?: string;
+  tall?: boolean;
 }
 
-export function RichTextEditor({ value, onChange, className }: Props) {
+export function RichTextEditor({ value, onChange, className, tall }: Props) {
   const [mediaOpen, setMediaOpen] = useState(false);
   const { data, isLoading } = useMediaAssets({ limit: 100 });
   const assets = asArray<MediaAsset>(data?.data ?? data);
@@ -26,8 +27,10 @@ export function RichTextEditor({ value, onChange, className }: Props) {
     onUpdate: ({ editor: e }) => onChange(e.getHTML()),
     editorProps: {
       attributes: {
-        class:
-          'prose prose-sm max-w-none min-h-[180px] px-3 py-2 focus:outline-none [&_img]:rounded-lg [&_iframe]:aspect-video [&_iframe]:w-full',
+        class: cn(
+          'prose prose-sm max-w-none px-3 py-2 focus:outline-none [&_img]:rounded-lg [&_iframe]:aspect-video [&_iframe]:w-full',
+          tall ? 'min-h-[28rem]' : 'min-h-[180px]',
+        ),
       },
     },
   });

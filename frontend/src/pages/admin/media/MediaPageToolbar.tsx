@@ -21,6 +21,8 @@ interface Props {
   uploadTitle?: string;
   onFolderChipClick?: () => void;
   uploadProgress?: UploadQueueState;
+  canUpload?: boolean;
+  canManage?: boolean;
 }
 
 function hintText(props: Props) {
@@ -53,6 +55,8 @@ export function MediaPageToolbar({
   uploadTitle,
   onFolderChipClick,
   uploadProgress,
+  canUpload = true,
+  canManage = true,
 }: Props) {
   const progressPct =
     uploadProgress && uploadProgress.total > 0
@@ -98,24 +102,28 @@ export function MediaPageToolbar({
               Odaberi sve ({visibleCount})
             </Button>
           )}
-          <Button
-            type="button"
-            size="sm"
-            variant={selectionMode ? 'default' : 'outline'}
-            onClick={onToggleSelectionMode}
-          >
-            {selectionMode ? `Odabrano (${selectedCount})` : 'Odaberi'}
-          </Button>
-          <Button
-            type="button"
-            size="sm"
-            className="hidden sm:inline-flex"
-            onClick={onUploadClick}
-            disabled={uploadDisabled}
-            title={uploadTitle}
-          >
-            Upload{selectedFolderName ? ` u „${selectedFolderName}"` : ''}
-          </Button>
+          {canManage ? (
+            <Button
+              type="button"
+              size="sm"
+              variant={selectionMode ? 'default' : 'outline'}
+              onClick={onToggleSelectionMode}
+            >
+              {selectionMode ? `Odabrano (${selectedCount})` : 'Odaberi'}
+            </Button>
+          ) : null}
+          {canUpload ? (
+            <Button
+              type="button"
+              size="sm"
+              className="hidden sm:inline-flex"
+              onClick={onUploadClick}
+              disabled={uploadDisabled}
+              title={uploadTitle}
+            >
+              Upload{selectedFolderName ? ` u „${selectedFolderName}"` : ''}
+            </Button>
+          ) : null}
         </div>
       </div>
       <p className="text-xs text-text-muted">{hintText({ search, onSearchChange, globalSearch, debouncedSearch, totalResults, folderId, selectedFolderName, selectionMode, selectedCount, visibleCount, onToggleSelectionMode, onSelectAllVisible, onUploadClick, uploadDisabled, uploadTitle, onFolderChipClick, uploadProgress })}</p>

@@ -11,7 +11,7 @@ interface MediaFolderTreeProps {
   onSelect: (id?: string) => void;
   newName: string;
   onNewNameChange: (v: string) => void;
-  onCreate: () => void;
+  onCreate?: () => void;
   isCreating?: boolean;
   onRename?: (id: string, name: string) => void;
   onDelete?: (id: string, name: string) => void;
@@ -63,12 +63,16 @@ function FolderNode({
             <span className="text-xs text-text-muted">{folder._count?.assets ?? 0}</span>
           </button>
         )}
-        {!editing && (
+        {!editing && (onRename || onDelete) ? (
           <div className="flex gap-1">
-            <Button type="button" size="sm" variant="ghost" onClick={() => setEditing(true)}>✎</Button>
-            <Button type="button" size="sm" variant="ghost" onClick={() => onDelete?.(folder.id, folder.name)}>×</Button>
+            {onRename ? (
+              <Button type="button" size="sm" variant="ghost" onClick={() => setEditing(true)}>✎</Button>
+            ) : null}
+            {onDelete ? (
+              <Button type="button" size="sm" variant="ghost" onClick={() => onDelete(folder.id, folder.name)}>×</Button>
+            ) : null}
           </div>
-        )}
+        ) : null}
       </div>
       {folder.children?.map((child) => (
         <FolderNode
@@ -122,17 +126,19 @@ export function MediaFolderTree({
           onDelete={onDelete}
         />
       ))}
-      <div className="flex gap-2 pt-2">
-        <Input
-          value={newName}
-          onChange={(e) => onNewNameChange(e.target.value)}
-          placeholder="Nova mapa"
-          className="text-sm"
-        />
-        <Button size="sm" onClick={onCreate} disabled={!newName || isCreating}>
-          +
-        </Button>
-      </div>
+      {onCreate ? (
+        <div className="flex gap-2 pt-2">
+          <Input
+            value={newName}
+            onChange={(e) => onNewNameChange(e.target.value)}
+            placeholder="Nova mapa"
+            className="text-sm"
+          />
+          <Button size="sm" onClick={onCreate} disabled={!newName || isCreating}>
+            +
+          </Button>
+        </div>
+      ) : null}
     </div>
   );
 }

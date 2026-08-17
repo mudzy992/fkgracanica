@@ -11,6 +11,7 @@ import {
   type MediaAsset,
   type MediaFolder,
 } from '../../hooks/use-media-admin';
+import { useMediaLibraryAccess } from '../../hooks/use-media-library-access';
 import { useMediaSelection } from '../../hooks/use-media-selection';
 import { useMediaUploadQueue } from '../../hooks/use-media-upload-queue';
 import { useConfirm } from '../../hooks/use-confirm';
@@ -21,15 +22,12 @@ import { MediaFolderSheet } from './media/MediaFolderSheet';
 import { MediaUploadZone } from './media/MediaUploadZone';
 import { MediaAssetFormSheet } from './MediaAssetFormSheet';
 import { MediaPageAssetsSection } from './media/MediaPageAssetsSection';
-import { mediaUrl } from '../../lib/media';
+import { MediaPageFileInputs } from './media/MediaPageFileInputs';
+import { emptyMediaMessage, copyMediaOriginalUrl } from './media/media-page-helpers';
 import { Seo } from '../../components/seo/Seo';
 
-function emptyMessage(globalSearch: boolean, debouncedSearch: string) {
-  if (globalSearch) return `Nema rezultata za „${debouncedSearch}".`;
-  return 'Nema medija u ovoj mapi.';
-}
-
 export function MediaPage() {
+  const { canUpload, canManage } = useMediaLibraryAccess();
   const uploadRef = useRef<HTMLInputElement>(null);
   const replaceRef = useRef<HTMLInputElement>(null);
   const [folderId, setFolderId] = useState<string | undefined>();
@@ -44,7 +42,6 @@ export function MediaPage() {
 
   const selection = useMediaSelection();
   const { enqueue, state: uploadState } = useMediaUploadQueue();
-
   const { data: foldersRaw, isLoading: fl } = useMediaFolders();
   const folders = asArray<MediaFolder>(foldersRaw);
 
@@ -72,53 +69,34 @@ export function MediaPage() {
   const selectedFolderName = folders.find((f) => f.id === folderId)?.name;
   const uploadDisabled = uploadState.isRunning || !folderId;
 
-  const handleSearchChange = (value: string) => {
-    setSearch(value);
-    setPage(1);
-    selection.clear();
-  };
-
   const handleFolderSelect = (id?: string) => {
     setFolderId(id);
     setPage(1);
     selection.clear();
   };
 
-  const copyUrl = (path: string) => {
-    void navigator.clipboard.writeText(mediaUrl(path, 'original') ?? path).then(() => {
-      setCopied(path);
-      setTimeout(() => setCopied(null), 2000);
-    });
-  };
+  const copyUrl = (path: string) => copyMediaOriginalUrl(path, setCopied);
 
   const onDelete = async (id: string, filename: string) => {
-    const ok = await confirm({ title: 'Obrisati medij?', description: filename, variant: 'danger', confirmLabel: 'Obriši' });
+    const ok = await confirm({
+      title: 'Obrisati medij?',
+      description: filename,
+      variant: 'danger',
+      confirmLabel: 'Obriši',
+    });
     if (ok) void remove.mutateAsync(id);
   };
 
   const onFolderDelete = async (id: string, name: string) => {
-    const ok = await confirm({ title: 'Obrisati mapu?', description: name, variant: 'danger', confirmLabel: 'Obriši' });
-    if (ok) {
-      void deleteFolder.mutateAsync(id).then(() => folderId === id && setFolderId(undefined));
-    }
-  };
-
-  const onBulkDeleteConfirm = async (count: number) =>
-    confirm({
-      title: `Obrisati ${count} medija?`,
-      description: 'Ova radnja se ne može poništiti.',
+    const ok = await confirm({
+      title: 'Obrisati mapu?',
+      description: name,
       variant: 'danger',
       confirmLabel: 'Obriši',
     });
-
-  const handleUploadFiles = (files: FileList) => {
-    if (!folderId) return;
-    enqueue(files, folderId);
-  };
-
-  const handleToggleSelectionMode = () => {
-    if (selection.selectionMode) selection.exitSelectionMode();
-    else selection.enterSelectionMode();
+    if (ok) {
+      void deleteFolder.mutateAsync(id).then(() => folderId === id && setFolderId(undefined));
+    }
   };
 
   const folderTreeProps = {
@@ -127,44 +105,32 @@ export function MediaPage() {
     onSelect: handleFolderSelect,
     newName: newFolder,
     onNewNameChange: setNewFolder,
-    onCreate: () => void createFolder.mutateAsync({ name: newFolder, parentId: folderId }).then(() => setNewFolder('')),
+    onCreate: canUpload
+      ? () => void createFolder.mutateAsync({ name: newFolder, parentId: folderId }).then(() => setNewFolder(''))
+      : undefined,
     isCreating: createFolder.isPending,
-    onRename: (id: string, name: string) => void updateFolder.mutateAsync({ id, name }),
-    onDelete: onFolderDelete,
+    onRename: canManage ? (id: string, name: string) => void updateFolder.mutateAsync({ id, name }) : undefined,
+    onDelete: canManage ? onFolderDelete : undefined,
   };
-
-  const empty = emptyMessage(globalSearch, debouncedSearch);
 
   return (
     <>
       <Seo title="Mediji" />
       {dialog}
-      <input
-        ref={uploadRef}
-        type="file"
-        accept="image/*"
-        multiple
-        className="hidden"
-        onChange={(e) => {
-          if (e.target.files?.length && folderId) handleUploadFiles(e.target.files);
-          e.target.value = '';
-        }}
-      />
-      <input
-        ref={replaceRef}
-        type="file"
-        accept="image/*"
-        className="hidden"
-        onChange={(e) => {
-          const file = e.target.files?.[0];
-          if (file && replaceId) void replace.mutateAsync({ id: replaceId, file }).finally(() => setReplaceId(null));
-          e.target.value = '';
+      <MediaPageFileInputs
+        uploadRef={uploadRef}
+        replaceRef={replaceRef}
+        folderId={folderId}
+        replaceId={replaceId}
+        onUpload={(files) => folderId && enqueue(files, folderId)}
+        onReplace={(file) => {
+          if (replaceId) void replace.mutateAsync({ id: replaceId, file }).finally(() => setReplaceId(null));
         }}
       />
       <AdminPageShell title="Mediji" isLoading={fl || al}>
         <MediaPageToolbar
           search={search}
-          onSearchChange={handleSearchChange}
+          onSearchChange={(v) => { setSearch(v); setPage(1); selection.clear(); }}
           globalSearch={globalSearch}
           debouncedSearch={debouncedSearch}
           totalResults={data?.meta?.total}
@@ -173,25 +139,31 @@ export function MediaPage() {
           selectionMode={selection.selectionMode}
           selectedCount={selection.selectedCount}
           visibleCount={visibleIds.length}
-          onToggleSelectionMode={handleToggleSelectionMode}
+          onToggleSelectionMode={() =>
+            (selection.selectionMode ? selection.exitSelectionMode() : selection.enterSelectionMode())
+          }
           onSelectAllVisible={() => selection.selectAll(visibleIds)}
           onUploadClick={() => uploadRef.current?.click()}
           uploadDisabled={uploadDisabled}
           uploadTitle={folderId ? undefined : 'Prvo odaberite mapu'}
           onFolderChipClick={() => setFolderSheetOpen(true)}
           uploadProgress={uploadState}
+          canUpload={canUpload}
+          canManage={canManage}
         />
-        <MediaUploadZone
-          folderId={folderId}
-          disabled={uploadState.isRunning}
-          onTrigger={() => uploadRef.current?.click()}
-          onFiles={handleUploadFiles}
-        />
+        {canUpload ? (
+          <MediaUploadZone
+            folderId={folderId}
+            disabled={uploadState.isRunning}
+            onTrigger={() => uploadRef.current?.click()}
+            onFiles={(files) => folderId && enqueue(files, folderId)}
+          />
+        ) : null}
         <div className="grid min-h-[320px] items-start lg:grid-cols-[minmax(200px,240px)_1fr]">
           <MediaFolderTree {...folderTreeProps} className="hidden lg:block" />
           <MediaPageAssetsSection
             assets={assets}
-            empty={empty}
+            empty={emptyMediaMessage(globalSearch, debouncedSearch)}
             copied={copied}
             folders={folders}
             selectionMode={selection.selectionMode}
@@ -200,23 +172,19 @@ export function MediaPage() {
             isSelected={selection.isSelected}
             onToggleSelect={selection.toggle}
             onCopy={copyUrl}
-            onReplace={(id) => { setReplaceId(id); replaceRef.current?.click(); }}
-            onDelete={onDelete}
-            onEdit={setEditAsset}
+            onReplace={canManage ? (id) => { setReplaceId(id); replaceRef.current?.click(); } : undefined}
+            onDelete={canManage ? onDelete : undefined}
+            onEdit={canManage ? setEditAsset : undefined}
             onClearSelection={selection.clear}
             onExitSelection={selection.exitSelectionMode}
-            onConfirmBulkDelete={onBulkDeleteConfirm}
+            onConfirmBulkDelete={canManage ? (n) => confirm({ title: `Obrisati ${n} medija?`, description: 'Ova radnja se ne može poništiti.', variant: 'danger', confirmLabel: 'Obriši' }) : undefined}
             meta={data?.meta}
             page={page}
             onPageChange={setPage}
           />
         </div>
       </AdminPageShell>
-      <MediaFolderSheet
-        open={folderSheetOpen}
-        onOpenChange={setFolderSheetOpen}
-        {...folderTreeProps}
-      />
+      <MediaFolderSheet open={folderSheetOpen} onOpenChange={setFolderSheetOpen} {...folderTreeProps} />
       <MediaAssetFormSheet asset={editAsset} open={!!editAsset} onOpenChange={(o) => !o && setEditAsset(null)} />
     </>
   );

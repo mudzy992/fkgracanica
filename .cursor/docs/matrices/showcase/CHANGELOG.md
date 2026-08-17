@@ -3,7 +3,9 @@
 ## 2026-08-17
 
 - Role `home[]` tačke u katalogu (šta vidi na početnom ekranu)
-- Web: writer/komentator/moderator home na `/admin`; član strip na `/clanstvo`
+- Web: writer/komentator/moderator/admin home na `/admin`; queue/health KPI; vijesti i galerija full-page editori
+- Writer: `media.read` + `media.upload` (mape i slike); odobrenje ostaje galerija/vijest
+- Član strip na `/clanstvo` (nediran u editor passu)
 - Mobile: staff hub brojači, writer/komentator/moderator strip, član home strip
 
 ## 2026-08-15 (audit)
