@@ -6,5 +6,6 @@
 - [x] 02b P1 leftover: login, tickets-buy, contact, tickets-browse
 - [ ] 03 P2 staff (dashboard, gallery-manage, orders, EntityList images)
 - [ ] 04 Stripe tickets-buy + Play Store listing
+- [x] 04a Stripe return-to-app (AuthSession + mobile-return bounce)
 - [ ] Canvas % update nakon svake faze
 - [x] HANDOFF updated

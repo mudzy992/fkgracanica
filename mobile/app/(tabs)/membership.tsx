@@ -9,6 +9,8 @@ import { ScreenEmpty } from '../../src/components/ScreenEmpty';
 import { ScreenLoading } from '../../src/components/ScreenLoading';
 import { useTheme } from '../../src/lib/theme-context';
 import { spacing } from '../../src/lib/theme';
+import { PrimaryButton } from '../../src/components/primitives/PrimaryButton';
+import { payMembershipOnline } from '../../src/components/membership/pay-membership-online';
 import type { Membership } from '../../src/types/api';
 
 function canRegister(status: string | undefined): boolean {
@@ -45,8 +47,28 @@ function MembershipBody() {
   const onRegister = async () => {
     setRegistering(true);
     try {
-      await api.post('/membership/register');
+      const { data } = await api.post<Membership>('/membership/register');
+      if (data?.id) {
+        const result = await payMembershipOnline(data.id);
+        if (result === 'cancelled') setError(t('paymentCancelled'));
+      }
       await loadMembership();
+    } catch {
+      setError(t('paymentFailed'));
+    } finally {
+      setRegistering(false);
+    }
+  };
+
+  const onPayPending = async () => {
+    if (!latest?.id) return;
+    setRegistering(true);
+    try {
+      const result = await payMembershipOnline(latest.id);
+      if (result === 'cancelled') setError(t('paymentCancelled'));
+      await loadMembership();
+    } catch {
+      setError(t('paymentFailed'));
     } finally {
       setRegistering(false);
     }
@@ -122,6 +144,13 @@ function MembershipBody() {
         actionLabel={canRegister(latest?.status) ? (registering ? t('loading') : t('registerMembership')) : undefined}
         onAction={canRegister(latest?.status) ? () => void onRegister() : undefined}
       />
+      {latest?.status === 'PENDING' ? (
+        <PrimaryButton
+          label={registering ? t('loading') : t('payOnline')}
+          loading={registering}
+          onPress={() => void onPayPending()}
+        />
+      ) : null}
     </ScrollView>
   );
 }

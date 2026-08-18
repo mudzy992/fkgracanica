@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Headers, Post, Query, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Headers, Post, Query, Redirect, Req, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import type { RawBodyRequest } from '@nestjs/common';
 import type { Request } from 'express';
@@ -6,11 +6,28 @@ import { PaymentsService } from './payments.service';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
 import type { AuthUser } from '../common/types/auth-user.type';
+import { buildMobileReturnUrl } from './mobile-return.util';
 
 @ApiTags('payments')
 @Controller('payments')
 export class PaymentsController {
   constructor(private readonly service: PaymentsService) {}
+
+  @Get('mobile-return')
+  @Redirect()
+  mobileReturn(
+    @Query()
+    query: {
+      to?: string;
+      kind?: string;
+      paid?: string;
+      cancelled?: string;
+      session_id?: string;
+      provider?: string;
+    },
+  ) {
+    return { url: buildMobileReturnUrl(query), statusCode: 302 };
+  }
 
   @Post('checkout/tickets')
   @UseGuards(JwtAuthGuard)

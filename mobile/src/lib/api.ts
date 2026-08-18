@@ -3,7 +3,7 @@ import * as SecureStore from 'expo-secure-store';
 import type { LoginResponse, User } from '../types/api';
 
 /** Set via `.env` — see `.env.example`. Prod default for device smoke. */
-const API_URL =
+export const API_URL =
   process.env.EXPO_PUBLIC_API_URL ?? 'https://fkgracanica.ba101.top/backend/api/v1';
 
 const ACCESS_TOKEN_KEY = 'fk_access_token';

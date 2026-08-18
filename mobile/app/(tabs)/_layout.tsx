@@ -20,7 +20,7 @@ function tabIcon(filled: IconName, outline: IconName) {
 
 export default function TabsLayout() {
   const { t } = useTranslation();
-  const { isAuthenticated, isLoading, logout, user } = useAuth();
+  const { isAuthenticated, isLoading, user } = useAuth();
   const { colors } = useTheme();
   const { count: unreadCount } = useUnreadNotifications();
   const { flags, loading: flagsLoading } = useModuleFlags();
@@ -35,9 +35,11 @@ export default function TabsLayout() {
 
   const headerRight = () =>
     isAuthenticated ? (
-      <Pressable onPress={() => void logout()} style={styles.logout} accessibilityLabel={t('logout')}>
-        <Ionicons name="log-out-outline" size={22} color={colors.white} />
-      </Pressable>
+      <Link href="/(tabs)/profile" asChild>
+        <Pressable style={styles.logout} accessibilityLabel={t('profile')}>
+          <Ionicons name="person-circle-outline" size={26} color={colors.white} />
+        </Pressable>
+      </Link>
     ) : (
       <Link href="/login" asChild>
         <Pressable style={styles.logout}>
@@ -84,8 +86,16 @@ export default function TabsLayout() {
         name="more"
         options={{
           title: t('more'),
-          tabBarBadge: isAuthenticated && unreadCount > 0 ? unreadCount : undefined,
           tabBarIcon: tabIcon('grid', 'grid-outline'),
+        }}
+      />
+      <Tabs.Screen
+        name="profile"
+        options={{
+          title: t('profile'),
+          href: isAuthenticated ? '/(tabs)/profile' : null,
+          tabBarBadge: isAuthenticated && unreadCount > 0 ? unreadCount : undefined,
+          tabBarIcon: tabIcon('person-circle', 'person-circle-outline'),
         }}
       />
       <Tabs.Screen

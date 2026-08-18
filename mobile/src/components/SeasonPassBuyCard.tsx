@@ -1,13 +1,14 @@
 import { useCallback, useEffect, useState } from 'react';
-import { Linking, Pressable, StyleSheet, Text, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { api } from '../lib/api';
+import { startMobileCheckout } from '../lib/start-mobile-checkout';
 import { useTheme } from '../lib/theme-context';
 import { spacing, typography } from '../lib/theme';
 import type { SeasonPassMine } from '../types/api';
 
-const WEB = 'https://fkgracanica.ba101.top';
-
 export function SeasonPassBuyCard() {
+  const { t } = useTranslation();
   const { colors } = useTheme();
   const [data, setData] = useState<SeasonPassMine | null>(null);
   const [busy, setBusy] = useState(false);
@@ -30,20 +31,18 @@ export function SeasonPassBuyCard() {
           ? data.pass
           : (await api.post<{ id: string; status: string }>('/ticketing/season-pass/open')).data;
       if (!data.offer.salesModes.online) return;
-      const provider = 'stripe';
-      const { data: session } = await api.post<{ url: string }>('/payments/checkout/season-pass', {
-        passId: opened.id,
-        provider,
-        successUrl: `${WEB}/ulaznice?kind=season&paid=1&provider=${provider}&session_id={CHECKOUT_SESSION_ID}`,
-        cancelUrl: `${WEB}/ulaznice?kind=season&cancelled=1`,
-      });
-      if (session.url) await Linking.openURL(session.url);
+      const result = await startMobileCheckout({ kind: 'season', body: { passId: opened.id } });
+      if (result === 'cancelled') setError(t('paymentCancelled'));
+      if (result === 'paid') {
+        const { data: row } = await api.get<SeasonPassMine>('/ticketing/season-pass/me');
+        setData(row);
+      }
     } catch {
-      setError('Kupovina nije uspjela.');
+      setError(t('paymentFailed'));
     } finally {
       setBusy(false);
     }
-  }, [data]);
+  }, [data, t]);
 
   const offer = data?.offer;
   if (!offer?.available || data?.pass?.status === 'ACTIVE') return null;
@@ -58,9 +57,10 @@ export function SeasonPassBuyCard() {
         style={[styles.btn, { backgroundColor: colors.primary }]}
         onPress={() => void buy()}
         disabled={busy}
+        accessibilityRole="button"
       >
         <Text style={[styles.btnText, { color: colors.white }]}>
-          {busy ? '...' : offer.salesModes.online ? 'Kupi sezonsku kartu' : 'Dostupno na blagajni'}
+          {busy ? t('loading') : offer.salesModes.online ? t('buySeasonPass') : t('seasonPassBoxOffice')}
         </Text>
       </Pressable>
       {error ? <Text style={[styles.meta, { color: colors.danger }]}>{error}</Text> : null}

@@ -83,7 +83,8 @@
           "savePhotosPermission": "Dozvoli spremanje fotografija u galeriju.",
           "isAccessMediaLocationEnabled": true
         }
-      ]
+      ],
+      "expo-web-browser"
     ],
     "extra": {
       "router": {},

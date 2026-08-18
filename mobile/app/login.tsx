@@ -1,18 +1,11 @@
 import { Link, useLocalSearchParams, useRouter } from 'expo-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-  ActivityIndicator,
-  Alert,
-  KeyboardAvoidingView,
-  Platform,
-  Pressable,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-} from 'react-native';
+import { Alert, KeyboardAvoidingView, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LoginCrest } from '../src/components/auth/LoginCrest';
+import { LoginFields } from '../src/components/auth/LoginFields';
+import { PrimaryButton } from '../src/components/primitives/PrimaryButton';
 import { useAuth } from '../src/lib/auth';
 import { useTheme } from '../src/lib/theme-context';
 import { spacing, typography } from '../src/lib/theme';
@@ -20,6 +13,7 @@ import { spacing, typography } from '../src/lib/theme';
 export default function LoginScreen() {
   const { t } = useTranslation();
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const { returnTo } = useLocalSearchParams<{ returnTo?: string }>();
   const { login } = useAuth();
   const { colors } = useTheme();
@@ -43,88 +37,49 @@ export default function LoginScreen() {
 
   return (
     <KeyboardAvoidingView
-      style={[styles.container, { backgroundColor: colors.surface }]}
+      style={[styles.container, { backgroundColor: colors.surface, paddingTop: insets.top + spacing.lg }]}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
-      <View style={[styles.card, { backgroundColor: colors.background, borderColor: colors.border }]}>
+      <View style={styles.hero}>
         <LoginCrest />
-        <Text style={[styles.title, { color: colors.primary }]}>{t('appName')}</Text>
-        <Text style={[styles.subtitle, { color: colors.textMuted }]}>{t('login')}</Text>
-
-        <Text style={[styles.label, { color: colors.textMuted }]}>{t('email')}</Text>
-        <TextInput
-          style={[
-            styles.input,
-            { borderColor: colors.border, color: colors.text, backgroundColor: colors.background },
-          ]}
-          value={email}
-          onChangeText={setEmail}
-          autoCapitalize="none"
-          keyboardType="email-address"
-          autoComplete="email"
-          placeholder="admin@fkgracanica.ba"
-          placeholderTextColor={colors.textMuted}
-        />
-
-        <Text style={[styles.label, { color: colors.textMuted }]}>{t('password')}</Text>
-        <TextInput
-          style={[
-            styles.input,
-            { borderColor: colors.border, color: colors.text, backgroundColor: colors.background },
-          ]}
-          value={password}
-          onChangeText={setPassword}
-          secureTextEntry
-          autoComplete="password"
-          placeholder="••••••••"
-          placeholderTextColor={colors.textMuted}
-        />
-
-        <Pressable
-          style={[styles.button, { backgroundColor: colors.primary }, submitting && styles.buttonDisabled]}
-          onPress={() => void handleLogin()}
-          disabled={submitting}
-        >
-          {submitting ? (
-            <ActivityIndicator color={colors.white} />
-          ) : (
-            <Text style={[styles.buttonText, { color: colors.white }]}>{t('signIn')}</Text>
-          )}
-        </Pressable>
-
-        <Link href="/(tabs)/home" asChild>
-          <Pressable style={styles.skip}>
-            <Text style={{ color: colors.primary, fontWeight: '600' }}>{t('continueAsGuest')}</Text>
-          </Pressable>
-        </Link>
-        <Link href="/contact" asChild>
-          <Pressable style={styles.skip} accessibilityRole="link" accessibilityLabel={t('forgotPassword')}>
-            <Text style={{ color: colors.textMuted, fontWeight: '600' }}>{t('forgotPassword')}</Text>
-          </Pressable>
-        </Link>
-        <Text style={[styles.hint, { color: colors.textMuted }]}>{t('forgotPasswordHint')}</Text>
+        <Text style={[styles.title, { color: colors.text }]}>{t('appName')}</Text>
+        <Text style={[styles.subtitle, { color: colors.textMuted }]}>{t('loginLead')}</Text>
+      </View>
+      <View style={[styles.plate, { backgroundColor: colors.background, borderColor: colors.border }]}>
+        <LoginFields email={email} password={password} onEmail={setEmail} onPassword={setPassword} />
+        <View style={styles.actions}>
+          <PrimaryButton
+            label={submitting ? t('signingIn') : t('signIn')}
+            loading={submitting}
+            disabled={!email.trim() || !password}
+            onPress={() => void handleLogin()}
+          />
+          <Link href="/(tabs)/home" asChild>
+            <Pressable style={styles.link} accessibilityRole="link">
+              <Text style={[styles.linkText, { color: colors.primaryLight }]}>{t('continueAsGuest')}</Text>
+            </Pressable>
+          </Link>
+          <Link href="/contact" asChild>
+            <Pressable style={styles.link} accessibilityRole="link" accessibilityLabel={t('forgotPassword')}>
+              <Text style={[styles.forgot, { color: colors.textMuted }]}>{t('forgotPassword')}</Text>
+            </Pressable>
+          </Link>
+          <Text style={[styles.hint, { color: colors.textMuted }]}>{t('forgotPasswordHint')}</Text>
+        </View>
       </View>
     </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: 'center', padding: spacing.lg },
-  card: { borderRadius: 12, padding: spacing.lg, borderWidth: 1 },
-  title: { ...typography.title, textAlign: 'center' },
-  subtitle: { ...typography.body, textAlign: 'center', marginBottom: spacing.lg },
-  label: { ...typography.caption, marginBottom: spacing.xs },
-  input: {
-    borderWidth: 1,
-    borderRadius: 8,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm + 4,
-    marginBottom: spacing.md,
-    fontSize: 16,
-  },
-  button: { borderRadius: 8, paddingVertical: spacing.md, alignItems: 'center', marginTop: spacing.sm },
-  buttonDisabled: { opacity: 0.7 },
-  buttonText: { fontSize: 16, fontWeight: '600' },
-  skip: { marginTop: spacing.lg, alignItems: 'center', padding: spacing.sm },
+  container: { flex: 1, paddingHorizontal: spacing.lg, justifyContent: 'center', gap: spacing.xl },
+  hero: { alignItems: 'center', gap: spacing.sm },
+  title: { ...typography.title, fontWeight: '800', textAlign: 'center' },
+  subtitle: { ...typography.body, textAlign: 'center' },
+  plate: { borderRadius: 24, borderWidth: 1, padding: spacing.lg },
+  actions: { marginTop: spacing.lg, gap: spacing.sm },
+  link: { alignItems: 'center', paddingVertical: spacing.sm },
+  linkText: { fontWeight: '700' },
+  forgot: { fontWeight: '600' },
   hint: { ...typography.caption, textAlign: 'center' },
 });

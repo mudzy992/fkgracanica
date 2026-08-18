@@ -1,5 +1,12 @@
 # CHANGELOG — 34 Mobile to 100%
 
+## 2026-08-18 (c)
+
+- Login: full-screen plate, crest, show/hide lozinka
+- Stripe: AuthSession + `GET /payments/mobile-return` bounce u app (tickets/membership/season)
+- Contact mapa: `geo:`/`maps:` umjesto neispravnog Google `?api=1` URL-a
+- Profil tab/hub za nalog (članstvo, ulaznice, notifikacije, odjava)
+
 ## 2026-08-18 (b)
 
 - Museum tab: arhiv/vitrina (mesing KPI + drawer filteri + featured/grid + pager)

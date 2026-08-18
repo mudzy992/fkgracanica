@@ -10,5 +10,5 @@ export function LoginCrest() {
 }
 
 const styles = StyleSheet.create({
-  crest: { width: 88, height: 88, alignSelf: 'center', marginBottom: 8 },
+  crest: { width: 112, height: 112, alignSelf: 'center' },
 });

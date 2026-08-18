@@ -28,7 +28,8 @@ function RootStack() {
       >
         <Stack.Screen name="index" options={{ headerShown: false }} />
         <Stack.Screen name="showcase" options={{ headerShown: false }} />
-        <Stack.Screen name="login" options={{ title: 'FK Gračanica' }} />
+        <Stack.Screen name="login" options={{ headerShown: false }} />
+        <Stack.Screen name="payment-return" options={{ headerShown: false }} />
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="staff" options={{ headerShown: false }} />
         <Stack.Screen name="team" options={{ headerShown: false }} />

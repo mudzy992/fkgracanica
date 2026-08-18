@@ -8,6 +8,7 @@ import { ScreenLoading } from '../src/components/ScreenLoading';
 import { TicketBrowseSteps } from '../src/components/TicketBrowseSteps';
 import { TicketReserveForm } from '../src/components/TicketReserveForm';
 import { SeasonPassBuyCard } from '../src/components/SeasonPassBuyCard';
+import { startMobileCheckout } from '../src/lib/start-mobile-checkout';
 import { api } from '../src/lib/api';
 import { formatDateTimeBs } from '../src/lib/format-date';
 import { useTheme } from '../src/lib/theme-context';
@@ -27,6 +28,7 @@ function TicketsBuyBody() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [payOnline, setPayOnline] = useState(false);
 
   const loadBase = useCallback(async () => {
     try {
@@ -37,6 +39,7 @@ function TicketsBuyBody() {
       ]);
       setMatches(Array.isArray(mRes.data) ? mRes.data : []);
       setCategories((cRes.data.categories ?? []).filter((c) => c.isActive !== false));
+      setPayOnline(Boolean(cRes.data.salesModes?.online && cRes.data.onlineReady));
     } catch {
       setError(t('error'));
     }
@@ -64,17 +67,25 @@ function TicketsBuyBody() {
     if (!matchId || !selected) return;
     setSubmitting(true);
     try {
-      await api.post('/ticketing/reserve', {
+      const intent = payOnline ? 'online' : 'box_office';
+      const { data: order } = await api.post<{ id?: string }>('/ticketing/reserve', {
         matchId,
         category: selected.label,
         categoryId: selected.id,
         price: selected.price,
         quantity: qty,
-        paymentIntent: 'box_office',
+        paymentIntent: intent,
       });
+      if (intent === 'online' && order?.id) {
+        const result = await startMobileCheckout({ kind: 'tickets', body: { orderId: order.id } });
+        if (result === 'cancelled') {
+          setError(t('paymentCancelled'));
+          return;
+        }
+      }
       router.replace('/(tabs)/tickets');
     } catch {
-      setError(t('error'));
+      setError(t('paymentFailed'));
     } finally {
       setSubmitting(false);
     }

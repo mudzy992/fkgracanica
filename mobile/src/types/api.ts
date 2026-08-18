@@ -146,6 +146,9 @@ export type TicketingConfig = {
   categories: TicketCategory[];
   salesModes?: { boxOffice: boolean; online: boolean };
   readyProviders?: string[];
+  onlineReady?: boolean;
+  membershipAnnualPrice?: number;
+  membershipOnlineEnabled?: boolean;
   seasonPassPrice?: number;
   seasonPassLabel?: string;
   seasonPassAvailable?: boolean;

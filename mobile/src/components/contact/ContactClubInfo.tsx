@@ -1,16 +1,10 @@
 import { Ionicons } from '@expo/vector-icons';
-import { Linking, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Linking, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { spacing, typography } from '../../lib/theme';
 import { useTheme } from '../../lib/theme-context';
+import { openMaps } from '../../lib/open-maps';
 import { usePublicSettings } from '../../lib/use-public-settings';
-
-function mapsUrl(address: string): string {
-  const query = encodeURIComponent(address);
-  return Platform.OS === 'ios'
-    ? `http://maps.apple.com/?q=${query}`
-    : `https://www.google.com/maps/search/?api=1&query=${query}`;
-}
 
 export function ContactClubInfo() {
   const { t } = useTranslation();
@@ -37,7 +31,7 @@ export function ContactClubInfo() {
       ) : null}
       {address ? (
         <Pressable
-          onPress={() => void Linking.openURL(mapsUrl(address))}
+          onPress={() => void openMaps(address)}
           accessibilityRole="link"
           accessibilityLabel={t('openMap')}
           style={[styles.map, { borderColor: colors.border, backgroundColor: colors.surface }]}
