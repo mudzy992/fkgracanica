@@ -1,4 +1,4 @@
-export type EntityFieldType = 'text' | 'number' | 'multiline' | 'choice';
+export type EntityFieldType = 'text' | 'number' | 'multiline' | 'choice' | 'image';
 
 export type EntityChoice = { value: string; label: string };
 

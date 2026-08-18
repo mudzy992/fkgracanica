@@ -12,6 +12,7 @@ import {
 } from './ticketing-query.util';
 import { occupiedForMatch } from './season-pass-capacity.util';
 import { validateSeasonPass } from './season-pass-validate.util';
+import { validateMembershipCard } from './membership-validate.util';
 import {
   countUserActiveTicketsForMatch,
   getMaxBoxOfficeTicketsPerUser,
@@ -68,7 +69,16 @@ export class TicketingService {
       where: { qrCode },
       include: { match: { include: { homeClub: true, awayClub: true } } },
     });
-    if (!ticket) return validateSeasonPass(this.prisma, qrCode, matchId);
+    if (!ticket) {
+      try {
+        return await validateSeasonPass(this.prisma, qrCode, matchId);
+      } catch (err) {
+        if (err instanceof NotFoundException && err.message === 'Ulaznica nije pronađena') {
+          return validateMembershipCard(this.prisma, qrCode);
+        }
+        throw err;
+      }
+    }
     if (ticket.status === TicketStatus.USED) {
       throw new BadRequestException('Ulaznica je već iskorištena');
     }

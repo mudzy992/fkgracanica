@@ -10,7 +10,7 @@ import { ListSkeleton } from '../../src/components/ListSkeleton';
 import { ScreenEmpty } from '../../src/components/ScreenEmpty';
 import { TeamFormationPitch } from '../../src/components/team/TeamFormationPitch';
 import { TeamRoster } from '../../src/components/team/TeamRoster';
-import { TeamSeasonSummary } from '../../src/components/team/TeamSeasonSummary';
+import { TeamSeasonStatsBlock } from '../../src/components/team/TeamSeasonStatsBlock';
 import { TeamSpotlight } from '../../src/components/team/TeamSpotlight';
 import { useTheme } from '../../src/lib/theme-context';
 import { spacing, typography } from '../../src/lib/theme';
@@ -126,12 +126,7 @@ export default function ClubPublicScreen() {
           {data.clubId && data.participations.length > 0 ? (
             <ClubCompetitionSection clubId={data.clubId} participations={data.participations} />
           ) : null}
-          <TeamSeasonSummary
-            seasonName={data.seasonName}
-            standing={data.standing}
-            totals={data.totals}
-            players={data.players}
-          />
+          {data.clubId ? <TeamSeasonStatsBlock clubId={data.clubId} /> : null}
         </View>
       </ScrollView>
     </View>

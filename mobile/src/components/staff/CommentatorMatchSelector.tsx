@@ -1,9 +1,16 @@
 import { Pressable, Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { matchStatusKey } from '../../lib/match-status';
 import { useTheme } from '../../lib/theme-context';
 import { commentatorStyles as styles } from './commentator-styles';
 
-export type MatchOption = { id: string; title: string; status?: string; reportStatus?: string };
+export type MatchOption = {
+  id: string;
+  title: string;
+  status?: string;
+  reportStatus?: string;
+  scheduledAt?: string;
+};
 
 type Props = {
   matches: MatchOption[];
@@ -38,6 +45,7 @@ export function CommentatorMatchSelector({ matches, selectedId, onSelect }: Prop
               >
                 <Text style={[styles.chipText, { color: selected ? colors.white : colors.text }]}>
                   {match.title}
+                  {match.status ? ` · ${t(matchStatusKey(match.status))}` : ''}
                 </Text>
               </Pressable>
             );

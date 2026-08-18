@@ -62,6 +62,8 @@ export type Match = {
   awayClub: Club;
   events?: MatchEvent[];
   highlights?: MatchHighlight[];
+  season?: { name: string; competition?: { name?: string } | null };
+  roundRel?: { number: number; name?: string | null } | null;
 };
 
 export type MatchHighlight = {

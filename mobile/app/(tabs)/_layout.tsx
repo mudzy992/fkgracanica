@@ -1,7 +1,8 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Link, Tabs } from 'expo-router';
-import { Pressable, StyleSheet, Text, type ColorValue } from 'react-native';
+import { Pressable, StyleSheet, Text, View, type ColorValue } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { HeaderSearchButton } from '../../src/components/HeaderSearchButton';
 import { ScreenLoading } from '../../src/components/ScreenLoading';
 import { useAuth } from '../../src/lib/auth';
 import { isStaffUser } from '../../src/lib/permissions';
@@ -33,20 +34,24 @@ export default function TabsLayout() {
     return <ShowcaseScreen />;
   }
 
-  const headerRight = () =>
-    isAuthenticated ? (
-      <Link href="/(tabs)/profile" asChild>
-        <Pressable style={styles.logout} accessibilityLabel={t('profile')}>
-          <Ionicons name="person-circle-outline" size={26} color={colors.white} />
-        </Pressable>
-      </Link>
-    ) : (
-      <Link href="/login" asChild>
-        <Pressable style={styles.logout}>
-          <Text style={{ color: colors.white, fontSize: 14, fontWeight: '600' }}>{t('login')}</Text>
-        </Pressable>
-      </Link>
-    );
+  const headerRight = () => (
+    <View style={styles.right}>
+      <HeaderSearchButton color={colors.white} />
+      {isAuthenticated ? (
+        <Link href="/(tabs)/profile" asChild>
+          <Pressable style={styles.logout} accessibilityLabel={t('profile')}>
+            <Ionicons name="person-circle-outline" size={26} color={colors.white} />
+          </Pressable>
+        </Link>
+      ) : (
+        <Link href="/login" asChild>
+          <Pressable style={styles.logout}>
+            <Text style={{ color: colors.white, fontSize: 14, fontWeight: '600' }}>{t('login')}</Text>
+          </Pressable>
+        </Link>
+      )}
+    </View>
+  );
 
   return (
     <Tabs
@@ -103,5 +108,6 @@ export default function TabsLayout() {
 }
 
 const styles = StyleSheet.create({
-  logout: { marginRight: 16 },
+  right: { flexDirection: 'row', alignItems: 'center', marginRight: 8 },
+  logout: { marginRight: 8 },
 });

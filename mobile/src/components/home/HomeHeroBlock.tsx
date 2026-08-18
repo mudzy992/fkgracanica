@@ -2,6 +2,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { HeaderSearchButton } from '../HeaderSearchButton';
 import { RemoteImage } from '../RemoteImage';
 import { useTheme } from '../../lib/theme-context';
 import { spacing, typography } from '../../lib/theme';
@@ -66,6 +67,9 @@ export function HomeHeroBlock({
           locations={[0, 0.16, 0.48, 1]}
           style={StyleSheet.absoluteFill}
         />
+        <View style={[styles.search, { top: insets.top + spacing.sm }]}>
+          <HeaderSearchButton color={HERO_ON_IMAGE.title} />
+        </View>
         <View style={[styles.inner, { paddingTop: insets.top + spacing.lg }]}>
           <View style={styles.copy}>
             {crestUrl ? (
@@ -105,6 +109,7 @@ const styles = StyleSheet.create({
   backdrop: { ...StyleSheet.absoluteFill, height: undefined, borderRadius: 0 },
   scrim: { ...StyleSheet.absoluteFill, backgroundColor: 'rgba(5, 10, 20, 0.18)' },
   inner: { flex: 1, justifyContent: 'flex-end' },
+  search: { position: 'absolute', right: spacing.md, zIndex: 2 },
   copy: { paddingHorizontal: spacing.lg, paddingBottom: spacing.sm },
   crest: { width: 80, height: 80, marginBottom: spacing.md, borderRadius: 0 },
   kicker: { ...typography.caption, fontWeight: '800', letterSpacing: 1.8, textTransform: 'uppercase' },

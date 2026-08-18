@@ -14,10 +14,14 @@ import type { Match } from '../../../src/types/api';
 function Section({
   title,
   matches,
+  locale,
+  featuredFirst,
   onPress,
 }: {
   title: string;
   matches: Match[];
+  locale: string;
+  featuredFirst?: boolean;
   onPress: (id: string) => void;
 }) {
   const { colors } = useTheme();
@@ -25,8 +29,14 @@ function Section({
   return (
     <View style={styles.section}>
       <Text style={[styles.sectionTitle, { color: colors.text }]}>{title}</Text>
-      {matches.map((m) => (
-        <LiveMatchRow key={m.id} match={m} onPress={onPress} />
+      {matches.map((m, index) => (
+        <LiveMatchRow
+          key={m.id}
+          match={m}
+          locale={locale}
+          featured={Boolean(featuredFirst && index === 0)}
+          onPress={onPress}
+        />
       ))}
     </View>
   );
@@ -34,7 +44,7 @@ function Section({
 
 export default function LiveListScreen() {
   const { colors } = useTheme();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const router = useRouter();
   const [matches, setMatches] = useState<Match[]>([]);
   const [loading, setLoading] = useState(true);
@@ -72,7 +82,7 @@ export default function LiveListScreen() {
         .slice(0, 10),
       recent: matches
         .filter((m) => m.status === 'FINISHED')
-        .sort((a, b) => new Date(b.scheduledAt).getTime() - new Date(a.scheduledAt).getTime())
+        .sort((a, b) => new Date(b.scheduledAt).getTime() - new Date(b.scheduledAt).getTime())
         .slice(0, 5),
     };
   }, [matches]);
@@ -94,6 +104,7 @@ export default function LiveListScreen() {
 
   const open = (id: string) => router.push(`/live/${id}`);
   const empty = live.length === 0 && upcoming.length === 0 && recent.length === 0;
+  const locale = i18n.language;
 
   return (
     <ScrollView
@@ -110,9 +121,9 @@ export default function LiveListScreen() {
       }
     >
       {empty ? <ScreenEmpty message={t('noMatches')} icon="football-outline" /> : null}
-      <Section title={t('live')} matches={live} onPress={open} />
-      <Section title={t('upcoming')} matches={upcoming} onPress={open} />
-      <Section title={t('recent')} matches={recent} onPress={open} />
+      <Section title={t('live')} matches={live} locale={locale} featuredFirst onPress={open} />
+      <Section title={t('upcoming')} matches={upcoming} locale={locale} onPress={open} />
+      <Section title={t('recent')} matches={recent} locale={locale} onPress={open} />
     </ScrollView>
   );
 }
@@ -121,6 +132,6 @@ const styles = StyleSheet.create({
   container: { flex: 1 },
   content: { padding: spacing.md },
   contentEmpty: { flexGrow: 1 },
-  section: { marginBottom: spacing.lg },
-  sectionTitle: { ...typography.heading, marginBottom: spacing.sm },
+  section: { marginBottom: spacing.lg, gap: spacing.sm },
+  sectionTitle: { ...typography.heading, marginBottom: spacing.xs },
 });

@@ -4,7 +4,7 @@ import { TicketingService } from './ticketing.service';
 import { TicketingConfigService } from './ticketing-config.service';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { PermissionsGuard } from '../common/guards/permissions.guard';
-import { RequirePermissions } from '../common/decorators/permissions.decorator';
+import { RequireAnyPermission, RequirePermissions } from '../common/decorators/permissions.decorator';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
 import type { AuthUser } from '../common/types/auth-user.type';
 
@@ -70,7 +70,7 @@ export class TicketingController {
 
   @Post('validate')
   @UseGuards(PermissionsGuard)
-  @RequirePermissions('ticketing.manage')
+  @RequireAnyPermission('admissions.scan', 'ticketing.manage')
   validate(@Body() body: { qrCode: string; matchId?: string }) {
     return this.service.validateTicket(body.qrCode, body.matchId);
   }

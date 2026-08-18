@@ -5,6 +5,12 @@ import { useTheme } from '../../lib/theme-context';
 import { spacing, typography } from '../../lib/theme';
 import type { LeagueLeaderItem } from './load-league-screen';
 
+const PODIUM = ['#EAB308', '#94A3B8', '#B45309'] as const;
+
+function podiumColor(index: number): string | undefined {
+  return index >= 0 && index < 3 ? PODIUM[index] : undefined;
+}
+
 type Props = { scorers: LeagueLeaderItem[]; assists: LeagueLeaderItem[] };
 
 export function LeagueLeadersSection({ scorers, assists }: Props) {
@@ -46,7 +52,9 @@ function LeaderTable({
           accessibilityRole="button"
           accessibilityLabel={row.name}
         >
-          <Text style={[styles.rank, { color: colors.textMuted }]}>{index + 1}</Text>
+          <Text style={[styles.rank, { color: podiumColor(index) ?? colors.textMuted }]}>
+            {index + 1}
+          </Text>
           <Text style={[styles.name, { color: colors.text }]} numberOfLines={1}>
             {row.name}
           </Text>

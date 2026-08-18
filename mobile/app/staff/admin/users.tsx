@@ -20,19 +20,22 @@ export default function AdminUsersScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [roleId, setRoleId] = useState('');
+  const [query, setQuery] = useState('');
 
   const load = useCallback(async () => {
     try {
-      const [usersRes, rolesRes] = await Promise.all([
-        api.get('/users'),
-        api.get('/users/role-options'),
-      ]);
+      const rolesRes = await api.get('/users/role-options');
       const roleList = asArray(rolesRes.data).map((r) => {
         const row = asRecord(r);
         return { id: asString(row.id), name: asString(row.name) };
       });
       setRoles(roleList);
       setRoleId((prev) => prev || roleList[0]?.id || '');
+    } catch {
+      setRoles([]);
+    }
+    try {
+      const usersRes = await api.get('/users');
       setItems(
         asArray(asRecord(usersRes.data).data ?? usersRes.data).map((user, i) => {
           const item = asRecord(user);
@@ -49,7 +52,6 @@ export default function AdminUsersScreen() {
       );
     } catch {
       setItems([]);
-      setRoles([]);
     }
   }, []);
 
@@ -72,16 +74,29 @@ export default function AdminUsersScreen() {
     await load();
   };
 
+  const q = query.trim().toLowerCase();
+  const visible = q
+    ? items.filter((item) => item.email.toLowerCase().includes(q) || item.name.toLowerCase().includes(q) || item.roleNames.toLowerCase().includes(q))
+    : items;
+
   return (
     <RequirePermission permission="users.read" returnTo="/staff/admin/users">
       <Screen padded={false}>
         <FlatList
-          data={items}
+          data={visible}
           keyExtractor={(item) => item.id}
           contentContainerStyle={styles.list}
           ListHeaderComponent={
             <View style={[styles.card, { backgroundColor: colors.background, borderColor: colors.border }]}>
               <Text style={[styles.title, { color: colors.text }]}>{t('users')}</Text>
+              <TextInput
+                style={[styles.input, { borderColor: colors.border, backgroundColor: colors.surface, color: colors.text }]}
+                value={query}
+                onChangeText={setQuery}
+                placeholder={t('searchUsers')}
+                placeholderTextColor={colors.textMuted}
+                autoCapitalize="none"
+              />
               <TextInput
                 style={[styles.input, { borderColor: colors.border, backgroundColor: colors.surface, color: colors.text }]}
                 value={email}

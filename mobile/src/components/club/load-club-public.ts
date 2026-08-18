@@ -22,6 +22,7 @@ export type ClubParticipation = {
   yearStart: number;
   isActive: boolean;
   isLeague: boolean;
+  competitionName: string;
 };
 
 export type ClubPublicData = TeamScreenData & {
@@ -159,6 +160,7 @@ export async function loadClubPublic(slug: string): Promise<ClubPublicData> {
         yearStart: Number(item.yearStart ?? 0),
         isActive: Boolean(item.isActive),
         isLeague: Boolean(item.isLeague),
+        competitionName,
       };
     })
     .filter((p) => p.seasonId);

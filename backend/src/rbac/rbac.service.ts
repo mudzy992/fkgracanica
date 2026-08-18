@@ -8,7 +8,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { AuditService } from '../audit/audit.service';
 import { syncPermissions } from './sync-permissions';
 
-export const SYSTEM_ROLES = ['Administrator', 'Moderator', 'Writer', 'Komentator', 'Član'];
+export const SYSTEM_ROLES = ['Administrator', 'Moderator', 'Writer', 'Komentator', 'Redar', 'Član'];
 
 @Injectable()
 export class RbacService implements OnModuleInit {

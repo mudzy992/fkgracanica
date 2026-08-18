@@ -26,6 +26,7 @@ const STAFF_KEYS = [
   'live.approve',
   'membership.manage',
   'ticketing.manage',
+  'admissions.scan',
   'dashboard.read',
   'analytics.read',
   'contact.read',

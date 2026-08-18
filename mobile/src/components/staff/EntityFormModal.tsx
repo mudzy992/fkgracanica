@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { PrimaryButton } from '../primitives/PrimaryButton';
 import { useTheme } from '../../lib/theme-context';
 import { spacing, typography } from '../../lib/theme';
+import { EntityImageField } from './EntityImageField';
 import type { EntityFieldDef } from './entity-crud-types';
 
 type Props = {
@@ -41,7 +42,9 @@ export function EntityFormModal({
                   {t(field.labelKey)}
                   {field.required ? ' *' : ''}
                 </Text>
-                {field.type === 'choice' && field.choices ? (
+                {field.type === 'image' ? (
+                  <EntityImageField value={values[field.key] ?? ''} onChange={(v) => onChange(field.key, v)} />
+                ) : field.type === 'choice' && field.choices ? (
                   <View style={styles.choices}>
                     {field.choices.map((choice) => {
                       const value = typeof choice === 'string' ? choice : choice.value;

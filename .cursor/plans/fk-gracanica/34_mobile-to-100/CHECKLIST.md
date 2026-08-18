@@ -5,7 +5,8 @@
 - [x] 02+ gallery native pager, heritage tab UX, live Socket.IO
 - [x] 02b P1 leftover: login, tickets-buy, contact, tickets-browse
 - [x] 02c Account/More/chrome: stack back, CMS uklonjen, skeleti, i18n headeri
-- [ ] 03 P2 staff (dashboard, gallery-manage, orders, EntityList images)
+- [x] 02d Liga/Tim/Uživo polish: competition filter, header search, live scoreboard
+- [x] 03 P2 staff — **zamijenjeno Track 35** (`.cursor/plans/fk-gracanica/35_staff-complete/`)
 - [ ] 04 Stripe tickets-buy + Play Store listing
 - [x] 04a Stripe return-to-app (AuthSession + mobile-return bounce)
 - [ ] Canvas % update nakon svake faze

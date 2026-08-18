@@ -6,6 +6,7 @@ const ROLES = [
   { name: 'Moderator', description: 'Upravljanje sadržajem i odobravanje' },
   { name: 'Writer', description: 'Kreiranje sadržaja' },
   { name: 'Komentator', description: 'Vođenje live utakmica' },
+  { name: 'Redar', description: 'Ulaz — skeniranje ulaznica i članskih kartica' },
   { name: 'Član', description: 'Član kluba' },
 ] as const;
 
@@ -23,6 +24,7 @@ const ROLE_PERMISSIONS: Record<string, string[]> = {
   ],
   Writer: ['news.manage', 'news.submit', 'gallery.manage', 'media.read', 'media.upload'],
   Komentator: ['live.manage', 'matches.manage'],
+  Redar: ['admissions.scan'],
   Član: [],
 };
 

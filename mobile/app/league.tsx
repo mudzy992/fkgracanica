@@ -1,5 +1,5 @@
 import { Stack } from 'expo-router';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { RefreshControl, ScrollView, StyleSheet, View } from 'react-native';
 import { LeagueHero } from '../src/components/league/LeagueHero';
@@ -21,6 +21,8 @@ const emptyData: LeagueScreenData = {
   seasons: [],
   seasonId: '',
   seasonName: '',
+  editions: [],
+  editionId: '',
   rounds: [],
   standings: [],
   matches: [],
@@ -35,17 +37,19 @@ export default function LeagueScreen() {
   const { t, i18n } = useTranslation();
   const [data, setData] = useState<LeagueScreenData>(emptyData);
   const [seasonId, setSeasonId] = useState<string | undefined>();
+  const [editionId, setEditionId] = useState<string | undefined>();
   const [upToRound, setUpToRound] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const load = useCallback(async (id?: string, round?: number | null) => {
+  const load = useCallback(async (id?: string, round?: number | null, edition?: string) => {
     try {
       setError(null);
-      const next = await loadLeagueScreen(id, round);
+      const next = await loadLeagueScreen(id, round, edition);
       setData(next);
       setSeasonId(next.seasonId || undefined);
+      setEditionId(next.editionId || undefined);
     } catch {
       setData(emptyData);
       setError(t('error'));
@@ -53,26 +57,43 @@ export default function LeagueScreen() {
   }, [t]);
 
   useEffect(() => {
-    void load(seasonId, upToRound).finally(() => setLoading(false));
+    void load(seasonId, upToRound, editionId).finally(() => setLoading(false));
   }, []);
 
   const handleSeasonChange = (id: string) => {
     setSeasonId(id);
+    setEditionId(undefined);
     setUpToRound(null);
     setRefreshing(true);
-    void load(id, null).finally(() => setRefreshing(false));
+    void load(id, null, undefined).finally(() => setRefreshing(false));
+  };
+
+  const handleEditionChange = (id: string) => {
+    setEditionId(id);
+    setUpToRound(null);
+    setRefreshing(true);
+    void load(seasonId, null, id).finally(() => setRefreshing(false));
   };
 
   const handleRoundChange = (round: number | null) => {
     setUpToRound(round);
     setRefreshing(true);
-    void load(seasonId, round).finally(() => setRefreshing(false));
+    void load(seasonId, round, editionId).finally(() => setRefreshing(false));
   };
 
   const handleRefresh = () => {
     setRefreshing(true);
-    void load(seasonId, upToRound).finally(() => setRefreshing(false));
+    void load(seasonId, upToRound, editionId).finally(() => setRefreshing(false));
   };
+
+  const editionChips = useMemo(
+    () =>
+      data.editions.map((e) => ({
+        id: e.id,
+        name: e.isLeague ? `${e.name} · ${t('leagueBadge')}` : e.name,
+      })),
+    [data.editions, t],
+  );
 
   if (loading) {
     return (
@@ -93,7 +114,7 @@ export default function LeagueScreen() {
           actionLabel={t('retry')}
           onAction={() => {
             setLoading(true);
-            void load(seasonId, upToRound).finally(() => setLoading(false));
+            void load(seasonId, upToRound, editionId).finally(() => setLoading(false));
           }}
         />
       </View>
@@ -115,6 +136,7 @@ export default function LeagueScreen() {
       >
         <LeagueHero
           seasonName={data.seasonName}
+          competitionName={data.competitionName}
           teamCount={data.teamCount}
           roundsPlayed={data.roundsPlayed}
           leaderName={data.leaderName}
@@ -126,6 +148,11 @@ export default function LeagueScreen() {
             seasons={data.seasons}
             seasonId={data.seasonId}
             onChange={handleSeasonChange}
+          />
+          <LeagueSeasonChips
+            seasons={editionChips}
+            seasonId={data.editionId}
+            onChange={handleEditionChange}
           />
           <LeagueRoundChips
             rounds={data.rounds}

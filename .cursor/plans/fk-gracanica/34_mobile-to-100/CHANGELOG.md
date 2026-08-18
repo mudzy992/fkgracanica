@@ -1,5 +1,13 @@
 # CHANGELOG — 34 Mobile to 100%
 
+## 2026-08-18 (e)
+
+- Tim/Klub: statistike sezone filtrirane po takmičenju u aktivnoj sezoni (`TeamSeasonStatsBlock`)
+- Liga: chipovi takmičenja (edition) + hero kicker + scoreboard mečevi + podium lideri
+- Search ikona u tab headeru i Home hero (tab bar ne diran)
+- Uživo: scoreboard lista/featured + detalj grbovi/i18n status
+- `tsc --noEmit` PASS
+
 ## 2026-08-18 (d)
 
 - Account: membership/tickets/notifications → stack rute + back gestura; hidden tabovi uklonjeni

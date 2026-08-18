@@ -1,10 +1,10 @@
 import { Stack, useLocalSearchParams } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ScrollView, StyleSheet } from 'react-native';
 import { ListSkeleton } from '../../src/components/ListSkeleton';
 import { LiveEventList } from '../../src/components/LiveEventList';
+import { LiveScoreboard } from '../../src/components/live/LiveScoreboard';
 import { MatchHighlightsList } from '../../src/components/MatchHighlightsList';
-import { ScorePulse } from '../../src/components/ScorePulse';
 import { ScreenEmpty } from '../../src/components/ScreenEmpty';
 import { useLiveMatch } from '../../src/hooks/use-live-match';
 import { useTheme } from '../../src/lib/theme-context';
@@ -34,34 +34,20 @@ export default function LiveMatchScreen() {
     );
   }
 
-  const isLive = match.status === 'LIVE' || match.status === 'HALFTIME';
-  const title = `${match.homeClub.name} – ${match.awayClub.name}`;
-
   return (
     <>
-      <Stack.Screen options={{ title }} />
-      <ScrollView style={[styles.container, { backgroundColor: colors.surface }]} contentContainerStyle={styles.content}>
-        <View style={[styles.scoreboard, { backgroundColor: colors.primary }]}>
-          <View style={styles.teamBlock}>
-            <Text style={[styles.teamName, { color: colors.white }]}>{match.homeClub.name}</Text>
-          </View>
-          <View style={styles.scoreBlock}>
-            <ScorePulse homeScore={match.homeScore} awayScore={match.awayScore} color={colors.white} />
-            {isLive ? (
-              <Text style={styles.liveBadge}>
-                {t('live')} · {match.minute}&apos;
-              </Text>
-            ) : (
-              <Text style={[styles.status, { color: colors.white }]}>{match.status}</Text>
-            )}
-          </View>
-          <View style={styles.teamBlock}>
-            <Text style={[styles.teamName, { color: colors.white }]}>{match.awayClub.name}</Text>
-          </View>
-        </View>
-        {match.venue ? <Text style={[styles.venue, { color: colors.textMuted }]}>{match.venue}</Text> : null}
+      <Stack.Screen options={{ title: `${match.homeClub.name} – ${match.awayClub.name}` }} />
+      <ScrollView
+        style={[styles.container, { backgroundColor: colors.surface }]}
+        contentContainerStyle={styles.content}
+      >
+        <LiveScoreboard match={match} />
         <LiveEventList events={match.events ?? []} connected={connected} />
-        <MatchHighlightsList highlights={match.highlights} textColor={colors.text} accentColor={colors.primary} />
+        <MatchHighlightsList
+          highlights={match.highlights}
+          textColor={colors.text}
+          accentColor={colors.primary}
+        />
       </ScrollView>
     </>
   );
@@ -70,17 +56,4 @@ export default function LiveMatchScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1 },
   content: { padding: spacing.lg },
-  scoreboard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderRadius: 12,
-    padding: spacing.lg,
-    marginBottom: spacing.md,
-  },
-  teamBlock: { flex: 1 },
-  teamName: { fontWeight: '600', textAlign: 'center' },
-  scoreBlock: { alignItems: 'center', paddingHorizontal: spacing.md },
-  liveBadge: { color: '#FCA5A5', marginTop: spacing.xs, fontWeight: '600' },
-  status: { opacity: 0.8, marginTop: spacing.xs },
-  venue: { textAlign: 'center', marginBottom: spacing.lg },
 });

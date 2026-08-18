@@ -10,6 +10,7 @@ import { RemoteImage } from '../RemoteImage';
 
 type Props = {
   seasonName: string;
+  competitionName?: string;
   teamCount: number;
   roundsPlayed: number;
   leaderName?: string;
@@ -19,6 +20,7 @@ type Props = {
 
 export function LeagueHero({
   seasonName,
+  competitionName,
   teamCount,
   roundsPlayed,
   leaderName,
@@ -57,7 +59,9 @@ export function LeagueHero({
         <Ionicons name="arrow-back" size={16} color={colors.white} />
         <Text style={[styles.backText, { color: colors.white }]}>{t('leagueBackHome')}</Text>
       </Pressable>
-      <Text style={[styles.kicker, { color: colors.link }]}>{t('leagueKicker')}</Text>
+      <Text style={[styles.kicker, { color: colors.link }]}>
+        {competitionName || t('leagueKicker')}
+      </Text>
       <Text style={[styles.title, { color: colors.white }]}>{t('leagueTitle')}</Text>
       <Text style={[styles.sub, { color: colors.textMuted }]}>
         {seasonName || t('leagueFallbackSub')}

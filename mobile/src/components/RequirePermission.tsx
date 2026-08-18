@@ -2,15 +2,16 @@ import { Redirect, type Href } from 'expo-router';
 import type { ReactNode } from 'react';
 import { ScreenEmpty } from './ScreenEmpty';
 import { useAuth } from '../lib/auth';
-import { hasPermission } from '../lib/permissions';
+import { hasAnyPermission, hasPermission } from '../lib/permissions';
 
 type Props = {
   children: ReactNode;
-  permission: string;
+  permission?: string;
+  anyOf?: string[];
   returnTo?: string;
 };
 
-export function RequirePermission({ children, permission, returnTo = '/(tabs)/more' }: Props) {
+export function RequirePermission({ children, permission, anyOf, returnTo = '/(tabs)/more' }: Props) {
   const { isAuthenticated, isLoading, user } = useAuth();
 
   if (isLoading) {
@@ -21,7 +22,10 @@ export function RequirePermission({ children, permission, returnTo = '/(tabs)/mo
     return <Redirect href={{ pathname: '/login', params: { returnTo } } as unknown as Href} />;
   }
 
-  if (!hasPermission(user, permission)) {
+  const allowed = anyOf?.length
+    ? hasAnyPermission(user, anyOf)
+    : hasPermission(user, permission ?? '');
+  if (!allowed) {
     return <ScreenEmpty message="Nemate pristup ovom ekranu." icon="lock-closed-outline" />;
   }
 

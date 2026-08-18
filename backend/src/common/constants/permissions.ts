@@ -32,6 +32,7 @@ export const PERMISSIONS = [
   { key: 'live.approve', description: 'Odobravanje live izvještaja' },
   { key: 'membership.manage', description: 'Upravljanje članstvom' },
   { key: 'ticketing.manage', description: 'Upravljanje ulaznicama' },
+  { key: 'admissions.scan', description: 'Skeniranje ulaza (ulaznice, sezonske, članske)' },
   { key: 'hall-of-fame.manage', description: 'Upravljanje Hall of Fame' },
   { key: 'museum.manage', description: 'Upravljanje muzejom' },
   { key: 'analytics.read', description: 'Pregled analitike' },

@@ -15,11 +15,33 @@ export function mapCalendarSeasons(data: unknown): LeagueSeasonChip[] {
     .filter((s) => s.id);
 }
 
+export type LeagueEditionChip = { id: string; name: string; isLeague: boolean };
+
+export function mapCalendarEditions(calendar: unknown): LeagueEditionChip[] {
+  return asArray(asRecord(calendar).competitions)
+    .map((ed) => {
+      const edition = asRecord(ed);
+      const competition = asRecord(edition.competition);
+      return {
+        id: asString(edition.id),
+        name: asString(competition.name, 'Takmičenje'),
+        isLeague: Boolean(competition.isLeague),
+      };
+    })
+    .filter((e) => e.id)
+    .sort((a, b) => Number(b.isLeague) - Number(a.isLeague) || a.name.localeCompare(b.name));
+}
+
+export function pickDefaultEditionId(
+  editions: { id: string; isLeague: boolean }[],
+  selected?: string,
+): string {
+  if (selected && editions.some((e) => e.id === selected)) return selected;
+  return editions.find((e) => e.isLeague)?.id ?? editions[0]?.id ?? '';
+}
+
 export function leagueEditionId(calendar: unknown): string {
-  const comps = asArray(asRecord(calendar).competitions);
-  const league = comps.find((e) => Boolean(asRecord(asRecord(e).competition).isLeague));
-  const pick = league ?? comps[0];
-  return asString(asRecord(pick).id);
+  return pickDefaultEditionId(mapCalendarEditions(calendar));
 }
 
 export function pickDefaultLeagueSeasonId(

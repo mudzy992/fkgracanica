@@ -15,6 +15,7 @@ export const leagueBs = {
   leagueTableUpTo: 'Do {{round}}.',
   leagueTableAllTitle: 'Ukupna tabela',
   leagueTableUpToTitle: 'Tabela do {{round}}. kola',
+  leagueBadge: 'liga',
   matchHighlights: 'Video sažeci',
   openHighlight: 'Otvori na YouTube',
 } as const;
@@ -36,6 +37,7 @@ export const leagueEn: Record<keyof typeof leagueBs, string> = {
   leagueTableUpTo: 'Up to {{round}}',
   leagueTableAllTitle: 'Overall table',
   leagueTableUpToTitle: 'Table up to round {{round}}',
+  leagueBadge: 'league',
   matchHighlights: 'Video highlights',
   openHighlight: 'Open on YouTube',
 };

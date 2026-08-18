@@ -44,6 +44,7 @@ export type TeamTotals = {
 };
 
 export type TeamScreenData = {
+  clubId: string;
   clubName: string;
   crestPath?: string;
   city?: string;
@@ -180,6 +181,7 @@ export async function loadTeamScreen(): Promise<TeamScreenData> {
     .sort((a, b) => b.goals - a.goals || b.assists - a.assists)
     .slice(0, 3);
   return {
+    clubId,
     clubName: asString(club.name, 'FK Gračanica'),
     crestPath: asString(club.crestPath) || asString(club.logoPath) || undefined,
     city: asString(stadium.city) || asString(club.city) || undefined,

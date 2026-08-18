@@ -20,6 +20,8 @@ export const teamBs = {
   teamDrawn: 'Neriješeno',
   teamLost: 'Porazi',
   teamStartingXi: 'Startna postava',
+  teamCompetition: 'Takmičenje',
+  teamLeagueChip: 'liga',
 } as const;
 
 export const teamEn: Record<keyof typeof teamBs, string> = {
@@ -44,4 +46,6 @@ export const teamEn: Record<keyof typeof teamBs, string> = {
   teamDrawn: 'Draws',
   teamLost: 'Losses',
   teamStartingXi: 'Starting XI',
+  teamCompetition: 'Competition',
+  teamLeagueChip: 'league',
 };

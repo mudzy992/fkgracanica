@@ -7,7 +7,7 @@ import { ScreenEmpty } from '../src/components/ScreenEmpty';
 import { TeamFormationPitch } from '../src/components/team/TeamFormationPitch';
 import { TeamHero } from '../src/components/team/TeamHero';
 import { TeamRoster } from '../src/components/team/TeamRoster';
-import { TeamSeasonSummary } from '../src/components/team/TeamSeasonSummary';
+import { TeamSeasonStatsBlock } from '../src/components/team/TeamSeasonStatsBlock';
 import { TeamSpotlight } from '../src/components/team/TeamSpotlight';
 import { loadTeamScreen, type TeamScreenData } from '../src/components/team/load-team-screen';
 import { useTheme } from '../src/lib/theme-context';
@@ -95,12 +95,7 @@ export default function TeamScreen() {
           <TeamFormationPitch formation={data.formation} slots={data.pitchSlots} />
           <TeamSpotlight players={data.spotlight} />
           <TeamRoster players={data.players} />
-          <TeamSeasonSummary
-            seasonName={data.seasonName}
-            standing={data.standing}
-            totals={data.totals}
-            players={data.players}
-          />
+          {data.clubId ? <TeamSeasonStatsBlock clubId={data.clubId} /> : null}
         </View>
       </ScrollView>
     </View>

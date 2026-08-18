@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useState } from 'react';
-import { FlatList, StyleSheet, Text, View } from 'react-native';
+import { Alert, FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { RequirePermission } from '../../../src/components/RequirePermission';
 import { ScreenEmpty } from '../../../src/components/ScreenEmpty';
 import { api } from '../../../src/lib/api';
+import { getApiErrorMessage } from '../../../src/lib/api-error';
 import { asArray, asRecord, asString } from '../../../src/lib/content-helpers';
 import { useTheme } from '../../../src/lib/theme-context';
 import { spacing, typography } from '../../../src/lib/theme';
@@ -45,6 +46,16 @@ export default function AdminOrdersScreen() {
     void load();
   }, [load]);
 
+  const run = async (path: string, okKey: string) => {
+    try {
+      await api.post(path);
+      await load();
+      Alert.alert(t('orders'), t(okKey));
+    } catch (err) {
+      Alert.alert(t('orders'), getApiErrorMessage(err, t('error')));
+    }
+  };
+
   return (
     <RequirePermission permission="ticketing.manage" returnTo="/staff/admin/orders">
       <FlatList
@@ -56,8 +67,25 @@ export default function AdminOrdersScreen() {
           <View style={[styles.card, { backgroundColor: colors.background, borderColor: colors.border }]}>
             <Text style={[styles.name, { color: colors.text }]}>{item.match}</Text>
             <Text style={[styles.meta, { color: colors.textMuted }]}>{item.email}</Text>
-            <Text style={[styles.meta, { color: colors.textMuted }]}>{item.status}</Text>
-            <Text style={[styles.meta, { color: colors.textMuted }]}>{item.total}</Text>
+            <Text style={[styles.meta, { color: colors.textMuted }]}>{item.status} · {item.total}</Text>
+            <View style={styles.actions}>
+              {item.status === 'REFUND_REQUESTED' ? (
+                <Pressable
+                  style={[styles.btn, { backgroundColor: colors.primary }]}
+                  onPress={() => void run(`/ticketing/orders/${item.id}/confirm-refund`, 'refundConfirmed')}
+                >
+                  <Text style={{ color: colors.white, fontWeight: '600' }}>{t('refundConfirm')}</Text>
+                </Pressable>
+              ) : null}
+              {item.status !== 'CANCELLED' && item.status !== 'USED' ? (
+                <Pressable
+                  style={[styles.btn, { backgroundColor: colors.surface, borderColor: colors.border, borderWidth: 1 }]}
+                  onPress={() => void run(`/ticketing/admin/orders/${item.id}/cancel`, 'orderCancelled')}
+                >
+                  <Text style={{ color: colors.text, fontWeight: '600' }}>{t('cancelOrder')}</Text>
+                </Pressable>
+              ) : null}
+            </View>
           </View>
         )}
       />
@@ -67,7 +95,9 @@ export default function AdminOrdersScreen() {
 
 const styles = StyleSheet.create({
   list: { padding: spacing.md, gap: spacing.sm, flexGrow: 1 },
-  card: { borderRadius: 12, borderWidth: 1, padding: spacing.md, marginBottom: spacing.sm },
+  card: { borderRadius: 12, borderWidth: 1, padding: spacing.md, marginBottom: spacing.sm, gap: spacing.xs },
   name: { ...typography.body, fontWeight: '600' },
-  meta: { ...typography.caption, marginTop: spacing.xs },
+  meta: { ...typography.caption },
+  actions: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm, marginTop: spacing.sm },
+  btn: { borderRadius: 10, paddingVertical: spacing.sm, paddingHorizontal: spacing.md },
 });

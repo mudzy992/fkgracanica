@@ -7,7 +7,7 @@ import { RequireAuth } from '../../src/components/RequireAuth';
 import { ScreenEmpty } from '../../src/components/ScreenEmpty';
 import { useStaffQueueCounts } from '../../src/hooks/use-staff-queue-counts';
 import { useAuth } from '../../src/lib/auth';
-import { hasPermission, isStaffUser } from '../../src/lib/permissions';
+import { hasAnyPermission, hasPermission, isStaffUser } from '../../src/lib/permissions';
 
 function StaffHubBody() {
   const { t } = useTranslation();
@@ -55,6 +55,14 @@ function StaffHubBody() {
           icon="shield-checkmark-outline"
           rightText={String(counts.newsPending + counts.galleryPending + counts.livePending)}
           onPress={() => router.push('/staff/moderation')}
+        />
+      ) : null}
+      {hasAnyPermission(user, ['admissions.scan', 'ticketing.manage']) ? (
+        <ListRow
+          title={t('ulaz')}
+          subtitle={t('ulazHint')}
+          icon="qr-code-outline"
+          onPress={() => router.push('/staff/ulaz')}
         />
       ) : null}
       {hasPermission(user, 'users.read') || hasPermission(user, 'settings.read') || hasPermission(user, 'ticketing.manage') ? (

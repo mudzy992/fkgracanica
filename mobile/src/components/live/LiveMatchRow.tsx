@@ -1,46 +1,33 @@
-import { useRouter } from 'expo-router';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { RemoteImage } from '../RemoteImage';
-import { formatDateTimeBs } from '../../lib/format-date';
-import { useTheme } from '../../lib/theme-context';
-import { spacing, typography } from '../../lib/theme';
+import { useTranslation } from 'react-i18next';
+import { MatchScoreRow } from './MatchScoreRow';
+import { matchMetaLine } from '../../lib/match-status';
 import type { Match } from '../../types/api';
 
-type Props = { match: Match; onPress: (id: string) => void };
+type Props = {
+  match: Match;
+  onPress: (id: string) => void;
+  locale: string;
+  featured?: boolean;
+};
 
-export function LiveMatchRow({ match, onPress }: Props) {
-  const { colors } = useTheme();
-  const live = match.status === 'LIVE' || match.status === 'HALFTIME';
+export function LiveMatchRow({ match, onPress, locale, featured }: Props) {
+  const { t } = useTranslation();
+  const metaLine = matchMetaLine(match, (n) => t('matchRound', { n }));
   return (
-    <Pressable
-      style={({ pressed }) => [
-        styles.card,
-        { backgroundColor: colors.background, borderColor: colors.border, opacity: pressed ? 0.9 : 1 },
-      ]}
+    <MatchScoreRow
+      homeName={match.homeClub.name}
+      awayName={match.awayClub.name}
+      homeCrestPath={match.homeClub.crestPath ?? undefined}
+      awayCrestPath={match.awayClub.crestPath ?? undefined}
+      status={match.status}
+      homeScore={match.homeScore}
+      awayScore={match.awayScore}
+      minute={match.minute}
+      scheduledAt={match.scheduledAt}
+      locale={locale}
+      featured={featured}
+      metaLine={metaLine || undefined}
       onPress={() => onPress(match.id)}
-      accessibilityRole="button"
-      accessibilityLabel={`${match.homeClub.name} vs ${match.awayClub.name}`}
-    >
-      <View style={styles.row}>
-        <RemoteImage path={match.homeClub.crestPath} variant="thumb" transparent style={styles.crest} />
-        <Text style={[styles.teams, { color: colors.text }]} numberOfLines={2}>
-          {match.homeClub.name} vs {match.awayClub.name}
-        </Text>
-        <RemoteImage path={match.awayClub.crestPath} variant="thumb" transparent style={styles.crest} />
-      </View>
-      <Text style={[styles.meta, { color: live ? colors.danger : colors.textMuted }]}>
-        {live
-          ? `${match.homeScore} : ${match.awayScore} · ${match.minute}'`
-          : formatDateTimeBs(match.scheduledAt)}
-      </Text>
-    </Pressable>
+    />
   );
 }
-
-const styles = StyleSheet.create({
-  card: { borderRadius: 10, padding: spacing.md, borderWidth: 1, marginBottom: spacing.sm },
-  row: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
-  crest: { width: 28, height: 28 },
-  teams: { ...typography.heading, flex: 1 },
-  meta: { ...typography.caption, marginTop: spacing.xs },
-});
