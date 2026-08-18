@@ -20,10 +20,13 @@ export function HallOfFameCinematicHero({ totalCount, yearCount }: Props) {
   const reduce = useReducedMotion();
 
   return (
-    <header className="relative overflow-hidden">
+    <header className="relative overflow-hidden border-b border-white/10">
       <div className="absolute inset-0 bg-[linear-gradient(180deg,#05070d_0%,#0c1421_55%,#130d06_100%)]" />
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(245,158,11,0.18),transparent_30%),radial-gradient(circle_at_left,rgba(59,130,246,0.12),transparent_28%)]" />
       <div className="pointer-events-none absolute -right-24 top-0 h-72 w-72 rounded-full bg-amber-400/10 blur-3xl" />
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-amber-300/60 to-transparent" />
+      <div className="pointer-events-none absolute left-1/2 top-10 h-24 w-24 -translate-x-1/2 rounded-full border border-amber-300/15" />
+      <div className="pointer-events-none absolute left-1/2 top-14 h-16 w-16 -translate-x-1/2 rounded-full border border-amber-300/10" />
 
       <div className="relative mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-20 md:py-24">
         <motion.div
@@ -44,6 +47,9 @@ export function HallOfFameCinematicHero({ totalCount, yearCount }: Props) {
           </h1>
           <p className="mx-auto mt-4 max-w-2xl text-base text-slate-300 sm:text-lg">
             Poseban prostor za igrače, trenere i ljude čije se ime ne odvaja od najvećih trenutaka kluba.
+          </p>
+          <p className="mx-auto mt-5 max-w-3xl text-sm uppercase tracking-[0.24em] text-amber-100/65">
+            Tišina muzeja. Težina trofejnih godina. Glasovi koje tribina pamti.
           </p>
 
           {totalCount > 0 && (

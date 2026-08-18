@@ -3,18 +3,22 @@ import type { HallOfFameEntry } from '../../../types';
 
 interface Props {
   entry: HallOfFameEntry;
+  onOpen: (entry: HallOfFameEntry) => void;
 }
 
-export function HofLegendCard({ entry }: Props) {
+export function HofLegendCard({ entry, onOpen }: Props) {
   const photo = entry.photoPath ?? entry.imagePath;
 
   return (
-    <article className="card-lift flex h-full flex-col overflow-hidden rounded-[1.75rem] border border-amber-300/15 bg-[linear-gradient(180deg,rgba(15,23,42,0.94),rgba(10,14,23,0.98))] px-5 py-8 text-center shadow-[0_22px_60px_rgba(2,6,23,0.35)]">
+    <button
+      type="button"
+      onClick={() => onOpen(entry)}
+      className="card-lift relative flex h-full w-full flex-col overflow-hidden rounded-[1.75rem] border border-amber-300/15 bg-[linear-gradient(180deg,rgba(15,23,42,0.96),rgba(10,14,23,1))] px-5 py-8 text-center shadow-[0_22px_60px_rgba(2,6,23,0.35)] transition hover:border-amber-200/35"
+    >
+      <div className="pointer-events-none absolute inset-x-5 top-0 h-px bg-gradient-to-r from-transparent via-amber-300/70 to-transparent" />
+      <div className="pointer-events-none absolute -right-10 top-10 h-24 w-24 rounded-full bg-amber-300/10 blur-2xl" />
       <div className="mb-6 flex items-start justify-between gap-3">
-        <div className="text-left">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-amber-100/70">Kuća slavnih</p>
-          {entry.years && <p className="mt-2 text-sm tabular-nums text-slate-400">{entry.years}</p>}
-        </div>
+        <div className="text-left">{entry.years && <p className="mt-2 text-sm tabular-nums text-slate-400">{entry.years}</p>}</div>
         {entry.role && (
           <div className="rounded-full border border-amber-300/20 bg-amber-300/10 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-amber-100">
             {entry.role}
@@ -25,15 +29,16 @@ export function HofLegendCard({ entry }: Props) {
         <img
           src={mediaUrl(photo, 'medium')}
           alt=""
-          className="mx-auto mb-5 h-28 w-28 rounded-full object-cover ring-2 ring-amber-300/50 ring-offset-2 ring-offset-transparent"
+          className="mx-auto mb-5 h-32 w-32 rounded-full object-cover ring-2 ring-amber-300/50 ring-offset-4 ring-offset-[#0f172a]"
         />
       ) : (
-        <div className="mx-auto mb-5 flex h-28 w-28 items-center justify-center rounded-full bg-amber-300/10 font-display text-3xl font-bold text-amber-100 ring-2 ring-amber-300/30">
+        <div className="mx-auto mb-5 flex h-32 w-32 items-center justify-center rounded-full bg-amber-300/10 font-display text-3xl font-bold text-amber-100 ring-2 ring-amber-300/30 ring-offset-4 ring-offset-[#0f172a]">
           {entry.name[0]}
         </div>
       )}
-      <h2 className="font-display text-xl font-bold text-white">{entry.name}</h2>
+      <h2 className="font-display text-2xl font-bold text-white">{entry.name}</h2>
+      <div className="mx-auto mt-3 h-px w-14 bg-gradient-to-r from-transparent via-amber-300/70 to-transparent" />
       {entry.bio && <p className="mt-4 line-clamp-5 text-sm leading-relaxed text-slate-300">{entry.bio}</p>}
-    </article>
+    </button>
   );
 }

@@ -5,12 +5,13 @@ import { useHallOfFame } from '../../hooks';
 import { PageContainer } from '../../components/public/PageContainer';
 import { HallOfFameCinematicHero } from '../../components/public/hall-of-fame/HallOfFameCinematicHero';
 import { HofLegendCard } from '../../components/public/hall-of-fame/HofLegendCard';
-import { NewsSectionTitle } from '../../components/news/NewsSectionTitle';
+import { HofLegendDialog } from '../../components/public/hall-of-fame/HofLegendDialog';
 import { Reveal } from '../../lib/motion/Reveal';
 import { Seo } from '../../components/seo/Seo';
 import { EmptyState } from '../../components/public/EmptyState';
 import { Button } from '../../components/ui/button';
 import { Skeleton } from '../../components/ui/skeleton';
+import type { HallOfFameEntry } from '../../types';
 
 function extractYears(years?: string | null): string[] {
   if (!years) return [];
@@ -20,6 +21,7 @@ function extractYears(years?: string | null): string[] {
 export function HallOfFamePage() {
   const { data, isLoading } = useHallOfFame();
   const [year, setYear] = useState<string | undefined>();
+  const [activeEntry, setActiveEntry] = useState<HallOfFameEntry | null>(null);
 
   const years = useMemo(() => {
     const set = new Set<string>();
@@ -38,20 +40,10 @@ export function HallOfFamePage() {
       <HallOfFameCinematicHero totalCount={data?.length ?? 0} yearCount={years.length} />
       <PageContainer className="py-10 sm:py-12">
         <div className="rounded-[2rem] border border-white/10 bg-white/5 p-5 backdrop-blur-sm sm:p-6">
-          <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
-            <div>
-              <div className="inline-flex items-center gap-2 rounded-full border border-amber-300/20 bg-amber-300/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.26em] text-amber-100">
-                <Landmark className="h-3.5 w-3.5" />
-                Ekskluzivno poglavlje
-              </div>
-              <div className="mt-4">
-                <Reveal>
-                  <NewsSectionTitle>Legende</NewsSectionTitle>
-                </Reveal>
-              </div>
-              <p className="mt-3 max-w-2xl text-sm leading-relaxed text-slate-300 sm:text-base">
-                Ovo poglavlje otvara se tek nakon priče o klubu i sabira ljude koji su ostavili najdublji trag.
-              </p>
+          <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
+            <div className="inline-flex items-center gap-2 rounded-full border border-amber-300/20 bg-amber-300/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.26em] text-amber-100">
+              <Landmark className="h-3.5 w-3.5" />
+              Ekskluzivno poglavlje
             </div>
             <Link
               to="/o-klubu"
@@ -88,10 +80,21 @@ export function HallOfFamePage() {
               ))
             : filtered?.map((entry, i) => (
                 <Reveal key={entry.id} delay={Math.min(i * 0.05, 0.3)}>
-                  <HofLegendCard entry={entry} />
+                  <HofLegendCard entry={entry} onOpen={setActiveEntry} />
                 </Reveal>
               ))}
         </div>
+        <div className="mt-10 rounded-[2rem] border border-amber-300/15 bg-[linear-gradient(180deg,rgba(245,158,11,0.12),rgba(15,23,42,0.25))] p-6 sm:p-8">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-amber-100">Završna nota</p>
+          <p className="font-display mt-3 max-w-3xl text-2xl font-bold tracking-tight text-white sm:text-3xl">
+            Kuća slavnih nije samo lista imena, već prostor u kojem klub čuva svoju mjeru veličine.
+          </p>
+          <p className="mt-4 max-w-3xl text-sm leading-relaxed text-slate-200 sm:text-base">
+            Svaka karta ovdje predstavlja lice iza jednog razdoblja, jedne pobjede, jedne tribine i jednog osjećaja
+            pripadnosti koji traje mnogo duže od jedne sezone.
+          </p>
+        </div>
+        <HofLegendDialog entry={activeEntry} open={Boolean(activeEntry)} onClose={() => setActiveEntry(null)} />
       </PageContainer>
     </div>
   );
