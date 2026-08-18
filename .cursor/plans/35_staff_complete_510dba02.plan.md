@@ -32,7 +32,7 @@ Nastavak Track 34. Originalni P2 (4 rupe) je preuzak. Ovo je **kompletan staff**
 
 **Editor odluka:** body vijesti = Expo DOM / WebView (Tiptap kao na webu). Naslov, cover, meta, veze, albumi = native.
 
-Dokumentacija pri execute: [`.cursor/plans/fk-gracanica/35_staff-complete/`](.cursor/plans/fk-gracanica/35_staff-complete/) (`00_overview.md` + faze). Track 34 faza 03 se smatra **zamijenjenom** ovim trackom; 34 ostaje Play Store.
+Dokumentacija pri execute: `[.cursor/plans/fk-gracanica/35_staff-complete/](.cursor/plans/fk-gracanica/35_staff-complete/)` (`00_overview.md` + faze). Track 34 faza 03 se smatra **zamijenjenom** ovim trackom; 34 ostaje Play Store.
 
 ```mermaid
 flowchart TB
@@ -54,11 +54,13 @@ flowchart TB
   scan --> member[Članska member-id]
 ```
 
+
+
 ---
 
 ## 1. Writer — vijest kao na webu
 
-Web izvor: [`NewsEditorPage.tsx`](frontend/src/pages/admin/news/NewsEditorPage.tsx), [`NewsEditorMain.tsx`](frontend/src/pages/admin/news/NewsEditorMain.tsx), [`NewsEditorMeta.tsx`](frontend/src/pages/admin/news/NewsEditorMeta.tsx), [`RichTextEditor.tsx`](frontend/src/components/admin/RichTextEditor.tsx). API već prima sva polja ([`NewsWriteInput`](backend/src/news/news.service.ts)).
+Web izvor: `[NewsEditorPage.tsx](frontend/src/pages/admin/news/NewsEditorPage.tsx)`, `[NewsEditorMain.tsx](frontend/src/pages/admin/news/NewsEditorMain.tsx)`, `[NewsEditorMeta.tsx](frontend/src/pages/admin/news/NewsEditorMeta.tsx)`, `[RichTextEditor.tsx](frontend/src/components/admin/RichTextEditor.tsx)`. API već prima sva polja (`[NewsWriteInput](backend/src/news/news.service.ts)`).
 
 **Native forma** (split fajlovi): lista nacrta → `/staff/writer/[id]` create/edit.
 
@@ -81,15 +83,15 @@ Polja (isti payload kao web):
 
 Single select za galeriju, multi za igrače/mečeve. Chipovi odabranih iznad searcha.
 
-Ne koristiti public [`/search`](backend/src/search/search.service.ts) za ove veze.
+Ne koristiti public `[/search](backend/src/search/search.service.ts)` za ove veze.
 
 ---
 
 ## 2. Writer — album kao na webu
 
-Web: kreiraj album → edit ekran → vidiš postojeće slike → dodaješ nove ([`GalleryEditorPage.tsx`](frontend/src/pages/admin/gallery/GalleryEditorPage.tsx) + [`GalleryPhotoPicker.tsx`](frontend/src/components/admin/GalleryPhotoPicker.tsx)).
+Web: kreiraj album → edit ekran → vidiš postojeće slike → dodaješ nove (`[GalleryEditorPage.tsx](frontend/src/pages/admin/gallery/GalleryEditorPage.tsx)` + `[GalleryPhotoPicker.tsx](frontend/src/components/admin/GalleryPhotoPicker.tsx)`).
 
-API: `POST /gallery`, `GET /gallery/:id`, `POST /gallery/:id/photos` `{ path }`, `DELETE .../photos/:photoId`, `POST .../photos/reorder`. Biblioteka: `GET /media` + `GET /media/folders` ([`media.controller.ts`](backend/src/media/media.controller.ts)). Writer već ima `gallery.manage` + `media.read` + `media.upload`.
+API: `POST /gallery`, `GET /gallery/:id`, `POST /gallery/:id/photos` `{ path }`, `DELETE .../photos/:photoId`, `POST .../photos/reorder`. Biblioteka: `GET /media` + `GET /media/folders` (`[media.controller.ts](backend/src/media/media.controller.ts)`). Writer već ima `gallery.manage` + `media.read` + `media.upload`.
 
 **Mobile tok:**
 
@@ -98,13 +100,13 @@ API: `POST /gallery`, `GET /gallery/:id`, `POST /gallery/:id/photos` `{ path }`,
 3. Editor `/staff/gallery-manage/[id]`: grid postojećih thumbova; caption/delete; **Odaberi iz biblioteke** (multi, search, već dodane označene); **Upload s telefona** (`uploadMedia`); opciono **Dodaj mapu** ako folders API ostane jednostavan
 4. Submit albuma na review ako Writer nema `gallery.approve` (postojeći status endpoint)
 
-Zamjenjuje današnji jedan ekran koji samo create + jedan upload ([`gallery-manage.tsx`](mobile/app/staff/gallery-manage.tsx)).
+Zamjenjuje današnji jedan ekran koji samo create + jedan upload (`[gallery-manage.tsx](mobile/app/staff/gallery-manage.tsx)`).
 
 ---
 
 ## 3. Komentator — full, polish
 
-Ekran i paneli već postoje ([`commentator.tsx`](mobile/app/staff/commentator.tsx) + Clock/Events/Comment/Stream/Report/Stoppage).
+Ekran i paneli već postoje (`[commentator.tsx](mobile/app/staff/commentator.tsx)` + Clock/Events/Comment/Stream/Report/Stoppage).
 
 - Desk: default filter LIVE + danas SCHEDULED + izvještaji pending (ne svi historijski mečevi)
 - Live semafor: trenutni rezultat/minuta pored selectora (`useLiveMatch` / socket)
@@ -118,7 +120,7 @@ Bez novog live API-ja.
 
 ## 4. Moderator — minimum + UX
 
-[`moderation.tsx`](mobile/app/staff/moderation.tsx): tri queue-a, approve/draft, bez previewa.
+`[moderation.tsx](mobile/app/staff/moderation.tsx)`: tri queue-a, approve/draft, bez previewa.
 
 - ListSkeleton, error, pull-to-refresh
 - Kartica: naslov + meta; preview sheet (excerpt / cover) prije approve
@@ -131,7 +133,7 @@ Bez novog live API-ja.
 
 Originalni P2, sada kao faza:
 
-- **Dashboard:** skeleton, error/retry, KPI kartice 2-col ([`dashboard.tsx`](mobile/app/staff/admin/dashboard.tsx))
+- **Dashboard:** skeleton, error/retry, KPI kartice 2-col (`[dashboard.tsx](mobile/app/staff/admin/dashboard.tsx)`)
 - **Orders:** status + refund preko postojećih `confirm-refund` / `admin/orders/:id/cancel`
 - **EntityList slike:** field type `image` + native MediaPicker (upload ili biblioteka) za trophies/HOF/museum/sponsors/clubs — ne raw `logoPath` tekst
 - **Users:** search filter; roles try/catch
@@ -142,12 +144,12 @@ Web-only i dalje van opsega: CMS DnD, formation editor, media-tree reorganize.
 
 ## 6. Redar + Ulaz (ulaznice, sezonske, članske)
 
-Danas: uloga ne postoji; [`POST /ticketing/validate`](backend/src/ticketing/ticketing.controller.ts) traži `ticketing.manage`; sezonska već pada u [`validateTicket`](backend/src/ticketing/ticketing.service.ts); članska QR je `member-{id}` ([`membership.service.ts`](backend/src/membership/membership.service.ts)) i **nije** u validate toku.
+Danas: uloga ne postoji; `[POST /ticketing/validate](backend/src/ticketing/ticketing.controller.ts)` traži `ticketing.manage`; sezonska već pada u `[validateTicket](backend/src/ticketing/ticketing.service.ts)`; članska QR je `member-{id}` (`[membership.service.ts](backend/src/membership/membership.service.ts)`) i **nije** u validate toku.
 
 **BE:**
 
-- Permission `admissions.scan` u [`permissions.ts`](backend/src/common/constants/permissions.ts)
-- Uloga **Redar** u [`rbac.ts`](backend/prisma/seed/rbac.ts) + [`SYSTEM_ROLES`](frontend/src/lib/rbac-constants.ts)
+- Permission `admissions.scan` u `[permissions.ts](backend/src/common/constants/permissions.ts)`
+- Uloga **Redar** u `[rbac.ts](backend/prisma/seed/rbac.ts)` + `[SYSTEM_ROLES](frontend/src/lib/rbac-constants.ts)`
 - Validate: `RequireAnyPermission('admissions.scan', 'ticketing.manage')`
 - `validateTicket`: ako nije ticket/pass, lookup `membershipCard.qrCode` → `{ kind: 'membership', status, name }` (ACTIVE vs ostalo)
 - `sync-permissions` na boot i dalje daje nove keyeve Administratoru
@@ -155,7 +157,7 @@ Danas: uloga ne postoji; [`POST /ticketing/validate`](backend/src/ticketing/tick
 **Mobile:**
 
 - Hub kartica **Ulaz** za Redar (i Admin kao prečica)
-- Isti skener ([`validate.tsx`](mobile/app/staff/admin/validate.tsx)): rezultat kartica Valjano / Iskorišteno / Nevažeće + kind (ulaznica / sezonska / članstvo)
+- Isti skener (`[validate.tsx](mobile/app/staff/admin/validate.tsx)`): rezultat kartica Valjano / Iskorišteno / Nevažeće + kind (ulaznica / sezonska / članstvo)
 - Redar **ne vidi** orders/refund/cjenovnik
 
 Ime uloge: **Redar**. Ekran: **Ulaz**.
@@ -164,7 +166,7 @@ Ime uloge: **Redar**. Ekran: **Ulaz**.
 
 ## 7. Hub IA + polish
 
-[`staff/index.tsx`](mobile/app/staff/index.tsx): Writer, Galerija, Komentator, Moderator, Ulaz, Admin — samo po permissionima. Count stripovi. Konzistentni skeleti, empty, i18n.
+`[staff/index.tsx](mobile/app/staff/index.tsx)`: Writer, Galerija, Komentator, Moderator, Ulaz, Admin — samo po permissionima. Count stripovi. Konzistentni skeleti, empty, i18n.
 
 ---
 

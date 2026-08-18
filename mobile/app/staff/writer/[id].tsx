@@ -46,7 +46,7 @@ export default function WriterEditorScreen() {
               html={editor.article.content}
               onChangeHtml={async (content) => editor.patch({ content })}
               onRequestImage={editor.requestBodyImage}
-              dom={{ style: { height: 360, width: '100%' } }}
+              dom={{ style: { height: 360, width: '100%' }, useExpoDOMWebView: false }}
             />
           </View>
           <WriterRelationsBlock article={editor.article} onChange={editor.patch} />

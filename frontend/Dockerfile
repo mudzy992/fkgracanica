@@ -3,7 +3,7 @@
 FROM node:22-alpine AS builder
 WORKDIR /app
 COPY package.json package-lock.json ./
-RUN npm ci
+RUN npm install --package-lock-only --ignore-scripts && npm ci
 COPY . .
 ARG VITE_API_URL=https://fkgracanica.ba101.top/backend/api/v1
 ENV VITE_API_URL=$VITE_API_URL
