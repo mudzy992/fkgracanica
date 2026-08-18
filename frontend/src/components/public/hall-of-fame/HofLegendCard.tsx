@@ -17,14 +17,7 @@ export function HofLegendCard({ entry, onOpen }: Props) {
     >
       <div className="pointer-events-none absolute inset-x-5 top-0 h-px bg-gradient-to-r from-transparent via-amber-300/70 to-transparent" />
       <div className="pointer-events-none absolute -right-10 top-10 h-24 w-24 rounded-full bg-amber-300/10 blur-2xl" />
-      <div className="mb-6 flex items-start justify-between gap-3">
-        <div className="text-left">{entry.years && <p className="mt-2 text-sm tabular-nums text-slate-400">{entry.years}</p>}</div>
-        {entry.role && (
-          <div className="rounded-full border border-amber-300/20 bg-amber-300/10 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-amber-100">
-            {entry.role}
-          </div>
-        )}
-      </div>
+      <div className="mb-6 text-left">{entry.years && <p className="text-sm tabular-nums text-slate-400">{entry.years}</p>}</div>
       {photo ? (
         <img
           src={mediaUrl(photo, 'medium')}
@@ -37,6 +30,11 @@ export function HofLegendCard({ entry, onOpen }: Props) {
         </div>
       )}
       <h2 className="font-display text-2xl font-bold text-white">{entry.name}</h2>
+      {entry.role && (
+        <p className="mt-2 text-[11px] font-semibold uppercase tracking-[0.24em] text-amber-100/80">
+          {entry.role}
+        </p>
+      )}
       <div className="mx-auto mt-3 h-px w-14 bg-gradient-to-r from-transparent via-amber-300/70 to-transparent" />
       {entry.bio && <p className="mt-4 line-clamp-5 text-sm leading-relaxed text-slate-300">{entry.bio}</p>}
     </button>
