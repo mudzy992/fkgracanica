@@ -23,6 +23,7 @@ import { NewsletterUnsubscribePage } from '../pages/public/NewsletterUnsubscribe
 import { TicketsPage } from '../pages/public/TicketsPage';
 import { MonriBridgePage } from '../pages/public/MonriBridgePage';
 import { CmsDynamicPage } from '../pages/public/CmsDynamicPage';
+import { AppDownloadPage } from '../pages/public/AppDownloadPage';
 
 export const publicLayoutRoutes = (
   <Route element={<PublicLayout />}>
@@ -57,6 +58,7 @@ export const publicLayoutRoutes = (
       <Route path="kontakt" element={<ContactPage />} />
     </Route>
     <Route path="pretraga" element={<SearchPage />} />
+    <Route path="aplikacija" element={<AppDownloadPage />} />
     <Route element={<ModuleRoute moduleKey="modules.hallOfFame" />}>
       <Route path="o-klubu/kuca-slavnih" element={<HallOfFamePage />} />
     </Route>

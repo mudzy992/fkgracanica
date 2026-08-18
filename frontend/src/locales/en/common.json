@@ -120,7 +120,9 @@
     "menu": "Menu",
     "quickLinks": "Quick links",
     "contact": "Contact",
-    "dashboard": "Dashboard"
+    "dashboard": "Dashboard",
+    "appCta": "Guide and download",
+    "appVersion": "Android app v{{version}}"
   },
   "login": {
     "title": "Sign in",
@@ -162,5 +164,45 @@
     "highlightTitle": "Clip title",
     "highlightStart": "Start (seconds, optional)",
     "highlightSaveError": "Could not save clip."
+  },
+  "appDownload": {
+    "seoTitle": "Android app",
+    "seoDesc": "Download the official FK Gračanica Android app and follow the install guide.",
+    "eyebrow": "App",
+    "title": "Android app",
+    "subtitle": "Download the APK and follow the steps. Enable unknown sources only if Android blocks the install.",
+    "empty": "There is no published app version right now.",
+    "download": "Download APK",
+    "version": "Version {{version}}",
+    "size": "{{size}} MB",
+    "guideTitle": "Installation",
+    "step1": "Open this page in Chrome on your phone.",
+    "step2": "Tap Download APK (version {{version}}).",
+    "step3": "If Chrome warns that the file may be harmful, choose Download anyway.",
+    "step4": "Open the file from the notification or Downloads.",
+    "step5": "Only if Android blocks the install: Settings → Apps → Special app access → Install unknown apps → Chrome (or Files) → allow for that app only.",
+    "step6": "Go back to the APK → Install → Open.",
+    "playProtect": "Google Play Protect may scan the app — allow the install.",
+    "iosNote": "On iPhone the native app is not on the App Store. Use this website.",
+    "pwaNote": "This is the full Android app, not a home-screen shortcut (PWA).",
+    "mock": {
+      "caption": "Illustration — this is how it looks on an Android phone. The yellow “Tap” label marks the button to press.",
+      "tap": "Tap",
+      "warnTitle": "This file might be harmful",
+      "warnBody": "{{file}} is not from Play Store. Chrome blocked the automatic download.",
+      "warnAnyway": "Download anyway",
+      "warnDiscard": "Discard",
+      "notifTitle": "Download complete",
+      "notifOpen": "Open",
+      "settingsHint": "Settings → Apps → Special app access",
+      "settingsTitle": "Install unknown apps",
+      "settingsBody": "Enable only for Chrome or Files, and only if the install is blocked.",
+      "chromeApp": "Chrome",
+      "allowSource": "Allow from this source",
+      "installTitle": "Do you want to install this app?",
+      "playScan": "Play Protect may scan the APK before install.",
+      "install": "Install",
+      "cancel": "Cancel"
+    }
   }
 }

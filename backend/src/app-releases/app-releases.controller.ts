@@ -22,7 +22,7 @@ import { RequirePermissions } from '../common/decorators/permissions.decorator';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
 import type { AuthUser } from '../common/types/auth-user.type';
 
-const MAX_APK_SIZE = 100 * 1024 * 1024;
+const MAX_APK_SIZE = 200 * 1024 * 1024;
 
 @ApiTags('app-releases')
 @Controller('app-releases')

@@ -120,7 +120,9 @@
     "menu": "Meni",
     "quickLinks": "Brzi linkovi",
     "contact": "Kontakt",
-    "dashboard": "Dashboard"
+    "dashboard": "Dashboard",
+    "appCta": "Uputstvo i preuzimanje",
+    "appVersion": "Android aplikacija v{{version}}"
   },
   "login": {
     "title": "Prijava",
@@ -162,5 +164,45 @@
     "highlightTitle": "Naslov klipa",
     "highlightStart": "Početak (sekunde, opcionalno)",
     "highlightSaveError": "Klip nije spremljen."
+  },
+  "appDownload": {
+    "seoTitle": "Android aplikacija",
+    "seoDesc": "Preuzmite službenu Android aplikaciju FK Gračanica i pogledajte uputstvo za instalaciju.",
+    "eyebrow": "Aplikacija",
+    "title": "Android aplikacija",
+    "subtitle": "Preuzmite APK i slijedite korake. Dozvolu za nepoznate izvore uključite tek ako Android blokira instalaciju.",
+    "empty": "Trenutno nema objavljene verzije aplikacije.",
+    "download": "Preuzmi APK",
+    "version": "Verzija {{version}}",
+    "size": "{{size}} MB",
+    "guideTitle": "Instalacija",
+    "step1": "Otvori ovu stranicu u Chromeu na telefonu.",
+    "step2": "Tapni Preuzmi APK (verzija {{version}}).",
+    "step3": "Ako Chrome upozori da fajl može biti štetan — odaberi Preuzmi ipak.",
+    "step4": "Otvori fajl iz notifikacije ili Preuzimanja.",
+    "step5": "Tek ako Android blokira instalaciju: Postavke → Aplikacije → Poseban pristup → Instaliraj nepoznate aplikacije → Chrome (ili Files) → dozvoli samo za tu aplikaciju.",
+    "step6": "Vrati se na APK → Instaliraj → Otvori.",
+    "playProtect": "Google Play Protect može skenirati aplikaciju — dozvolite instalaciju.",
+    "iosNote": "Na iPhoneu native app nije u App Storeu. Koristite ovaj web portal.",
+    "pwaNote": "Ovo nije prečica na početni ekran (PWA), nego puna Android aplikacija.",
+    "mock": {
+      "caption": "Ilustracija — ovako izgleda na Android telefonu. Žuti natpis „Dodirni“ pokazuje dugme koje treba pritisnuti.",
+      "tap": "Dodirni",
+      "warnTitle": "Ova datoteka može biti štetna",
+      "warnBody": "{{file}} nije iz Play Storea. Chrome je zaustavio automatsko preuzimanje.",
+      "warnAnyway": "Preuzmi ipak",
+      "warnDiscard": "Odbaci",
+      "notifTitle": "Preuzimanje završeno",
+      "notifOpen": "Otvori",
+      "settingsHint": "Postavke → Aplikacije → Poseban pristup",
+      "settingsTitle": "Instaliraj nepoznate aplikacije",
+      "settingsBody": "Uključite samo za Chrome ili Files, i samo ako je instalacija blokirana.",
+      "chromeApp": "Chrome",
+      "allowSource": "Dozvoli iz ovog izvora",
+      "installTitle": "Želite li instalirati ovu aplikaciju?",
+      "playScan": "Play Protect može skenirati APK prije instalacije.",
+      "install": "Instaliraj",
+      "cancel": "Otkaži"
+    }
   }
 }

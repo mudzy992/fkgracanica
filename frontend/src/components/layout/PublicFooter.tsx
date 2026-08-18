@@ -4,6 +4,7 @@ import { usePublicSettings } from '../../hooks';
 import { useAuth } from '../../lib/auth';
 import { hasStaffAccess } from '../../lib/staff-access';
 import { PublicSiteLogo } from './PublicSiteLogo';
+import { FooterAppDownloadCta } from './FooterAppDownloadCta';
 
 interface NavItem {
   to: string;
@@ -70,6 +71,7 @@ export function PublicFooter({ clubName, crestUrl, footerText, navItems }: Props
             </ul>
           </div>
         </div>
+        <FooterAppDownloadCta />
         <div className="mt-10 flex flex-col gap-3 border-t border-white/10 pt-6 text-xs text-text-muted sm:flex-row sm:items-center sm:justify-between">
           <p>
             © {new Date().getFullYear()} {clubName}

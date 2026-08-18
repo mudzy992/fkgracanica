@@ -6,6 +6,7 @@ import { ConfigService } from '@nestjs/config';
 import { AppReleasePlatform, AppReleaseStatus } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { toPublicUrl } from '../upload/upload.util';
+import { resolveApkAbsPath } from './apk-download.util';
 import { CreateAppReleaseDto } from './dto/create-app-release.dto';
 import { UpdateAppReleaseDto } from './dto/update-app-release.dto';
 
@@ -116,6 +117,24 @@ export class AppReleasesService {
       releaseNotes: latest.releaseNotes,
       publishedAt: latest.publishedAt?.toISOString() ?? null,
     };
+  }
+
+  async resolveLatestAndroidDownload() {
+    const latest = await this.prisma.appRelease.findFirst({
+      where: { platform: AppReleasePlatform.ANDROID, status: AppReleaseStatus.PUBLISHED },
+      orderBy: { versionCode: 'desc' },
+    });
+    if (!latest) return null;
+    const uploadRoot = this.config.get<string>('UPLOAD_PATH', './uploads');
+    const absPath = resolveApkAbsPath(uploadRoot, latest.apkPath);
+    if (!absPath) return null;
+    try {
+      const st = await fs.stat(absPath);
+      if (!st.isFile()) return null;
+      return { version: latest.version, absPath, size: st.size };
+    } catch {
+      return null;
+    }
   }
 
   private async requireById(id: string) {
