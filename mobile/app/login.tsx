@@ -12,6 +12,7 @@ import {
   TextInput,
   View,
 } from 'react-native';
+import { LoginCrest } from '../src/components/auth/LoginCrest';
 import { useAuth } from '../src/lib/auth';
 import { useTheme } from '../src/lib/theme-context';
 import { spacing, typography } from '../src/lib/theme';
@@ -46,6 +47,7 @@ export default function LoginScreen() {
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
       <View style={[styles.card, { backgroundColor: colors.background, borderColor: colors.border }]}>
+        <LoginCrest />
         <Text style={[styles.title, { color: colors.primary }]}>{t('appName')}</Text>
         <Text style={[styles.subtitle, { color: colors.textMuted }]}>{t('login')}</Text>
 
@@ -95,6 +97,12 @@ export default function LoginScreen() {
             <Text style={{ color: colors.primary, fontWeight: '600' }}>{t('continueAsGuest')}</Text>
           </Pressable>
         </Link>
+        <Link href="/contact" asChild>
+          <Pressable style={styles.skip} accessibilityRole="link" accessibilityLabel={t('forgotPassword')}>
+            <Text style={{ color: colors.textMuted, fontWeight: '600' }}>{t('forgotPassword')}</Text>
+          </Pressable>
+        </Link>
+        <Text style={[styles.hint, { color: colors.textMuted }]}>{t('forgotPasswordHint')}</Text>
       </View>
     </KeyboardAvoidingView>
   );
@@ -118,4 +126,5 @@ const styles = StyleSheet.create({
   buttonDisabled: { opacity: 0.7 },
   buttonText: { fontSize: 16, fontWeight: '600' },
   skip: { marginTop: spacing.lg, alignItems: 'center', padding: spacing.sm },
+  hint: { ...typography.caption, textAlign: 'center' },
 });

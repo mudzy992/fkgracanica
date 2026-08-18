@@ -1,10 +1,11 @@
 import { Stack, useRouter } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FlatList, Pressable, ScrollView, StyleSheet, Text } from 'react-native';
+import { FlatList, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { RequireAuth } from '../src/components/RequireAuth';
 import { ScreenEmpty } from '../src/components/ScreenEmpty';
 import { ScreenLoading } from '../src/components/ScreenLoading';
+import { TicketBrowseSteps } from '../src/components/TicketBrowseSteps';
 import { TicketReserveForm } from '../src/components/TicketReserveForm';
 import { SeasonPassBuyCard } from '../src/components/SeasonPassBuyCard';
 import { api } from '../src/lib/api';
@@ -100,7 +101,12 @@ function TicketsBuyBody() {
         data={matches}
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.list}
-        ListHeaderComponent={<SeasonPassBuyCard />}
+        ListHeaderComponent={
+          <>
+            <TicketBrowseSteps active={2} />
+            <SeasonPassBuyCard />
+          </>
+        }
         ListEmptyComponent={<ScreenEmpty message={t('noMatches')} icon="football-outline" />}
         renderItem={({ item }) => (
           <Pressable
@@ -122,6 +128,9 @@ function TicketsBuyBody() {
 
   return (
     <ScrollView keyboardShouldPersistTaps="handled">
+      <View style={styles.formPad}>
+        <TicketBrowseSteps active={2} />
+      </View>
       <SeasonPassBuyCard />
       <TicketReserveForm
         categories={categories}
@@ -154,4 +163,5 @@ const styles = StyleSheet.create({
   card: { borderRadius: 10, padding: spacing.md, borderWidth: 1, marginBottom: spacing.md },
   matchTitle: { ...typography.heading },
   meta: { ...typography.caption, marginTop: spacing.xs },
+  formPad: { paddingHorizontal: spacing.md, paddingTop: spacing.md },
 });

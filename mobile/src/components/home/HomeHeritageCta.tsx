@@ -6,18 +6,17 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { RemoteImage } from '../RemoteImage';
 import { useTheme } from '../../lib/theme-context';
 import { spacing, typography } from '../../lib/theme';
-import type { HomeTimelineItem } from './load-home-extras';
+import type { HomeTimelineItem, HomeTimelineSpan } from './load-home-extras';
 
-type Props = { items: HomeTimelineItem[] };
+type Props = { items: HomeTimelineItem[]; span?: HomeTimelineSpan };
 
-export function HomeHeritageCta({ items }: Props) {
+export function HomeHeritageCta({ items, span }: Props) {
   const { t } = useTranslation();
   const { colors } = useTheme();
   const router = useRouter();
   if (items.length === 0) return null;
 
-  const years = items.map((item) => item.year).filter((year): year is number => year != null);
-  const span = years.length > 0 ? `${Math.min(...years)} — ${Math.max(...years)}` : '';
+  const yearLabel = span ? `${span.start} — ${span.end}` : '';
 
   return (
     <Pressable
@@ -46,7 +45,7 @@ export function HomeHeritageCta({ items }: Props) {
           style={StyleSheet.absoluteFill}
         />
         <View style={styles.copy}>
-          {span ? <Text style={[styles.span, { color: colors.primaryLight }]}>{span}</Text> : null}
+          {yearLabel ? <Text style={[styles.span, { color: colors.primaryLight }]}>{yearLabel}</Text> : null}
           <Text style={styles.title}>{t('homeHeritageTitle')}</Text>
           <View style={styles.ctaRow}>
             <Text style={styles.cta}>{t('homeHeritageCta')}</Text>

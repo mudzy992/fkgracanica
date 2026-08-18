@@ -119,7 +119,7 @@ export default function HomeScreen() {
         <HomeFadeSection delay={260}>
           <View style={styles.padded}>
             <HomeSectionShell>
-              <HomeHeritageCta items={extras.timeline} />
+              <HomeHeritageCta items={extras.timeline} span={extras.timelineSpan} />
             </HomeSectionShell>
           </View>
         </HomeFadeSection>

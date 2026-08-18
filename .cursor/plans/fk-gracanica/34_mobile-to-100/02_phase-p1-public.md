@@ -16,7 +16,7 @@ Redoslijed iz canvasa / GAPS. Jedan ekran (ili usko povezan par) po iteraciji.
 
 News je **prvi** veliki ekran (Track 29 queue #2).
 
-**DONE 2026-08-17** za redove 1–8. Leftover: login, tickets-buy, contact, tickets-browse.
+**DONE 2026-08-17** za redove 1–8. **DONE 2026-08-18** leftover: login, tickets-buy, contact, tickets-browse.
 
 Ne dirati Home / Liga / Tim / Klub osim regresije.
 

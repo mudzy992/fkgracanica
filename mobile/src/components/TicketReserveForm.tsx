@@ -32,6 +32,10 @@ export function TicketReserveForm({
 }: Props) {
   const { colors } = useTheme();
   const { t } = useTranslation();
+  const isSoldOut = availability != null && availability.remaining === 0;
+  const qty = Math.max(1, parseInt(quantity, 10) || 1);
+  const canReserve =
+    Boolean(categoryId) && !isSoldOut && (availability == null || qty <= availability.remaining);
 
   return (
     <View style={styles.form}>
@@ -42,6 +46,12 @@ export function TicketReserveForm({
         <Text style={[styles.meta, { color: colors.textMuted }]}>
           {t('available')}: {availability.remaining} / {availability.capacity}
         </Text>
+      ) : null}
+      {isSoldOut ? (
+        <View style={[styles.soldOut, { borderColor: colors.danger }]}>
+          <Text style={[styles.soldTitle, { color: colors.danger }]}>{t('soldOut')}</Text>
+          <Text style={[styles.soldBody, { color: colors.danger }]}>{t('soldOutBody')}</Text>
+        </View>
       ) : null}
       <Text style={[styles.label, { color: colors.text }]}>{t('category')}</Text>
       <View style={styles.chips}>
@@ -77,7 +87,12 @@ export function TicketReserveForm({
         accessibilityLabel={t('quantity')}
       />
       {error ? <Text style={[styles.err, { color: colors.danger }]}>{error}</Text> : null}
-      <PrimaryButton label={t('reserveTicket')} loading={submitting} onPress={onReserve} />
+      <PrimaryButton
+        label={isSoldOut ? t('soldOut') : t('reserveTicket')}
+        loading={submitting}
+        disabled={!canReserve}
+        onPress={onReserve}
+      />
     </View>
   );
 }
@@ -98,4 +113,7 @@ const styles = StyleSheet.create({
     ...typography.body,
   },
   err: { ...typography.caption, marginVertical: spacing.xs },
+  soldOut: { borderWidth: 1, borderRadius: 10, padding: spacing.md, gap: spacing.xs },
+  soldTitle: { ...typography.heading, fontWeight: '800' },
+  soldBody: { ...typography.caption, lineHeight: 18 },
 });

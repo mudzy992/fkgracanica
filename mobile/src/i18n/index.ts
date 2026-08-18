@@ -13,6 +13,9 @@ import { roleHomeBs, roleHomeEn } from './role-home';
 import { writerGalleryBs, writerGalleryEn } from './writer-gallery';
 import { newsBs, newsEn } from './news';
 import { heritageBs, heritageEn } from './heritage';
+import { authBs, authEn } from './auth';
+import { ticketsBs, ticketsEn } from './tickets';
+import { contactBs, contactEn } from './contact';
 
 const LANG_KEY = 'app_language';
 
@@ -29,6 +32,9 @@ const bs = {
   ...clubBs,
   ...newsBs,
   ...heritageBs,
+  ...authBs,
+  ...ticketsBs,
+  ...contactBs,
 };
 
 const en: Record<keyof typeof bs, string> = {
@@ -44,6 +50,9 @@ const en: Record<keyof typeof bs, string> = {
   ...clubEn,
   ...newsEn,
   ...heritageEn,
+  ...authEn,
+  ...ticketsEn,
+  ...contactEn,
 };
 
 void i18n.use(initReactI18next).init({

@@ -1,6 +1,6 @@
 # HANDOFF — FK Gračanica
 
-> Ažurirano: **2026-08-17**
+> Ažurirano: **2026-08-18**
 
 ---
 
@@ -8,9 +8,9 @@
 
 | Polje | Vrijednost |
 |-------|------------|
-| **Datum** | 2026-08-17 |
+| **Datum** | 2026-08-18 |
 | **Branch** | `main` |
-| **Aktivni track** | [34_mobile-to-100](./34_mobile-to-100/HANDOFF.md) — leftover public + P2 |
+| **Aktivni track** | [34_mobile-to-100](./34_mobile-to-100/HANDOFF.md) — museum + leftover public + P2 |
 | **Prethodno** | Track 30 League/Clubs max; 32 web 100%; 33 after_launch 1–8 |
 | **Matrica** | `.cursor/docs/matrices/showcase-audit/` |
 | **Canvas** | Cursor canvas `mobile-completeness` (lokalno, nije u gitu) |
@@ -19,7 +19,7 @@
 
 ## 2. Status u jednoj rečenici
 
-Web/admin 100%. Mobile P0+P1 + gallery pager / heritage UX / live socket. Sljedeći: leftover public + P2 staff.
+Web/admin 100%. Mobile heritage (timeline/HoF/sponzori/trofeji) + home historija CTA. Sljedeći: museum + leftover public + P2 staff.
 
 ---
 

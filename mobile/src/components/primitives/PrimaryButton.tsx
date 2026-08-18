@@ -6,16 +6,19 @@ type Props = {
   label: string;
   onPress: () => void;
   loading?: boolean;
+  disabled?: boolean;
 };
 
-export function PrimaryButton({ label, onPress, loading }: Props) {
+export function PrimaryButton({ label, onPress, loading, disabled }: Props) {
   const { colors } = useTheme();
+  const isDisabled = Boolean(loading || disabled);
 
   return (
     <Pressable
-      style={[styles.button, { backgroundColor: colors.primary }, loading && styles.disabled]}
-      disabled={loading}
+      style={[styles.button, { backgroundColor: colors.primary }, isDisabled && styles.disabled]}
+      disabled={isDisabled}
       onPress={onPress}
+      accessibilityState={{ disabled: isDisabled }}
     >
       {loading ? <ActivityIndicator color={colors.white} /> : <Text style={[styles.label, { color: colors.white }]}>{label}</Text>}
     </Pressable>

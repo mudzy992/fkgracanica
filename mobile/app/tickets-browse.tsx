@@ -4,8 +4,10 @@ import { useTranslation } from 'react-i18next';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { ListSkeleton } from '../src/components/ListSkeleton';
 import { ScreenEmpty } from '../src/components/ScreenEmpty';
+import { TicketBrowseSteps } from '../src/components/TicketBrowseSteps';
 import { PrimaryButton } from '../src/components/primitives/PrimaryButton';
 import { api } from '../src/lib/api';
+import { useAuth } from '../src/lib/auth';
 import { asArray, asNumber, asRecord, asString } from '../src/lib/content-helpers';
 import { formatDateTimeBs } from '../src/lib/format-date';
 import { useTheme } from '../src/lib/theme-context';
@@ -17,6 +19,7 @@ export default function TicketsBrowseScreen() {
   const { colors } = useTheme();
   const { t } = useTranslation();
   const router = useRouter();
+  const { isAuthenticated } = useAuth();
   const [rows, setRows] = useState<BrowseRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -77,6 +80,7 @@ export default function TicketsBrowseScreen() {
 
   return (
     <ScrollView style={[styles.container, { backgroundColor: colors.surface }]} contentContainerStyle={styles.list}>
+      <TicketBrowseSteps active={1} />
       <Text style={[styles.title, { color: colors.text }]}>{t('browseTickets')}</Text>
       <Text style={[styles.hint, { color: colors.textMuted }]}>{t('ticketsBrowseHint')}</Text>
       {rows.length === 0 ? (
@@ -96,9 +100,13 @@ export default function TicketsBrowseScreen() {
       )}
       <PrimaryButton
         label={t('buyTickets')}
-        onPress={() =>
-          router.push({ pathname: '/login', params: { returnTo: '/(tabs)/tickets' } })
-        }
+        onPress={() => {
+          if (isAuthenticated) {
+            router.push('/tickets-buy');
+            return;
+          }
+          router.push({ pathname: '/login', params: { returnTo: '/tickets-buy' } });
+        }}
       />
     </ScrollView>
   );

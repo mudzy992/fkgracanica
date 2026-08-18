@@ -1,54 +1,88 @@
 import { StyleSheet, Text, View } from 'react-native';
+import { RemoteImage } from '../RemoteImage';
 import { useTheme } from '../../lib/theme-context';
 import { spacing, typography } from '../../lib/theme';
 import type { HeritageItem } from './load-heritage';
-import { extractYears } from './heritage-utils';
-import { HeritageFilmPhoto } from './HeritageFilmPhoto';
-import { HeritageTimelineShade } from './HeritageTimelineShade';
 
-type Props = {
-  item: HeritageItem;
-  height: number;
-};
+const GOLD = '#C9A227';
 
-export function HeritageHofChapter({ item, height }: Props) {
+type Props = { item: HeritageItem };
+
+export function HeritageHofChapter({ item }: Props) {
   const { colors } = useTheme();
-  const ghost = extractYears(item.years)[0] ?? item.title[0];
 
   return (
-    <View style={[styles.chapter, { height, backgroundColor: colors.background }]}>
-      <HeritageFilmPhoto path={item.imagePath} />
-      <HeritageTimelineShade />
-      <Text style={styles.ghost}>{ghost}</Text>
-      <View style={styles.copy}>
-        {item.years ? (
-          <Text style={[styles.kicker, { color: colors.primaryLight }]}>{item.years}</Text>
-        ) : null}
-        <Text style={styles.name}>{item.title}</Text>
-        {item.role ? <Text style={[styles.role, { color: colors.primaryLight }]}>{item.role}</Text> : null}
-        {item.description ? (
-          <Text style={styles.bio} numberOfLines={5}>
-            {item.description}
-          </Text>
-        ) : null}
+    <View style={styles.stage}>
+      <View style={styles.glow} />
+      <View style={[styles.ring, { backgroundColor: colors.background }]}>
+        {item.imagePath ? (
+          <RemoteImage path={item.imagePath} variant="original" contentFit="cover" style={styles.photo} />
+        ) : (
+          <View style={[styles.fallback, { backgroundColor: colors.surface }]}>
+            <Text style={styles.initial}>{item.title[0]}</Text>
+          </View>
+        )}
       </View>
+      {item.years ? <Text style={styles.years}>{item.years}</Text> : null}
+      <Text style={[styles.name, { color: colors.text }]}>{item.title}</Text>
+      <View style={styles.rule} />
+      {item.role ? <Text style={styles.role}>{item.role}</Text> : null}
+      {item.description ? (
+        <Text style={[styles.bio, { color: colors.textMuted }]}>{item.description}</Text>
+      ) : null}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  chapter: { overflow: 'hidden', justifyContent: 'flex-end' },
-  ghost: {
-    position: 'absolute',
-    top: spacing.md,
-    left: spacing.md,
-    fontSize: 72,
-    fontWeight: '800',
-    color: 'rgba(255,255,255,0.25)',
+  stage: {
+    alignItems: 'center',
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.xl,
   },
-  copy: { padding: spacing.lg, paddingRight: 72, gap: spacing.sm, zIndex: 1 },
-  kicker: { ...typography.caption, fontWeight: '800', letterSpacing: 2, textTransform: 'uppercase' },
-  name: { ...typography.title, color: '#fff', fontWeight: '800' },
-  role: { ...typography.caption, fontWeight: '800', letterSpacing: 1.4, textTransform: 'uppercase' },
-  bio: { ...typography.body, lineHeight: 22, color: 'rgba(255,255,255,0.7)' },
+  glow: {
+    position: 'absolute',
+    top: 28,
+    width: 220,
+    height: 220,
+    borderRadius: 110,
+    backgroundColor: 'rgba(201,162,39,0.14)',
+  },
+  ring: {
+    width: 176,
+    height: 176,
+    borderRadius: 88,
+    borderWidth: 3,
+    borderColor: GOLD,
+    overflow: 'hidden',
+    marginBottom: spacing.md,
+  },
+  photo: { width: '100%', height: '100%', borderRadius: 0 },
+  fallback: { flex: 1, alignItems: 'center', justifyContent: 'center' },
+  initial: { ...typography.display, color: GOLD },
+  years: {
+    ...typography.caption,
+    color: GOLD,
+    fontWeight: '800',
+    letterSpacing: 2,
+    textTransform: 'uppercase',
+    marginBottom: spacing.xs,
+  },
+  name: { ...typography.display, fontSize: 28, textAlign: 'center' },
+  rule: { width: 40, height: 2, backgroundColor: GOLD, marginVertical: spacing.sm, borderRadius: 1 },
+  role: {
+    ...typography.caption,
+    color: GOLD,
+    fontWeight: '800',
+    letterSpacing: 1.6,
+    textTransform: 'uppercase',
+    textAlign: 'center',
+  },
+  bio: {
+    ...typography.body,
+    lineHeight: 22,
+    textAlign: 'center',
+    marginTop: spacing.sm,
+    maxWidth: 320,
+  },
 });

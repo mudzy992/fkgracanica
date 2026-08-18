@@ -5,6 +5,7 @@ import { useTheme } from '../../lib/theme-context';
 import { spacing, typography } from '../../lib/theme';
 import type { HeritageItem } from './load-heritage';
 import { splitFeaturedTrophy } from './heritage-utils';
+import { HeritageTrophyFeatured } from './HeritageTrophyFeatured';
 
 const GOLD = '#C9A227';
 
@@ -18,59 +19,59 @@ export function HeritageTrophiesTab({ items }: Props) {
 
   return (
     <View style={styles.wrap}>
-      <View style={[styles.featured, { backgroundColor: colors.background, borderColor: GOLD }]}>
-        {featured.imagePath ? (
-          <RemoteImage path={featured.imagePath} variant="medium" contentFit="contain" style={styles.featImg} />
-        ) : (
-          <Text style={[styles.featYear, { color: GOLD }]}>{featured.year}</Text>
-        )}
-        <Text style={[styles.featYear, { color: GOLD }]}>{featured.year}</Text>
-        <Text style={[styles.featTitle, { color: colors.text }]}>{featured.title}</Text>
-        {featured.competition ? (
-          <Text style={[styles.sub, { color: colors.textMuted }]}>{featured.competition}</Text>
-        ) : null}
-        {featured.description ? (
-          <Text style={[styles.body, { color: colors.textMuted }]}>{featured.description}</Text>
-        ) : null}
-      </View>
-      {rest.length > 0 ? <Text style={[styles.heading, { color: colors.text }]}>{t('otherTrophies')}</Text> : null}
-      <View style={styles.grid}>
-        {rest.map((item) => (
-          <View key={item.id} style={[styles.card, { backgroundColor: colors.background, borderColor: colors.border }]}>
-            {item.imagePath ? (
-              <RemoteImage path={item.imagePath} variant="thumb" contentFit="contain" style={styles.thumb} />
-            ) : (
-              <Text style={[styles.year, { color: colors.primaryLight }]}>{item.year}</Text>
-            )}
-            <View style={styles.copy}>
-              <Text style={[styles.year, { color: colors.primaryLight }]}>{item.year}</Text>
-              <Text style={[styles.name, { color: colors.text }]}>{item.title}</Text>
-              {item.competition ? (
-                <Text style={[styles.sub, { color: colors.textMuted }]} numberOfLines={1}>
-                  {item.competition}
-                </Text>
-              ) : null}
+      <HeritageTrophyFeatured item={featured} />
+      {rest.length > 0 ? (
+        <View style={styles.shelf}>
+          <Text style={[styles.kicker, { color: colors.textMuted }]}>{t('otherTrophies')}</Text>
+          {rest.map((item) => (
+            <View key={item.id} style={styles.row}>
+              <View style={[styles.pedestal, { backgroundColor: colors.background }]}>
+                {item.imagePath ? (
+                  <RemoteImage path={item.imagePath} variant="medium" contentFit="contain" style={styles.thumb} />
+                ) : (
+                  <Text style={styles.year}>{item.year}</Text>
+                )}
+              </View>
+              <View style={styles.copy}>
+                <Text style={styles.year}>{item.year}</Text>
+                <Text style={[styles.name, { color: colors.text }]}>{item.title}</Text>
+                {item.competition ? (
+                  <Text style={[styles.comp, { color: colors.textMuted }]}>{item.competition}</Text>
+                ) : null}
+                {item.description ? (
+                  <Text style={[styles.body, { color: colors.textMuted }]}>{item.description}</Text>
+                ) : null}
+              </View>
             </View>
-          </View>
-        ))}
-      </View>
+          ))}
+        </View>
+      ) : null}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  wrap: { gap: spacing.md },
-  featured: { borderRadius: 22, borderWidth: 1, padding: spacing.lg, alignItems: 'center' },
-  featImg: { height: 140, width: '70%', marginBottom: spacing.md },
-  featYear: { ...typography.title, fontWeight: '800' },
-  featTitle: { ...typography.heading, textAlign: 'center', marginTop: spacing.xs },
-  body: { ...typography.body, textAlign: 'center', marginTop: spacing.sm },
-  heading: { ...typography.heading, fontWeight: '800', marginTop: spacing.sm },
-  grid: { gap: spacing.sm },
-  card: { flexDirection: 'row', gap: spacing.md, borderRadius: 16, borderWidth: 1, padding: spacing.md, alignItems: 'center' },
-  thumb: { width: 56, height: 56 },
-  copy: { flex: 1 },
-  year: { ...typography.caption, fontWeight: '800' },
+  wrap: { gap: spacing.xl },
+  shelf: { gap: spacing.lg },
+  kicker: {
+    ...typography.caption,
+    fontWeight: '800',
+    letterSpacing: 2,
+    textTransform: 'uppercase',
+    textAlign: 'center',
+  },
+  row: { flexDirection: 'row', gap: spacing.md, alignItems: 'center' },
+  pedestal: {
+    width: 84,
+    height: 84,
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  thumb: { width: 64, height: 64 },
+  copy: { flex: 1, gap: 2 },
+  year: { ...typography.title, color: GOLD, fontWeight: '800' },
   name: { ...typography.body, fontWeight: '700' },
-  sub: { ...typography.caption, marginTop: 2 },
+  comp: { ...typography.caption, fontWeight: '600' },
+  body: { ...typography.caption, lineHeight: 18, marginTop: 4 },
 });

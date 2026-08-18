@@ -51,6 +51,8 @@ export type HomeTimelineItem = {
   imagePath?: string;
 };
 
+export type HomeTimelineSpan = { start: number; end: number };
+
 export type HomeExtras = {
   players: HomePlayerItem[];
   leagueRows: HomeLeagueRow[];
@@ -58,6 +60,7 @@ export type HomeExtras = {
   trophies: HomeTrophyItem[];
   sponsors: HomeSponsorItem[];
   timeline: HomeTimelineItem[];
+  timelineSpan?: HomeTimelineSpan;
 };
 
 const emptyExtras: HomeExtras = {
@@ -145,21 +148,26 @@ function asYear(value: unknown): number | undefined {
   return Number.isFinite(parsed) && parsed > 0 ? parsed : undefined;
 }
 
-async function loadTimeline(): Promise<HomeTimelineItem[]> {
+async function loadTimeline(): Promise<{ photos: HomeTimelineItem[]; span?: HomeTimelineSpan }> {
   const { data } = await api.get('/club-timeline');
-  return asArray(data)
-    .map((item, index) => {
-      const record = asRecord(item);
-      return {
-        id: asString(record.id, String(index)),
-        year: asYear(record.year),
-        title: asString(record.title, '—'),
-        imagePath: asString(record.imagePath) || asString(record.photoPath) || undefined,
-      };
-    })
-    .filter((item) => Boolean(item.imagePath))
+  const rows = asArray(data).map((item, index) => {
+    const record = asRecord(item);
+    return {
+      id: asString(record.id, String(index)),
+      year: asYear(record.year),
+      title: asString(record.title, '—'),
+      imagePath: asString(record.imagePath) || asString(record.photoPath) || undefined,
+    };
+  });
+  const years = rows.map((row) => row.year).filter((year): year is number => year != null);
+  const photos = rows
+    .filter((row) => Boolean(row.imagePath))
     .sort((a, b) => (a.year ?? 0) - (b.year ?? 0))
     .slice(0, 3);
+  if (years.length === 0) return { photos };
+  const start = Math.min(...years);
+  const end = Math.max(Math.max(...years), new Date().getFullYear());
+  return { photos, span: { start, end } };
 }
 
 export async function loadHomeExtras(): Promise<HomeExtras> {
@@ -169,9 +177,17 @@ export async function loadHomeExtras(): Promise<HomeExtras> {
     loadGallery().catch(() => [] as HomeGalleryItem[]),
     loadTrophies().catch(() => [] as HomeTrophyItem[]),
     loadSponsors().catch(() => [] as HomeSponsorItem[]),
-    loadTimeline().catch(() => [] as HomeTimelineItem[]),
+    loadTimeline().catch((): { photos: HomeTimelineItem[]; span?: HomeTimelineSpan } => ({ photos: [] })),
   ]);
-  return { players, leagueRows, gallery, trophies, sponsors, timeline };
+  return {
+    players,
+    leagueRows,
+    gallery,
+    trophies,
+    sponsors,
+    timeline: timeline.photos,
+    timelineSpan: timeline.span,
+  };
 }
 
 export { emptyExtras };
