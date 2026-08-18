@@ -6,6 +6,7 @@ import { HeroSectionForm } from './HeroSectionForm';
 import { NewsFeedSectionForm } from './NewsFeedSectionForm';
 import { NextMatchSectionForm } from './NextMatchSectionForm';
 import { GenericSectionForm } from './GenericSectionForm';
+import { ClubAboutCtaSectionForm } from './ClubAboutCtaSectionForm';
 
 interface Props {
   widgetType: string;
@@ -25,7 +26,8 @@ export function CmsSectionForm({ widgetType, config, onChange }: Props) {
       {widgetType === 'custom-html' && <CustomHtmlSectionForm config={config} onChange={onChange} />}
       {widgetType === 'footer-about' && <FooterAboutForm config={config} onChange={onChange} />}
       {widgetType === 'next-match' && <NextMatchSectionForm config={config} onChange={onChange} />}
-      {!['hero', 'news-feed', 'rich-text', 'footer-about', 'next-match', 'custom-html'].includes(widgetType) && (
+      {widgetType === 'club-about-cta' && <ClubAboutCtaSectionForm config={config} onChange={onChange} />}
+      {!['hero', 'news-feed', 'rich-text', 'footer-about', 'next-match', 'custom-html', 'club-about-cta'].includes(widgetType) && (
         <GenericSectionForm widgetType={widgetType} config={config} onChange={onChange} />
       )}
     </div>

@@ -10,7 +10,7 @@ const PUBLIC_ROUTE_MODULES: [string, string][] = [
   ['/utakmice', 'modules.competitions'],
   ['/sponzori', 'modules.sponsors'],
   ['/trofeji', 'modules.trophies'],
-  ['/hall-of-fame', 'modules.hallOfFame'],
+  ['/o-klubu/kuca-slavnih', 'modules.hallOfFame'],
   ['/muzej', 'modules.museum'],
   ['/ulaznice', 'modules.ticketing'],
   ['/clanstvo', 'feature.membership'],

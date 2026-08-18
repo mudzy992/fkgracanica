@@ -14,6 +14,7 @@ export const WIDGET_TYPES = [
   'rich-text',
   'custom-html',
   'cta-band',
+  'club-about-cta',
   'footer-about',
 ] as const;
 
@@ -24,6 +25,7 @@ export const widgetMeta: Record<WidgetType, { label: string; category: string }>
   'rich-text': { label: 'Tekst blok', category: 'layout' },
   'custom-html': { label: 'Custom HTML', category: 'layout' },
   'cta-band': { label: 'Poziv na akciju', category: 'layout' },
+  'club-about-cta': { label: 'CTA O klubu i baština', category: 'layout' },
   'news-feed': { label: 'Vijesti', category: 'module' },
   gallery: { label: 'Galerija', category: 'module' },
   sponsors: { label: 'Sponzori', category: 'module' },

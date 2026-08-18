@@ -14,7 +14,7 @@ export function ClubStoryFilm({ events }: Props) {
   const { activeId, setActiveId } = useActiveChapter(rootRef, ids);
 
   return (
-    <div id="story-film" ref={rootRef}>
+    <div id="story-film" ref={rootRef} className="snap-y snap-mandatory">
       <ClubStoryProgress events={events} activeId={activeId} onSelect={setActiveId} />
       {events.map((event) => (
         <ClubStoryChapter key={event.id} event={event} />

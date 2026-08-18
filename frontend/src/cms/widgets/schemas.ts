@@ -77,6 +77,17 @@ export const widgetSchemas = {
     text: z.string().optional(),
     buttons: z.array(ctaButton).default([]),
   }),
+  'club-about-cta': z.object({
+    eyebrow: z.string().optional(),
+    title: z.string().optional(),
+    text: z.string().optional(),
+    primaryLabel: z.string().optional(),
+    primaryUrl: z.string().optional(),
+    secondaryLabel: z.string().optional(),
+    secondaryText: z.string().optional(),
+    storyImage: z.string().optional(),
+    heritageImage: z.string().optional(),
+  }),
   'footer-about': z.object({ text: z.string().min(1) }),
 } as const;
 
@@ -91,6 +102,7 @@ export const widgetMeta: Record<WidgetType, { label: string; category: string }>
   'rich-text': { label: 'Tekst blok', category: 'layout' },
   'custom-html': { label: 'Custom HTML', category: 'layout' },
   'cta-band': { label: 'Poziv na akciju', category: 'layout' },
+  'club-about-cta': { label: 'CTA O klubu i baština', category: 'layout' },
   'news-feed': { label: 'Vijesti', category: 'module' },
   gallery: { label: 'Galerija', category: 'module' },
   sponsors: { label: 'Sponzori', category: 'module' },

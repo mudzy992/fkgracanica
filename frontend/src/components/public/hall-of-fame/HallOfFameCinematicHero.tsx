@@ -1,5 +1,5 @@
 import { motion, useReducedMotion } from 'framer-motion';
-import { Calendar, Star, Users } from 'lucide-react';
+import { Calendar, Crown, Star, Users } from 'lucide-react';
 
 interface Props {
   totalCount: number;
@@ -8,9 +8,9 @@ interface Props {
 
 function KpiChip({ icon: Icon, label, value }: { icon: typeof Star; label: string; value: string | number }) {
   return (
-    <div className="glass-premium rounded-xl px-4 py-3 text-center">
-      <Icon size={16} className="mx-auto mb-2 text-primary-light" />
-      <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-white/45">{label}</p>
+    <div className="rounded-2xl border border-amber-300/15 bg-white/5 px-4 py-3 text-center backdrop-blur-sm">
+      <Icon size={16} className="mx-auto mb-2 text-amber-200" />
+      <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-400">{label}</p>
       <p className="font-display mt-1 text-lg font-bold text-white sm:text-xl">{value}</p>
     </div>
   );
@@ -21,9 +21,9 @@ export function HallOfFameCinematicHero({ totalCount, yearCount }: Props) {
 
   return (
     <header className="relative overflow-hidden">
-      <div className="absolute inset-0 bg-[image:var(--gradient-page-hero)]" />
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(0,102,255,0.18),transparent_55%)]" />
-      <div className="pointer-events-none absolute -right-24 top-0 h-72 w-72 rounded-full bg-primary/10 blur-3xl" />
+      <div className="absolute inset-0 bg-[linear-gradient(180deg,#05070d_0%,#0c1421_55%,#130d06_100%)]" />
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(245,158,11,0.18),transparent_30%),radial-gradient(circle_at_left,rgba(59,130,246,0.12),transparent_28%)]" />
+      <div className="pointer-events-none absolute -right-24 top-0 h-72 w-72 rounded-full bg-amber-400/10 blur-3xl" />
 
       <div className="relative mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-20 md:py-24">
         <motion.div
@@ -32,20 +32,25 @@ export function HallOfFameCinematicHero({ totalCount, yearCount }: Props) {
           transition={{ duration: 0.5 }}
           className="text-center"
         >
-          <p className="text-xs font-semibold uppercase tracking-[0.25em] text-primary-light sm:text-sm">
-            Legende
+          <div className="inline-flex items-center gap-2 rounded-full border border-amber-300/20 bg-amber-300/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.25em] text-amber-100 sm:text-sm">
+            <Crown className="h-4 w-4" />
+            Kuća slavnih
+          </div>
+          <p className="mt-5 text-xs font-semibold uppercase tracking-[0.25em] text-amber-200/80 sm:text-sm">
+            Nasljeđe kluba
           </p>
-          <h1 className="font-display mt-3 text-4xl font-bold tracking-tight text-gradient-club sm:text-5xl md:text-6xl">
-            Hall of Fame
+          <h1 className="font-display mt-3 text-4xl font-bold tracking-tight text-white sm:text-5xl md:text-6xl">
+            Lica koja su zauvijek ucrtana u historiju
           </h1>
-          <p className="mx-auto mt-4 max-w-xl text-base text-white/60 sm:text-lg">
-            Igrači i osobe koje su ostavile trag u historiji kluba.
+          <p className="mx-auto mt-4 max-w-2xl text-base text-slate-300 sm:text-lg">
+            Poseban prostor za igrače, trenere i ljude čije se ime ne odvaja od najvećih trenutaka kluba.
           </p>
 
           {totalCount > 0 && (
-            <div className="mx-auto mt-10 grid max-w-md grid-cols-2 gap-3">
+            <div className="mx-auto mt-10 grid max-w-xl grid-cols-2 gap-3 md:grid-cols-3">
               <KpiChip icon={Users} label="Legendi" value={totalCount} />
               <KpiChip icon={Calendar} label="Godina" value={yearCount || '—'} />
+              <KpiChip icon={Star} label="Status" value="Vječno" />
             </div>
           )}
         </motion.div>

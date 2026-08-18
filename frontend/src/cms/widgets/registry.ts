@@ -13,6 +13,7 @@ import { TrophiesWidget } from './TrophiesWidget';
 import { RichTextWidget } from './RichTextWidget';
 import { CustomHtmlWidget } from './CustomHtmlWidget';
 import { CtaBandWidget } from './CtaBandWidget';
+import { ClubAboutCtaWidget } from './ClubAboutCtaWidget';
 
 type WidgetComponent = ComponentType<{ config: WidgetConfigMap[WidgetType] }>;
 
@@ -32,4 +33,5 @@ export const widgetRegistry: Partial<Record<WidgetType, WidgetComponent>> = {
   'rich-text': RichTextWidget as WidgetComponent,
   'custom-html': CustomHtmlWidget as WidgetComponent,
   'cta-band': CtaBandWidget as WidgetComponent,
+  'club-about-cta': ClubAboutCtaWidget as WidgetComponent,
 };

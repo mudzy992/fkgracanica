@@ -1,4 +1,4 @@
-import { Route } from 'react-router-dom';
+import { Navigate, Route } from 'react-router-dom';
 import { PublicLayout } from '../components/layout/PublicLayout';
 import { ModuleRoute } from '../components/common/ModuleRoute';
 import { HomePage } from '../pages/home/HomePage';
@@ -58,8 +58,9 @@ export const publicLayoutRoutes = (
     </Route>
     <Route path="pretraga" element={<SearchPage />} />
     <Route element={<ModuleRoute moduleKey="modules.hallOfFame" />}>
-      <Route path="hall-of-fame" element={<HallOfFamePage />} />
+      <Route path="o-klubu/kuca-slavnih" element={<HallOfFamePage />} />
     </Route>
+    <Route path="hall-of-fame" element={<Navigate to="/o-klubu" replace />} />
     <Route element={<ModuleRoute moduleKey="modules.museum" />}>
       <Route path="muzej" element={<MuseumPage />} />
     </Route>
