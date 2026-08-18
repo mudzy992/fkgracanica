@@ -30,7 +30,7 @@ export function registerPushDeepLinks() {
       router.push(path as never);
       return;
     }
-    router.push('/(tabs)/notifications');
+    router.push('/notifications');
   });
   return () => subscription.remove();
 }

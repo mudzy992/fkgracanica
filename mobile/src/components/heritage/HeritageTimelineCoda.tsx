@@ -40,7 +40,7 @@ export function HeritageTimelineCoda({ height }: Props) {
           <Text style={[styles.btnLabel, { color: colors.white }]}>{t('storyFirstTeam')}</Text>
         </Pressable>
         <Pressable
-          onPress={() => router.push('/(tabs)/membership')}
+          onPress={() => router.push('/membership')}
           accessibilityRole="button"
           accessibilityLabel={t('homeMembershipCta')}
           style={styles.outline}

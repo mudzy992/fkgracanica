@@ -47,7 +47,7 @@ export default function NewsListScreen() {
     void loadNews().finally(() => setLoading(false));
   }, [loadNews]);
 
-  const open = (slug: string) => router.push(`/(tabs)/news/${slug}`);
+  const open = (slug: string) => router.push(`/news/${slug}`);
   const featured = !categoryId ? items[0] : undefined;
   const rest = featured ? items.slice(1) : items;
 

@@ -47,7 +47,7 @@ export function LeagueMatchesSection({ matches, locale }: Props) {
                 key={match.id}
                 match={match}
                 locale={locale}
-                onPress={() => router.push(`/(tabs)/live/${match.id}`)}
+                onPress={() => router.push(`/live/${match.id}`)}
               />
             ))}
           </View>
@@ -56,7 +56,7 @@ export function LeagueMatchesSection({ matches, locale }: Props) {
       {next ? (
         <View style={styles.block}>
           <Text style={[styles.title, { color: colors.text }]}>{t('leagueNextMatch')}</Text>
-          <MatchRow match={next} locale={locale} onPress={() => router.push(`/(tabs)/live/${next.id}`)} />
+          <MatchRow match={next} locale={locale} onPress={() => router.push(`/live/${next.id}`)} />
         </View>
       ) : null}
       {recent.length > 0 ? (
@@ -68,7 +68,7 @@ export function LeagueMatchesSection({ matches, locale }: Props) {
                 key={match.id}
                 match={match}
                 locale={locale}
-                onPress={() => router.push(`/(tabs)/live/${match.id}`)}
+                onPress={() => router.push(`/live/${match.id}`)}
               />
             ))}
           </View>

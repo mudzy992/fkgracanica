@@ -4,6 +4,7 @@
 - [x] 02 P1 public (news → heritage → gallery → search → CMS → live → membership/tickets)
 - [x] 02+ gallery native pager, heritage tab UX, live Socket.IO
 - [x] 02b P1 leftover: login, tickets-buy, contact, tickets-browse
+- [x] 02c Account/More/chrome: stack back, CMS uklonjen, skeleti, i18n headeri
 - [ ] 03 P2 staff (dashboard, gallery-manage, orders, EntityList images)
 - [ ] 04 Stripe tickets-buy + Play Store listing
 - [x] 04a Stripe return-to-app (AuthSession + mobile-return bounce)

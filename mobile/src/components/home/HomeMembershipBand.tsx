@@ -14,8 +14,8 @@ export function HomeMembershipBand() {
   const { isAuthenticated } = useAuth();
 
   const handlePress = () => {
-    if (isAuthenticated) router.push('/(tabs)/membership');
-    else router.push('/login?returnTo=/(tabs)/membership');
+    if (isAuthenticated) router.push('/membership');
+    else router.push('/login?returnTo=/membership');
   };
 
   return (

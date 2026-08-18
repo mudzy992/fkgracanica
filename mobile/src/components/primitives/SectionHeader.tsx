@@ -14,7 +14,12 @@ export function SectionHeader({ title, subtitle }: { title: string; subtitle?: s
 }
 
 const styles = StyleSheet.create({
-  wrap: { marginBottom: spacing.sm },
-  title: { ...typography.heading },
+  wrap: { marginTop: spacing.sm, marginBottom: spacing.xs },
+  title: {
+    ...typography.caption,
+    fontWeight: '800',
+    letterSpacing: 1.6,
+    textTransform: 'uppercase',
+  },
   subtitle: { ...typography.caption, marginTop: spacing.xs },
 });

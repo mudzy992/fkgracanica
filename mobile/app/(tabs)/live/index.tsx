@@ -92,7 +92,7 @@ export default function LiveListScreen() {
     );
   }
 
-  const open = (id: string) => router.push(`/(tabs)/live/${id}`);
+  const open = (id: string) => router.push(`/live/${id}`);
   const empty = live.length === 0 && upcoming.length === 0 && recent.length === 0;
 
   return (

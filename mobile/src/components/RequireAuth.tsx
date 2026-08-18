@@ -6,7 +6,7 @@ import { useTheme } from '../lib/theme-context';
 
 interface Props {
   children: ReactNode;
-  /** Path after login, e.g. /(tabs)/membership */
+  /** Path after login, e.g. /membership */
   returnTo: string;
 }
 

@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { FlatList, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { RequireAuth } from '../src/components/RequireAuth';
 import { ScreenEmpty } from '../src/components/ScreenEmpty';
-import { ScreenLoading } from '../src/components/ScreenLoading';
+import { ListSkeleton } from '../src/components/ListSkeleton';
 import { TicketBrowseSteps } from '../src/components/TicketBrowseSteps';
 import { TicketReserveForm } from '../src/components/TicketReserveForm';
 import { SeasonPassBuyCard } from '../src/components/SeasonPassBuyCard';
@@ -83,7 +83,7 @@ function TicketsBuyBody() {
           return;
         }
       }
-      router.replace('/(tabs)/tickets');
+      router.replace('/tickets');
     } catch {
       setError(t('paymentFailed'));
     } finally {
@@ -91,7 +91,7 @@ function TicketsBuyBody() {
     }
   };
 
-  if (loading) return <ScreenLoading />;
+  if (loading) return <ListSkeleton rows={4} />;
   if (error && matches.length === 0) {
     return (
       <ScreenEmpty
@@ -163,7 +163,7 @@ export default function TicketsBuyScreen() {
   const { t } = useTranslation();
   return (
     <RequireAuth returnTo="/tickets-buy">
-      <Stack.Screen options={{ title: t('reserveTicket') }} />
+      <Stack.Screen options={{ title: t('buyTickets') }} />
       <TicketsBuyBody />
     </RequireAuth>
   );

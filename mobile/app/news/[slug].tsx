@@ -1,26 +1,25 @@
 import { Ionicons } from '@expo/vector-icons';
-import { useLocalSearchParams, useNavigation } from 'expo-router';
+import { Stack, useLocalSearchParams } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Linking, Pressable, ScrollView, Share, StyleSheet, Text } from 'react-native';
-import { NativePhotoPager } from '../../../src/components/gallery/NativePhotoPager';
-import { NewsComments } from '../../../src/components/NewsComments';
-import { NewsHtmlBody } from '../../../src/components/news/NewsHtmlBody';
-import { NewsRelatedBlock } from '../../../src/components/news/NewsRelatedBlock';
-import { fetchNewsDetail, type NewsDetail } from '../../../src/components/news/load-news-detail';
-import { RemoteImage } from '../../../src/components/RemoteImage';
-import { ScreenEmpty } from '../../../src/components/ScreenEmpty';
-import { ScreenLoading } from '../../../src/components/ScreenLoading';
-import { formatDateBs } from '../../../src/lib/format-date';
-import { useTheme } from '../../../src/lib/theme-context';
-import { newsArticleUrl } from '../../../src/lib/web-origin';
-import { spacing, typography } from '../../../src/lib/theme';
+import { NativePhotoPager } from '../../src/components/gallery/NativePhotoPager';
+import { ListSkeleton } from '../../src/components/ListSkeleton';
+import { NewsComments } from '../../src/components/NewsComments';
+import { NewsHtmlBody } from '../../src/components/news/NewsHtmlBody';
+import { NewsRelatedBlock } from '../../src/components/news/NewsRelatedBlock';
+import { fetchNewsDetail, type NewsDetail } from '../../src/components/news/load-news-detail';
+import { RemoteImage } from '../../src/components/RemoteImage';
+import { ScreenEmpty } from '../../src/components/ScreenEmpty';
+import { formatDateBs } from '../../src/lib/format-date';
+import { useTheme } from '../../src/lib/theme-context';
+import { newsArticleUrl } from '../../src/lib/web-origin';
+import { spacing, typography } from '../../src/lib/theme';
 
 export default function NewsDetailScreen() {
   const { colors } = useTheme();
   const { t } = useTranslation();
   const { slug } = useLocalSearchParams<{ slug: string }>();
-  const navigation = useNavigation();
   const [article, setArticle] = useState<NewsDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -47,35 +46,40 @@ export default function NewsDetailScreen() {
     await Share.share({ title: article.title, message: `${article.title}\n${url}`, url });
   }, [article]);
 
-  useEffect(() => {
-    if (!article) return;
-    navigation.setOptions({
-      title: article.title,
-      headerRight: () => (
-        <Pressable onPress={() => void handleShare()} accessibilityRole="button" accessibilityLabel={t('shareNews')}>
-          <Ionicons name="share-outline" size={22} color={colors.white} />
-        </Pressable>
-      ),
-    });
-  }, [article, navigation, handleShare, t, colors.white]);
+  const shareBtn = article ? (
+    <Pressable onPress={() => void handleShare()} accessibilityRole="button" accessibilityLabel={t('shareNews')}>
+      <Ionicons name="share-outline" size={22} color={colors.white} />
+    </Pressable>
+  ) : null;
 
-  if (loading) return <ScreenLoading />;
+  if (loading) {
+    return (
+      <>
+        <Stack.Screen options={{ title: t('news') }} />
+        <ListSkeleton rows={3} />
+      </>
+    );
+  }
   if (error || !article) {
     return (
-      <ScreenEmpty
-        message={error ?? t('error')}
-        icon="alert-circle-outline"
-        actionLabel={t('retry')}
-        onAction={() => {
-          setLoading(true);
-          void loadArticle().finally(() => setLoading(false));
-        }}
-      />
+      <>
+        <Stack.Screen options={{ title: t('news') }} />
+        <ScreenEmpty
+          message={error ?? t('error')}
+          icon="alert-circle-outline"
+          actionLabel={t('retry')}
+          onAction={() => {
+            setLoading(true);
+            void loadArticle().finally(() => setLoading(false));
+          }}
+        />
+      </>
     );
   }
 
   return (
     <>
+      <Stack.Screen options={{ title: article.title, headerRight: () => shareBtn }} />
       <ScrollView
         style={[styles.container, { backgroundColor: colors.background }]}
         contentContainerStyle={styles.content}

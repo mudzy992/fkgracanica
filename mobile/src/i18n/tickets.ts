@@ -9,6 +9,12 @@ export const ticketsBs = {
   paymentFailed: 'Plaćanje nije uspjelo.',
   buySeasonPass: 'Kupi sezonsku kartu',
   seasonPassBoxOffice: 'Dostupno na blagajni',
+  seasonPassKicker: 'Sezona',
+  seasonPassHint: 'Važi za sve domaće utakmice',
+  ticketStatusPaid: 'Plaćeno',
+  ticketStatusReserved: 'Rezervisano',
+  ticketStatusUsed: 'Iskorišteno',
+  ticketStatusPending: 'Na čekanju',
 } as const;
 
 export const ticketsEn: Record<keyof typeof ticketsBs, string> = {
@@ -22,4 +28,10 @@ export const ticketsEn: Record<keyof typeof ticketsBs, string> = {
   paymentFailed: 'Payment failed.',
   buySeasonPass: 'Buy season pass',
   seasonPassBoxOffice: 'Available at the box office',
+  seasonPassKicker: 'Season',
+  seasonPassHint: 'Valid for all home matches',
+  ticketStatusPaid: 'Paid',
+  ticketStatusReserved: 'Reserved',
+  ticketStatusUsed: 'Used',
+  ticketStatusPending: 'Pending',
 };

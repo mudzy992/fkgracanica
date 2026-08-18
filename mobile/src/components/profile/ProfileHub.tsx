@@ -36,14 +36,15 @@ export function ProfileHub() {
         <Text style={[styles.email, { color: colors.textMuted }]}>{user?.email}</Text>
       </View>
       <SectionHeader title={t('accountTools')} />
-      <ListRow title={t('membership')} icon="id-card-outline" onPress={() => router.push('/(tabs)/membership')} />
-      <ListRow title={t('tickets')} icon="ticket-outline" onPress={() => router.push('/(tabs)/tickets')} />
+      <ListRow title={t('membership')} icon="id-card-outline" onPress={() => router.push('/membership')} />
+      <ListRow title={t('tickets')} icon="ticket-outline" onPress={() => router.push('/tickets')} />
       <ListRow title={t('buyTickets')} icon="card-outline" onPress={() => router.push('/tickets-buy')} />
       <ListRow
         title={t('notifications')}
         icon="notifications-outline"
-        onPress={() => router.push('/(tabs)/notifications')}
+        onPress={() => router.push('/notifications')}
       />
+      <SectionHeader title={t('preferences')} />
       <ListRow
         title={t('language')}
         subtitle={i18n.language === 'en' ? t('languageEn') : t('languageBs')}

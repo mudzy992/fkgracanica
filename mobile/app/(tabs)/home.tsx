@@ -54,7 +54,7 @@ export default function HomeScreen() {
     );
   }
 
-  const openMatch = (id: string) => router.push(`/(tabs)/live/${id}`);
+  const openMatch = (id: string) => router.push(`/live/${id}`);
   const showMembership = isEnabled('feature.membership');
 
   return (

@@ -22,7 +22,9 @@ export function MembershipCardVisual({ membership }: Props) {
       <View style={styles.meta}>
         <View>
           <Text style={[styles.label, { color: colors.primaryLight }]}>{t('status')}</Text>
-          <Text style={[styles.value, { color: colors.white }]}>{membership.status}</Text>
+          <Text style={[styles.value, { color: colors.white }]}>
+            {membership.status === 'ACTIVE' ? t('statusActive') : membership.status}
+          </Text>
         </View>
         <View>
           <Text style={[styles.label, { color: colors.primaryLight }]}>{t('validUntil')}</Text>

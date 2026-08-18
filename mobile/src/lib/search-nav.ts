@@ -60,13 +60,13 @@ export function groupSearchItems(items: SearchNavItem[]): { type: string; data: 
 export function searchItemHref(item: SearchNavItem): string | null {
   switch (item.type) {
     case 'news':
-      return item.slug ? `/(tabs)/news/${item.slug}` : null;
+      return item.slug ? `/news/${item.slug}` : null;
     case 'players':
       return `/player/${item.id}`;
     case 'galleries':
       return item.slug ? `/gallery/${item.slug}` : null;
     case 'matches':
-      return `/(tabs)/live/${item.id}`;
+      return `/live/${item.id}`;
     case 'clubs':
       return item.slug ? `/clubs/${item.slug}` : '/team';
     case 'trophies':

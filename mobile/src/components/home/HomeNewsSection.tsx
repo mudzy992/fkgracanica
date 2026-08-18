@@ -15,7 +15,7 @@ export function HomeNewsSection({ items }: Props) {
   const { colors } = useTheme();
   const router = useRouter();
 
-  const openArticle = (slug: string) => router.push(`/(tabs)/news/${slug}`);
+  const openArticle = (slug: string) => router.push(`/news/${slug}`);
   const [featured, ...rest] = items;
 
   return (

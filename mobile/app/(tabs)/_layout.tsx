@@ -98,32 +98,6 @@ export default function TabsLayout() {
           tabBarIcon: tabIcon('person-circle', 'person-circle-outline'),
         }}
       />
-      <Tabs.Screen
-        name="membership"
-        options={{
-          title: t('membership'),
-          href: null,
-          tabBarIcon: tabIcon('id-card', 'id-card-outline'),
-        }}
-      />
-      <Tabs.Screen
-        name="tickets"
-        options={{
-          title: t('tickets'),
-          href: null,
-          tabBarIcon: tabIcon('ticket', 'ticket-outline'),
-        }}
-      />
-      <Tabs.Screen
-        name="notifications"
-        options={{
-          title: t('notifications'),
-          href: null,
-          tabBarIcon: tabIcon('notifications', 'notifications-outline'),
-        }}
-      />
-      <Tabs.Screen name="news/[slug]" options={{ href: null, title: t('news') }} />
-      <Tabs.Screen name="live/[id]" options={{ href: null, title: t('live') }} />
     </Tabs>
   );
 }

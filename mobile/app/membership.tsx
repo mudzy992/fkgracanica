@@ -1,17 +1,17 @@
+import { Stack } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { RefreshControl, ScrollView, StyleSheet } from 'react-native';
-import { api } from '../../src/lib/api';
-import { MemberHomeStrip } from '../../src/components/membership/MemberHomeStrip';
-import { MembershipCardVisual } from '../../src/components/membership/MembershipCardVisual';
-import { RequireAuth } from '../../src/components/RequireAuth';
-import { ScreenEmpty } from '../../src/components/ScreenEmpty';
-import { ScreenLoading } from '../../src/components/ScreenLoading';
-import { useTheme } from '../../src/lib/theme-context';
-import { spacing } from '../../src/lib/theme';
-import { PrimaryButton } from '../../src/components/primitives/PrimaryButton';
-import { payMembershipOnline } from '../../src/components/membership/pay-membership-online';
-import type { Membership } from '../../src/types/api';
+import { api } from '../src/lib/api';
+import { MembershipCardVisual } from '../src/components/membership/MembershipCardVisual';
+import { payMembershipOnline } from '../src/components/membership/pay-membership-online';
+import { ListSkeleton } from '../src/components/ListSkeleton';
+import { PrimaryButton } from '../src/components/primitives/PrimaryButton';
+import { RequireAuth } from '../src/components/RequireAuth';
+import { ScreenEmpty } from '../src/components/ScreenEmpty';
+import { useTheme } from '../src/lib/theme-context';
+import { spacing } from '../src/lib/theme';
+import type { Membership } from '../src/types/api';
 
 function canRegister(status: string | undefined): boolean {
   return !status || status === 'EXPIRED' || status === 'CANCELLED';
@@ -74,8 +74,7 @@ function MembershipBody() {
     }
   };
 
-  if (loading) return <ScreenLoading />;
-
+  if (loading) return <ListSkeleton rows={3} />;
   if (error) {
     return (
       <ScreenEmpty
@@ -87,27 +86,6 @@ function MembershipBody() {
           void loadMembership().finally(() => setLoading(false));
         }}
       />
-    );
-  }
-
-  if (active?.card) {
-    return (
-      <ScrollView
-        style={[styles.container, { backgroundColor: colors.surface }]}
-        contentContainerStyle={styles.content}
-        refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={() => {
-              setRefreshing(true);
-              void loadMembership().finally(() => setRefreshing(false));
-            }}
-          />
-        }
-      >
-        <MemberHomeStrip memberships={memberships} />
-        <MembershipCardVisual membership={active} />
-      </ScrollView>
     );
   }
 
@@ -136,28 +114,31 @@ function MembershipBody() {
         />
       }
     >
-      <MemberHomeStrip memberships={memberships} />
-      <ScreenEmpty
-        compact
-        message={statusMsg}
-        icon="id-card-outline"
-        actionLabel={canRegister(latest?.status) ? (registering ? t('loading') : t('registerMembership')) : undefined}
-        onAction={canRegister(latest?.status) ? () => void onRegister() : undefined}
-      />
-      {latest?.status === 'PENDING' ? (
-        <PrimaryButton
-          label={registering ? t('loading') : t('payOnline')}
-          loading={registering}
-          onPress={() => void onPayPending()}
-        />
-      ) : null}
+      {active?.card ? (
+        <MembershipCardVisual membership={active} />
+      ) : (
+        <>
+          <ScreenEmpty
+            compact
+            message={statusMsg}
+            icon="id-card-outline"
+            actionLabel={canRegister(latest?.status) ? t('registerMembership') : undefined}
+            onAction={canRegister(latest?.status) ? () => void onRegister() : undefined}
+          />
+          {latest?.status === 'PENDING' ? (
+            <PrimaryButton label={t('payOnline')} loading={registering} onPress={() => void onPayPending()} />
+          ) : null}
+        </>
+      )}
     </ScrollView>
   );
 }
 
 export default function MembershipScreen() {
+  const { t } = useTranslation();
   return (
-    <RequireAuth returnTo="/(tabs)/membership">
+    <RequireAuth returnTo="/membership">
+      <Stack.Screen options={{ title: t('membership') }} />
       <MembershipBody />
     </RequireAuth>
   );
@@ -165,5 +146,5 @@ export default function MembershipScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
-  content: { padding: spacing.lg },
+  content: { padding: spacing.lg, gap: spacing.md },
 });

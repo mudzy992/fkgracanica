@@ -16,6 +16,7 @@ import { heritageBs, heritageEn } from './heritage';
 import { authBs, authEn } from './auth';
 import { ticketsBs, ticketsEn } from './tickets';
 import { contactBs, contactEn } from './contact';
+import { navBs, navEn } from './nav';
 
 const LANG_KEY = 'app_language';
 
@@ -35,6 +36,7 @@ const bs = {
   ...authBs,
   ...ticketsBs,
   ...contactBs,
+  ...navBs,
 };
 
 const en: Record<keyof typeof bs, string> = {
@@ -53,6 +55,7 @@ const en: Record<keyof typeof bs, string> = {
   ...authEn,
   ...ticketsEn,
   ...contactEn,
+  ...navEn,
 };
 
 void i18n.use(initReactI18next).init({

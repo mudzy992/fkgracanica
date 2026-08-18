@@ -5,6 +5,7 @@ import { api } from '../lib/api';
 import { formatDateBs } from '../lib/format-date';
 import { useTheme } from '../lib/theme-context';
 import { spacing, typography } from '../lib/theme';
+import { ticketStatusKey } from './ticket-status';
 import type { TicketOrder } from '../types/api';
 import { QrCodeView } from './QrCodeView';
 
@@ -36,7 +37,7 @@ export function TicketOrderCard({ order, onShowQr, onRefunded }: Props) {
         {t('order')} · {formatDateBs(order.createdAt)}
       </Text>
       <Text style={[styles.status, { color: colors.textMuted }]}>
-        {t('status')}: {order.status}
+        {t('status')}: {t(ticketStatusKey(order.status))}
       </Text>
       {order.tickets.map((ticket) => (
         <View key={ticket.id} style={[styles.ticket, { borderTopColor: colors.border }]}>
@@ -45,7 +46,7 @@ export function TicketOrderCard({ order, onShowQr, onRefunded }: Props) {
             {t('category')}: {ticket.category}
           </Text>
           <Text style={[styles.ticketLine, { color: colors.text }]}>
-            {t('price')}: {ticket.price} KM · {ticket.status}
+            {t('price')}: {ticket.price} KM · {t(ticketStatusKey(ticket.status))}
           </Text>
           <Pressable
             style={styles.qrWrap}
@@ -75,7 +76,7 @@ export function TicketOrderCard({ order, onShowQr, onRefunded }: Props) {
 }
 
 const styles = StyleSheet.create({
-  card: { borderRadius: 10, padding: spacing.md, borderWidth: 1, marginBottom: spacing.md },
+  card: { borderRadius: 16, padding: spacing.md, borderWidth: 1, marginBottom: spacing.md },
   orderTitle: { ...typography.heading },
   status: { ...typography.caption, marginTop: spacing.xs },
   ticket: { marginTop: spacing.md, paddingTop: spacing.md, borderTopWidth: 1, borderStyle: 'dashed' },

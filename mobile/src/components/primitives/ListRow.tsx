@@ -26,13 +26,18 @@ export function ListRow({ title, subtitle, icon, onPress, rightText }: Props) {
       ]}
     >
       <View style={styles.left}>
-        {icon ? <Ionicons name={icon} size={18} color={colors.primary} /> : null}
+        {icon ? (
+          <View style={[styles.iconWell, { backgroundColor: colors.surface }]}>
+            <Ionicons name={icon} size={18} color={colors.primaryLight} />
+          </View>
+        ) : null}
         <View style={styles.texts}>
           <Text style={[styles.title, { color: colors.text }]}>{title}</Text>
           {subtitle ? <Text style={[styles.subtitle, { color: colors.textMuted }]}>{subtitle}</Text> : null}
         </View>
       </View>
       {rightText ? <Text style={[styles.right, { color: colors.textMuted }]}>{rightText}</Text> : null}
+      {onPress ? <Ionicons name="chevron-forward" size={16} color={colors.textMuted} /> : null}
     </Pressable>
   );
 }
@@ -40,14 +45,21 @@ export function ListRow({ title, subtitle, icon, onPress, rightText }: Props) {
 const styles = StyleSheet.create({
   row: {
     borderWidth: 1,
-    borderRadius: 12,
+    borderRadius: 16,
     padding: spacing.md,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     gap: spacing.sm,
   },
-  left: { flex: 1, flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
+  left: { flex: 1, flexDirection: 'row', alignItems: 'center', gap: spacing.md },
+  iconWell: {
+    width: 36,
+    height: 36,
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   texts: { flex: 1 },
   title: { ...typography.body, fontWeight: '600' },
   subtitle: { ...typography.caption, marginTop: spacing.xs },

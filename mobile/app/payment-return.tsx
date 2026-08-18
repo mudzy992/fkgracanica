@@ -6,9 +6,9 @@ import { parseCheckoutKind } from '../src/lib/start-mobile-checkout';
 import { useAuth } from '../src/lib/auth';
 
 const DEST = {
-  tickets: '/(tabs)/tickets',
-  membership: '/(tabs)/membership',
-  season: '/(tabs)/tickets',
+  tickets: '/tickets',
+  membership: '/membership',
+  season: '/tickets',
 } as const;
 
 const CONFIRM = {

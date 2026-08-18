@@ -1,5 +1,15 @@
 # CHANGELOG — 34 Mobile to 100%
 
+## 2026-08-18 (d)
+
+- Account: membership/tickets/notifications → stack rute + back gestura; hidden tabovi uklonjeni
+- More: Istraži/Klub/Postavke; CMS rute obrisane
+- tickets-browse: stack header, koraci, tap → buy
+- Headers i18n + `fullScreenGestureEnabled` + minimal back
+- News/live detail na stack (`/news/[slug]`, `/live/[id]`)
+- ListSkeleton pulse; skeleti na buy/gallery/news/live
+- `tsc --noEmit` PASS
+
 ## 2026-08-18 (c)
 
 - Login: full-screen plate, crest, show/hide lozinka

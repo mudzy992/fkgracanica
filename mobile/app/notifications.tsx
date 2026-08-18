@@ -1,22 +1,16 @@
+import { Stack } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-  FlatList,
-  Pressable,
-  RefreshControl,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
-import { RequireAuth } from '../../src/components/RequireAuth';
-import { ScreenEmpty } from '../../src/components/ScreenEmpty';
-import { ScreenLoading } from '../../src/components/ScreenLoading';
-import { useUnreadNotifications } from '../../src/hooks/use-unread-notifications';
-import { api } from '../../src/lib/api';
-import { formatDateTimeBs } from '../../src/lib/format-date';
-import { useTheme } from '../../src/lib/theme-context';
-import { spacing, typography } from '../../src/lib/theme';
-import type { Notification, PaginatedResponse } from '../../src/types/api';
+import { FlatList, Pressable, RefreshControl, StyleSheet, Text, View } from 'react-native';
+import { ListSkeleton } from '../src/components/ListSkeleton';
+import { RequireAuth } from '../src/components/RequireAuth';
+import { ScreenEmpty } from '../src/components/ScreenEmpty';
+import { useUnreadNotifications } from '../src/hooks/use-unread-notifications';
+import { api } from '../src/lib/api';
+import { formatDateTimeBs } from '../src/lib/format-date';
+import { useTheme } from '../src/lib/theme-context';
+import { spacing, typography } from '../src/lib/theme';
+import type { Notification, PaginatedResponse } from '../src/types/api';
 
 function NotificationsBody() {
   const { t } = useTranslation();
@@ -48,7 +42,7 @@ function NotificationsBody() {
       setItems((prev) => prev.map((n) => (n.id === id ? { ...n, isRead: true } : n)));
       await refreshBadge();
     } catch {
-      // ignore
+      /* ignore */
     }
   };
 
@@ -58,11 +52,11 @@ function NotificationsBody() {
       setItems((prev) => prev.map((n) => ({ ...n, isRead: true })));
       await refreshBadge();
     } catch {
-      // ignore
+      /* ignore */
     }
   };
 
-  if (loading) return <ScreenLoading />;
+  if (loading) return <ListSkeleton rows={5} />;
   if (error) {
     return (
       <ScreenEmpty
@@ -103,59 +97,53 @@ function NotificationsBody() {
             accessibilityRole="button"
             accessibilityLabel={t('markAllRead')}
           >
-            <Text style={[styles.action, { color: colors.accent }]}>{t('markAllRead')}</Text>
+            <Text style={[styles.action, { color: colors.primaryLight }]}>{t('markAllRead')}</Text>
           </Pressable>
         ) : null
       }
-      ListEmptyComponent={
-        <ScreenEmpty message={t('noNotifications')} icon="notifications-outline" />
-      }
+      ListEmptyComponent={<ScreenEmpty message={t('noNotifications')} icon="notifications-outline" compact />}
       renderItem={({ item }) => (
-        <View
+        <Pressable
+          onPress={() => {
+            if (!item.isRead) void markRead(item.id);
+          }}
+          accessibilityRole="button"
           style={[
             styles.card,
             { backgroundColor: colors.background, borderColor: colors.border },
-            !item.isRead && { borderLeftWidth: 4, borderLeftColor: colors.primary },
+            !item.isRead && { borderColor: colors.primary },
           ]}
         >
           <View style={styles.titleRow}>
-            {!item.isRead ? <View style={[styles.dot, { backgroundColor: colors.primary }]} /> : null}
-            <Text style={[styles.title, { color: colors.text, flex: 1 }]}>{item.title}</Text>
+            {!item.isRead ? <View style={[styles.dot, { backgroundColor: colors.primaryLight }]} /> : null}
+            <Text style={[styles.title, { color: colors.text }]}>{item.title}</Text>
           </View>
           <Text style={[styles.body, { color: colors.textMuted }]}>{item.body}</Text>
           <Text style={[styles.date, { color: colors.textMuted }]}>{formatDateTimeBs(item.createdAt)}</Text>
-          {!item.isRead ? (
-            <Pressable onPress={() => void markRead(item.id)} accessibilityRole="button">
-              <Text style={[styles.action, { color: colors.accent }]}>{t('markRead')}</Text>
-            </Pressable>
-          ) : null}
-        </View>
+        </Pressable>
       )}
     />
   );
 }
 
-const styles = StyleSheet.create({
-  list: { padding: spacing.md, flexGrow: 1 },
-  markAll: { marginBottom: spacing.sm, alignSelf: 'flex-end' },
-  card: {
-    borderRadius: 10,
-    padding: spacing.md,
-    borderWidth: 1,
-    marginBottom: spacing.sm,
-  },
-  titleRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
-  dot: { width: 8, height: 8, borderRadius: 4 },
-  title: { ...typography.heading },
-  body: { ...typography.body, marginTop: spacing.xs },
-  date: { ...typography.caption, marginTop: spacing.sm },
-  action: { marginTop: spacing.sm, fontWeight: '600' },
-});
-
 export default function NotificationsScreen() {
+  const { t } = useTranslation();
   return (
-    <RequireAuth returnTo="/(tabs)/notifications">
+    <RequireAuth returnTo="/notifications">
+      <Stack.Screen options={{ title: t('notifications') }} />
       <NotificationsBody />
     </RequireAuth>
   );
 }
+
+const styles = StyleSheet.create({
+  list: { padding: spacing.md, flexGrow: 1, gap: spacing.sm },
+  markAll: { alignSelf: 'flex-end', paddingVertical: spacing.xs },
+  card: { borderRadius: 16, padding: spacing.md, borderWidth: 1 },
+  titleRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
+  dot: { width: 8, height: 8, borderRadius: 4 },
+  title: { ...typography.heading, flex: 1, fontWeight: '800' },
+  body: { ...typography.body, marginTop: spacing.xs },
+  date: { ...typography.caption, marginTop: spacing.sm },
+  action: { fontWeight: '700' },
+});

@@ -1,4 +1,4 @@
-import { useRouter } from 'expo-router';
+import { Stack, useRouter } from 'expo-router';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, SectionList, StyleSheet, Text, TextInput } from 'react-native';
@@ -67,26 +67,25 @@ export default function SearchScreen() {
   const emptyMessage = !query.trim() ? t('searchEmpty') : error ? error : t('searchNoResults');
 
   return (
-    <SectionList
+    <>
+      <Stack.Screen options={{ title: t('search') }} />
+      <SectionList
       sections={sections}
       keyExtractor={(item) => `${item.type}-${item.id}`}
       contentContainerStyle={styles.list}
       stickySectionHeadersEnabled={false}
       ListHeaderComponent={
-        <>
-          <Text style={[styles.title, { color: colors.text }]}>{t('search')}</Text>
-          <TextInput
-            style={[
-              styles.input,
-              { borderColor: colors.border, backgroundColor: colors.background, color: colors.text },
-            ]}
-            value={query}
-            onChangeText={setQuery}
-            placeholder={t('searchPlaceholder')}
-            placeholderTextColor={colors.textMuted}
-            accessibilityLabel={t('search')}
-          />
-        </>
+        <TextInput
+          style={[
+            styles.input,
+            { borderColor: colors.border, backgroundColor: colors.background, color: colors.text },
+          ]}
+          value={query}
+          onChangeText={setQuery}
+          placeholder={t('searchPlaceholder')}
+          placeholderTextColor={colors.textMuted}
+          accessibilityLabel={t('search')}
+        />
       }
       ListEmptyComponent={
         <ScreenEmpty
@@ -119,12 +118,12 @@ export default function SearchScreen() {
         );
       }}
     />
+    </>
   );
 }
 
 const styles = StyleSheet.create({
   list: { padding: spacing.md, gap: spacing.sm, flexGrow: 1 },
-  title: { ...typography.title, marginBottom: spacing.sm },
   input: {
     borderWidth: 1,
     borderRadius: 10,

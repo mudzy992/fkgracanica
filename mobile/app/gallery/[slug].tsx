@@ -5,8 +5,8 @@ import { FlatList, Pressable, StyleSheet, Text } from 'react-native';
 import { NativePhotoPager } from '../../src/components/gallery/NativePhotoPager';
 import type { PagerPhoto } from '../../src/components/gallery/photo-pager-types';
 import { RemoteImage } from '../../src/components/RemoteImage';
+import { ListSkeleton } from '../../src/components/ListSkeleton';
 import { ScreenEmpty } from '../../src/components/ScreenEmpty';
-import { ScreenLoading } from '../../src/components/ScreenLoading';
 import { api } from '../../src/lib/api';
 import { asArray, asRecord, asString } from '../../src/lib/content-helpers';
 import { useTheme } from '../../src/lib/theme-context';
@@ -49,7 +49,7 @@ export default function GalleryDetailScreen() {
     void load().finally(() => setLoading(false));
   }, [load]);
 
-  if (loading) return <ScreenLoading />;
+  if (loading) return <ListSkeleton rows={4} />;
   if (error) {
     return (
       <>

@@ -16,7 +16,7 @@ export default function MoreScreen() {
 
   return (
     <Screen scroll>
-      <SectionHeader title={t('publicModules')} />
+      <SectionHeader title={t('explore')} />
       {isEnabled('modules.gallery') ? (
         <ListRow
           title={t('gallery')}
@@ -41,6 +41,8 @@ export default function MoreScreen() {
           onPress={() => router.push('/league')}
         />
       ) : null}
+      <ListRow title={t('search')} subtitle={t('searchHint')} icon="search-outline" onPress={() => router.push('/search')} />
+      <SectionHeader title={t('moreClub')} />
       <ListRow title={t('heritage')} subtitle={t('heritageHint')} icon="ribbon-outline" onPress={() => router.push('/heritage')} />
       <ListRow title={t('contact')} subtitle={t('contactHint')} icon="mail-outline" onPress={() => router.push('/contact')} />
       <ListRow
@@ -49,15 +51,6 @@ export default function MoreScreen() {
         icon="ticket-outline"
         onPress={() => router.push('/tickets-browse')}
       />
-      <ListRow title={t('search')} subtitle={t('searchHint')} icon="search-outline" onPress={() => router.push('/search')} />
-      {isEnabled('modules.cms') ? (
-        <ListRow
-          title={t('cmsPages')}
-          subtitle={t('cmsPagesHint')}
-          icon="document-text-outline"
-          onPress={() => router.push('/pages')}
-        />
-      ) : null}
       <SectionHeader title={t('preferences')} />
       <ListRow
         title={t('language')}
@@ -66,15 +59,12 @@ export default function MoreScreen() {
         onPress={() => void setAppLanguage(nextLang)}
       />
       {isAuthenticated ? null : (
-        <>
-          <SectionHeader title={t('accountTools')} subtitle={t('guestMode')} />
-          <ListRow
-            title={t('login')}
-            subtitle={t('signInForMemberTools')}
-            icon="log-in-outline"
-            onPress={() => router.push('/login')}
-          />
-        </>
+        <ListRow
+          title={t('login')}
+          subtitle={t('signInForMemberTools')}
+          icon="log-in-outline"
+          onPress={() => router.push('/login')}
+        />
       )}
     </Screen>
   );

@@ -49,7 +49,7 @@ export function NewsRelatedBlock({
           {matches.map((match) => (
             <Pressable
               key={match.id}
-              onPress={() => router.push(`/(tabs)/live/${match.id}`)}
+              onPress={() => router.push(`/live/${match.id}`)}
               accessibilityRole="button"
               accessibilityLabel={match.label}
             >

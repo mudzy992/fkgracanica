@@ -4,7 +4,6 @@ import { Alert, StyleSheet, Text, TextInput, View } from 'react-native';
 import { ContactClubInfo } from '../src/components/contact/ContactClubInfo';
 import { PrimaryButton } from '../src/components/primitives/PrimaryButton';
 import { Screen } from '../src/components/primitives/Screen';
-import { SectionHeader } from '../src/components/primitives/SectionHeader';
 import { api } from '../src/lib/api';
 import { useTheme } from '../src/lib/theme-context';
 import { spacing, typography } from '../src/lib/theme';
@@ -57,7 +56,6 @@ export default function ContactScreen() {
 
   return (
     <Screen scroll>
-      <SectionHeader title={t('contact')} subtitle={t('contactHint')} />
       <ContactClubInfo />
       <View style={[styles.card, { backgroundColor: colors.background, borderColor: colors.border }]}>
         <TextInput

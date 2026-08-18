@@ -20,8 +20,8 @@ export function HomeModuleCtas({ showMembership, showTickets }: Props) {
   if (!showMembership && !showTickets) return null;
 
   const goMembership = () => {
-    if (isAuthenticated) router.push('/(tabs)/membership');
-    else router.push('/login?returnTo=/(tabs)/membership');
+    if (isAuthenticated) router.push('/membership');
+    else router.push('/login?returnTo=/membership');
   };
 
   const goTickets = () => {
