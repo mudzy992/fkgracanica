@@ -40,6 +40,7 @@ export function TicketOrderCard({ order, onShowQr, onRefunded }: Props) {
       </Text>
       {order.tickets.map((ticket) => (
         <View key={ticket.id} style={[styles.ticket, { borderTopColor: colors.border }]}>
+          <View style={[styles.tear, { borderColor: colors.border }]} />
           <Text style={[styles.ticketLine, { color: colors.text }]}>
             {t('category')}: {ticket.category}
           </Text>
@@ -77,7 +78,8 @@ const styles = StyleSheet.create({
   card: { borderRadius: 10, padding: spacing.md, borderWidth: 1, marginBottom: spacing.md },
   orderTitle: { ...typography.heading },
   status: { ...typography.caption, marginTop: spacing.xs },
-  ticket: { marginTop: spacing.md, paddingTop: spacing.md, borderTopWidth: 1 },
+  ticket: { marginTop: spacing.md, paddingTop: spacing.md, borderTopWidth: 1, borderStyle: 'dashed' },
+  tear: { borderTopWidth: 1, borderStyle: 'dashed', marginBottom: spacing.sm },
   ticketLine: { ...typography.body, marginTop: spacing.xs },
   qrWrap: { marginTop: spacing.sm, alignItems: 'flex-start' },
   showQr: { marginTop: spacing.xs, fontWeight: '600' },

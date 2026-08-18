@@ -74,6 +74,15 @@
           "imageWidth": 280,
           "resizeMode": "contain"
         }
+      ],
+      "expo-sharing",
+      [
+        "expo-media-library",
+        {
+          "photosPermission": "Dozvoli spremanje fotografija u galeriju.",
+          "savePhotosPermission": "Dozvoli spremanje fotografija u galeriju.",
+          "isAccessMediaLocationEnabled": true
+        }
       ]
     ],
     "extra": {

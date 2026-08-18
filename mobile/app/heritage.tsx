@@ -1,44 +1,36 @@
+import { Stack, useLocalSearchParams } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, View } from 'react-native';
+import { HeritageHofTab } from '../src/components/heritage/HeritageHofTab';
+import { HeritageMuseumTab } from '../src/components/heritage/HeritageMuseumTab';
+import { HeritageSponsorsTab } from '../src/components/heritage/HeritageSponsorsTab';
+import { HeritageTabs } from '../src/components/heritage/HeritageTabs';
+import { HeritageTimelineTab } from '../src/components/heritage/HeritageTimelineTab';
+import { HeritageTrophiesTab } from '../src/components/heritage/HeritageTrophiesTab';
+import { loadHeritage, parseHeritageTab, type HeritageData, type HeritageTab } from '../src/components/heritage/load-heritage';
 import { ListSkeleton } from '../src/components/ListSkeleton';
 import { ScreenEmpty } from '../src/components/ScreenEmpty';
-import { api } from '../src/lib/api';
-import { asArray, asRecord, asString } from '../src/lib/content-helpers';
 import { useTheme } from '../src/lib/theme-context';
-import { spacing, typography } from '../src/lib/theme';
+import { spacing } from '../src/lib/theme';
 
-type Block = { title: string; items: string[] };
+const EMPTY: HeritageData = { sponsors: [], trophies: [], timeline: [], hall: [], museum: [] };
 
 export default function HeritageScreen() {
   const { colors } = useTheme();
   const { t } = useTranslation();
-  const [blocks, setBlocks] = useState<Block[]>([]);
+  const { tab: tabParam } = useLocalSearchParams<{ tab?: string }>();
+  const [tab, setTab] = useState<HeritageTab>(() => parseHeritageTab(tabParam));
+  const [data, setData] = useState<HeritageData>(EMPTY);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     try {
       setError(null);
-      const [sponsors, trophies, timeline, hall, museum] = await Promise.all([
-        api.get('/sponsors'),
-        api.get('/trophies'),
-        api.get('/club-timeline'),
-        api.get('/hall-of-fame'),
-        api.get('/museum'),
-      ]);
-      setBlocks([
-        { title: t('sponsors'), items: asArray(sponsors.data).map((x) => asString(asRecord(x).name, '—')) },
-        {
-          title: t('trophies'),
-          items: asArray(trophies.data).map((x) => asString(asRecord(x).name) || asString(asRecord(x).title, '—')),
-        },
-        { title: t('timeline'), items: asArray(timeline.data).map((x) => asString(asRecord(x).title, '—')) },
-        { title: t('hallOfFame'), items: asArray(hall.data).map((x) => asString(asRecord(x).name, '—')) },
-        { title: t('museum'), items: asArray(museum.data).map((x) => asString(asRecord(x).title, '—')) },
-      ]);
+      setData(await loadHeritage());
     } catch {
-      setBlocks([]);
+      setData(EMPTY);
       setError(t('error'));
     }
   }, [t]);
@@ -50,40 +42,54 @@ export default function HeritageScreen() {
   if (loading) return <ListSkeleton />;
   if (error) {
     return (
-      <ScreenEmpty
-        message={error}
-        icon="alert-circle-outline"
-        actionLabel={t('retry')}
-        onAction={() => {
-          setLoading(true);
-          void load().finally(() => setLoading(false));
-        }}
-      />
+      <>
+        <Stack.Screen options={{ title: t('heritage') }} />
+        <ScreenEmpty
+          message={error}
+          icon="alert-circle-outline"
+          actionLabel={t('retry')}
+          onAction={() => {
+            setLoading(true);
+            void load().finally(() => setLoading(false));
+          }}
+        />
+      </>
     );
   }
 
+  const items = data[tab];
+  const isFilm = tab === 'timeline' || tab === 'hall';
+
   return (
-    <ScrollView style={[styles.container, { backgroundColor: colors.surface }]} contentContainerStyle={styles.content}>
-      <Text style={[styles.title, { color: colors.text }]}>{t('heritage')}</Text>
-      {blocks.map((block) => (
-        <View key={block.title} style={[styles.card, { backgroundColor: colors.background, borderColor: colors.border }]}>
-          <Text style={[styles.section, { color: colors.text }]}>{block.title}</Text>
-          {block.items.map((item, index) => (
-            <Text key={`${block.title}-${index}`} style={[styles.item, { color: colors.textMuted }]}>
-              • {item}
-            </Text>
-          ))}
+    <>
+      <Stack.Screen options={{ title: t('heritage') }} />
+      <View style={[styles.shell, { backgroundColor: colors.surface }]}>
+        <View style={styles.tabs}>
+          <HeritageTabs active={tab} onChange={setTab} />
         </View>
-      ))}
-    </ScrollView>
+        {isFilm ? (
+          items.length === 0 ? (
+            <ScreenEmpty message={t('searchNoResults')} icon="file-tray-outline" compact />
+          ) : tab === 'timeline' ? (
+            <HeritageTimelineTab items={items} />
+          ) : (
+            <HeritageHofTab items={items} />
+          )
+        ) : (
+          <ScrollView contentContainerStyle={styles.content}>
+            {items.length === 0 ? <ScreenEmpty message={t('searchNoResults')} icon="file-tray-outline" compact /> : null}
+            {tab === 'sponsors' ? <HeritageSponsorsTab items={items} /> : null}
+            {tab === 'trophies' ? <HeritageTrophiesTab items={items} /> : null}
+            {tab === 'museum' ? <HeritageMuseumTab items={items} /> : null}
+          </ScrollView>
+        )}
+      </View>
+    </>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1 },
-  content: { padding: spacing.md, gap: spacing.sm },
-  title: { ...typography.title },
-  card: { borderRadius: 12, borderWidth: 1, padding: spacing.md },
-  section: { ...typography.heading, marginBottom: spacing.sm },
-  item: { ...typography.body, marginBottom: spacing.xs },
+  shell: { flex: 1 },
+  tabs: { paddingHorizontal: spacing.md, paddingTop: spacing.md },
+  content: { padding: spacing.md, gap: spacing.md },
 });

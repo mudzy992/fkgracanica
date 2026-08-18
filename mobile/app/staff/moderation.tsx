@@ -40,21 +40,21 @@ export default function ModerationScreen() {
         api.get('/gallery', { params: { status: 'PENDING' } }),
         api.get('/live/pending'),
       ]);
-      setNews(asArray(newsRes.data).map((item, i) => ({ id: asString(asRecord(item).id, String(i)), title: pendingTitle(item, 'Vijest') })));
-      setGallery(asArray(galleryRes.data).map((item, i) => ({ id: asString(asRecord(item).id, String(i)), title: pendingTitle(item, 'Galerija') })));
-      setLive(asArray(liveRes.data).map((item, i) => ({ id: asString(asRecord(item).id, String(i)), title: pendingTitle(item, 'Live report') })));
+      setNews(asArray(newsRes.data).map((item, i) => ({ id: asString(asRecord(item).id, String(i)), title: pendingTitle(item, t('news')) })));
+      setGallery(asArray(galleryRes.data).map((item, i) => ({ id: asString(asRecord(item).id, String(i)), title: pendingTitle(item, t('gallery')) })));
+      setLive(asArray(liveRes.data).map((item, i) => ({ id: asString(asRecord(item).id, String(i)), title: pendingTitle(item, t('live')) })));
     } catch {
       setNews([]);
       setGallery([]);
       setLive([]);
     }
-  }, []);
+  }, [t]);
 
   useEffect(() => {
     void load();
   }, [load]);
 
-  const setStatus = async (kind: Kind, id: string, status: 'PUBLISHED' | 'ARCHIVED') => {
+  const setStatus = async (kind: Kind, id: string, status: 'PUBLISHED' | 'DRAFT' | 'ARCHIVED') => {
     if (kind === 'live') {
       if (status === 'PUBLISHED') await api.post(`/live/matches/${id}/approve`);
       return load();
@@ -89,7 +89,7 @@ export default function ModerationScreen() {
             </Pressable>
             {kind !== 'live' && (
               <>
-                <Pressable style={[styles.button, { backgroundColor: colors.surface }]} onPress={() => void setStatus(kind, item.id, 'ARCHIVED')}>
+                <Pressable style={[styles.button, { backgroundColor: colors.surface }]} onPress={() => void setStatus(kind, item.id, 'DRAFT')}>
                   <Text style={[styles.buttonText, { color: colors.text }]}>{t('reject')}</Text>
                 </Pressable>
                 <Pressable style={[styles.button, { backgroundColor: colors.surface }]} onPress={() => void setStatus(kind, item.id, 'ARCHIVED')}>

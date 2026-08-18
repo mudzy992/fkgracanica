@@ -18,8 +18,6 @@
 - [ ] Media tree
 - [ ] Web ticketing Stripe tok
 
-## Mobile (zadnje)
+## Mobile (zadnje) → Track 34
 
-- [ ] GAPS P0
-- [ ] GAPS P1
-- [ ] GAPS P2
+- [ ] Premješteno: `.cursor/plans/fk-gracanica/34_mobile-to-100/CHECKLIST.md`

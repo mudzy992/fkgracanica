@@ -20,9 +20,10 @@ export function HomeLeagueRowItem({ row }: Props) {
   const { t } = useTranslation();
   const { colors } = useTheme();
   const router = useRouter();
+  const highlight = row.isHighlight ?? row.isOwn;
   const podium = row.position >= 1 && row.position <= 3 ? PODIUM[row.position - 1] : null;
-  const posBg = podium ?? (row.isOwn ? colors.primary : colors.surface);
-  const posFg = podium || row.isOwn ? colors.white : colors.textMuted;
+  const posBg = podium ?? (highlight ? colors.primary : colors.surface);
+  const posFg = podium || highlight ? colors.white : colors.textMuted;
   const canOpen = row.isOwn || Boolean(row.slug);
 
   const handlePress = () => {
@@ -38,8 +39,8 @@ export function HomeLeagueRowItem({ row }: Props) {
       style={[
         styles.row,
         {
-          backgroundColor: row.isOwn ? `${colors.primary}14` : colors.surface,
-          borderColor: row.isOwn ? `${colors.primary}33` : 'transparent',
+          backgroundColor: highlight ? `${colors.primary}14` : colors.surface,
+          borderColor: highlight ? `${colors.primary}33` : 'transparent',
         },
       ]}
       onPress={canOpen ? handlePress : undefined}

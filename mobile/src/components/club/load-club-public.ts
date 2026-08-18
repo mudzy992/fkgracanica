@@ -16,9 +16,19 @@ export type ClubStadiumInfo = {
   description?: string;
 };
 
+export type ClubParticipation = {
+  seasonId: string;
+  label: string;
+  yearStart: number;
+  isActive: boolean;
+  isLeague: boolean;
+};
+
 export type ClubPublicData = TeamScreenData & {
   isOwnClub: boolean;
+  clubId: string;
   stadium?: ClubStadiumInfo;
+  participations: ClubParticipation[];
 };
 
 function mapPitch(x: number, y: number) {
@@ -137,8 +147,24 @@ export async function loadClubPublic(slug: string): Promise<ClubPublicData> {
     .filter((p) => p.goals > 0)
     .sort((a, b) => b.goals - a.goals || b.assists - a.assists)
     .slice(0, 3);
+  const participations: ClubParticipation[] = asArray(root.participations)
+    .map((row) => {
+      const item = asRecord(row);
+      const seasonId = asString(item.seasonId);
+      const competitionName = asString(item.competitionName, 'Takmičenje');
+      const seasonName = asString(item.seasonName);
+      return {
+        seasonId,
+        label: seasonName ? `${competitionName} (${seasonName})` : competitionName,
+        yearStart: Number(item.yearStart ?? 0),
+        isActive: Boolean(item.isActive),
+        isLeague: Boolean(item.isLeague),
+      };
+    })
+    .filter((p) => p.seasonId);
   return {
     isOwnClub: Boolean(club.isOwnClub),
+    clubId: asString(club.id),
     clubName: asString(club.name, 'Klub'),
     crestPath: asString(club.crestPath) || asString(club.logoPath) || undefined,
     city,
@@ -153,5 +179,6 @@ export async function loadClubPublic(slug: string): Promise<ClubPublicData> {
     players,
     spotlight,
     pitchSlots,
+    participations,
   };
 }

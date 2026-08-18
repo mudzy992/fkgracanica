@@ -11,6 +11,8 @@ import { clubBs, clubEn } from './club';
 import { teamBs, teamEn } from './team';
 import { roleHomeBs, roleHomeEn } from './role-home';
 import { writerGalleryBs, writerGalleryEn } from './writer-gallery';
+import { newsBs, newsEn } from './news';
+import { heritageBs, heritageEn } from './heritage';
 
 const LANG_KEY = 'app_language';
 
@@ -25,6 +27,8 @@ const bs = {
   ...leagueBs,
   ...teamBs,
   ...clubBs,
+  ...newsBs,
+  ...heritageBs,
 };
 
 const en: Record<keyof typeof bs, string> = {
@@ -38,6 +42,8 @@ const en: Record<keyof typeof bs, string> = {
   ...leagueEn,
   ...teamEn,
   ...clubEn,
+  ...newsEn,
+  ...heritageEn,
 };
 
 void i18n.use(initReactI18next).init({

@@ -1,14 +1,15 @@
 import { useRouter } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FlatList, Pressable, RefreshControl, StyleSheet, Text } from 'react-native';
+import { FlatList, RefreshControl, StyleSheet, View } from 'react-native';
+import { HomeNewsCompactCard, HomeNewsFeaturedCard } from '../../src/components/home/home-news-cards';
 import { ListSkeleton } from '../../src/components/ListSkeleton';
-import { RemoteImage } from '../../src/components/RemoteImage';
+import { NewsCategoryChips, type NewsCategoryChip } from '../../src/components/news/NewsCategoryChips';
 import { ScreenEmpty } from '../../src/components/ScreenEmpty';
 import { api } from '../../src/lib/api';
-import { formatDateBs } from '../../src/lib/format-date';
+import { asArray, asRecord, asString } from '../../src/lib/content-helpers';
 import { useTheme } from '../../src/lib/theme-context';
-import { spacing, typography } from '../../src/lib/theme';
+import { spacing } from '../../src/lib/theme';
 import type { NewsItem } from '../../src/types/api';
 
 export default function NewsListScreen() {
@@ -16,6 +17,8 @@ export default function NewsListScreen() {
   const { t } = useTranslation();
   const router = useRouter();
   const [items, setItems] = useState<NewsItem[]>([]);
+  const [categories, setCategories] = useState<NewsCategoryChip[]>([]);
+  const [categoryId, setCategoryId] = useState<string | undefined>();
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -23,17 +26,30 @@ export default function NewsListScreen() {
   const loadNews = useCallback(async () => {
     try {
       setError(null);
-      const { data } = await api.get<NewsItem[]>('/news/published');
-      setItems(data);
+      const [newsRes, catRes] = await Promise.all([
+        api.get<NewsItem[]>('/news/published', { params: categoryId ? { categoryId } : undefined }),
+        api.get('/news-categories'),
+      ]);
+      setItems(Array.isArray(newsRes.data) ? newsRes.data : []);
+      setCategories(
+        asArray(catRes.data).map((row, index) => {
+          const item = asRecord(row);
+          return { id: asString(item.id, String(index)), name: asString(item.name) };
+        }),
+      );
     } catch {
       setItems([]);
       setError(t('error'));
     }
-  }, [t]);
+  }, [categoryId, t]);
 
   useEffect(() => {
     void loadNews().finally(() => setLoading(false));
   }, [loadNews]);
+
+  const open = (slug: string) => router.push(`/(tabs)/news/${slug}`);
+  const featured = !categoryId ? items[0] : undefined;
+  const rest = featured ? items.slice(1) : items;
 
   if (loading) return <ListSkeleton />;
   if (error) {
@@ -52,9 +68,10 @@ export default function NewsListScreen() {
 
   return (
     <FlatList
-      data={items}
+      data={rest}
       keyExtractor={(item) => item.id}
       contentContainerStyle={styles.list}
+      style={{ backgroundColor: colors.surface }}
       refreshControl={
         <RefreshControl
           refreshing={refreshing}
@@ -64,38 +81,21 @@ export default function NewsListScreen() {
           }}
         />
       }
-      ListEmptyComponent={<ScreenEmpty message={t('noNews')} icon="newspaper-outline" />}
-      renderItem={({ item }) => (
-        <Pressable
-          style={({ pressed }) => [
-            styles.card,
-            { backgroundColor: colors.background, borderColor: colors.border, opacity: pressed ? 0.9 : 1 },
-          ]}
-          onPress={() => router.push(`/(tabs)/news/${item.slug}`)}
-          accessibilityRole="button"
-          accessibilityLabel={item.title}
-        >
-          {item.coverPath ? <RemoteImage path={item.coverPath} style={styles.thumb} /> : null}
-          <Text style={[styles.title, { color: colors.text }]}>{item.title}</Text>
-          {item.excerpt ? (
-            <Text style={[styles.excerpt, { color: colors.textMuted }]} numberOfLines={2}>
-              {item.excerpt}
-            </Text>
-          ) : null}
-          <Text style={[styles.date, { color: colors.textMuted }]}>
-            {formatDateBs(item.publishedAt ?? item.createdAt)}
-          </Text>
-        </Pressable>
-      )}
+      ListHeaderComponent={
+        <View style={styles.header}>
+          <NewsCategoryChips categories={categories} activeId={categoryId} onChange={setCategoryId} />
+          {featured ? <HomeNewsFeaturedCard item={featured} onPress={() => open(featured.slug)} /> : null}
+        </View>
+      }
+      ListEmptyComponent={
+        featured ? null : <ScreenEmpty message={t('noNews')} icon="newspaper-outline" />
+      }
+      renderItem={({ item }) => <HomeNewsCompactCard item={item} onPress={() => open(item.slug)} />}
     />
   );
 }
 
 const styles = StyleSheet.create({
   list: { padding: spacing.md, gap: spacing.sm, flexGrow: 1 },
-  card: { borderRadius: 10, padding: spacing.md, borderWidth: 1, marginBottom: spacing.sm },
-  thumb: { height: 120, marginBottom: spacing.sm },
-  title: { ...typography.heading },
-  excerpt: { ...typography.body, marginTop: spacing.xs },
-  date: { ...typography.caption, marginTop: spacing.sm },
+  header: { gap: spacing.md, marginBottom: spacing.sm },
 });

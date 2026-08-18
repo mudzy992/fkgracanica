@@ -146,7 +146,7 @@ export class RealtimeGateway
       penaltyAwayScore?: number;
     },
   ) {
-    this.emitRoom(matchId, 'match:score', score);
+    this.emitRoom(matchId, 'match:score', { id: matchId, ...score });
   }
 
   emitMatchClock(matchId: string, clock: unknown) {

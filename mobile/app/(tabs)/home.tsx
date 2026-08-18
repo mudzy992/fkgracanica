@@ -4,6 +4,7 @@ import { RefreshControl, ScrollView, StyleSheet, View } from 'react-native';
 import { HomeFadeSection } from '../../src/components/home/HomeFadeSection';
 import { HomeFeaturedPlayers } from '../../src/components/home/HomeFeaturedPlayers';
 import { HomeGalleryPreview } from '../../src/components/home/HomeGalleryPreview';
+import { HomeHeritageCta } from '../../src/components/home/HomeHeritageCta';
 import { HomeHeroBlock } from '../../src/components/home/HomeHeroBlock';
 import { HomeLeagueSnippet } from '../../src/components/home/HomeLeagueSnippet';
 import { HomeMatchWidget } from '../../src/components/home/HomeMatchWidget';
@@ -113,6 +114,16 @@ export default function HomeScreen() {
           <HomeGalleryPreview items={extras.gallery} />
         </HomeSectionShell>
       </HomeFadeSection>
+
+      {extras.timeline.length > 0 ? (
+        <HomeFadeSection delay={260}>
+          <View style={styles.padded}>
+            <HomeSectionShell>
+              <HomeHeritageCta items={extras.timeline} />
+            </HomeSectionShell>
+          </View>
+        </HomeFadeSection>
+      ) : null}
 
       {showMembership ? (
         <HomeFadeSection delay={280}>

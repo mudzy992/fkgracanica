@@ -5,6 +5,7 @@ import { RefreshControl, ScrollView, StyleSheet, View } from 'react-native';
 import { LeagueHero } from '../src/components/league/LeagueHero';
 import { LeagueLeadersSection } from '../src/components/league/LeagueLeadersSection';
 import { LeagueMatchesSection } from '../src/components/league/LeagueMatchesSection';
+import { LeagueRoundChips } from '../src/components/league/LeagueRoundChips';
 import { LeagueSeasonChips } from '../src/components/league/LeagueSeasonChips';
 import { LeagueStandingsList } from '../src/components/league/LeagueStandingsList';
 import {
@@ -20,6 +21,7 @@ const emptyData: LeagueScreenData = {
   seasons: [],
   seasonId: '',
   seasonName: '',
+  rounds: [],
   standings: [],
   matches: [],
   scorers: [],
@@ -33,14 +35,15 @@ export default function LeagueScreen() {
   const { t, i18n } = useTranslation();
   const [data, setData] = useState<LeagueScreenData>(emptyData);
   const [seasonId, setSeasonId] = useState<string | undefined>();
+  const [upToRound, setUpToRound] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const load = useCallback(async (id?: string) => {
+  const load = useCallback(async (id?: string, round?: number | null) => {
     try {
       setError(null);
-      const next = await loadLeagueScreen(id);
+      const next = await loadLeagueScreen(id, round);
       setData(next);
       setSeasonId(next.seasonId || undefined);
     } catch {
@@ -50,18 +53,25 @@ export default function LeagueScreen() {
   }, [t]);
 
   useEffect(() => {
-    void load(seasonId).finally(() => setLoading(false));
+    void load(seasonId, upToRound).finally(() => setLoading(false));
   }, []);
 
   const handleSeasonChange = (id: string) => {
     setSeasonId(id);
-    setLoading(true);
-    void load(id).finally(() => setLoading(false));
+    setUpToRound(null);
+    setRefreshing(true);
+    void load(id, null).finally(() => setRefreshing(false));
+  };
+
+  const handleRoundChange = (round: number | null) => {
+    setUpToRound(round);
+    setRefreshing(true);
+    void load(seasonId, round).finally(() => setRefreshing(false));
   };
 
   const handleRefresh = () => {
     setRefreshing(true);
-    void load(seasonId).finally(() => setRefreshing(false));
+    void load(seasonId, upToRound).finally(() => setRefreshing(false));
   };
 
   if (loading) {
@@ -83,12 +93,15 @@ export default function LeagueScreen() {
           actionLabel={t('retry')}
           onAction={() => {
             setLoading(true);
-            void load(seasonId).finally(() => setLoading(false));
+            void load(seasonId, upToRound).finally(() => setLoading(false));
           }}
         />
       </View>
     );
   }
+
+  const tableTitle =
+    upToRound != null ? t('leagueTableUpToTitle', { round: upToRound }) : t('leagueTableAllTitle');
 
   return (
     <View style={[styles.fill, { backgroundColor: colors.surface }]}>
@@ -108,13 +121,20 @@ export default function LeagueScreen() {
           leaderPoints={data.leaderPoints}
           leaderCrestPath={data.leaderCrestPath}
         />
-        <LeagueSeasonChips
-          seasons={data.seasons}
-          seasonId={data.seasonId}
-          onChange={handleSeasonChange}
-        />
+        <View style={styles.filters}>
+          <LeagueSeasonChips
+            seasons={data.seasons}
+            seasonId={data.seasonId}
+            onChange={handleSeasonChange}
+          />
+          <LeagueRoundChips
+            rounds={data.rounds}
+            upToRound={upToRound}
+            onChange={handleRoundChange}
+          />
+        </View>
         <View style={styles.sections}>
-          <LeagueStandingsList rows={data.standings} />
+          <LeagueStandingsList rows={data.standings} title={tableTitle} />
           <LeagueMatchesSection matches={data.matches} locale={i18n.language} />
           <LeagueLeadersSection scorers={data.scorers} assists={data.assists} />
         </View>
@@ -126,5 +146,6 @@ export default function LeagueScreen() {
 const styles = StyleSheet.create({
   fill: { flex: 1 },
   content: { paddingBottom: spacing.xl, flexGrow: 1 },
+  filters: { gap: spacing.sm, marginTop: spacing.md },
   sections: { gap: spacing.xl, marginTop: spacing.lg },
 });

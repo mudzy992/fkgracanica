@@ -5,4 +5,5 @@
 - [x] 03 Own team `/team` redesign — DONE (web parity + pitch markings; owner OK)
 - [x] 04 Club public `/clubs/[slug]` — DONE (own → `/team`; reuse Team*)
 - [x] 05 Home Tabela wire-up (row → club) — DONE (own `/team`, else `/clubs/[slug]`)
-- [x] HANDOFF updated (2026-07-28 Phase 05; Track 30 complete)
+- [x] Max polish — round `upToRound` filter, live matches, club competition tabs
+- [x] HANDOFF updated (2026-08-17; Track 30 max; next = Track 31 novi chat)

@@ -10,6 +10,11 @@ export const leagueBs = {
   leagueTopScorers: 'Najbolji strijelci',
   leagueTopAssists: 'Asistencije',
   leagueBackHome: 'Početna',
+  leagueLiveMatches: 'Uživo',
+  leagueTableAll: 'Ukupno',
+  leagueTableUpTo: 'Do {{round}}.',
+  leagueTableAllTitle: 'Ukupna tabela',
+  leagueTableUpToTitle: 'Tabela do {{round}}. kola',
   matchHighlights: 'Video sažeci',
   openHighlight: 'Otvori na YouTube',
 } as const;
@@ -26,6 +31,11 @@ export const leagueEn: Record<keyof typeof leagueBs, string> = {
   leagueTopScorers: 'Top scorers',
   leagueTopAssists: 'Assists',
   leagueBackHome: 'Home',
+  leagueLiveMatches: 'Live',
+  leagueTableAll: 'Overall',
+  leagueTableUpTo: 'Up to {{round}}',
+  leagueTableAllTitle: 'Overall table',
+  leagueTableUpToTitle: 'Table up to round {{round}}',
   matchHighlights: 'Video highlights',
   openHighlight: 'Open on YouTube',
 };

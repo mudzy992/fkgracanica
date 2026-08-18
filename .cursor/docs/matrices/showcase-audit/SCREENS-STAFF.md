@@ -1,6 +1,6 @@
 # Mobile staff screens
 
-Prosjek **24 ekrana: 70%**. Hub/thin CRUD, ne cinematic admin.  
+Prosjek **24 ekrana: ~71%** (P0 2026-08-17). Hub/thin CRUD, ne cinematic admin.  
 Public: [SCREENS.md](./SCREENS.md).
 
 | Ekran | Tip | F | V | H | **%** | Zašto ne 100 | Sljedeći korak |
@@ -11,7 +11,7 @@ Public: [SCREENS.md](./SCREENS.md).
 | settings | CRUD | 34 | 30 | 15 | **79** | Nema error na load | Empty/error |
 | players | CRUD | 34 | 30 | 15 | **79** | Nema photo upload; 192 lin | `uploadMedia` |
 | matches | CRUD | 35 | 28 | 16 | **79** | ISO date; nema lineup | Date picker |
-| staff/index | Hub | 32 | 30 | 12 | **74** | Komentator/Moderator/Admin hardcoded BS | `t()` ključevi |
+| staff/index | Hub | 34 | 30 | 16 | **80** | Hub kompletan | — |
 | writer | CRUD | 33 | 26 | 15 | **74** | Nema list loading; nema RTE | Skeleton |
 | competitions | CRUD | 35 | 24 | 15 | **74** | 199 lin; long-press edit | Split seasons |
 | users | CRUD | 30 | 28 | 13 | **71** | Nema try/catch, search, delete | Alert + search |
@@ -23,13 +23,13 @@ Public: [SCREENS.md](./SCREENS.md).
 | clubs | Thin | 30 | 20 | 17 | **67** | Nema ClubHub tabove | Deep-link hub |
 | sponsors | Thin | 30 | 20 | 17 | **67** | Nema logo preview | Image |
 | club-timeline | Thin | 30 | 20 | 17 | **67** | Nema vizuelnu liniju | Date layout |
-| moderation | CRUD | 28 | 24 | 13 | **65** | **reject=archive** isti endpoint | Odvojeni status |
+| moderation | CRUD | 32 | 26 | 17 | **75** | Reject=`DRAFT` | Live reject |
 | membership | CRUD | 28 | 24 | 13 | **65** | Nema try/catch / ScreenEmpty | Alert + empty |
 | gallery-manage | CRUD | 28 | 20 | 14 | **62** | Nema edit/delete photo | Album edit |
 | orders | CRUD | 25 | 20 | 17 | **62** | Read-only, nema refund | Status akcije |
 | dashboard | CRUD | 27 | 20 | 13 | **60** | Nema skeleton/error/chart | KPI kartice |
-| validate | CRUD | 27 | 24 | 7 | **58** | Nula `t()`; JSON raw; nema try | i18n + parsed card |
+| validate | CRUD | 32 | 26 | 14 | **72** | Parsed card; scan može spamati | Scan lock UI |
 
-**Dokaz:** `staff/index.tsx` L41–59 hardcoded; `moderation.tsx` L82 i L85 oba `ARCHIVED`; `validate.tsx` bez `useTranslation`.
+**Dokaz (2026-08-17):** reject=`DRAFT`; validate parsed card; staff `noStaffAccess`.
 
-Predloženo `mobile-staff`: **70** (katalog 82).
+Predloženo `mobile-staff`: **71** (katalog 82).

@@ -23,6 +23,7 @@ export type NewsItem = {
   publishedAt: string | null;
   createdAt: string;
   category?: { id: string; name: string; slug: string } | null;
+  videoUrl?: string | null;
 };
 
 export type Club = {

@@ -28,3 +28,10 @@ export function stripHtml(html: string): string {
     });
   return text.replace(/\n{3,}/g, '\n\n').trim();
 }
+
+export function htmlToParagraphs(html: string): string[] {
+  return stripHtml(html)
+    .split(/\n+/)
+    .map((line) => line.trim())
+    .filter(Boolean);
+}

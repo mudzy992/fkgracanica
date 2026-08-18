@@ -9,7 +9,7 @@ import { asArray, asRecord, asString } from '../src/lib/content-helpers';
 import { useTheme } from '../src/lib/theme-context';
 import { spacing, typography } from '../src/lib/theme';
 
-type PageItem = { id: string; slug: string; title: string };
+type PageItem = { id: string; slug: string; title: string; excerpt?: string };
 
 export default function PagesScreen() {
   const { colors } = useTheme();
@@ -30,6 +30,7 @@ export default function PagesScreen() {
             id: asString(item.id, String(index)),
             slug: asString(item.slug),
             title: asString(item.title, t('cmsPages')),
+            excerpt: asString(item.seoDesc) || asString(item.excerpt) || undefined,
           };
         }),
       );
@@ -76,7 +77,13 @@ export default function PagesScreen() {
           accessibilityLabel={item.title}
         >
           <Text style={[styles.cardTitle, { color: colors.text }]}>{item.title}</Text>
-          <Text style={[styles.slug, { color: colors.textMuted }]}>/{item.slug}</Text>
+          {item.excerpt ? (
+            <Text style={[styles.slug, { color: colors.textMuted }]} numberOfLines={2}>
+              {item.excerpt}
+            </Text>
+          ) : (
+            <Text style={[styles.slug, { color: colors.textMuted }]}>/{item.slug}</Text>
+          )}
         </Pressable>
       )}
     />

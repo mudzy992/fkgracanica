@@ -2,6 +2,7 @@ import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ClubCompetitionSection } from '../../src/components/club/ClubCompetitionSection';
 import { ClubInfoSection } from '../../src/components/club/ClubInfoSection';
 import { ClubPublicHero } from '../../src/components/club/ClubPublicHero';
 import { loadClubPublic, type ClubPublicData } from '../../src/components/club/load-club-public';
@@ -122,6 +123,9 @@ export default function ClubPublicScreen() {
           ) : (
             <Text style={[styles.empty, { color: colors.textMuted }]}>{t('clubEmptyRoster')}</Text>
           )}
+          {data.clubId && data.participations.length > 0 ? (
+            <ClubCompetitionSection clubId={data.clubId} participations={data.participations} />
+          ) : null}
           <TeamSeasonSummary
             seasonName={data.seasonName}
             standing={data.standing}

@@ -1,18 +1,12 @@
 import { useRouter } from 'expo-router';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-  Pressable,
-  RefreshControl,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import { RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { ListSkeleton } from '../../../src/components/ListSkeleton';
+import { LiveMatchRow } from '../../../src/components/live/LiveMatchRow';
 import { ScreenEmpty } from '../../../src/components/ScreenEmpty';
+import { useLiveListSocket } from '../../../src/hooks/use-live-list-socket';
 import { api } from '../../../src/lib/api';
-import { formatDateTimeBs } from '../../../src/lib/format-date';
 import { useTheme } from '../../../src/lib/theme-context';
 import { spacing, typography } from '../../../src/lib/theme';
 import type { Match } from '../../../src/types/api';
@@ -32,24 +26,7 @@ function Section({
     <View style={styles.section}>
       <Text style={[styles.sectionTitle, { color: colors.text }]}>{title}</Text>
       {matches.map((m) => (
-        <Pressable
-          key={m.id}
-          style={({ pressed }) => [
-            styles.card,
-            { backgroundColor: colors.background, borderColor: colors.border, opacity: pressed ? 0.9 : 1 },
-          ]}
-          onPress={() => onPress(m.id)}
-          accessibilityRole="button"
-        >
-          <Text style={[styles.teams, { color: colors.text }]}>
-            {m.homeClub.name} vs {m.awayClub.name}
-          </Text>
-          <Text style={[styles.meta, { color: colors.textMuted }]}>
-            {m.status === 'LIVE' || m.status === 'HALFTIME'
-              ? `${m.homeScore} : ${m.awayScore} · ${m.minute}'`
-              : formatDateTimeBs(m.scheduledAt)}
-          </Text>
-        </Pressable>
+        <LiveMatchRow key={m.id} match={m} onPress={onPress} />
       ))}
     </View>
   );
@@ -68,16 +45,22 @@ export default function LiveListScreen() {
     try {
       setError(null);
       const { data } = await api.get<Match[]>('/matches');
-      setMatches(data);
+      setMatches(Array.isArray(data) ? data : []);
     } catch {
       setMatches([]);
       setError(t('error'));
     }
   }, [t]);
 
+  const patchMatch = useCallback((id: string, partial: Partial<Match>) => {
+    setMatches((prev) => prev.map((match) => (match.id === id ? { ...match, ...partial } : match)));
+  }, []);
+
   useEffect(() => {
     void load().finally(() => setLoading(false));
   }, [load]);
+
+  useLiveListSocket(matches, patchMatch, load);
 
   const { live, upcoming, recent } = useMemo(() => {
     const now = Date.now();
@@ -140,7 +123,4 @@ const styles = StyleSheet.create({
   contentEmpty: { flexGrow: 1 },
   section: { marginBottom: spacing.lg },
   sectionTitle: { ...typography.heading, marginBottom: spacing.sm },
-  card: { borderRadius: 10, padding: spacing.md, borderWidth: 1, marginBottom: spacing.sm },
-  teams: { ...typography.heading },
-  meta: { ...typography.caption, marginTop: spacing.xs },
 });

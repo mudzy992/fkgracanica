@@ -26,6 +26,9 @@ export const homeBs = {
   homeMembershipCta: 'Postani član',
   homePlayersSubtitle: 'Top 5 strijelaca lige',
   homeOurTeam: 'Naš tim',
+  homeHeritageKicker: 'Historija kluba',
+  homeHeritageTitle: 'Priča se nastavlja',
+  homeHeritageCta: 'Otvori timeline',
 } as const;
 
 export const homeEn: Record<keyof typeof homeBs, string> = {
@@ -56,4 +59,7 @@ export const homeEn: Record<keyof typeof homeBs, string> = {
   homeMembershipCta: 'Become a member',
   homePlayersSubtitle: 'Top 5 league scorers',
   homeOurTeam: 'Our team',
+  homeHeritageKicker: 'Club history',
+  homeHeritageTitle: 'The story continues',
+  homeHeritageCta: 'Open the timeline',
 };

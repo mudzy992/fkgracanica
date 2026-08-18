@@ -2,26 +2,26 @@
 
 Redoslijed za kasnije trackove. Ne radi PayPal/Monri/PWA/Excel/newsletter blast u ovoj traci.
 
-## P0 — bug / higijena (brzo)
+## P0 — bug / higijena (brzo) — DONE 2026-08-17
 
 | # | Stavka | Sad | Meta | Zašto |
 |---|--------|-----|------|-------|
-| 1 | `moderation.tsx` reject=archive | 65 | ~75 | Oba dugmeta šalju `ARCHIVED` |
-| 2 | `gallery/[slug].tsx` i18n+retry | 41 | ~55 | Hardcoded BS, nema error |
-| 3 | `staff/index.tsx` t() | 74 | ~80 | 3 labele BS |
-| 4 | `validate.tsx` i18n+try | 58 | ~72 | Nula prijevoda, raw JSON |
+| 1 | `moderation.tsx` reject≠archive | ~75 | ~75 | Reject=`DRAFT`, archive=`ARCHIVED` |
+| 2 | `gallery/[slug].tsx` native pager | ~82 | ~82 | Original swipe + download/share |
+| 3 | `staff/index.tsx` t() | ~80 | ~80 | `noStaffAccess` |
+| 4 | `validate.tsx` i18n+try | ~72 | ~72 | Parsed card + try/catch |
 
-## P1 — public polish (queue 29)
+## P1 — public polish (queue 29) — 5–11 DONE 2026-08-17
 
 | # | Ekran | Sad | Meta | Korak |
 |---|-------|-----|------|-------|
-| 5 | heritage | 42 | 85 | Tabovi + slike (5 web stranica) |
-| 6 | news + detail | 61 | 85 | Featured, kategorije, HTML |
-| 7 | gallery lista | 58 | 80 | Bento 2-col |
-| 8 | search | 61 | 80 | Debounce + grupisanje |
-| 9 | pages/[slug] | 50 | 75 | Hero + HTML widget |
-| 10 | live/index | 68 | 82 | Crest + live update |
-| 11 | membership/tickets UI | 76–77 | 88 | Kartica/ulaznica vizual |
+| 5 | heritage | ~85 | 85 | Per-tab UX (tiers, featured, chapters) |
+| 6 | news + detail | ~82–83 | 85 | Share `/vijesti/{slug}` + photo pager |
+| 7 | gallery lista | ~84 | 84 | Bento + stack header |
+| 8 | search | ~78 | 80 | Debounce + SectionList |
+| 9 | pages + [slug] | ~68–70 | 75 | Excerpt; hero + HTML |
+| 10 | live/index | ~83 | 83 | Socket.IO `match:join` (nema poll) |
+| 11 | membership/tickets UI | ~82–85 | 88 | Kartica / tear-line |
 
 ## P2 — staff ops
 
@@ -55,4 +55,5 @@ Redoslijed za kasnije trackove. Ne radi PayPal/Monri/PWA/Excel/newsletter blast 
 
 ## Upisano u katalog
 
-`catalog-modules.ts` = kolona pred. (2026-08-15). Sljedeća sesija: backend → frontend → mobile. After_launch van opsega.
+`catalog-modules.ts` = kolona pred. (2026-08-15).  
+**2026-08-17:** web 100% (32); after_launch 1–8 (33). Mobile Track 34 P0+P1 public. Leftover: login/buy/contact/browse; P2 staff.

@@ -2,13 +2,18 @@ import { api } from '../../lib/api';
 import { asArray, asRecord, asString } from '../../lib/content-helpers';
 import { leagueEditionId, mapCalendarSeasons, pickDefaultLeagueSeasonId } from '../../lib/league-season';
 import type { HomeLeagueRow } from '../home/load-home-extras';
+import { mapStandingsRows } from './map-standings';
 
 export type LeagueSeasonOption = { id: string; name: string };
+
+export type LeagueRoundOption = { id: string; number: number; name: string };
 
 export type LeagueMatchItem = {
   id: string;
   homeName: string;
   awayName: string;
+  homeId?: string;
+  awayId?: string;
   meta: string;
   status: string;
   scheduledAt: string;
@@ -24,6 +29,7 @@ export type LeagueScreenData = {
   seasons: LeagueSeasonOption[];
   seasonId: string;
   seasonName: string;
+  rounds: LeagueRoundOption[];
   standings: HomeLeagueRow[];
   matches: LeagueMatchItem[];
   scorers: LeagueLeaderItem[];
@@ -35,21 +41,26 @@ export type LeagueScreenData = {
   leaderCrestPath?: string;
 };
 
-function mapStandings(rows: unknown[], ownId: string): HomeLeagueRow[] {
-  return asArray(rows).map((row, index) => {
-    const item = asRecord(row);
-    const id = asString(item.clubId, String(index));
+export function mapLeagueMatches(rows: unknown[]): LeagueMatchItem[] {
+  return asArray(rows).map((match, index) => {
+    const item = asRecord(match);
+    const home = asRecord(item.homeClub);
+    const away = asRecord(item.awayClub);
+    const status = asString(item.status);
+    const live = status === 'LIVE' || status === 'HALFTIME';
     return {
-      id,
-      clubName: asString(item.clubName, `Tim ${index + 1}`),
-      slug: asString(item.clubSlug) || undefined,
-      points: Number(item.points ?? 0),
-      position: index + 1,
-      crestPath: asString(item.crestPath) || undefined,
-      played: Number(item.played ?? 0),
-      goalDifference: Number(item.goalDifference ?? 0),
-      form: asString(item.form),
-      isOwn: Boolean(ownId && id === ownId),
+      id: asString(item.id, String(index)),
+      homeName: asString(home.name, 'Domaći'),
+      awayName: asString(away.name, 'Gosti'),
+      homeId: asString(home.id) || undefined,
+      awayId: asString(away.id) || undefined,
+      status,
+      scheduledAt: asString(item.scheduledAt),
+      meta: live
+        ? `${asString(item.homeScore, '0')} : ${asString(item.awayScore, '0')} · ${asString(item.minute, '0')}'`
+        : status === 'FINISHED'
+          ? `${asString(item.homeScore, '0')} : ${asString(item.awayScore, '0')}`
+          : asString(item.scheduledAt),
     };
   });
 }
@@ -68,26 +79,19 @@ function mapLeaders(rows: unknown[]): LeagueLeaderItem[] {
     .filter((r) => r.playerId);
 }
 
-function mapMatches(rows: unknown[]): LeagueMatchItem[] {
-  return asArray(rows).map((match, index) => {
-    const item = asRecord(match);
-    const home = asRecord(item.homeClub);
-    const away = asRecord(item.awayClub);
-    const status = asString(item.status);
-    const live = status === 'LIVE' || status === 'HALFTIME';
-    return {
-      id: asString(item.id, String(index)),
-      homeName: asString(home.name, 'Domaći'),
-      awayName: asString(away.name, 'Gosti'),
-      status,
-      scheduledAt: asString(item.scheduledAt),
-      meta: live
-        ? `${asString(item.homeScore, '0')} : ${asString(item.awayScore, '0')} · ${asString(item.minute, '0')}'`
-        : status === 'FINISHED'
-          ? `${asString(item.homeScore, '0')} : ${asString(item.awayScore, '0')}`
-          : asString(item.scheduledAt),
-    };
-  });
+function mapRounds(rows: unknown[]): LeagueRoundOption[] {
+  return asArray(rows)
+    .map((row) => {
+      const item = asRecord(row);
+      const number = Number(item.number ?? 0);
+      return {
+        id: asString(item.id),
+        number,
+        name: asString(item.name) || String(number),
+      };
+    })
+    .filter((r) => r.id && r.number > 0)
+    .sort((a, b) => a.number - b.number);
 }
 
 function roundsPlayed(matches: unknown[]): number {
@@ -102,7 +106,23 @@ function roundsPlayed(matches: unknown[]): number {
   return max;
 }
 
-export async function loadLeagueScreen(seasonId?: string): Promise<LeagueScreenData> {
+const empty = (seasons: LeagueSeasonOption[], seasonName: string): LeagueScreenData => ({
+  seasons,
+  seasonId: '',
+  seasonName,
+  rounds: [],
+  standings: [],
+  matches: [],
+  scorers: [],
+  assists: [],
+  teamCount: 0,
+  roundsPlayed: 0,
+});
+
+export async function loadLeagueScreen(
+  seasonId?: string,
+  upToRound?: number | null,
+): Promise<LeagueScreenData> {
   const [seasonsRes, ownRes] = await Promise.all([
     api.get('/seasons'),
     api.get('/clubs/own').catch(() => ({ data: null })),
@@ -114,34 +134,24 @@ export async function loadLeagueScreen(seasonId?: string): Promise<LeagueScreenD
   const seasonName = seasons.find((s) => s.id === activeId)?.name ?? '';
   const ownId = asString(asRecord(ownRes.data).id);
   const editionId = leagueEditionId(calendar);
-  if (!editionId) {
-    return {
-      seasons,
-      seasonId: '',
-      seasonName,
-      standings: [],
-      matches: [],
-      scorers: [],
-      assists: [],
-      teamCount: 0,
-      roundsPlayed: 0,
-    };
-  }
-  const [standingsRes, matchesRes, scorersRes, assistsRes] = await Promise.all([
-    api.get('/statistics/standings', { params: { seasonId: editionId } }),
+  if (!editionId) return empty(seasons, seasonName);
+  const params = { seasonId: editionId, ...(upToRound != null ? { upToRound } : {}) };
+  const [standingsRes, matchesRes, scorersRes, assistsRes, roundsRes] = await Promise.all([
+    api.get('/statistics/standings', { params }),
     api.get('/matches', { params: { seasonId: editionId } }),
     api.get('/statistics/top-scorers', { params: { seasonId: editionId } }),
     api.get('/statistics/top-assists', { params: { seasonId: editionId } }),
+    api.get('/rounds', { params: { seasonId: editionId } }).catch(() => ({ data: [] })),
   ]);
-  const standings = mapStandings(standingsRes.data, ownId);
-  const matches = mapMatches(matchesRes.data);
+  const standings = mapStandingsRows(standingsRes.data, { ownId });
   const leader = standings[0];
   return {
     seasons,
     seasonId: activeId,
     seasonName,
+    rounds: mapRounds(roundsRes.data),
     standings,
-    matches,
+    matches: mapLeagueMatches(matchesRes.data),
     scorers: mapLeaders(scorersRes.data),
     assists: mapLeaders(assistsRes.data),
     teamCount: standings.length,

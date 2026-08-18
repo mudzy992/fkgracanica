@@ -2,6 +2,8 @@ import { useLocalSearchParams } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, Text, View } from 'react-native';
+import { NewsHtmlBody } from '../../src/components/news/NewsHtmlBody';
+import { RemoteImage } from '../../src/components/RemoteImage';
 import { ScreenEmpty } from '../../src/components/ScreenEmpty';
 import { ScreenLoading } from '../../src/components/ScreenLoading';
 import { Screen } from '../../src/components/primitives/Screen';
@@ -17,6 +19,7 @@ type SectionCard = {
   title: string;
   body: string;
   known: boolean;
+  imagePath?: string;
 };
 
 const KNOWN = new Set(['hero', 'text', 'html', 'generic']);
@@ -38,13 +41,16 @@ function parseSection(raw: unknown, index: number): SectionCard {
   const known = KNOWN.has(type);
   const title = asString(config.title) || asString(item.title);
   const body = pickBody(config, item);
+  const imagePath =
+    asString(config.backgroundImage) || asString(config.image) || asString(config.coverPath) || undefined;
   if (known) {
     return {
       id: asString(item.id, String(index)),
       type,
       title,
-      body: stripHtml(body),
+      body: stripHtml(body || asString(config.subtitle)),
       known: true,
+      imagePath,
     };
   }
   const extras = [asString(config.text), asString(item.text), asString(config.description)]
@@ -74,13 +80,13 @@ export default function CmsPageScreen() {
       setError(false);
       const { data } = await api.get(`/cms/pages/${slug}`);
       const page = asRecord(data);
-      setTitle(asString(page.title, 'CMS'));
+      setTitle(asString(page.title, t('cmsPages')));
       setSections(asArray(page.sections).map(parseSection));
     } catch {
       setSections([]);
       setError(true);
     }
-  }, [slug]);
+  }, [slug, t]);
 
   useEffect(() => {
     void load().finally(() => setLoading(false));
@@ -109,6 +115,9 @@ export default function CmsPageScreen() {
           key={section.id}
           style={[styles.card, { backgroundColor: colors.background, borderColor: colors.border }]}
         >
+          {section.type === 'hero' && section.imagePath ? (
+            <RemoteImage path={section.imagePath} variant="medium" style={styles.hero} />
+          ) : null}
           <Text style={[styles.section, { color: colors.text }]}>
             {section.known ? section.title || section.type : section.type}
           </Text>
@@ -116,7 +125,11 @@ export default function CmsPageScreen() {
             <Text style={[styles.caption, { color: colors.textMuted }]}>{section.title}</Text>
           ) : null}
           {section.body ? (
-            <Text style={[styles.body, { color: colors.text }]}>{section.body}</Text>
+            section.type === 'html' || section.type === 'text' ? (
+              <NewsHtmlBody html={section.body} />
+            ) : (
+              <Text style={[styles.body, { color: colors.text }]}>{section.body}</Text>
+            )
           ) : null}
         </View>
       ))}
@@ -135,4 +148,5 @@ const styles = StyleSheet.create({
   section: { ...typography.heading },
   caption: { ...typography.caption, marginTop: spacing.xs },
   body: { ...typography.body, marginTop: spacing.sm, lineHeight: 22 },
+  hero: { height: 180, marginBottom: spacing.sm },
 });

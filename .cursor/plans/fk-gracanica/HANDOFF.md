@@ -1,6 +1,6 @@
 # HANDOFF — FK Gračanica
 
-> Ažurirano: **2026-08-16**
+> Ažurirano: **2026-08-17**
 
 ---
 
@@ -8,17 +8,18 @@
 
 | Polje | Vrijednost |
 |-------|------------|
-| **Datum** | 2026-08-16 |
+| **Datum** | 2026-08-17 |
 | **Branch** | `main` |
-| **Aktivni track** | [32_web-to-100](./32_web-to-100/HANDOFF.md) — web/admin done; **mobile kasnije** |
-| **Prethodno** | Showcase cinematic + audit katalog |
+| **Aktivni track** | [34_mobile-to-100](./34_mobile-to-100/HANDOFF.md) — leftover public + P2 |
+| **Prethodno** | Track 30 League/Clubs max; 32 web 100%; 33 after_launch 1–8 |
 | **Matrica** | `.cursor/docs/matrices/showcase-audit/` |
+| **Canvas** | Cursor canvas `mobile-completeness` (lokalno, nije u gitu) |
 
 ---
 
 ## 2. Status u jednoj rečenici
 
-Web/admin 100% (19 ready + 3 web_only). i18n-en ~60. Mobile polish zadnji.
+Web/admin 100%. Mobile P0+P1 + gallery pager / heritage UX / live socket. Sljedeći: leftover public + P2 staff.
 
 ---
 
@@ -38,10 +39,10 @@ Flag `feature.showcaseMode` default OFF.
 
 ## 4. Sljedeći koraci
 
-1. **Backend 100%:** analytics H2H/agregacija, email HTML/fail log, SEO share crawler, newsletter lista.
-2. **Frontend 100%:** i18n-en, analytics UI, OG, media-tree.
-3. **Mobile polish** iz GAPS P0–P2 — tek nakon 1–2.
-4. After_launch: [33](./33_after-launch-to-100/HANDOFF.md) — faza 2 PayPal done. Sljedeće: faza 3 Monri.
+1. **Track 34 leftover** — login, tickets-buy, contact, tickets-browse.
+2. **P2 staff** — dashboard, gallery-manage, orders, list images.
+3. **P04** — Stripe na `tickets-buy`; Play Store (33 faza 9).
+4. Canvas % ručno.
 
 ---
 
@@ -61,3 +62,4 @@ Flag `feature.showcaseMode` default OFF.
 - Logika → MATRIX + CHANGELOG
 - `npm ci` u Dockeru = `frontend/package-lock.json`
 - Ne dirati mobile showcase intercept u `_layout.tsx`
+- Bez commita osim na zahtjev

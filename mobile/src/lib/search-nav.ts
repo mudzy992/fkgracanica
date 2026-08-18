@@ -50,6 +50,13 @@ export function flattenSearchResponse(data: unknown): SearchNavItem[] {
   return out;
 }
 
+export function groupSearchItems(items: SearchNavItem[]): { type: string; data: SearchNavItem[] }[] {
+  const order = ['news', 'players', 'clubs', 'matches', 'galleries', 'trophies'];
+  return order
+    .map((type) => ({ type, data: items.filter((item) => item.type === type) }))
+    .filter((group) => group.data.length > 0);
+}
+
 export function searchItemHref(item: SearchNavItem): string | null {
   switch (item.type) {
     case 'news':
@@ -61,7 +68,7 @@ export function searchItemHref(item: SearchNavItem): string | null {
     case 'matches':
       return `/(tabs)/live/${item.id}`;
     case 'clubs':
-      return '/team';
+      return item.slug ? `/clubs/${item.slug}` : '/team';
     case 'trophies':
       return '/heritage';
     default:

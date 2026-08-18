@@ -9,6 +9,9 @@ export const clubBs = {
   clubStadiumCity: 'Grad',
   clubStadiumAddress: 'Adresa',
   clubStadiumCapacity: 'Kapacitet',
+  clubCompetitions: 'Takmičenja',
+  clubRounds: 'Kola',
+  clubStandingsTab: 'Tabela',
 } as const;
 
 export const clubEn: Record<keyof typeof clubBs, string> = {
@@ -22,4 +25,7 @@ export const clubEn: Record<keyof typeof clubBs, string> = {
   clubStadiumCity: 'City',
   clubStadiumAddress: 'Address',
   clubStadiumCapacity: 'Capacity',
+  clubCompetitions: 'Competitions',
+  clubRounds: 'Rounds',
+  clubStandingsTab: 'Table',
 };

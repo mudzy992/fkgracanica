@@ -1,36 +1,17 @@
 # HANDOFF — Parity to 100%
 
-> Datum: **2026-08-15**  
-> Status: Showcase katalog + cinematic **DONE**. Sljedeće: **backend 100%**.
+> Datum: **2026-08-17**  
+> Status: BE/FE cilj preuzet u Track 32 (**web done**). Mobile polish = **Track 34**.
 
-## Starter (nova sesija)
+## Mobile (nastavak)
 
-Nastavi FK Gračanica s `main`. Pročitaj:
+Koristi Track 34, ne ovaj folder:
 
-- `.cursor/plans/fk-gracanica/HANDOFF.md`
-- `.cursor/plans/fk-gracanica/31_parity-to-100/00_overview.md`
-- `.cursor/plans/fk-gracanica/31_parity-to-100/01_phase-backend.md`
-- `.cursor/docs/matrices/showcase-audit/GAPS.md`
+- `.cursor/plans/fk-gracanica/34_mobile-to-100/HANDOFF.md`
+- Canvas: mobile-completeness
 
-**Redoslijed:** backend → frontend → mobile. Prioritet BE+FE na 100% (bez after_launch).
+Faza 3 ovdje (`03_phase-mobile.md`) je apsorbovana u 34 P0–P2.
 
-Ne: PayPal, Monri, PWA, Excel, newsletter blast.  
-Ne diraj showcase intercept u `mobile/app/_layout.tsx` i `(tabs)/_layout.tsx`.
+## Šta je ostalo ovdje
 
-Počni fazu 1: `backend/src/analytics/` (H2H + agregacija), zatim email, SEO share.
-
-## Šta je gotovo ove sesije
-
-- Dual-scroll fix, cinematic `/platforma`
-- Audit checklist (23 public + 24 staff)
-- Katalog % iz audita (`mobile-polish` 69, `mobile-staff` 70, `analytics` 42, `seo` 74, `pwa` 22)
-
-## Preview
-
-https://fkgracanica.ba101.top/platforma  
-Flag `feature.showcaseMode` default OFF.
-
-## Reference
-
-- Audit: `.cursor/docs/matrices/showcase-audit/`
-- Katalog: `backend/src/showcase/catalog-modules.ts`
+Checklist BE/FE stavke su historija (32 zatvorio web). Ne otvarati 31 faza 1 u novom chatu.

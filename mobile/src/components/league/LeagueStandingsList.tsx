@@ -5,16 +5,16 @@ import { spacing, typography } from '../../lib/theme';
 import type { HomeLeagueRow } from '../home/load-home-extras';
 import { HomeLeagueRowItem } from '../home/HomeLeagueRowItem';
 
-type Props = { rows: HomeLeagueRow[] };
+type Props = { rows: HomeLeagueRow[]; title?: string };
 
-export function LeagueStandingsList({ rows }: Props) {
+export function LeagueStandingsList({ rows, title }: Props) {
   const { t } = useTranslation();
   const { colors } = useTheme();
 
   return (
     <View style={styles.wrap}>
       <Text style={[styles.title, { color: colors.text }]} accessibilityRole="header">
-        {t('standings')}
+        {title ?? t('standings')}
       </Text>
       <View style={[styles.table, { backgroundColor: colors.background, borderColor: colors.border }]}>
         <View style={[styles.accent, { backgroundColor: colors.primary }]} />

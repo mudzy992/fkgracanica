@@ -1,21 +1,14 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-  RefreshControl,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import { RefreshControl, ScrollView, StyleSheet } from 'react-native';
 import { api } from '../../src/lib/api';
-import { QrCodeView } from '../../src/components/QrCodeView';
 import { MemberHomeStrip } from '../../src/components/membership/MemberHomeStrip';
+import { MembershipCardVisual } from '../../src/components/membership/MembershipCardVisual';
 import { RequireAuth } from '../../src/components/RequireAuth';
 import { ScreenEmpty } from '../../src/components/ScreenEmpty';
 import { ScreenLoading } from '../../src/components/ScreenLoading';
-import { formatDateBs } from '../../src/lib/format-date';
 import { useTheme } from '../../src/lib/theme-context';
-import { spacing, typography } from '../../src/lib/theme';
+import { spacing } from '../../src/lib/theme';
 import type { Membership } from '../../src/types/api';
 
 function canRegister(status: string | undefined): boolean {
@@ -90,21 +83,8 @@ function MembershipBody() {
           />
         }
       >
-        <Text style={[styles.title, { color: colors.primary }]}>{t('membershipCard')}</Text>
         <MemberHomeStrip memberships={memberships} />
-        <View style={[styles.card, { backgroundColor: colors.background, borderColor: colors.border }]}>
-          <Text style={[styles.label, { color: colors.textMuted }]}>{t('cardNumber')}</Text>
-          <Text style={[styles.value, { color: colors.text }]}>{active.card.cardNumber}</Text>
-          <Text style={[styles.label, { color: colors.textMuted }]}>{t('status')}</Text>
-          <Text style={[styles.value, { color: colors.text }]}>{active.status}</Text>
-          <Text style={[styles.label, { color: colors.textMuted }]}>{t('validUntil')}</Text>
-          <Text style={[styles.value, { color: colors.text }]}>{formatDateBs(active.endDate)}</Text>
-        </View>
-        <View style={styles.qrBox}>
-          <Text style={[styles.label, { color: colors.textMuted }]}>{t('qrCode')}</Text>
-          <QrCodeView value={active.card.qrCode} size={220} />
-          <Text style={[styles.qrHint, { color: colors.textMuted }]}>{t('qrHint')}</Text>
-        </View>
+        <MembershipCardVisual membership={active} />
       </ScrollView>
     );
   }
@@ -157,15 +137,4 @@ export default function MembershipScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1 },
   content: { padding: spacing.lg },
-  title: { ...typography.title, marginBottom: spacing.lg },
-  card: {
-    borderRadius: 12,
-    padding: spacing.lg,
-    borderWidth: 1,
-    marginBottom: spacing.lg,
-  },
-  label: { ...typography.caption, marginTop: spacing.sm },
-  value: { ...typography.heading },
-  qrBox: { alignItems: 'center' },
-  qrHint: { ...typography.caption, marginTop: spacing.md },
 });

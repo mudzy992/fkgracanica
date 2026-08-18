@@ -23,6 +23,7 @@ export const writerGalleryBs = {
   galleryPhotoAdded: 'Fotografija je dodana.',
   galleryEmpty: 'Nema albuma.',
   galleryPhotos: 'fotografija',
+  galleryNoPhotos: 'Galerija nema fotografija.',
 } as const;
 
 export const writerGalleryEn: Record<keyof typeof writerGalleryBs, string> = {
@@ -50,4 +51,5 @@ export const writerGalleryEn: Record<keyof typeof writerGalleryBs, string> = {
   galleryPhotoAdded: 'Photo added.',
   galleryEmpty: 'No albums.',
   galleryPhotos: 'photos',
+  galleryNoPhotos: 'This album has no photos.',
 };

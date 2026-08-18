@@ -15,9 +15,13 @@ function pickNext(matches: LeagueMatchItem[]): LeagueMatchItem | undefined {
   return upcoming[0];
 }
 
+function pickLive(matches: LeagueMatchItem[]): LeagueMatchItem[] {
+  return matches.filter((m) => m.status === 'LIVE' || m.status === 'HALFTIME');
+}
+
 function pickRecent(matches: LeagueMatchItem[]): LeagueMatchItem[] {
   return matches
-    .filter((m) => m.status === 'FINISHED' || m.status === 'LIVE' || m.status === 'HALFTIME')
+    .filter((m) => m.status === 'FINISHED')
     .sort((a, b) => b.scheduledAt.localeCompare(a.scheduledAt))
     .slice(0, 8);
 }
@@ -27,12 +31,28 @@ export function LeagueMatchesSection({ matches, locale }: Props) {
   const { colors } = useTheme();
   const router = useRouter();
   const next = pickNext(matches);
+  const live = pickLive(matches);
   const recent = pickRecent(matches);
 
-  if (!next && recent.length === 0) return null;
+  if (!next && live.length === 0 && recent.length === 0) return null;
 
   return (
     <View style={styles.wrap}>
+      {live.length > 0 ? (
+        <View style={styles.block}>
+          <Text style={[styles.title, { color: colors.text }]}>{t('leagueLiveMatches')}</Text>
+          <View style={styles.list}>
+            {live.map((match) => (
+              <MatchRow
+                key={match.id}
+                match={match}
+                locale={locale}
+                onPress={() => router.push(`/(tabs)/live/${match.id}`)}
+              />
+            ))}
+          </View>
+        </View>
+      ) : null}
       {next ? (
         <View style={styles.block}>
           <Text style={[styles.title, { color: colors.text }]}>{t('leagueNextMatch')}</Text>

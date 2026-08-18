@@ -1,6 +1,7 @@
 import { api } from '../../lib/api';
 import { asArray, asRecord, asString } from '../../lib/content-helpers';
 import { leagueEditionId, mapCalendarSeasons, pickDefaultLeagueSeasonId } from '../../lib/league-season';
+import { mapStandingsRows } from '../league/map-standings';
 import { loadHomePlayers, type HomePlayerItem } from './load-home-players';
 
 export type { HomePlayerItem };
@@ -16,6 +17,7 @@ export type HomeLeagueRow = {
   goalDifference: number;
   form: string;
   isOwn: boolean;
+  isHighlight?: boolean;
 };
 
 export type HomeGalleryItem = {
@@ -42,12 +44,20 @@ export type HomeSponsorItem = {
   url?: string;
 };
 
+export type HomeTimelineItem = {
+  id: string;
+  year?: number;
+  title: string;
+  imagePath?: string;
+};
+
 export type HomeExtras = {
   players: HomePlayerItem[];
   leagueRows: HomeLeagueRow[];
   gallery: HomeGalleryItem[];
   trophies: HomeTrophyItem[];
   sponsors: HomeSponsorItem[];
+  timeline: HomeTimelineItem[];
 };
 
 const emptyExtras: HomeExtras = {
@@ -56,6 +66,7 @@ const emptyExtras: HomeExtras = {
   gallery: [],
   trophies: [],
   sponsors: [],
+  timeline: [],
 };
 
 async function loadLeague(): Promise<HomeLeagueRow[]> {
@@ -71,24 +82,7 @@ async function loadLeague(): Promise<HomeLeagueRow[]> {
   if (!seasonId) return [];
   const ownId = asString(asRecord(ownRes.data).id);
   const standings = await api.get('/statistics/standings', { params: { seasonId } });
-  return asArray(standings.data)
-    .slice(0, 5)
-    .map((row, index) => {
-      const item = asRecord(row);
-      const id = asString(item.clubId, String(index));
-      return {
-        id,
-        clubName: asString(item.clubName, `Tim ${index + 1}`),
-        slug: asString(item.clubSlug) || undefined,
-        points: Number(item.points ?? 0),
-        position: index + 1,
-        crestPath: asString(item.crestPath) || undefined,
-        played: Number(item.played ?? 0),
-        goalDifference: Number(item.goalDifference ?? 0),
-        form: asString(item.form),
-        isOwn: Boolean(ownId && id === ownId),
-      };
-    });
+  return mapStandingsRows(standings.data, { ownId }).slice(0, 5);
 }
 
 async function loadGallery(): Promise<HomeGalleryItem[]> {
@@ -145,15 +139,39 @@ async function loadSponsors(): Promise<HomeSponsorItem[]> {
     });
 }
 
+function asYear(value: unknown): number | undefined {
+  if (typeof value === 'number') return value;
+  const parsed = Number(value);
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : undefined;
+}
+
+async function loadTimeline(): Promise<HomeTimelineItem[]> {
+  const { data } = await api.get('/club-timeline');
+  return asArray(data)
+    .map((item, index) => {
+      const record = asRecord(item);
+      return {
+        id: asString(record.id, String(index)),
+        year: asYear(record.year),
+        title: asString(record.title, '—'),
+        imagePath: asString(record.imagePath) || asString(record.photoPath) || undefined,
+      };
+    })
+    .filter((item) => Boolean(item.imagePath))
+    .sort((a, b) => (a.year ?? 0) - (b.year ?? 0))
+    .slice(0, 3);
+}
+
 export async function loadHomeExtras(): Promise<HomeExtras> {
-  const [players, leagueRows, gallery, trophies, sponsors] = await Promise.all([
+  const [players, leagueRows, gallery, trophies, sponsors, timeline] = await Promise.all([
     loadHomePlayers().catch(() => [] as HomePlayerItem[]),
     loadLeague().catch(() => [] as HomeLeagueRow[]),
     loadGallery().catch(() => [] as HomeGalleryItem[]),
     loadTrophies().catch(() => [] as HomeTrophyItem[]),
     loadSponsors().catch(() => [] as HomeSponsorItem[]),
+    loadTimeline().catch(() => [] as HomeTimelineItem[]),
   ]);
-  return { players, leagueRows, gallery, trophies, sponsors };
+  return { players, leagueRows, gallery, trophies, sponsors, timeline };
 }
 
 export { emptyExtras };

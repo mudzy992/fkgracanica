@@ -16,7 +16,7 @@ function StaffHubBody() {
   const counts = useStaffQueueCounts(user);
 
   if (!isStaffUser(user)) {
-    return <ScreenEmpty message="Nemate staff pristup." icon="lock-closed-outline" />;
+    return <ScreenEmpty message={t('noStaffAccess')} icon="lock-closed-outline" />;
   }
 
   return (

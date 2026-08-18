@@ -2,6 +2,7 @@
 
 ## 2026-08-17
 
+- Track 34 P0+P1: public ~78%, staff ~71%. Reject=`DRAFT`; news/heritage/gallery/search/CMS/live/membership.
 - Track 33 faza 6: `video-highlights` 100 ready
 - Track 33 faza 5: `pwa` 100 ready
 - Track 33 faza 4: `financial-export` 100 ready (Excel/PDF)

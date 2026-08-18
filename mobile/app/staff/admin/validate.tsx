@@ -1,19 +1,25 @@
 import { CameraView, useCameraPermissions } from 'expo-camera';
-import { useEffect, useState } from 'react';
-import { Alert, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { RequirePermission } from '../../../src/components/RequirePermission';
 import { Screen } from '../../../src/components/primitives/Screen';
+import { mapTicketValidate, type TicketValidateCard } from '../../../src/components/staff/map-ticket-validate';
+import { getApiErrorMessage } from '../../../src/lib/api-error';
+import { api } from '../../../src/lib/api';
 import { useTheme } from '../../../src/lib/theme-context';
 import { spacing, typography } from '../../../src/lib/theme';
-import { api } from '../../../src/lib/api';
 import type { TicketingConfig } from '../../../src/types/api';
 
 export default function AdminValidateScreen() {
+  const { t } = useTranslation();
   const { colors } = useTheme();
   const [permission, requestPermission] = useCameraPermissions();
   const [qrCode, setQrCode] = useState('');
-  const [result, setResult] = useState('');
+  const [card, setCard] = useState<TicketValidateCard | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const [matchId, setMatchId] = useState<string | undefined>();
+  const busyRef = useRef(false);
 
   useEffect(() => {
     void api
@@ -23,15 +29,24 @@ export default function AdminValidateScreen() {
   }, []);
 
   const validate = async (value = qrCode) => {
-    if (!value) return;
-    const { data } = await api.post('/ticketing/validate', { qrCode: value, matchId });
-    setResult(JSON.stringify(data));
+    if (!value || busyRef.current) return;
+    busyRef.current = true;
+    setError(null);
+    setCard(null);
+    try {
+      const { data } = await api.post('/ticketing/validate', { qrCode: value, matchId });
+      setCard(mapTicketValidate(data));
+    } catch (err) {
+      setError(getApiErrorMessage(err, t('validateFailed')));
+    } finally {
+      busyRef.current = false;
+    }
   };
 
   return (
     <RequirePermission permission="ticketing.manage" returnTo="/staff/admin/validate">
       <Screen scroll>
-        <Text style={[styles.title, { color: colors.text }]}>QR validacija</Text>
+        <Text style={[styles.title, { color: colors.text }]}>{t('qrValidate')}</Text>
         <View style={[styles.card, { backgroundColor: colors.background, borderColor: colors.border }]}>
           {permission?.granted ? (
             <CameraView
@@ -44,7 +59,7 @@ export default function AdminValidateScreen() {
             />
           ) : (
             <Pressable style={[styles.button, { backgroundColor: colors.primary }]} onPress={() => void requestPermission()}>
-              <Text style={[styles.buttonText, { color: colors.white }]}>Omogući kameru</Text>
+              <Text style={[styles.buttonText, { color: colors.white }]}>{t('enableCamera')}</Text>
             </Pressable>
           )}
           <TextInput
@@ -54,13 +69,28 @@ export default function AdminValidateScreen() {
             ]}
             value={qrCode}
             onChangeText={setQrCode}
-            placeholder="Ili unesite QR kod ručno"
+            placeholder={t('qrManualPlaceholder')}
             placeholderTextColor={colors.textMuted}
           />
           <Pressable style={[styles.button, { backgroundColor: colors.primary }]} onPress={() => void validate()}>
-            <Text style={[styles.buttonText, { color: colors.white }]}>Validiraj</Text>
+            <Text style={[styles.buttonText, { color: colors.white }]}>{t('validateAction')}</Text>
           </Pressable>
-          {result ? <Text style={[styles.result, { color: colors.textMuted }]}>{result}</Text> : null}
+          {error ? <Text style={[styles.result, { color: colors.danger }]}>{error}</Text> : null}
+          {card ? (
+            <View style={[styles.resultCard, { borderColor: colors.border, backgroundColor: colors.surface }]}>
+              <Text style={[styles.resultTitle, { color: colors.text }]}>
+                {card.kind === 'pass' ? t('passValidated') : t('ticketValidated')}
+              </Text>
+              <Text style={[styles.result, { color: colors.textMuted }]}>
+                {card.kind === 'pass' ? t('passKind') : t('ticketKind')}
+                {card.category ? ` · ${card.category}` : ''}
+                {card.status ? ` · ${card.status}` : ''}
+              </Text>
+              {card.matchLabel ? (
+                <Text style={[styles.result, { color: colors.textMuted }]}>{card.matchLabel}</Text>
+              ) : null}
+            </View>
+          ) : null}
         </View>
       </Screen>
     </RequirePermission>
@@ -85,4 +115,6 @@ const styles = StyleSheet.create({
   button: { borderRadius: 10, paddingVertical: spacing.md, alignItems: 'center' },
   buttonText: { fontWeight: '600' },
   result: { ...typography.caption },
+  resultTitle: { ...typography.heading },
+  resultCard: { borderRadius: 10, borderWidth: 1, padding: spacing.md, gap: spacing.xs },
 });

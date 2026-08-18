@@ -1,14 +1,14 @@
 # HANDOFF — Track 30 League/Clubs
 
-> **Datum:** 2026-07-28  
-> **Status:** Phase 01–05 **DONE** (Track 30 complete)  
+> **Datum:** 2026-08-17  
+> **Status:** Phase 01–05 **DONE** + **max polish** (round filter, live matches, club competitions). Track 31 = novi chat.  
 > **Plan:** `.cursor/plans/fk-gracanica/30_mobile-league-clubs/`
 
 ---
 
 ## Status u jednoj rečenici
 
-Featured, `/league`, `/team`, `/clubs/[slug]`, i Home/League tabela taps gotovi. News van ovog tracka.
+Featured, `/league` (uključujući round filter), `/team`, `/clubs/[slug]` + takmičenja, i tabela taps gotovi. News / Track 31 van ovog tracka.
 
 ---
 
@@ -57,9 +57,17 @@ Featured, `/league`, `/team`, `/clubs/[slug]`, i Home/League tabela taps gotovi.
 | Fajl | Šta |
 |------|-----|
 | `HomeLeagueRow.slug` | map `clubSlug` u Home + League loaders |
-| `HomeLeagueRowItem` | Pressable: own → `/team`, else `/clubs/[slug]` |
+| `HomeLeagueRowItem` | Pressable: own → `/team`, else `/clubs/[slug]`; `isHighlight` |
 | `LeagueStandingsList` | auto via shared row item |
 | `HomeLeagueSnippet` | „Sve” → `/league` (već postojao) |
+
+### Max polish (2026-08-17)
+| Fajl | Šta |
+|------|-----|
+| `LeagueRoundChips` + `loadLeagueScreen(upToRound)` | Tabela do kola (`GET /rounds` + `upToRound`) |
+| `LeagueMatchesSection` | Live odvojeno od recent |
+| `ClubCompetitionSection` | Takmičenja: kola + tabela (highlight kluba) |
+| `map-standings.ts` | Shared standings map |
 
 ### Layout bug fix (bitno)
 Fragment + ScrollView → **visina 0**. Fix: root `View` `flex:1` + `headerShown: false`.
@@ -74,7 +82,7 @@ Fragment + ScrollView → **visina 0**. Fix: root `View` `flex:1` + `headerShown
 4. `/team` ≈ FirstTeamPage; `/clubs/[slug]` ≈ ClubPublicPage.
 5. Own club na `/clubs/[slug]` → `router.replace('/team')`.
 6. Tabela row: own → `/team`, else → `/clubs/[slug]`.
-7. Competition tabs / round filter — deferred.
+7. Round filter i club competition tabs — **done** (max polish). Position-change strelice na tabeli nisu u Track 30 fazama.
 8. Bez commita osim na eksplicitni zahtjev.
 
 ---
@@ -87,15 +95,14 @@ Fragment + ScrollView → **visina 0**. Fix: root `View` `flex:1` + `headerShown
 
 ---
 
-## Next (van Track 30)
+## Next (Track 34 — novi chat)
 
-- Device smoke Phase 04–05 (club slug + tabela taps).
-- Commit na zahtjev.
-- News track kad owner odluči.
+Kompletna mobile app po canvasu: `.cursor/plans/fk-gracanica/34_mobile-to-100/HANDOFF.md`  
+Starter je u tom HANDOFF.md. News / P0 nisu Track 30.
 
 ---
 
 ## Test status
 
-- `cd mobile && npx tsc --noEmit` — PASS nakon Phase 04; Phase 05 tipovi trivijalni (re-run).
-- Manual: Phase 01–03 potvrđeno; 04–05 — device smoke preostao.
+- `cd mobile && npx tsc --noEmit` — **PASS** (2026-08-17, max polish).
+- Manual: Phase 01–03 potvrđeno ranije; round chips + club competitions — smoke na uređaju.

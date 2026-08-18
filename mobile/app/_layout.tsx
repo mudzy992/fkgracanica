@@ -34,7 +34,9 @@ function RootStack() {
         <Stack.Screen name="team" options={{ headerShown: false }} />
         <Stack.Screen name="league" options={{ headerShown: false }} />
         <Stack.Screen name="player/[id]" options={{ headerShown: false }} />
-        <Stack.Screen name="clubs/[slug]" options={{ headerShown: false }} />
+        <Stack.Screen name="gallery" options={{ title: 'Galerija' }} />
+        <Stack.Screen name="gallery/[slug]" options={{ title: 'Galerija' }} />
+        <Stack.Screen name="heritage" options={{ title: 'Baština' }} />
       </Stack>
     </>
   );
