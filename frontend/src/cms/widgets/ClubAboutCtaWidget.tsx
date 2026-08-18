@@ -1,13 +1,32 @@
-import { ArrowRight, Landmark, Sparkles } from 'lucide-react';
+import { ArrowRight, Sparkles } from 'lucide-react';
+import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
+import { useClubTimeline, useHallOfFame, useOwnClub } from '../../hooks';
 import { mediaUrl } from '../../lib/media';
+import { sortStoryChapters } from '../../components/public/story/sort-story-chapters';
 import type { WidgetConfigMap } from './schemas';
 
 type Props = { config: WidgetConfigMap['club-about-cta'] };
 
-export function ClubAboutCtaWidget({ config }: Props) {
-  const storyImage = config.storyImage ? mediaUrl(config.storyImage, 'original') : null;
-  const heritageImage = config.heritageImage ? mediaUrl(config.heritageImage, 'original') : null;
+export function ClubAboutCtaWidget({ config: _config }: Props) {
+  const { data: ownClub } = useOwnClub();
+  const { data: timeline } = useClubTimeline();
+  const { data: hallOfFame } = useHallOfFame();
+  const chapters = useMemo(() => sortStoryChapters(timeline ?? []), [timeline]);
+  const firstYear = chapters[0]?.year;
+  const storyImagePath = chapters.find((chapter) => chapter.imagePath)?.imagePath;
+  const hallEntry = hallOfFame?.find((entry) => entry.photoPath || entry.imagePath);
+  const storyImage = storyImagePath ? mediaUrl(storyImagePath, 'original') : null;
+  const heritageImage = hallEntry ? mediaUrl(hallEntry.photoPath ?? hallEntry.imagePath, 'original') : null;
+  const clubName = ownClub?.name ?? 'FK Gračanica';
+  const hallCount = hallOfFame?.length ?? 0;
+  const title = firstYear
+    ? `${clubName} od ${firstYear}. vodi u priču koja završava u Kući slavnih.`
+    : `${clubName} vodi u priču koja završava u Kući slavnih.`;
+  const text =
+    hallCount > 0
+      ? 'Uđi u dokumentarnu priču kluba, prođi kroz njegove ere i otvori baštinsko poglavlje posvećeno imenima koja su ga obilježila.'
+      : 'Uđi u dokumentarnu priču kluba i otkrij baštinsko poglavlje posvećeno njegovim najvećim imenima.';
 
   return (
     <section className="mx-auto max-w-6xl px-4 py-12 sm:px-6 md:py-16">
@@ -17,61 +36,37 @@ export function ClubAboutCtaWidget({ config }: Props) {
           <div className="space-y-5">
             <div className="inline-flex items-center gap-2 rounded-full border border-amber-300/20 bg-amber-300/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.28em] text-amber-100">
               <Sparkles className="h-3.5 w-3.5" />
-              {config.eyebrow || 'Dokumentar kluba'}
+              Dokumentar kluba
             </div>
             <div>
-              <h2 className="font-display max-w-2xl text-3xl font-bold tracking-tight text-white sm:text-4xl">
-                {config.title || 'Uđi u priču kluba i otkrij baštinu koja čuva njegova najveća imena.'}
-              </h2>
-              <p className="mt-4 max-w-2xl text-base leading-relaxed text-slate-300 sm:text-lg">
-                {config.text ||
-                  'Cinematic pregled historije vodi kroz ključne ere, a završna scena otvara vrata Kuće slavnih.'}
-              </p>
+              <h2 className="font-display max-w-2xl text-3xl font-bold tracking-tight text-white sm:text-4xl">{title}</h2>
+              <p className="mt-4 max-w-2xl text-base leading-relaxed text-slate-300 sm:text-lg">{text}</p>
             </div>
             <div className="flex flex-wrap gap-3">
               <Link
-                to={config.primaryUrl || '/o-klubu'}
+                to="/o-klubu"
                 className="inline-flex items-center gap-2 rounded-full bg-white px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-white/90"
               >
-                {config.primaryLabel || 'Pregledaj O klubu'}
+                Pregledaj O klubu
                 <ArrowRight className="h-4 w-4" />
               </Link>
-            </div>
-            <div className="grid gap-3 sm:grid-cols-2">
-              <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
-                <p className="text-xs font-semibold uppercase tracking-[0.24em] text-sky-200">Timeline iskustvo</p>
-                <p className="mt-2 text-sm leading-relaxed text-slate-300">
-                  Scroll vodi kroz ere kluba, kadar po kadar, sve do završne baštinske scene.
-                </p>
-              </div>
-              <div className="rounded-2xl border border-amber-300/20 bg-amber-300/10 p-4">
-                <div className="flex items-center gap-2 text-amber-100">
-                  <Landmark className="h-4 w-4" />
-                  <p className="text-xs font-semibold uppercase tracking-[0.24em]">
-                    {config.secondaryLabel || 'Kuća slavnih'}
-                  </p>
-                </div>
-                <p className="mt-2 text-sm leading-relaxed text-amber-50/85">
-                  {config.secondaryText || 'Ekskluzivno otključavanje na kraju priče kluba.'}
-                </p>
-              </div>
             </div>
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="overflow-hidden rounded-[1.75rem] border border-white/10 bg-slate-900/60">
               {storyImage ? (
-                <img src={storyImage} alt="" className="h-72 w-full object-cover sm:h-80" />
+                <img src={storyImage} alt="" className="h-80 w-full object-cover sm:h-[26rem]" />
               ) : (
-                <div className="flex h-72 items-center justify-center bg-[linear-gradient(160deg,#0f172a,#1d4ed8)] text-sm font-semibold uppercase tracking-[0.3em] text-white/70 sm:h-80">
+                <div className="flex h-80 items-center justify-center bg-[linear-gradient(160deg,#0f172a,#1d4ed8)] text-sm font-semibold uppercase tracking-[0.3em] text-white/70 sm:h-[26rem]">
                   O klubu
                 </div>
               )}
             </div>
             <div className="overflow-hidden rounded-[1.75rem] border border-amber-300/20 bg-slate-950/70 sm:mt-10">
               {heritageImage ? (
-                <img src={heritageImage} alt="" className="h-72 w-full object-cover sm:h-80" />
+                <img src={heritageImage} alt="" className="h-80 w-full object-cover sm:h-[26rem]" />
               ) : (
-                <div className="flex h-72 items-center justify-center bg-[linear-gradient(180deg,#120d05,#3f2a0f)] text-sm font-semibold uppercase tracking-[0.3em] text-amber-100/75 sm:h-80">
+                <div className="flex h-80 items-center justify-center bg-[linear-gradient(180deg,#120d05,#3f2a0f)] text-sm font-semibold uppercase tracking-[0.3em] text-amber-100/75 sm:h-[26rem]">
                   Baština
                 </div>
               )}

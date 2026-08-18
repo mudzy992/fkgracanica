@@ -77,17 +77,7 @@ export const widgetSchemas = {
     text: z.string().optional(),
     buttons: z.array(ctaButton).default([]),
   }),
-  'club-about-cta': z.object({
-    eyebrow: z.string().optional(),
-    title: z.string().optional(),
-    text: z.string().optional(),
-    primaryLabel: z.string().optional(),
-    primaryUrl: z.string().optional(),
-    secondaryLabel: z.string().optional(),
-    secondaryText: z.string().optional(),
-    storyImage: z.string().optional(),
-    heritageImage: z.string().optional(),
-  }),
+  'club-about-cta': z.object({}),
   'footer-about': z.object({ text: z.string().min(1) }),
 } as const;
 
