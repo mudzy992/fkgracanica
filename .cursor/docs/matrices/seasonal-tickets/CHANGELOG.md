@@ -1,5 +1,9 @@
 # Seasonal tickets changelog
 
+## 2026-08-18 (mobile PENDING)
+
+- Mobile QR samo `ACTIVE`; `PENDING` (napušten checkout) — pay retry, bez QR
+
 ## 2026-08-17 (season pass visual)
 
 - Zaseban `SeasonPassVisual` (grb, badge Sezona, bez VS/protivnika)

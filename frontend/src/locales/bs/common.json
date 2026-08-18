@@ -92,6 +92,7 @@
     "heritage": "Baština",
     "comms": "Komunikacija",
     "analytics": "Analitika",
+    "appReleases": "App release",
     "navGroup": {
       "overview": "Pregled",
       "system": "Sistem",
@@ -111,7 +112,9 @@
     "password": "Lozinka",
     "name": "Ime",
     "message": "Poruka",
-    "subject": "Naslov"
+    "subject": "Naslov",
+    "livePushTitle": "Live push obavijesti",
+    "livePushHint": "Golovi, kartoni i ostale akcije uživo. Isključite da utišate push."
   },
   "footer": {
     "menu": "Meni",

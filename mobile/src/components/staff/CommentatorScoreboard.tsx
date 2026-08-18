@@ -10,10 +10,11 @@ type Props = { matchId: string };
 export function CommentatorScoreboard({ matchId }: Props) {
   const { t } = useTranslation();
   const { colors } = useTheme();
-  const { match } = useLiveMatch(matchId);
+  const { match, clock } = useLiveMatch(matchId);
   if (!match) return null;
   const home = match.homeClub?.name ?? t('commentatorHome');
   const away = match.awayClub?.name ?? t('commentatorAway');
+  const minute = clock?.displayMinute ?? match.minute;
   return (
     <View style={[styles.card, { backgroundColor: colors.background, borderColor: colors.border }]}>
       <Text style={[styles.label, { color: colors.text }]}>
@@ -21,7 +22,8 @@ export function CommentatorScoreboard({ matchId }: Props) {
       </Text>
       <Text style={[styles.hint, { color: colors.textMuted }]}>
         {t(matchStatusKey(match.status))}
-        {match.minute != null ? ` · ${match.minute}'` : ''}
+        {minute != null ? ` · ${minute}'` : ''}
+        {clock?.periodLabel ? ` · ${clock.periodLabel}` : ''}
       </Text>
     </View>
   );

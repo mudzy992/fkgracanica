@@ -4,6 +4,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import { ListRow } from '../primitives/ListRow';
 import { SectionHeader } from '../primitives/SectionHeader';
 import { useAuth } from '../../lib/auth';
+import { api } from '../../lib/api';
 import { isStaffUser } from '../../lib/permissions';
 import { setAppLanguage } from '../../i18n';
 import { useTheme } from '../../lib/theme-context';
@@ -12,7 +13,7 @@ import { spacing, typography } from '../../lib/theme';
 export function ProfileHub() {
   const { t, i18n } = useTranslation();
   const router = useRouter();
-  const { user, logout } = useAuth();
+  const { user, logout, refreshUser } = useAuth();
   const { colors } = useTheme();
   const nextLang = i18n.language === 'en' ? 'bs' : 'en';
   const displayName = user?.firstName
@@ -51,6 +52,19 @@ export function ProfileHub() {
         icon="language-outline"
         onPress={() => void setAppLanguage(nextLang)}
       />
+      {user ? (
+        <ListRow
+          title={t('livePushToggle')}
+          subtitle={t('livePushHint')}
+          icon="notifications-outline"
+          rightText={user.notifyLiveMatch === false ? 'OFF' : 'ON'}
+          onPress={() => {
+            void api
+              .patch('/auth/preferences', { notifyLiveMatch: user.notifyLiveMatch === false })
+              .then(() => refreshUser());
+          }}
+        />
+      ) : null}
       {isStaffUser(user) ? (
         <ListRow title={t('staffWorkspace')} icon="briefcase-outline" onPress={() => router.push('/staff')} />
       ) : null}

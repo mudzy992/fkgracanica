@@ -15,7 +15,7 @@ import { spacing, typography } from '../src/lib/theme';
 import type { Ticket, TicketOrder } from '../src/types/api';
 
 type Filter = 'all' | 'valid' | 'used';
-const VALID = new Set(['RESERVED', 'PAID_AT_BOX_OFFICE']);
+const VALID = new Set(['PAID_AT_BOX_OFFICE']);
 
 function ticketMatches(ticket: Ticket, filter: Filter): boolean {
   if (filter === 'all') return true;
@@ -116,7 +116,7 @@ function TicketsBody() {
         }
         ListEmptyComponent={<ScreenEmpty message={t('noTickets')} icon="ticket-outline" compact />}
         renderItem={({ item }) => (
-          <TicketOrderCard order={item} onShowQr={setQrValue} onRefunded={() => void loadOrders()} />
+          <TicketOrderCard order={item} onShowQr={setQrValue} onChanged={() => void loadOrders()} />
         )}
       />
       <QrModal value={qrValue} onClose={() => setQrValue(null)} />

@@ -8,6 +8,7 @@ import {
 } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { RealtimeGateway } from '../realtime/realtime.gateway';
+import { LiveFanoutService } from '../notifications/live-fanout.service';
 import { resolveEventMinute } from './live-clock.util';
 
 @Injectable()
@@ -15,6 +16,7 @@ export class LivePhaseService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly realtime: RealtimeGateway,
+    private readonly liveFanout: LiveFanoutService,
   ) {}
 
   private assertTied(match: { homeScore: number; awayScore: number }) {
@@ -43,6 +45,7 @@ export class LivePhaseService {
       },
     });
     this.realtime.emitMatchStatus(matchId, match);
+    void this.liveFanout.fanout(matchId, MatchEventType.FULL_TIME);
     return match;
   }
 
@@ -69,6 +72,7 @@ export class LivePhaseService {
       },
     });
     this.realtime.emitMatchStatus(matchId, match);
+    void this.liveFanout.fanout(matchId, MatchEventType.EXTRA_TIME);
     return match;
   }
 
@@ -86,6 +90,7 @@ export class LivePhaseService {
       data: { status: MatchStatus.HALFTIME, liveBreak: LiveBreak.ET_HT, minute, clockStartedAt: null },
     });
     this.realtime.emitMatchStatus(matchId, match);
+    void this.liveFanout.fanout(matchId, MatchEventType.HALFTIME);
     return match;
   }
 
@@ -109,6 +114,7 @@ export class LivePhaseService {
       },
     });
     this.realtime.emitMatchStatus(matchId, match);
+    void this.liveFanout.fanout(matchId, MatchEventType.SECOND_HALF);
     return match;
   }
 
@@ -132,6 +138,7 @@ export class LivePhaseService {
       },
     });
     this.realtime.emitMatchStatus(matchId, match);
+    void this.liveFanout.fanout(matchId, MatchEventType.FULL_TIME);
     return match;
   }
 
@@ -158,6 +165,7 @@ export class LivePhaseService {
       },
     });
     this.realtime.emitMatchStatus(matchId, match);
+    void this.liveFanout.fanout(matchId, MatchEventType.COMMENT, 'Izvođenje penala');
     return match;
   }
 
@@ -177,6 +185,7 @@ export class LivePhaseService {
       },
     });
     this.realtime.emitMatchStatus(matchId, match);
+    void this.liveFanout.fanout(matchId, MatchEventType.FULL_TIME);
     return match;
   }
 }

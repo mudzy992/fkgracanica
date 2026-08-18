@@ -4,7 +4,6 @@ export const QUICK_EVENTS = [
   'RED_CARD',
   'PENALTY_SCORED',
   'PENALTY_MISSED',
-  'SUBSTITUTION',
 ] as const;
 
 export const MORE_EVENTS = [
@@ -18,7 +17,7 @@ export const MORE_EVENTS = [
   'OWN_GOAL',
 ] as const;
 
-export type LiveEventType = (typeof QUICK_EVENTS)[number] | (typeof MORE_EVENTS)[number];
+export type LiveEventType = (typeof QUICK_EVENTS)[number] | (typeof MORE_EVENTS)[number] | 'SUBSTITUTION';
 
 export const EVENT_I18N: Record<LiveEventType, string> = {
   GOAL: 'eventGoal',

@@ -74,7 +74,7 @@ export default function CommentatorScreen() {
   return (
     <RequirePermission permission="live.manage" returnTo="/staff/commentator">
       <Screen scroll contentStyle={{ gap: spacing.md }}>
-        <SectionHeader title={t('commentatorTitle')} subtitle={t('commentatorSubtitle')} />
+        <SectionHeader title={t('commentatorSubtitle')} />
         <CountStrip
           items={[
             { label: t('liveNow'), value: desk.live },

@@ -105,7 +105,7 @@ export default function ModerationScreen() {
   return (
     <RequireAuth returnTo="/staff/moderation">
       <Screen scroll refreshControl={<RefreshControl refreshing={loading} onRefresh={() => void load()} />}>
-        <SectionHeader title={t('moderator')} subtitle={t('pendingQueue')} />
+        <SectionHeader title={t('pendingQueue')} />
         <CountStrip
           items={[
             { label: t('newsPending'), value: news.length },

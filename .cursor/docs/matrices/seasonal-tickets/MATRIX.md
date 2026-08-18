@@ -29,4 +29,5 @@ PENDING → ACTIVE
 - Public `/ulaznice` tab Sezona — `SeasonPassVisual` (grb + sezona, bez VS meča)
 - Print/HTML: `buildSeasonPassHtml`
 - Admin Ulaznice → Sezona
-- Mobile strip: SEZONA + „Važi za sve domaće utakmice”; staff scan šalje `matchId`
+- Mobile strip: SEZONA; QR samo `ACTIVE`; `PENDING` (napušten checkout) — pay retry, bez QR
+- Staff scan šalje `matchId`

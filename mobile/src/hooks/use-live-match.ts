@@ -3,10 +3,18 @@ import { api } from '../lib/api';
 import { getRealtimeSocket } from '../lib/realtime';
 import type { Match, MatchEvent } from '../types/api';
 
+export type LiveClock = {
+  displayMinute: number;
+  displaySecond?: number;
+  periodLabel?: string;
+};
+
 export function useLiveMatch(matchId: string) {
   const [match, setMatch] = useState<Match | null>(null);
+  const [clock, setClock] = useState<LiveClock | null>(null);
   const [connected, setConnected] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [toast, setToast] = useState<MatchEvent | null>(null);
 
   const patch = useCallback((partial: Partial<Match>) => {
     setMatch((old) => (old ? { ...old, ...partial } : old));
@@ -15,16 +23,11 @@ export function useLiveMatch(matchId: string) {
   useEffect(() => {
     if (!matchId) return;
     let cancelled = false;
-
-    const load = async () => {
-      try {
-        const { data } = await api.get<Match>(`/matches/${matchId}`);
-        if (!cancelled) setMatch(data);
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
-    };
-    void load();
+    void api.get<Match>(`/matches/${matchId}`).then(({ data }) => {
+      if (!cancelled) setMatch(data);
+    }).finally(() => {
+      if (!cancelled) setLoading(false);
+    });
 
     const socket = getRealtimeSocket();
     const join = () => socket.emit('match:join', { matchId });
@@ -32,19 +35,21 @@ export function useLiveMatch(matchId: string) {
       setConnected(true);
       join();
     };
-    const onDisconnect = () => setConnected(false);
     const onEvent = (event: MatchEvent) => {
-      setMatch((old) =>
-        old ? { ...old, events: [...(old.events ?? []), event] } : old,
-      );
+      setMatch((old) => (old ? { ...old, events: [...(old.events ?? []), event] } : old));
+      if (event.type === 'GOAL' || event.type === 'YELLOW_CARD' || event.type === 'RED_CARD') {
+        setToast(event);
+      }
     };
+    const onDisconnect = () => setConnected(false);
+    const onClock = (payload: LiveClock) => setClock(payload);
 
     socket.on('connect', onConnect);
     socket.on('disconnect', onDisconnect);
     socket.on('match:event', onEvent);
     socket.on('match:score', patch);
     socket.on('match:status', patch);
-
+    socket.on('match:clock', onClock);
     if (socket.connected) onConnect();
 
     return () => {
@@ -55,8 +60,15 @@ export function useLiveMatch(matchId: string) {
       socket.off('match:event', onEvent);
       socket.off('match:score', patch);
       socket.off('match:status', patch);
+      socket.off('match:clock', onClock);
     };
   }, [matchId, patch]);
 
-  return { match, connected, loading };
+  useEffect(() => {
+    if (!toast) return;
+    const id = setTimeout(() => setToast(null), 4000);
+    return () => clearTimeout(id);
+  }, [toast]);
+
+  return { match, clock, connected, loading, toast };
 }

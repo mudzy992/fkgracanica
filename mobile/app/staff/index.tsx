@@ -21,7 +21,7 @@ function StaffHubBody() {
 
   return (
     <Screen scroll>
-      <SectionHeader title={t('staffWorkspace')} subtitle={t('staffWorkspaceHint')} />
+      <SectionHeader title={t('staffWorkspaceHint')} />
       {hasPermission(user, 'news.submit') || hasPermission(user, 'news.manage') ? (
         <ListRow
           title={t('writer')}

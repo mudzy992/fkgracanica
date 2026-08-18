@@ -42,7 +42,7 @@ export default function AdminDashboardScreen() {
   return (
     <RequirePermission permission="dashboard.read" returnTo="/staff/admin/dashboard">
       <Screen scroll>
-        <SectionHeader title={t('dashboard')} subtitle={t('dashboardHint')} />
+        <SectionHeader title={t('dashboardHint')} />
         {loading ? <ListSkeleton rows={4} /> : null}
         {error ? <ScreenEmpty message={t('error')} actionLabel={t('retry')} onAction={() => void load()} compact /> : null}
         {!loading && !error && entries.length === 0 ? <ScreenEmpty message={t('noItems')} compact /> : null}

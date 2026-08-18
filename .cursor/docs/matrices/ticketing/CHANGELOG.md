@@ -1,5 +1,10 @@
 # Ticketing Changelog
 
+## 2026-08-18 (mobile unpaid QR)
+
+- Mobile QR samo `PAID_AT_BOX_OFFICE`; pay/cancel za pending rezervacije
+- Filter valid ne uključuje RESERVED
+
 ## 2026-08-17 (season pass)
 
 - Kapacitet uključuje sezonske karte; validate `{ qrCode, matchId? }`

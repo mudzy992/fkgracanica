@@ -2,6 +2,8 @@ import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { api } from '../lib/api';
+import { startMobileCheckout } from '../lib/start-mobile-checkout';
+import { canShowSeasonQr } from '../lib/ticketing-status';
 import { useTheme } from '../lib/theme-context';
 import { spacing, typography } from '../lib/theme';
 import type { SeasonPassMine } from '../types/api';
@@ -12,6 +14,7 @@ export function SeasonPassStrip({ onShowQr, onBuy }: Props) {
   const { t } = useTranslation();
   const { colors } = useTheme();
   const [data, setData] = useState<SeasonPassMine | null>(null);
+  const [busy, setBusy] = useState(false);
 
   const load = useCallback(async () => {
     try {
@@ -28,19 +31,42 @@ export function SeasonPassStrip({ onShowQr, onBuy }: Props) {
 
   const pass = data?.pass;
   const offer = data?.offer;
-  if (pass?.status === 'ACTIVE') {
+
+  const payPending = async () => {
+    if (!pass?.id) return;
+    setBusy(true);
+    try {
+      await startMobileCheckout({ kind: 'season', body: { passId: pass.id } });
+      await load();
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  if (pass && canShowSeasonQr(pass.status)) {
     return (
       <View style={[styles.card, { borderColor: colors.primary, backgroundColor: colors.surface }]}>
         <Text style={[styles.chip, { color: colors.primaryLight }]}>{t('seasonPassKicker')}</Text>
         <Text style={[styles.title, { color: colors.text }]}>{pass.label}</Text>
         <Text style={[styles.meta, { color: colors.textMuted }]}>{pass.season?.name}</Text>
         <Text style={[styles.hint, { color: colors.textMuted }]}>{t('seasonPassHint')}</Text>
-        <Pressable
-          style={[styles.btn, { backgroundColor: colors.primary }]}
-          onPress={() => onShowQr(pass.qrCode)}
-        >
+        <Pressable style={[styles.btn, { backgroundColor: colors.primary }]} onPress={() => onShowQr(pass.qrCode)}>
           <Text style={[styles.btnText, { color: colors.white }]}>QR</Text>
         </Pressable>
+      </View>
+    );
+  }
+  if (pass?.status === 'PENDING') {
+    return (
+      <View style={[styles.card, { borderColor: colors.border, backgroundColor: colors.background }]}>
+        <Text style={[styles.chip, { color: colors.primaryLight }]}>{t('seasonPassKicker')}</Text>
+        <Text style={[styles.title, { color: colors.text }]}>{pass.label}</Text>
+        <Text style={[styles.hint, { color: colors.textMuted }]}>{t('seasonPassPending')}</Text>
+        {offer?.salesModes.online ? (
+          <Pressable style={[styles.btn, { backgroundColor: colors.primary }]} onPress={() => void payPending()} disabled={busy}>
+            <Text style={[styles.btnText, { color: colors.white }]}>{busy ? t('loading') : t('paySeasonPass')}</Text>
+          </Pressable>
+        ) : null}
       </View>
     );
   }

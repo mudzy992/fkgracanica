@@ -38,6 +38,7 @@ export const PERMISSIONS = [
   { key: 'analytics.read', description: 'Pregled analitike' },
   { key: 'dashboard.read', description: 'Pregled dashboard KPI' },
   { key: 'finance.read', description: 'Pregled finansijskih izvještaja' },
+  { key: 'app-releases.manage', description: 'Upravljanje Android app releaseima' },
 ] as const;
 
 export type PermissionKey = (typeof PERMISSIONS)[number]['key'];

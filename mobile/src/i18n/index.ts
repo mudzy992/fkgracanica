@@ -18,6 +18,7 @@ import { ticketsBs, ticketsEn } from './tickets';
 import { contactBs, contactEn } from './contact';
 import { navBs, navEn } from './nav';
 import { liveBs, liveEn } from './live';
+import { appUpdateBs, appUpdateEn } from './app-update';
 
 const LANG_KEY = 'app_language';
 
@@ -39,6 +40,7 @@ const bs = {
   ...contactBs,
   ...navBs,
   ...liveBs,
+  ...appUpdateBs,
 };
 
 const en: Record<keyof typeof bs, string> = {
@@ -59,6 +61,7 @@ const en: Record<keyof typeof bs, string> = {
   ...contactEn,
   ...navEn,
   ...liveEn,
+  ...appUpdateEn,
 };
 
 void i18n.use(initReactI18next).init({

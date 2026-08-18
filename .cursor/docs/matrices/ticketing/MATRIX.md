@@ -30,6 +30,8 @@ pending → paid → (refund_requested) → refunded
 
 - Širina ~520px; grbovi domaćin/gost, takmičenje · sezona · kolo
 - Podaci iz `match.season.competition`, `roundRel`, `homeClub/awayClub.crestPath` (API `/ticketing/orders`)
+- QR samo `PAID_AT_BOX_OFFICE` (web + mobile). `RESERVED` / pending: Plati online + Otkaži, bez QR
+- Mobile filter „važeće” = plaćene; napušten Stripe ostavlja RESERVED za naknadnu uplatu
 
 - JSON setting `ticketing.categories`: `[{ id, label, price, isActive }]`
 - Admin CRUD na `/admin/ticketing` → Postavke

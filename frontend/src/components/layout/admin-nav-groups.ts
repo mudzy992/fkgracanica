@@ -52,6 +52,7 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
     labelKey: 'admin.navGroup.system',
     items: [
       { to: '/admin/settings', labelKey: 'admin.settings', permissions: ['settings.read'] },
+      { to: '/admin/app-releases', labelKey: 'admin.appReleases', permissions: ['app-releases.manage'] },
       { to: '/admin/users', labelKey: 'admin.usersAndRoles', permissions: ['users.read', 'rbac.read'] },
     ],
   },

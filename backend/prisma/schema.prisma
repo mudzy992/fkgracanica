@@ -15,10 +15,11 @@ model User {
   firstName    String?
   lastName     String?
   isActive     Boolean   @default(true)
-  notifyInApp  Boolean   @default(true)
-  notifyEmail  Boolean   @default(true)
-  notifyPush   Boolean   @default(true)
-  deletedAt    DateTime?
+  notifyInApp      Boolean   @default(true)
+  notifyEmail      Boolean   @default(true)
+  notifyPush       Boolean   @default(true)
+  notifyLiveMatch  Boolean   @default(true)
+  deletedAt        DateTime?
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
 
@@ -36,6 +37,7 @@ model User {
   seasonPasses     SeasonPass[]
   matchEvents      MatchEvent[]      @relation("EventCreator")
   liveComments     LiveComment[]
+  appReleasesCreated AppRelease[]    @relation("AppReleasesCreatedBy")
 
   @@index([email])
   @@index([deletedAt])
@@ -1014,6 +1016,38 @@ model SeasonPass {
   @@unique([userId, seasonId])
   @@index([seasonId, status])
   @@index([externalId])
+}
+
+enum AppReleasePlatform {
+  ANDROID
+}
+
+enum AppReleaseStatus {
+  DRAFT
+  PUBLISHED
+  RETIRED
+}
+
+model AppRelease {
+  id                      String              @id @default(cuid())
+  platform                AppReleasePlatform  @default(ANDROID)
+  version                 String
+  versionCode             Int
+  minSupportedVersionCode Int                 @default(1)
+  forceUpdate             Boolean             @default(false)
+  apkPath                 String
+  apkSha256               String
+  apkSizeBytes            Int
+  releaseNotes            String?             @db.Text
+  status                  AppReleaseStatus    @default(DRAFT)
+  publishedAt             DateTime?
+  createdById             String?
+  createdAt               DateTime            @default(now())
+  updatedAt               DateTime            @updatedAt
+  createdBy               User?               @relation("AppReleasesCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+
+  @@unique([platform, versionCode])
+  @@index([platform, status, versionCode])
 }
 
 model SeasonPassAdmission {

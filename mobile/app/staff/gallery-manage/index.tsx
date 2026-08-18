@@ -73,7 +73,7 @@ export default function GalleryManageListScreen() {
   return (
     <RequirePermission permission="gallery.manage" returnTo="/staff/gallery-manage">
       <Screen scroll>
-        <SectionHeader title={t('galleryManage')} subtitle={t('galleryManageHint')} />
+        <SectionHeader title={t('galleryManageHint')} />
         <View style={[styles.card, { backgroundColor: colors.background, borderColor: colors.border }]}>
           <TextInput style={inputStyle} value={title} onChangeText={setTitle} placeholder={t('galleryAlbumTitle')} placeholderTextColor={colors.textMuted} />
           <TextInput style={inputStyle} value={description} onChangeText={setDescription} placeholder={t('galleryAlbumDesc')} placeholderTextColor={colors.textMuted} />

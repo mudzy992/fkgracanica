@@ -19,7 +19,8 @@
       },
       "permissions": [
         "CAMERA",
-        "android.permission.CAMERA"
+        "android.permission.CAMERA",
+        "android.permission.REQUEST_INSTALL_PACKAGES"
       ],
       "predictiveBackGestureEnabled": false,
       "package": "com.mudzahud.fkgracanica",

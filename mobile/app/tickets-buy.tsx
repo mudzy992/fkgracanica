@@ -79,7 +79,7 @@ function TicketsBuyBody() {
       if (intent === 'online' && order?.id) {
         const result = await startMobileCheckout({ kind: 'tickets', body: { orderId: order.id } });
         if (result === 'cancelled') {
-          setError(t('paymentCancelled'));
+          router.replace('/tickets');
           return;
         }
       }

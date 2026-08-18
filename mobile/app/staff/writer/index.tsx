@@ -47,7 +47,7 @@ export default function WriterListScreen() {
   return (
     <RequirePermission permission="news.submit" returnTo="/staff/writer">
       <Screen scroll>
-        <SectionHeader title={t('writer')} subtitle={t('writerHint')} />
+        <SectionHeader title={t('writerHint')} />
         <CountStrip
           items={[
             { label: t('drafts'), value: items.filter((i) => i.status === 'DRAFT').length },

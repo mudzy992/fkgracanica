@@ -31,11 +31,20 @@
 - `match:comment` — LiveComment
 - `match:status` — status change
 
-Public clients: connect without JWT, emit `match:join`. Komentator: JWT + REST `POST /live/matches/:id/events`.
+- `match:clock` — live sat (displayMinute, periodLabel)
+
+Public clients: connect without JWT, emit `match:join`. Komentator: JWT + REST `POST /live/matches/:id/events` (minuta sa sata ako se ne pošalje).
 
 ## Komentator actions
 
-Map to `MatchEventType`: GOAL, YELLOW_CARD, SUBSTITUTION, etc.
+- **Globalne** (sat): start / HT / resume / end / ET / penali / VAR — bez igrača
+- **Klub** (home/away): obavezan `playerId` iz lineupa; izmjena = `playerId` (out) + `relatedPlayerId` (in)
+- Minuta: `data.minute ?? resolveEventMinute(clock)`
+
+## Push (live)
+
+- Fanout na evente + start/HT/FT: in-app + Expo push
+- `User.notifyLiveMatch` (default true) + `notifyPush` za push; mute u profilu/nalogu ne gasi in-app
 
 ## Approval flow
 
@@ -45,4 +54,5 @@ Map to `MatchEventType`: GOAL, YELLOW_CARD, SUBSTITUTION, etc.
 
 ## Changelog
 
+- 2026-08-18: Klub akcije zahtijevaju igrača; live push + mute; mobile stream overlay
 - 2026-06-24: Initial live center workflow matrix

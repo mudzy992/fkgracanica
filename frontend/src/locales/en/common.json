@@ -92,6 +92,7 @@
     "heritage": "Heritage",
     "comms": "Communication",
     "analytics": "Analytics",
+    "appReleases": "App release",
     "navGroup": {
       "overview": "Overview",
       "system": "System",
@@ -111,7 +112,9 @@
     "password": "Password",
     "name": "Name",
     "message": "Message",
-    "subject": "Subject"
+    "subject": "Subject",
+    "livePushTitle": "Live match push",
+    "livePushHint": "Goals, cards and other live actions. Turn off to mute push."
   },
   "footer": {
     "menu": "Menu",

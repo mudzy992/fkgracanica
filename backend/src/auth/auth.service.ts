@@ -57,6 +57,14 @@ export class AuthService {
     return { ...this.sanitizeUser(user), permissions };
   }
 
+  async updatePreferences(
+    userId: string,
+    dto: { notifyLiveMatch?: boolean; notifyPush?: boolean; notifyInApp?: boolean },
+  ) {
+    await this.prisma.user.update({ where: { id: userId }, data: dto });
+    return this.me(userId);
+  }
+
   async logout(refreshToken: string, userId?: string) {
     await this.prisma.refreshToken.deleteMany({ where: { token: refreshToken } });
     if (userId) {
@@ -100,12 +108,18 @@ export class AuthService {
     email: string;
     firstName: string | null;
     lastName: string | null;
+    notifyLiveMatch?: boolean;
+    notifyPush?: boolean;
+    notifyInApp?: boolean;
   }) {
     return {
       id: user.id,
       email: user.email,
       firstName: user.firstName,
       lastName: user.lastName,
+      notifyLiveMatch: user.notifyLiveMatch !== false,
+      notifyPush: user.notifyPush !== false,
+      notifyInApp: user.notifyInApp !== false,
     };
   }
 

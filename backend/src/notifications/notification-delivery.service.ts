@@ -38,7 +38,22 @@ export class NotificationDeliveryService {
     notification: { title: string; body: string; type: string; path?: string },
   ) {
     if (!user.notifyPush || user.pushDevices.length === 0) return;
-    const messages = user.pushDevices.map((device) => ({
+    await this.pushMessages(user.pushDevices, notification);
+  }
+
+  async deliverPushOnly(
+    user: { notifyPush: boolean; pushDevices: { expoPushToken: string }[] },
+    notification: { title: string; body: string; type: string; path?: string },
+  ) {
+    if (!user.notifyPush || user.pushDevices.length === 0) return;
+    await this.pushMessages(user.pushDevices, notification);
+  }
+
+  private async pushMessages(
+    devices: { expoPushToken: string }[],
+    notification: { title: string; body: string; type: string; path?: string },
+  ) {
+    const messages = devices.map((device) => ({
       to: device.expoPushToken,
       sound: 'default',
       title: notification.title,

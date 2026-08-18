@@ -32,7 +32,7 @@ export default function WriterEditorScreen() {
   return (
     <RequirePermission permission="news.submit" returnTo="/staff/writer">
       <Screen scroll>
-        <SectionHeader title={t('writer')} subtitle={t('writerHint')} />
+        <SectionHeader title={t('writerHint')} />
         <View style={[styles.card, { backgroundColor: colors.background, borderColor: colors.border }]}>
           <WriterNewsFields
             article={editor.article}
@@ -42,12 +42,14 @@ export default function WriterEditorScreen() {
           />
           <Text style={[styles.label, { color: colors.textMuted }]}>{t('writerBody')}</Text>
           <View style={styles.dom}>
-            <NewsBodyDomEditor
-              html={editor.article.content}
-              onChangeHtml={async (content) => editor.patch({ content })}
-              onRequestImage={editor.requestBodyImage}
-              dom={{ style: { height: 360, width: '100%' }, useExpoDOMWebView: false }}
-            />
+            {editor.isNew || editor.article.id ? (
+              <NewsBodyDomEditor
+                key={editor.isNew ? 'new' : editor.article.id}
+                html={editor.article.content}
+                onChangeHtml={async (content) => editor.patch({ content })}
+                onRequestImage={editor.requestBodyImage}
+              />
+            ) : null}
           </View>
           <WriterRelationsBlock article={editor.article} onChange={editor.patch} />
           <PrimaryButton label={editor.isNew ? t('writerSaveDraft') : t('writerSave')} onPress={() => void handleSave()} loading={editor.saving} />

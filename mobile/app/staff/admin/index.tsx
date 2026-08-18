@@ -45,7 +45,7 @@ export default function AdminHubScreen() {
   return (
     <RequireAuth returnTo="/staff/admin">
       <Screen scroll>
-        <SectionHeader title={t('adminHub')} subtitle={t('adminHubHint')} />
+        <SectionHeader title={t('adminHubHint')} />
         <AdminHubLinks user={user} />
       </Screen>
     </RequireAuth>

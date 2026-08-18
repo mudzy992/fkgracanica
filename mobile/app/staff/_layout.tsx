@@ -20,6 +20,14 @@ export default function StaffLayout() {
       }}
     >
       <Stack.Screen name="index" options={{ title: t('staffWorkspace') }} />
+      <Stack.Screen name="writer/index" options={{ title: t('writer') }} />
+      <Stack.Screen name="writer/[id]" options={{ title: t('writer') }} />
+      <Stack.Screen name="commentator" options={{ title: t('commentatorTitle') }} />
+      <Stack.Screen name="gallery-manage/index" options={{ title: t('galleryManage') }} />
+      <Stack.Screen name="gallery-manage/[id]" options={{ title: t('galleryManage') }} />
+      <Stack.Screen name="moderation" options={{ title: t('moderator') }} />
+      <Stack.Screen name="ulaz" options={{ title: t('ulaz') }} />
+      <Stack.Screen name="admin" options={{ headerShown: false, title: t('adminHub') }} />
     </Stack>
   );
 }

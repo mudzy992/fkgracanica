@@ -7,6 +7,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { AuthProvider } from '../src/lib/auth';
 import { registerPushDeepLinks } from '../src/lib/push';
 import { ThemeProvider, useTheme } from '../src/lib/theme-context';
+import { ApkUpdateHost } from '../src/features/app-update/ApkUpdateHost';
 
 function RootStack() {
   const { colors } = useTheme();
@@ -64,6 +65,7 @@ export default function RootLayout() {
     <SafeAreaProvider>
       <ThemeProvider>
         <AuthProvider>
+          <ApkUpdateHost />
           <RootStack />
         </AuthProvider>
       </ThemeProvider>

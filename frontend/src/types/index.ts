@@ -24,6 +24,9 @@ export interface User {
   firstName: string | null;
   lastName: string | null;
   permissions?: string[];
+  notifyLiveMatch?: boolean;
+  notifyPush?: boolean;
+  notifyInApp?: boolean;
 }
 
 export interface StandingRow {

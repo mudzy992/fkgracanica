@@ -10,6 +10,7 @@ import { DashboardPage } from '../pages/admin/DashboardPage';
 import { AnalyticsPage } from '../pages/admin/AnalyticsPage';
 import { PlatformStatusPage } from '../pages/admin/platform-status/PlatformStatusPage';
 import { SettingsPage } from '../pages/admin/SettingsPage';
+import { AppReleasesAdminPage } from '../pages/admin/app-releases/AppReleasesAdminPage';
 import { UsersRolesPage } from '../pages/admin/UsersRolesPage';
 import { CmsHubPage } from '../pages/admin/cms/CmsHubPage';
 import { CmsPageBuilderPage } from '../pages/admin/cms/CmsPageBuilderPage';
@@ -69,6 +70,9 @@ export const appRouteElements = (
           </Route>
           <Route element={<PermissionRoute permission="settings.read" />}>
             <Route path="settings" element={<SettingsPage />} />
+          </Route>
+          <Route element={<PermissionRoute permission="app-releases.manage" />}>
+            <Route path="app-releases" element={<AppReleasesAdminPage />} />
           </Route>
           <Route path="notifications" element={<NotificationsPage />} />
           <Route path="users" element={<UsersRolesPage />} />

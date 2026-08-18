@@ -1,5 +1,11 @@
 # Changelog — Live Center
 
+## 2026-08-18 (Track 36)
+
+- Klub akcije zahtijevaju `playerId`; izmjena out+in
+- Live push (`notifyLiveMatch`) + mute; fanout na evente i start/HT/FT
+- Mobile LIVE: YouTube stream, clock overlay, toast
+
 ## 2026-07-02
 
 - Retroaktivne utakmice: admin može kreirati FINISHED utakmicu u prošlosti, postavu i izvještaj bez live toka

@@ -84,6 +84,42 @@ export class NotificationsService {
     return notification;
   }
 
+  async createLive(
+    userId: string,
+    input: { title: string; body: string; path: string; type: string },
+  ) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        notifyInApp: true,
+        notifyPush: true,
+        notifyLiveMatch: true,
+        email: true,
+        pushDevices: { select: { expoPushToken: true } },
+      },
+    });
+    if (!user) return null;
+    const notification = await this.prisma.notification.create({
+      data: {
+        userId,
+        title: input.title,
+        body: input.body,
+        type: `live.${input.type}`,
+        metadata: { path: input.path },
+      },
+    });
+    if (user.notifyInApp !== false) {
+      this.realtime.emitNotificationNew(userId, notification);
+    }
+    if (user.notifyPush && user.notifyLiveMatch) {
+      await this.delivery.deliverPushOnly(
+        { notifyPush: true, pushDevices: user.pushDevices },
+        { title: notification.title, body: notification.body, type: notification.type, path: input.path },
+      );
+    }
+    return notification;
+  }
+
   async registerDevice(userId: string, token: string, platform?: string) {
     return this.prisma.pushDevice.upsert({
       where: { expoPushToken: token },

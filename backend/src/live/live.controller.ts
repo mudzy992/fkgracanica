@@ -1,92 +1,22 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { MatchEventType } from '@prisma/client';
-import { IsIn, IsInt, IsOptional, IsString, IsUrl, Max, Min } from 'class-validator';
 import { LiveService } from './live.service';
+import { LiveClockOpsService } from './live-clock-ops.service';
 import { LivePhaseService } from './live-phase.service';
-import { LiveReportService } from './live-report.service';
+import { AddEventDto, SetLiveStreamDto, SetStoppageDto } from './live.dto';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { PermissionsGuard } from '../common/guards/permissions.guard';
 import { RequirePermissions } from '../common/decorators/permissions.decorator';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
 import type { AuthUser } from '../common/types/auth-user.type';
 
-class AddEventDto {
-  @IsString()
-  type!: MatchEventType;
-
-  @IsOptional()
-  @IsInt()
-  @Min(0)
-  @Max(130)
-  minute?: number;
-
-  @IsOptional()
-  @IsString()
-  playerId?: string;
-
-  @IsOptional()
-  @IsString()
-  relatedPlayerId?: string;
-
-  @IsOptional()
-  @IsString()
-  teamSide?: string;
-
-  @IsOptional()
-  @IsString()
-  description?: string;
-}
-
-class ReportEventDto {
-  @IsString()
-  type!: MatchEventType;
-
-  @IsInt()
-  @Min(0)
-  @Max(130)
-  minute!: number;
-
-  @IsOptional()
-  @IsString()
-  playerId?: string;
-
-  @IsOptional()
-  @IsString()
-  relatedPlayerId?: string;
-
-  @IsOptional()
-  @IsString()
-  teamSide?: string;
-
-  @IsOptional()
-  @IsString()
-  description?: string;
-}
-
-class SetStoppageDto {
-  @IsIn([1, 2, 3, 4])
-  half!: 1 | 2 | 3 | 4;
-
-  @IsInt()
-  @Min(1)
-  @Max(15)
-  minutes!: number;
-}
-
-class SetLiveStreamDto {
-  @IsOptional()
-  @IsString()
-  url?: string | null;
-}
-
 @ApiTags('live')
 @Controller('live')
 export class LiveController {
   constructor(
     private readonly service: LiveService,
+    private readonly clock: LiveClockOpsService,
     private readonly phases: LivePhaseService,
-    private readonly reports: LiveReportService,
   ) {}
 
   @Get('pending')
@@ -127,7 +57,7 @@ export class LiveController {
   @RequirePermissions('live.manage')
   @ApiBearerAuth()
   startMatch(@Param('matchId') matchId: string) {
-    return this.service.startMatch(matchId);
+    return this.clock.startMatch(matchId);
   }
 
   @Post('matches/:matchId/stoppage')
@@ -135,7 +65,7 @@ export class LiveController {
   @RequirePermissions('live.manage')
   @ApiBearerAuth()
   setStoppage(@Param('matchId') matchId: string, @Body() body: SetStoppageDto) {
-    return this.service.setStoppage(matchId, body.half, body.minutes);
+    return this.clock.setStoppage(matchId, body.half, body.minutes);
   }
 
   @Patch('matches/:matchId/stream')
@@ -151,7 +81,7 @@ export class LiveController {
   @RequirePermissions('live.manage')
   @ApiBearerAuth()
   endMatch(@Param('matchId') matchId: string) {
-    return this.service.endMatch(matchId);
+    return this.clock.endMatch(matchId);
   }
 
   @Post('matches/:matchId/halftime')
@@ -159,7 +89,7 @@ export class LiveController {
   @RequirePermissions('live.manage')
   @ApiBearerAuth()
   setHalftime(@Param('matchId') matchId: string) {
-    return this.service.setHalftime(matchId);
+    return this.clock.setHalftime(matchId);
   }
 
   @Post('matches/:matchId/resume')
@@ -167,7 +97,7 @@ export class LiveController {
   @RequirePermissions('live.manage')
   @ApiBearerAuth()
   resumeSecondHalf(@Param('matchId') matchId: string) {
-    return this.service.resumeSecondHalf(matchId);
+    return this.clock.resumeSecondHalf(matchId);
   }
 
   @Post('matches/:matchId/regular-time/end')
@@ -232,45 +162,5 @@ export class LiveController {
   @ApiBearerAuth()
   approveReport(@Param('matchId') matchId: string) {
     return this.service.approveReport(matchId);
-  }
-
-  @Post('matches/:matchId/report/events')
-  @UseGuards(JwtAuthGuard, PermissionsGuard)
-  @RequirePermissions('live.manage')
-  @ApiBearerAuth()
-  addReportEvent(
-    @Param('matchId') matchId: string,
-    @Body() body: ReportEventDto,
-    @CurrentUser() user: AuthUser,
-  ) {
-    return this.reports.addEvent(matchId, { ...body, createdById: user.id });
-  }
-
-  @Delete('matches/:matchId/report/events/:eventId')
-  @UseGuards(JwtAuthGuard, PermissionsGuard)
-  @RequirePermissions('live.manage')
-  @ApiBearerAuth()
-  deleteReportEvent(@Param('matchId') matchId: string, @Param('eventId') eventId: string) {
-    return this.reports.deleteEvent(matchId, eventId);
-  }
-
-  @Post('matches/:matchId/report/comments')
-  @UseGuards(JwtAuthGuard, PermissionsGuard)
-  @RequirePermissions('live.manage')
-  @ApiBearerAuth()
-  addReportComment(
-    @Param('matchId') matchId: string,
-    @Body() body: { message: string; minute: number },
-    @CurrentUser() user: AuthUser,
-  ) {
-    return this.reports.addComment(matchId, { ...body, userId: user.id });
-  }
-
-  @Post('matches/:matchId/report/submit')
-  @UseGuards(JwtAuthGuard, PermissionsGuard)
-  @RequirePermissions('live.manage')
-  @ApiBearerAuth()
-  submitReport(@Param('matchId') matchId: string) {
-    return this.reports.submitReport(matchId);
   }
 }

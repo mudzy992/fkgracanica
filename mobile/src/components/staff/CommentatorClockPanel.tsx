@@ -1,7 +1,7 @@
 import { Pressable, Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../../lib/theme-context';
-import { type LiveActionRunner, postLive } from './commentator-api';
+import { type LiveActionRunner, postLive, postLiveEvent } from './commentator-api';
 import { commentatorStyles as styles } from './commentator-styles';
 
 type ClockAction = { path: string; labelKey: string };
@@ -60,6 +60,13 @@ export function CommentatorClockPanel({ matchId, run }: Props) {
       {renderGroup('commentatorClockRegular', REGULAR)}
       {renderGroup('commentatorClockExtra', EXTRA)}
       {renderGroup('commentatorClockPenalties', PENALTIES)}
+      <Pressable
+        accessibilityRole="button"
+        style={[styles.actionBtn, { backgroundColor: colors.surface }]}
+        onPress={() => void run(() => postLiveEvent(matchId, { type: 'VAR' }))}
+      >
+        <Text style={[styles.actionText, { color: colors.text }]}>{t('commentatorVar')}</Text>
+      </Pressable>
     </View>
   );
 }

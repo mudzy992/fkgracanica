@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Alert, StyleSheet, Text, View } from 'react-native';
-import { useLocalSearchParams } from 'expo-router';
+import { Stack, useLocalSearchParams } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { ListSkeleton } from '../../../src/components/ListSkeleton';
 import { MediaPickerSheet } from '../../../src/components/media/MediaPickerSheet';
@@ -111,8 +111,9 @@ export default function GalleryEditorScreen() {
 
   return (
     <RequirePermission permission="gallery.manage" returnTo="/staff/gallery-manage">
+      <Stack.Screen options={{ title: title || t('galleryManage') }} />
       <Screen scroll>
-        <SectionHeader title={title || t('galleryManage')} subtitle={t('galleryEditorHint')} />
+        <SectionHeader title={t('galleryEditorHint')} />
         {loading ? <ListSkeleton rows={2} /> : (
           <View style={[styles.card, { backgroundColor: colors.background, borderColor: colors.border }]}>
             <Text style={[styles.meta, { color: colors.textMuted }]}>{status} · {photos.length} {t('galleryPhotos')}</Text>

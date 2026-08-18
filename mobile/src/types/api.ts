@@ -4,6 +4,7 @@ export type User = {
   firstName: string | null;
   lastName: string | null;
   permissions?: string[];
+  notifyLiveMatch?: boolean;
 };
 
 export type AuthTokens = {
@@ -58,12 +59,24 @@ export type Match = {
   venue: string | null;
   status: string;
   minute: number;
+  liveStreamUrl?: string | null;
+  youtubeUrl?: string | null;
+  matchPeriod?: string | null;
+  clockStartedAt?: string | null;
   homeClub: Club;
   awayClub: Club;
   events?: MatchEvent[];
   highlights?: MatchHighlight[];
+  lineup?: MatchLineup[];
   season?: { name: string; competition?: { name?: string } | null };
   roundRel?: { number: number; name?: string | null } | null;
+};
+
+export type MatchLineup = {
+  playerId: string;
+  clubId: string;
+  isStarter: boolean;
+  player?: { id: string; firstName: string; lastName: string };
 };
 
 export type MatchHighlight = {
@@ -78,6 +91,10 @@ export type MatchEvent = {
   type: string;
   minute: number;
   description?: string | null;
+  playerId?: string | null;
+  relatedPlayerId?: string | null;
+  teamSide?: string | null;
+  player?: { firstName: string; lastName: string } | null;
 };
 
 export type Notification = {
