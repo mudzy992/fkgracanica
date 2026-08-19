@@ -1,5 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, Text, View } from 'react-native';
+import { useLiveClock } from '../../hooks/use-live-clock';
+import { formatLiveMinute } from '../../lib/live-clock';
 import { matchMetaLine, matchStatusKey } from '../../lib/match-status';
 import { useTheme } from '../../lib/theme-context';
 import { spacing, typography } from '../../lib/theme';
@@ -12,9 +14,13 @@ type Props = { match: Match };
 export function LiveScoreboard({ match }: Props) {
   const { t } = useTranslation();
   const { colors } = useTheme();
+  const clock = useLiveClock(match);
   const isLive = match.status === 'LIVE' || match.status === 'HALFTIME';
   const meta = matchMetaLine(match, (n) => t('matchRound', { n }));
   const statusLabel = t(matchStatusKey(match.status));
+  const clockLabel = formatLiveMinute(clock, match.minute);
+  const badge =
+    match.status === 'HALFTIME' ? statusLabel : isLive ? `${statusLabel} · ${clockLabel}` : statusLabel;
 
   return (
     <View style={[styles.board, { backgroundColor: colors.primary }]}>
@@ -22,9 +28,7 @@ export function LiveScoreboard({ match }: Props) {
         <Team name={match.homeClub.name} crestPath={match.homeClub.crestPath} />
         <View style={styles.score}>
           <ScorePulse homeScore={match.homeScore} awayScore={match.awayScore} color={colors.white} />
-          <Text style={[styles.badge, { color: isLive ? '#FCA5A5' : colors.white }]}>
-            {isLive ? `${statusLabel} · ${match.minute}'` : statusLabel}
-          </Text>
+          <Text style={[styles.badge, { color: isLive ? '#FCA5A5' : colors.white }]}>{badge}</Text>
         </View>
         <Team name={match.awayClub.name} crestPath={match.awayClub.crestPath} />
       </View>

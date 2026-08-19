@@ -3,6 +3,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { ListSkeleton } from '../../../src/components/ListSkeleton';
+import { LiveFeaturedStream } from '../../../src/components/live/LiveFeaturedStream';
 import { LiveMatchRow } from '../../../src/components/live/LiveMatchRow';
 import { ScreenEmpty } from '../../../src/components/ScreenEmpty';
 import { useLiveListSocket } from '../../../src/hooks/use-live-list-socket';
@@ -107,24 +108,27 @@ export default function LiveListScreen() {
   const locale = i18n.language;
 
   return (
-    <ScrollView
-      style={[styles.container, { backgroundColor: colors.surface }]}
-      contentContainerStyle={[styles.content, empty && styles.contentEmpty]}
-      refreshControl={
-        <RefreshControl
-          refreshing={refreshing}
-          onRefresh={() => {
-            setRefreshing(true);
-            void load().finally(() => setRefreshing(false));
-          }}
-        />
-      }
-    >
-      {empty ? <ScreenEmpty message={t('noMatches')} icon="football-outline" /> : null}
-      <Section title={t('live')} matches={live} locale={locale} featuredFirst onPress={open} />
-      <Section title={t('upcoming')} matches={upcoming} locale={locale} onPress={open} />
-      <Section title={t('recent')} matches={recent} locale={locale} onPress={open} />
-    </ScrollView>
+    <View style={[styles.container, { backgroundColor: colors.surface }]}>
+      <LiveFeaturedStream match={live[0]} onOpen={open} />
+      <ScrollView
+        style={styles.container}
+        contentContainerStyle={[styles.content, empty && styles.contentEmpty]}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={() => {
+              setRefreshing(true);
+              void load().finally(() => setRefreshing(false));
+            }}
+          />
+        }
+      >
+        {empty ? <ScreenEmpty message={t('noMatches')} icon="football-outline" /> : null}
+        <Section title={t('live')} matches={live} locale={locale} featuredFirst onPress={open} />
+        <Section title={t('upcoming')} matches={upcoming} locale={locale} onPress={open} />
+        <Section title={t('recent')} matches={recent} locale={locale} onPress={open} />
+      </ScrollView>
+    </View>
   );
 }
 

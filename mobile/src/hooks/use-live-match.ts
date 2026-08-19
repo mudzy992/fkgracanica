@@ -2,19 +2,14 @@ import { useCallback, useEffect, useState } from 'react';
 import { api } from '../lib/api';
 import { getRealtimeSocket } from '../lib/realtime';
 import type { Match, MatchEvent } from '../types/api';
-
-export type LiveClock = {
-  displayMinute: number;
-  displaySecond?: number;
-  periodLabel?: string;
-};
+import { useLiveClock } from './use-live-clock';
 
 export function useLiveMatch(matchId: string) {
   const [match, setMatch] = useState<Match | null>(null);
-  const [clock, setClock] = useState<LiveClock | null>(null);
   const [connected, setConnected] = useState(false);
   const [loading, setLoading] = useState(true);
   const [toast, setToast] = useState<MatchEvent | null>(null);
+  const clock = useLiveClock(match);
 
   const patch = useCallback((partial: Partial<Match>) => {
     setMatch((old) => (old ? { ...old, ...partial } : old));
@@ -42,7 +37,9 @@ export function useLiveMatch(matchId: string) {
       }
     };
     const onDisconnect = () => setConnected(false);
-    const onClock = (payload: LiveClock) => setClock(payload);
+    const onClock = (payload: { displayMinute?: number }) => {
+      if (typeof payload.displayMinute === 'number') patch({ minute: payload.displayMinute });
+    };
 
     socket.on('connect', onConnect);
     socket.on('disconnect', onDisconnect);
@@ -66,7 +63,7 @@ export function useLiveMatch(matchId: string) {
 
   useEffect(() => {
     if (!toast) return;
-    const id = setTimeout(() => setToast(null), 4000);
+    const id = setTimeout(() => setToast(null), 12000);
     return () => clearTimeout(id);
   }, [toast]);
 

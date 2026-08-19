@@ -4,11 +4,13 @@ import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { ListSkeleton } from '../../src/components/ListSkeleton';
 import { LiveEventList } from '../../src/components/LiveEventList';
 import { LiveEventToast } from '../../src/components/live/LiveEventToast';
+import { LiveMatchBroadcast } from '../../src/components/live/LiveMatchBroadcast';
 import { LiveScoreboard } from '../../src/components/live/LiveScoreboard';
-import { LiveStreamPlayer } from '../../src/components/live/LiveStreamPlayer';
 import { MatchHighlightsList } from '../../src/components/MatchHighlightsList';
 import { ScreenEmpty } from '../../src/components/ScreenEmpty';
 import { useLiveMatch } from '../../src/hooks/use-live-match';
+import { formatLiveMinute } from '../../src/lib/live-clock';
+import { parseYouTubeId } from '../../src/lib/youtube-id';
 import { useTheme } from '../../src/lib/theme-context';
 import { spacing } from '../../src/lib/theme';
 
@@ -17,8 +19,6 @@ export default function LiveMatchScreen() {
   const { t } = useTranslation();
   const { colors } = useTheme();
   const { match, clock, connected, loading, toast } = useLiveMatch(id ?? '');
-  const streamUrl = match?.liveStreamUrl ?? match?.youtubeUrl ?? null;
-  const isHalftime = match?.status === 'HALFTIME';
 
   if (loading && !match) {
     return (
@@ -37,17 +37,35 @@ export default function LiveMatchScreen() {
     );
   }
 
-  const minuteLabel = isHalftime
-    ? t('matchHalftime')
-    : clock
-      ? `${clock.displayMinute}'`
-      : `${match.minute}'`;
+  const streamUrl = match.liveStreamUrl ?? match.youtubeUrl ?? '';
+  const isBroadcast =
+    Boolean(parseYouTubeId(streamUrl)) &&
+    (match.status === 'LIVE' || match.status === 'HALFTIME');
+
+  if (isBroadcast) {
+    return (
+      <>
+        <Stack.Screen
+          options={{
+            title: '',
+            headerTransparent: true,
+            headerTintColor: '#fff',
+            headerShadowVisible: false,
+            contentStyle: { backgroundColor: '#000' },
+          }}
+        />
+        <LiveMatchBroadcast match={match} clock={clock} toast={toast} connected={connected} />
+      </>
+    );
+  }
+
+  const isHalftime = match.status === 'HALFTIME';
+  const minuteLabel = isHalftime ? t('matchHalftime') : formatLiveMinute(clock, match.minute);
 
   return (
     <>
       <Stack.Screen options={{ title: `${match.homeClub.name} – ${match.awayClub.name}` }} />
       <View style={[styles.root, { backgroundColor: '#050A14' }]}>
-        {streamUrl ? <LiveStreamPlayer url={streamUrl} hidden={isHalftime} /> : null}
         <ScrollView contentContainerStyle={styles.content}>
           <View style={styles.hud}>
             <Text style={styles.liveBadge}>{isHalftime ? t('matchHalftime') : t('matchLive')}</Text>

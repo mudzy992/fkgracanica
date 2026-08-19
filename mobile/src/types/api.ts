@@ -63,6 +63,10 @@ export type Match = {
   youtubeUrl?: string | null;
   matchPeriod?: string | null;
   clockStartedAt?: string | null;
+  stoppageFirstHalf?: number;
+  stoppageSecondHalf?: number;
+  stoppageExtraFirst?: number;
+  stoppageExtraSecond?: number;
   homeClub: Club;
   awayClub: Club;
   events?: MatchEvent[];

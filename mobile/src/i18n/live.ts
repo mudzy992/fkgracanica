@@ -6,6 +6,10 @@ export const liveBs = {
   matchPostponed: 'Odgođena',
   matchCancelled: 'Otkazana',
   matchRound: '{{n}}. kolo',
+  matchStream: 'Stream',
+  matchStreamPaused: 'Prijenos pauziran — poluvrijeme',
+  matchEventsCta: 'Događaji',
+  matchOpenBroadcast: 'Otvori prijenos',
 } as const;
 
 export const liveEn: Record<keyof typeof liveBs, string> = {
@@ -16,4 +20,8 @@ export const liveEn: Record<keyof typeof liveBs, string> = {
   matchPostponed: 'Postponed',
   matchCancelled: 'Cancelled',
   matchRound: 'Round {{n}}',
+  matchStream: 'Stream',
+  matchStreamPaused: 'Stream paused — half-time',
+  matchEventsCta: 'Events',
+  matchOpenBroadcast: 'Open broadcast',
 };

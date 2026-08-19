@@ -4,12 +4,12 @@ import { matchEventLabelKey } from '../../lib/match-events';
 import { spacing, typography } from '../../lib/theme';
 import type { MatchEvent } from '../../types/api';
 
-export function LiveEventToast({ event }: { event: MatchEvent | null }) {
+export function LiveEventToast({ event, bottom }: { event: MatchEvent | null; bottom?: number }) {
   const { t } = useTranslation();
   if (!event) return null;
   const player = event.player ? `${event.player.firstName} ${event.player.lastName}` : '';
   return (
-    <View style={styles.toast}>
+    <View style={[styles.toast, bottom != null && { bottom }]}>
       <Text style={styles.min}>{event.minute}'</Text>
       <Text style={styles.label}>
         {t(matchEventLabelKey(event.type), { type: event.type })}

@@ -13,11 +13,12 @@ export type MatchScoreRowProps = {
   status: string;
   homeScore?: number;
   awayScore?: number;
-  minute?: number;
+  minute?: number | string;
   scheduledAt?: string;
   locale: string;
   featured?: boolean;
   metaLine?: string;
+  hasStream?: boolean;
   onPress: () => void;
 };
 
@@ -34,6 +35,7 @@ export function MatchScoreRow({
   locale,
   featured,
   metaLine,
+  hasStream,
   onPress,
 }: MatchScoreRowProps) {
   const { colors } = useTheme();
@@ -43,6 +45,7 @@ export function MatchScoreRow({
   const day = scheduledAt ? formatMatchDayLabel(scheduledAt, locale) : '';
   const time = scheduledAt ? formatMatchTime(scheduledAt) : '';
   const scoreSize = featured ? 28 : 18;
+  const minuteLabel = typeof minute === 'number' ? `${minute}'` : minute;
 
   return (
     <Pressable
@@ -58,7 +61,8 @@ export function MatchScoreRow({
       {live ? (
         <Text style={[styles.live, { color: colors.danger }]}>
           {status === 'HALFTIME' ? t('matchHalftime') : t('matchLive')}
-          {minute != null ? ` · ${minute}'` : ''}
+          {minuteLabel != null && minuteLabel !== '' ? ` · ${minuteLabel}` : ''}
+          {hasStream ? ` · ${t('matchStream')}` : ''}
         </Text>
       ) : null}
       <View style={styles.teams}>
