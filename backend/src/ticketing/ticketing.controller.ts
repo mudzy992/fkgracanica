@@ -68,6 +68,13 @@ export class TicketingController {
     return this.service.cancelOrder(orderId, user.id);
   }
 
+  @Post('inspect')
+  @UseGuards(PermissionsGuard)
+  @RequireAnyPermission('admissions.scan', 'ticketing.manage')
+  inspect(@Body() body: { qrCode: string; matchId?: string }) {
+    return this.service.inspectTicket(body.qrCode, body.matchId);
+  }
+
   @Post('validate')
   @UseGuards(PermissionsGuard)
   @RequireAnyPermission('admissions.scan', 'ticketing.manage')

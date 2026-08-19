@@ -1,5 +1,4 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
-import { TicketStatus } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { PaymentsReadinessService } from '../payments/payments-readiness.service';
 import { TicketingOrdersService } from './ticketing-orders.service';
@@ -11,8 +10,7 @@ import {
   ticketOrderInclude,
 } from './ticketing-query.util';
 import { occupiedForMatch } from './season-pass-capacity.util';
-import { validateSeasonPass } from './season-pass-validate.util';
-import { validateMembershipCard } from './membership-validate.util';
+import { scanAdmission } from './admission-scan';
 import {
   countUserActiveTicketsForMatch,
   getMaxBoxOfficeTicketsPerUser,
@@ -64,38 +62,12 @@ export class TicketingService {
     return this.orders.cancelOrder(orderId, userId);
   }
 
-  async validateTicket(qrCode: string, matchId?: string) {
-    const ticket = await this.prisma.ticket.findUnique({
-      where: { qrCode },
-      include: { match: { include: { homeClub: true, awayClub: true } } },
-    });
-    if (!ticket) {
-      try {
-        return await validateSeasonPass(this.prisma, qrCode, matchId);
-      } catch (err) {
-        if (err instanceof NotFoundException && err.message === 'Ulaznica nije pronađena') {
-          return validateMembershipCard(this.prisma, qrCode);
-        }
-        throw err;
-      }
-    }
-    if (ticket.status === TicketStatus.USED) {
-      throw new BadRequestException('Ulaznica je već iskorištena');
-    }
-    if (ticket.status === TicketStatus.CANCELLED) {
-      throw new BadRequestException('Ulaznica je otkazana');
-    }
-    if (ticket.status === TicketStatus.RESERVED) {
-      throw new BadRequestException('Ulaznica nije plaćena');
-    }
-    if (ticket.status !== TicketStatus.PAID_AT_BOX_OFFICE) {
-      throw new BadRequestException('Ulaznica nije validna');
-    }
-    return this.prisma.ticket.update({
-      where: { id: ticket.id },
-      data: { status: TicketStatus.USED },
-      include: { match: { include: { homeClub: true, awayClub: true } } },
-    }).then((row) => ({ kind: 'ticket' as const, ...row }));
+  inspectTicket(qrCode: string, matchId?: string) {
+    return scanAdmission(this.prisma, qrCode, matchId, false);
+  }
+
+  validateTicket(qrCode: string, matchId?: string) {
+    return scanAdmission(this.prisma, qrCode, matchId, true);
   }
 
   async getMatchAvailability(matchId: string, userId?: string) {

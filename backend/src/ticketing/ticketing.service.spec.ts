@@ -62,6 +62,13 @@ describe('TicketingService.validateTicket', () => {
     expect(result.status).toBe(TicketStatus.USED);
   });
 
+  it('inspect does not mark ticket USED', async () => {
+    prismaMock.ticket.findUnique.mockResolvedValue(baseTicket);
+    const result = await service.inspectTicket('ticket_abc');
+    expect(prismaMock.ticket.update).not.toHaveBeenCalled();
+    expect(result).toMatchObject({ kind: 'ticket', status: TicketStatus.PAID_AT_BOX_OFFICE });
+  });
+
   it('rejects already USED', async () => {
     prismaMock.ticket.findUnique.mockResolvedValue({ ...baseTicket, status: TicketStatus.USED });
     await expect(service.validateTicket('ticket_abc')).rejects.toThrow(BadRequestException);

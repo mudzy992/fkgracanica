@@ -1,6 +1,6 @@
 # HANDOFF — FK Gračanica
 
-> Ažurirano: **2026-08-18**
+> Ažurirano: **2026-08-18** (kraj sesije Track 36 + gate scan)
 
 ---
 
@@ -9,17 +9,18 @@
 | Polje | Vrijednost |
 |-------|------------|
 | **Datum** | 2026-08-18 |
-| **Branch** | `main` |
-| **Aktivni track** | [34_mobile-to-100](./34_mobile-to-100/HANDOFF.md) — museum + leftover public + P2 |
-| **Prethodno** | Track 30 League/Clubs max; 32 web 100%; 33 after_launch 1–8 |
-| **Matrica** | `.cursor/docs/matrices/showcase-audit/` |
-| **Canvas** | Cursor canvas `mobile-completeness` (lokalno, nije u gitu) |
+| **Branch** | `main` @ `e15fd07` (pushed) |
+| **Aktivni track** | [36_ops-ticketing-live](./36_ops-ticketing-live/HANDOFF.md) |
+| **Uncommitted** | Gate QR lock (ulaz) — vidi Track 36 HANDOFF |
+| **Prethodno** | Track 34/35 staff; 36 app release + LIVE |
 
 ---
 
 ## 2. Status u jednoj rečenici
 
-Web/admin 100%. Mobile heritage (timeline/HoF/sponzori/trofeji) + home historija CTA. Sljedeći: museum + leftover public + P2 staff.
+Track 36 je na `origin/main`. **Gate scan lock nije commitovan** — sljedeća sesija: commit pa test na ulazu.
+
+Detalji, fajlovi, rizici: [36_ops-ticketing-live/HANDOFF.md](./36_ops-ticketing-live/HANDOFF.md).
 
 ---
 
@@ -28,21 +29,18 @@ Web/admin 100%. Mobile heritage (timeline/HoF/sponzori/trofeji) + home historija
 | Resurs | Vrijednost |
 |--------|------------|
 | Web | https://fkgracanica.ba101.top |
-| Preview | https://fkgracanica.ba101.top/platforma |
 | API | https://fkgracanica.ba101.top/backend/api/v1 |
 | Swagger | https://fkgracanica.ba101.top/backend/api/docs |
 | Health | https://fkgracanica.ba101.top/backend/api/v1/health |
-
-Flag `feature.showcaseMode` default OFF.
 
 ---
 
 ## 4. Sljedeći koraci
 
-1. **Track 34 leftover** — login, tickets-buy, contact, tickets-browse.
-2. **P2 staff** — dashboard, gallery-manage, orders, list images.
-3. **P04** — Stripe na `tickets-buy`; Play Store (33 faza 9).
-4. Canvas % ručno.
+1. Commit/push gate scan (`admission-scan`, inspect, sticky overlay).
+2. DB migrate `20260818190000_app_releases_live_notify` ako nije na prod.
+3. EAS APK + native rebuild za in-app update.
+4. Terenski test ulaza: VALID ostaje dok se ne skenira druga karta.
 
 ---
 
@@ -50,8 +48,7 @@ Flag `feature.showcaseMode` default OFF.
 
 ```bash
 ./scripts/menu.sh   # 1 = rebuild docker
-# ili
-./scripts/docker-prod-build.sh && docker compose up -d
+npm run dev:backend && npm run dev:frontend && npm run dev:mobile
 ```
 
 ---
@@ -60,6 +57,5 @@ Flag `feature.showcaseMode` default OFF.
 
 - Fajlovi ≤200 linija (config do 400)
 - Logika → MATRIX + CHANGELOG
-- `npm ci` u Dockeru = `frontend/package-lock.json`
 - Ne dirati mobile showcase intercept u `_layout.tsx`
 - Bez commita osim na zahtjev

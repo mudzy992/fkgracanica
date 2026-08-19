@@ -1,66 +1,96 @@
-import { Link } from 'react-router-dom';
-import { useMatches } from '../../../hooks';
+import { useMatch, useMatches } from '../../../hooks';
+import { useMatchRealtime } from '../../../hooks/use-match-realtime';
 import { Button } from '../../../components/ui/button';
-import { matchStatusLabel } from '../../../lib/match-status-label';
-import { formatDateTime } from '../../../lib/utils';
-import { matchTitle, pickCommentatorDeskMatches } from './commentator-desk';
+import type { HomeAction } from './HomeQuickActions';
 import { HomeKpiGrid } from './HomeKpiGrid';
 import { HomeQuickActions } from './HomeQuickActions';
 import { RoleHomeShell } from './RoleHomeShell';
+import { CommentatorDeskList } from './CommentatorDeskList';
+import { CommentatorLiveHero } from './CommentatorLiveHero';
+import {
+  deskCounts,
+  deskHref,
+  pickAwaitingApproval,
+  pickLive,
+  pickNeedsReport,
+  pickToday,
+  primaryDeskMatch,
+} from './commentator-desk';
 
 export function CommentatorHome() {
-  const { data, isLoading } = useMatches();
+  const { data, isLoading, isError, refetch } = useMatches();
   const matches = data ?? [];
-  const desk = pickCommentatorDeskMatches(matches);
-  const live = matches.filter((m) => m.status === 'LIVE' || m.status === 'HALFTIME');
-  const upcoming = matches.filter((m) => m.status === 'SCHEDULED');
-  const reports = matches.filter(
-    (m) => m.status === 'FINISHED' && m.reportStatus === 'PENDING_APPROVAL',
-  );
-  const next = desk[0];
+  const counts = deskCounts(matches);
+  const live = pickLive(matches);
+  const liveId = live[0]?.id;
+  const { data: liveDetail } = useMatch(liveId ?? '');
+  useMatchRealtime(liveId);
+  const hero = liveDetail ?? live[0];
+  const primary = primaryDeskMatch(matches);
+  const draft = pickNeedsReport(matches)[0];
+  const today = pickToday(matches)[0];
+  const pending = pickAwaitingApproval(matches)[0];
+  const actions: HomeAction[] = [];
+  if (primary) actions.push({ to: deskHref(primary), label: 'Otvori desk', variant: 'default' });
+  if (live[0]) actions.push({ to: `/live/${live[0].id}`, label: 'Javni live' });
+  if (draft) actions.push({ to: deskHref(draft), label: 'Izvještaj' });
+
+  if (isError) {
+    return (
+      <RoleHomeShell seo="Komentator" title="Komentator — kontrolna tabla" hint="Semafor, događaji, izvještaji.">
+        <div className="flex flex-col items-center gap-4 py-12">
+          <p className="text-text-muted">Nije moguće učitati utakmice.</p>
+          <Button variant="outline" onClick={() => void refetch()}>
+            Pokušaj ponovo
+          </Button>
+        </div>
+      </RoleHomeShell>
+    );
+  }
 
   return (
     <RoleHomeShell
       seo="Komentator"
       title="Komentator — kontrolna tabla"
-      hint="Samo utakmice: semafor, događaji, predaja izvještaja."
+      hint="Semafor, događaji i predaja izvještaja. Bez kalendara i takmičenja."
     >
       <HomeKpiGrid
         items={[
-          { key: 'live', label: 'Uživo', value: isLoading ? '…' : live.length, hint: 'Live / poluvrijeme' },
-          { key: 'upcoming', label: 'Zakazane', value: isLoading ? '…' : upcoming.length, hint: 'Predstojeće' },
-          { key: 'reports', label: 'Izvještaji', value: isLoading ? '…' : reports.length, hint: 'Za predaju' },
+          {
+            key: 'live',
+            label: 'Uživo',
+            value: isLoading ? '…' : counts.live,
+            hint: 'Live / poluvrijeme',
+            href: live[0] ? deskHref(live[0]) : undefined,
+          },
+          {
+            key: 'today',
+            label: 'Danas',
+            value: isLoading ? '…' : counts.today,
+            hint: 'Zakazane danas',
+            href: today ? deskHref(today) : undefined,
+          },
+          {
+            key: 'drafts',
+            label: 'Nacrti izvještaja',
+            value: isLoading ? '…' : counts.drafts,
+            hint: 'Još nisu predati',
+            href: draft ? deskHref(draft) : undefined,
+          },
+          {
+            key: 'pending',
+            label: 'Čeka odobrenje',
+            value: isLoading ? '…' : counts.pending,
+            hint: 'Kod moderatora',
+            href: pending ? deskHref(pending) : undefined,
+          },
         ]}
       />
-      <HomeQuickActions
-        items={[
-          { to: next ? `/admin/live/${next.id}` : '/admin/competitions', label: 'Otvori desk', variant: 'default' },
-          { to: next ? `/live/${next.id}` : '/liga', label: 'Javni live' },
-          { to: '/admin/competitions', label: 'Kalendar' },
-        ]}
-      />
-      <h2 className="mt-8 mb-3 text-sm font-semibold text-text-muted">Utakmice za desk</h2>
-      <ul className="divide-y divide-[var(--border-subtle)] rounded-xl border border-[var(--border-subtle)]">
-        {isLoading ? (
-          <li className="px-4 py-6 text-sm text-text-muted">Učitavanje utakmica…</li>
-        ) : desk.length === 0 ? (
-          <li className="px-4 py-6 text-sm text-text-muted">Nema utakmica za desk.</li>
-        ) : (
-          desk.map((match) => (
-            <li key={match.id} className="flex flex-wrap items-center justify-between gap-3 px-4 py-3">
-              <div className="min-w-0">
-                <p className="truncate font-medium">{matchTitle(match)}</p>
-                <p className="text-xs text-text-muted">
-                  {matchStatusLabel(match.status)} · {formatDateTime(match.scheduledAt)}
-                </p>
-              </div>
-              <Link to={`/admin/live/${match.id}`}>
-                <Button size="sm">Desk</Button>
-              </Link>
-            </li>
-          ))
-        )}
-      </ul>
+      {actions.length > 0 ? <HomeQuickActions items={actions} /> : null}
+      {hero ? <div className="mt-8"><CommentatorLiveHero match={hero} /></div> : null}
+      <div className="mt-8">
+        <CommentatorDeskList matches={matches} isLoading={isLoading} />
+      </div>
     </RoleHomeShell>
   );
 }

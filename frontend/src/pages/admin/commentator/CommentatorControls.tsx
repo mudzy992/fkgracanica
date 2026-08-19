@@ -1,11 +1,10 @@
 import type { Match } from '../../../types';
-import { matchEventLabel } from '../../../lib/match-event-labels';
-import { formatEventPlayers } from '../../../lib/live-event-text';
 import { isPenaltiesPhase } from '../../../lib/match-live-phase';
 import { CommentatorPenaltiesBoard } from './CommentatorPenaltiesBoard';
 import { CommentatorClockBar } from './CommentatorClockBar';
 import { CommentatorTeamColumn } from './CommentatorTeamBoard';
 import { CommentatorCommentPanel } from './CommentatorCommentPanel';
+import { CommentatorEventLog } from './CommentatorEventLog';
 
 interface Props {
   match: Match;
@@ -14,7 +13,6 @@ interface Props {
 export function CommentatorControls({ match }: Props) {
   const penalties = isPenaltiesPhase(match);
   const canAct = match.status === 'LIVE' && !penalties;
-
   return (
     <div className="space-y-4">
       <CommentatorClockBar match={match} />
@@ -39,19 +37,7 @@ export function CommentatorControls({ match }: Props) {
         </div>
       )}
       <CommentatorCommentPanel match={match} />
-      <details>
-        <summary className="cursor-pointer text-sm font-semibold">Dnevnik događaja</summary>
-        <ul className="mt-2 max-h-48 space-y-1 overflow-y-auto rounded-lg border border-slate-200 p-2 text-sm">
-          {match.events?.map((ev) => (
-            <li key={ev.id}>
-              <span className="font-semibold text-primary">{ev.minute}&apos;</span>{' '}
-              {matchEventLabel(ev.type)}
-              {formatEventPlayers(ev) && ` — ${formatEventPlayers(ev)}`}
-              {ev.description ? ` — ${ev.description}` : ''}
-            </li>
-          ))}
-        </ul>
-      </details>
+      <CommentatorEventLog match={match} />
     </div>
   );
 }

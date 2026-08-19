@@ -12,19 +12,24 @@ import {
   useStartMatch,
   useStartPenalties,
 } from '../../../hooks/use-live-admin';
+import { useConfirm } from '../../../hooks/use-confirm';
 import { getApiErrorMessage } from '../../../lib/api-error';
-import { canExtraHalftime, canHalftime, isTied } from '../../../lib/match-live-phase';
 import type { Match } from '../../../types';
 import { Button } from '../../../components/ui/button';
 import { Badge } from '../../../components/ui/badge';
 import { cn } from '../../../lib/utils';
+import { buildClockActions, clockBreakHint } from './clock-actions';
 
 const BTN = 'h-8 px-2.5 text-xs';
-const BTN_OUTLINE = cn(BTN, 'border-white/25 bg-white/10 text-white hover:bg-white/20');
-const BTN_END = cn(BTN, 'bg-red-600 text-white hover:bg-red-500');
+const STYLES = {
+  primary: BTN,
+  outline: cn(BTN, 'border-white/25 bg-white/10 text-white hover:bg-white/20'),
+  end: cn(BTN, 'bg-red-600 text-white hover:bg-red-500'),
+};
 
 export function CommentatorClockActions({ match }: { match: Match }) {
   const [error, setError] = useState('');
+  const { confirm, dialog } = useConfirm();
   const start = useStartMatch();
   const halftime = useHalftimeMatch();
   const resume = useResumeMatch();
@@ -36,7 +41,6 @@ export function CommentatorClockActions({ match }: { match: Match }) {
   const finishExtra = useFinishExtraTime();
   const startPenalties = useStartPenalties();
   const endPenalties = useEndAfterPenalties();
-
   const busy =
     start.isPending ||
     halftime.isPending ||
@@ -49,159 +53,67 @@ export function CommentatorClockActions({ match }: { match: Match }) {
     finishExtra.isPending ||
     startPenalties.isPending ||
     endPenalties.isPending;
+  const handlers: Record<string, () => Promise<unknown>> = {
+    start: () => start.mutateAsync(match.id),
+    ht: () => halftime.mutateAsync(match.id),
+    end: () => end.mutateAsync(match.id),
+    resume2: () => resume.mutateAsync(match.id),
+    ft: () => finishRegular.mutateAsync(match.id),
+    et: () => startExtra.mutateAsync(match.id),
+    eth: () => etHalftime.mutateAsync(match.id),
+    et2: () => resumeExtra.mutateAsync(match.id),
+    etend: () => finishExtra.mutateAsync(match.id),
+    pen: () => startPenalties.mutateAsync(match.id),
+    penend: () => endPenalties.mutateAsync(match.id),
+  };
+  const actions = buildClockActions(match);
+  const hint = clockBreakHint(match);
 
-  const liveBreak = match.liveBreak ?? 'NONE';
-  const period = match.matchPeriod;
-
-  const run = async (fn: () => Promise<unknown>) => {
+  const run = async (key: string, needsConfirm: boolean, label: string) => {
+    if (needsConfirm) {
+      const ok = await confirm({
+        title: `${label}?`,
+        description: 'Rezultat i sat se zaključavaju. Izvještaj ide na odobrenje.',
+        variant: 'danger',
+        confirmLabel: label,
+      });
+      if (!ok) return;
+    }
     try {
       setError('');
-      await fn();
+      const action = handlers[key];
+      if (!action) return;
+      await action();
     } catch (err) {
       setError(getApiErrorMessage(err, 'Akcija nije uspjela.'));
     }
   };
 
-  const actions: {
-    key: string;
-    label: string;
-    className?: string;
-    variant?: 'default' | 'outline' | 'ghost' | 'danger';
-    onClick: () => void;
-  }[] = [];
-
-  if (match.status === 'SCHEDULED') {
-    actions.push({ key: 'start', label: 'Započni', className: BTN, onClick: () => void run(() => start.mutateAsync(match.id)) });
-  }
-  if (canHalftime(match)) {
-    actions.push({
-      key: 'ht',
-      label: 'Poluvrijeme',
-      variant: 'outline',
-      className: BTN_OUTLINE,
-      onClick: () => void run(() => halftime.mutateAsync(match.id)),
-    });
-    actions.push({
-      key: 'end1',
-      label: 'Završi',
-      variant: 'danger',
-      className: BTN_END,
-      onClick: () => void run(() => end.mutateAsync(match.id)),
-    });
-  }
-  if (match.status === 'HALFTIME' && liveBreak === 'REGULAR_HT') {
-    actions.push({
-      key: 'resume2',
-      label: '2. poluvrijeme',
-      className: BTN,
-      onClick: () => void run(() => resume.mutateAsync(match.id)),
-    });
-  }
-  if (match.status === 'LIVE' && period === 'SECOND_HALF') {
-    if (isTied(match)) {
-      actions.push({
-        key: 'ft',
-        label: 'Kraj regularnog',
-        variant: 'outline',
-        className: BTN_OUTLINE,
-        onClick: () => void run(() => finishRegular.mutateAsync(match.id)),
-      });
-    } else {
-      actions.push({
-        key: 'end',
-        label: 'Završi',
-        variant: 'danger',
-        className: BTN_END,
-        onClick: () => void run(() => end.mutateAsync(match.id)),
-      });
-    }
-  }
-  if (match.status === 'HALFTIME' && liveBreak === 'POST_REGULATION' && isTied(match)) {
-    actions.push({
-      key: 'et',
-      label: 'Produžeci',
-      className: BTN,
-      onClick: () => void run(() => startExtra.mutateAsync(match.id)),
-    });
-  }
-  if (match.status === 'LIVE' && period === 'EXTRA_FIRST' && canExtraHalftime(match)) {
-    actions.push({
-      key: 'eth',
-      label: 'Pauza ET',
-      variant: 'outline',
-      className: BTN_OUTLINE,
-      onClick: () => void run(() => etHalftime.mutateAsync(match.id)),
-    });
-  }
-  if (match.status === 'HALFTIME' && liveBreak === 'ET_HT') {
-    actions.push({
-      key: 'et2',
-      label: '2. produžetak',
-      className: BTN,
-      onClick: () => void run(() => resumeExtra.mutateAsync(match.id)),
-    });
-  }
-  if (match.status === 'LIVE' && period === 'EXTRA_SECOND') {
-    if (isTied(match)) {
-      actions.push({
-        key: 'etend',
-        label: 'Kraj produžetaka',
-        variant: 'outline',
-        className: BTN_OUTLINE,
-        onClick: () => void run(() => finishExtra.mutateAsync(match.id)),
-      });
-    } else {
-      actions.push({
-        key: 'end',
-        label: 'Završi',
-        variant: 'danger',
-        className: BTN_END,
-        onClick: () => void run(() => end.mutateAsync(match.id)),
-      });
-    }
-  }
-  if (match.status === 'HALFTIME' && liveBreak === 'POST_EXTRA' && isTied(match)) {
-    actions.push({
-      key: 'pen',
-      label: 'Penali',
-      className: BTN,
-      onClick: () => void run(() => startPenalties.mutateAsync(match.id)),
-    });
-  }
-  if (match.status === 'LIVE' && period === 'PENALTIES') {
-    actions.push({
-      key: 'penend',
-      label: 'Završi penale',
-      variant: 'danger',
-      className: BTN_END,
-      onClick: () => void run(() => endPenalties.mutateAsync(match.id)),
-    });
-  }
-
-  if (!actions.length && !error) return null;
+  if (!actions.length && !error) return dialog;
 
   return (
     <div className="mt-3 border-t border-white/10 pt-3">
+      {dialog}
       <div className="flex flex-wrap items-center gap-1.5">
-        {match.status === 'HALFTIME' && liveBreak !== 'NONE' && liveBreak !== 'REGULAR_HT' && (
+        {hint ? (
           <Badge variant="muted" className="mr-1 text-[10px]">
-            {liveBreak === 'POST_REGULATION' || liveBreak === 'POST_EXTRA' ? 'Neriješeno' : 'Pauza'}
+            {hint}
           </Badge>
-        )}
-        {actions.map((a) => (
+        ) : null}
+        {actions.map((action) => (
           <Button
-            key={a.key}
+            key={action.key}
             size="sm"
-            variant={a.variant ?? 'default'}
-            className={a.className ?? BTN}
+            variant={action.style === 'end' ? 'danger' : action.style === 'outline' ? 'outline' : 'default'}
+            className={STYLES[action.style]}
             disabled={busy}
-            onClick={a.onClick}
+            onClick={() => void run(action.key, !!action.confirm, action.label)}
           >
-            {a.label}
+            {action.label}
           </Button>
         ))}
       </div>
-      {error && <p className="mt-2 text-xs text-red-300">{error}</p>}
+      {error ? <p className="mt-2 text-xs text-red-300">{error}</p> : null}
     </div>
   );
 }

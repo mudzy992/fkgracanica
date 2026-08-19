@@ -63,10 +63,13 @@ pending → paid → (refund_requested) → refunded
 
 ## QR validation
 
-- `POST /ticketing/validate` with `{ qrCode, matchId? }` — RBAC `ticketing.manage`
-- Ticket path pa SeasonPass; pass treba `matchId` (sljedeća domaća)
-- Admin: `TicketingValidatePanel` na tabu Narudžbe
-- Rejects: RESERVED (nije plaćeno), USED, CANCELLED; pass već skeniran za utakmicu
+- `POST /ticketing/inspect` — lookup only (bez USED / bez SeasonPassAdmission)
+- `POST /ticketing/validate` — admit: ticket → USED, pass → admission za `matchId`
+- RBAC: `admissions.scan` ili `ticketing.manage`
+- Ticket path pa SeasonPass pa membership; pass treba `matchId` (domaća)
+- Rejects: RESERVED, USED, CANCELLED; pass već skeniran za utakmicu
+- Mobile ulaz: lock na isti QR, sticky VALID/USED dok se ne skenira **druga** karta; default admit odmah; toggle ručna potvrda = inspect pa „Potvrdi ulaz”
+- Admin web: jedan klik = admit; jasno USED vs VALID
 
 ## Payment
 

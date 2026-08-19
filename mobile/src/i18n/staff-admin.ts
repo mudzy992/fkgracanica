@@ -102,6 +102,9 @@ export const staffAdminBs = {
   admissionValid: 'Valjano',
   admissionUsed: 'Iskorišteno',
   admissionInvalid: 'Nevažeće',
+  scanHoldHint: 'Rezultat ostaje dok ne skenirate sljedeću kartu.',
+  scanManualConfirm: 'Ručna potvrda ulaza',
+  scanConfirmAdmit: 'Potvrdi ulaz',
 } as const;
 
 export const staffAdminEn: Record<keyof typeof staffAdminBs, string> = {
@@ -208,4 +211,7 @@ export const staffAdminEn: Record<keyof typeof staffAdminBs, string> = {
   admissionValid: 'Valid',
   admissionUsed: 'Used',
   admissionInvalid: 'Invalid',
+  scanHoldHint: 'Result stays until you scan the next ticket.',
+  scanManualConfirm: 'Manual admit confirm',
+  scanConfirmAdmit: 'Confirm entry',
 };

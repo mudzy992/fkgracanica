@@ -1,5 +1,10 @@
 # Ticketing Changelog
 
+## 2026-08-18 (gate scan lock)
+
+- `POST /ticketing/inspect` bez consume; validate i dalje admit
+- Mobile: isti QR se ignoriše; sticky VALID/USED dok se ne skenira sljedeća; ručna potvrda opcionalna
+
 ## 2026-08-18 (mobile unpaid QR)
 
 - Mobile QR samo `PAID_AT_BOX_OFFICE`; pay/cancel za pending rezervacije

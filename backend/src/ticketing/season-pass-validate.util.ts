@@ -5,7 +5,9 @@ export async function validateSeasonPass(
   prisma: PrismaService,
   qrCode: string,
   matchId?: string,
+  options?: { commit?: boolean },
 ) {
+  const commit = options?.commit !== false;
   const pass = await prisma.seasonPass.findUnique({
     where: { qrCode },
     include: { season: { select: { name: true } }, user: { select: { email: true } } },
@@ -26,16 +28,18 @@ export async function validateSeasonPass(
     throw new BadRequestException('Sezonska karta vrijedi samo na domaćim utakmicama');
   }
 
-  try {
+  const existing = await prisma.seasonPassAdmission.findUnique({
+    where: { passId_matchId: { passId: pass.id, matchId } },
+  });
+  if (existing) throw new BadRequestException('Sezonska karta je već skenirana za ovu utakmicu');
+  if (commit) {
     await prisma.seasonPassAdmission.create({ data: { passId: pass.id, matchId } });
-  } catch {
-    throw new BadRequestException('Sezonska karta je već skenirana za ovu utakmicu');
   }
 
   return {
     kind: 'pass' as const,
     id: pass.id,
-    status: 'ADMITTED',
+    status: commit ? 'ADMITTED' : 'ACTIVE',
     category: pass.label,
     match: { homeClub: match.homeClub, awayClub: match.awayClub },
   };

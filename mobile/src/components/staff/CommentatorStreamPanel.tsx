@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Alert, Pressable, Text, TextInput, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { useLiveMatch } from '../../hooks/use-live-match';
 import { useTheme } from '../../lib/theme-context';
 import { type LiveActionRunner, patchLiveStream } from './commentator-api';
 import { commentatorStyles as styles } from './commentator-styles';
@@ -13,7 +14,13 @@ type Props = {
 export function CommentatorStreamPanel({ matchId, run }: Props) {
   const { t } = useTranslation();
   const { colors } = useTheme();
+  const { match } = useLiveMatch(matchId);
+  const saved = match?.liveStreamUrl ?? '';
   const [url, setUrl] = useState('');
+  useEffect(() => {
+    setUrl(saved);
+  }, [saved]);
+  const linked = !!saved;
 
   const save = () => {
     const trimmed = url.trim();
@@ -33,7 +40,9 @@ export function CommentatorStreamPanel({ matchId, run }: Props) {
 
   return (
     <View style={[styles.card, { backgroundColor: colors.background, borderColor: colors.border }]}>
-      <Text style={[styles.label, { color: colors.text }]}>{t('commentatorStream')}</Text>
+      <Text style={[styles.label, { color: colors.text }]}>
+        {linked ? t('commentatorStreamLinked') : t('commentatorStream')}
+      </Text>
       <TextInput
         style={[styles.input, { borderColor: colors.border, backgroundColor: colors.surface, color: colors.text }]}
         value={url}
@@ -55,7 +64,8 @@ export function CommentatorStreamPanel({ matchId, run }: Props) {
         </Pressable>
         <Pressable
           accessibilityRole="button"
-          style={[styles.submit, { flex: 1, backgroundColor: colors.surface }]}
+          disabled={!linked}
+          style={[styles.submit, { flex: 1, backgroundColor: colors.surface, opacity: linked ? 1 : 0.5 }]}
           onPress={clear}
         >
           <Text style={[styles.submitText, { color: colors.text }]}>{t('commentatorStreamClear')}</Text>

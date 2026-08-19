@@ -73,7 +73,7 @@ export function CommentatorTeamColumn({
   };
 
   return (
-    <div className="rounded-lg border border-slate-200 bg-surface/50 p-3">
+    <div className="rounded-lg border border-[var(--border-subtle)] bg-surface/50 p-3">
       <h3 className="mb-2 text-center text-sm font-semibold">{clubName}</h3>
       <EntitySelect label="Igrač" value={playerId} onChange={setPlayerId} options={opts} />
       <EntitySelect
@@ -89,12 +89,8 @@ export function CommentatorTeamColumn({
             size="sm"
             variant={t === 'GOAL' ? 'default' : 'outline'}
             className="h-8 px-1 text-[11px]"
-            disabled={disabled || busy || (t !== 'GOAL' && !playerId)}
-            onClick={() => {
-              if (t === 'GOAL' && !playerId) fire('GOAL');
-              else if (t === 'GOAL' || t === 'PENALTY_SCORED') fireWithPlayer(t, t === 'GOAL');
-              else fireWithPlayer(t);
-            }}
+            disabled={disabled || busy || !playerId}
+            onClick={() => fireWithPlayer(t, t === 'GOAL')}
           >
             {eventLabel(t)}
           </Button>
@@ -117,7 +113,7 @@ export function CommentatorTeamColumn({
           ))}
         </div>
       </details>
-      <details className="mt-2 border-t border-slate-100 pt-2">
+      <details className="mt-2 border-t border-[var(--border-subtle)] pt-2">
         <summary className="cursor-pointer text-[11px] font-medium text-text-muted">Izmjena</summary>
         <div className="mt-2 space-y-2">
           <EntitySelect label="Izlazi" value={subOut} onChange={setSubOut} options={opts} />

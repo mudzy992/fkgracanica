@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useTicketingPublicConfig } from '../../hooks/use-ticketing';
 import { useValidateTicket } from '../../hooks/use-ticketing-admin';
+import { getApiErrorMessage } from '../../lib/api-error';
 import { matchLabel, ticketStatusLabel } from '../../lib/ticketing-status';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
@@ -19,12 +20,13 @@ export function TicketingValidatePanel() {
     try {
       await validate.mutateAsync({ qrCode: code, matchId });
       setQrCode('');
-    } catch {
-      setError('Validacija nije uspjela. Provjerite QR kod i status ulaznice.');
+    } catch (err) {
+      setError(getApiErrorMessage(err, 'Validacija nije uspjela. Provjerite QR kod i status ulaznice.'));
     }
   };
 
   const result = validate.data;
+  const used = Boolean(error && /iskorišten|skeniran|already/i.test(error));
 
   return (
     <div className="mb-6 rounded-xl border border-[var(--border-subtle)] bg-background p-4">
@@ -47,13 +49,17 @@ export function TicketingValidatePanel() {
           {validate.isPending ? 'Provjera...' : 'Validiraj'}
         </Button>
       </div>
-      {error && <p className="mt-2 text-sm text-danger">{error}</p>}
-      {result && (
-        <div className="mt-3 rounded-lg bg-success/10 p-3 text-sm text-success">
-          Ulaznica validirana — {ticketStatusLabel(result.status)} · {result.category} ·{' '}
-          {matchLabel(result.match)}
+      {error ? (
+        <div className="mt-3 rounded-lg bg-danger/10 p-3 text-sm text-danger">
+          {used ? 'Iskorišteno — ' : 'Nevažeće — '}
+          {error}
         </div>
-      )}
+      ) : null}
+      {result && !error ? (
+        <div className="mt-3 rounded-lg bg-success/10 p-3 text-sm text-success">
+          Valjano — {ticketStatusLabel(result.status)} · {result.category} · {matchLabel(result.match)}
+        </div>
+      ) : null}
     </div>
   );
 }
