@@ -63,6 +63,22 @@ export const SHOWCASE_ROLES: ShowcaseRole[] = [
     ],
   },
   {
+    id: 'redar',
+    title: 'Redar',
+    who: 'Djelatnik obezbjeđenja na stadionu',
+    tasks: [
+      'Skenira QR ulaznice, sezonske karte i članske kartice',
+      'Kamera automatski validira; prikazuje zelen/crven overlay sa vibracijom',
+      'Inspect mode za pregled bez bilježenja ulaska',
+      'Manual fallback — upisuje QR ručno ako kamera ne radi',
+    ],
+    home: [
+      'Direktan ulaz na scan ekran (admissions.scan)',
+      'Prikaz rezultata: valjano / iskorišteno / nevažeće',
+      'Nema pristupa ostalim admin modulima',
+    ],
+  },
+  {
     id: 'clan',
     title: 'Član',
     who: 'Navijač s nalogom',

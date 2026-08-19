@@ -1,5 +1,13 @@
 # Changelog — showcase-audit
 
+## 2026-08-19
+
+- git pull eac5821: admission scan (Redar), komentator desk polish, live broadcast HUD, events sheet, YouTube orientation
+- Nova showcase rola `redar` dodana u catalog-roles.ts
+- mobile-staff: 70 → 82, mobile-polish: 69 → 72
+- rbac/dashboard summary update — šest uloga, Redar validate panel
+- MODULES.md rescore + otvorene stavke sa sljedećim koracima
+
 ## 2026-08-17
 
 - Track 34 P0+P1: public ~78%, staff ~71%. Reject=`DRAFT`; news/heritage/gallery/search/CMS/live/membership.
