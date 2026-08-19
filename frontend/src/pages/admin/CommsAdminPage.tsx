@@ -9,18 +9,22 @@ import { Button } from '../../components/ui/button';
 import { AdminPageShell } from '../../components/admin/AdminPageShell';
 import { ContactAdminPage } from './ContactAdminPage';
 import { NewsletterAdminPage } from './NewsletterAdminPage';
+import { EmailLogPanel } from './EmailLogPanel';
 
-type Tab = 'contact' | 'newsletter';
+type Tab = 'contact' | 'newsletter' | 'email-log';
 
 function resolveTab(
   param: string | null,
   canContact: boolean,
   canNewsletter: boolean,
+  canEmailLog: boolean,
 ): Tab {
   if (param === 'newsletter' && canNewsletter) return 'newsletter';
+  if (param === 'email-log' && canEmailLog) return 'email-log';
   if (param === 'contact' && canContact) return 'contact';
   if (canContact) return 'contact';
-  return 'newsletter';
+  if (canNewsletter) return 'newsletter';
+  return 'email-log';
 }
 
 export function CommsAdminPage() {
@@ -32,19 +36,21 @@ export function CommsAdminPage() {
   const canNewsletter =
     hasPermission(perms, 'newsletter.read') &&
     isModuleEnabled(moduleFlags, 'modules.newsletter');
+  const canEmailLog = hasPermission(perms, 'settings.read');
   const [searchParams, setSearchParams] = useSearchParams();
 
   const tabs = useMemo(() => {
     const list: { key: Tab; label: string }[] = [];
     if (canContact) list.push({ key: 'contact', label: 'Kontakt' });
     if (canNewsletter) list.push({ key: 'newsletter', label: 'Newsletter' });
+    if (canEmailLog) list.push({ key: 'email-log', label: 'Email log' });
     return list;
-  }, [canContact, canNewsletter]);
+  }, [canContact, canNewsletter, canEmailLog]);
 
-  if (!canContact && !canNewsletter) return <Navigate to="/admin" replace />;
+  if (!canContact && !canNewsletter && !canEmailLog) return <Navigate to="/admin" replace />;
 
   const tabParam = searchParams.get('tab');
-  const activeTab = resolveTab(tabParam, canContact, canNewsletter);
+  const activeTab = resolveTab(tabParam, canContact, canNewsletter, canEmailLog);
 
   useEffect(() => {
     if (tabParam !== activeTab) {
@@ -78,6 +84,7 @@ export function CommsAdminPage() {
       >
         {activeTab === 'contact' && <ContactAdminPage embedded />}
         {activeTab === 'newsletter' && <NewsletterAdminPage embedded />}
+        {activeTab === 'email-log' && <EmailLogPanel />}
       </AdminPageShell>
     </>
   );

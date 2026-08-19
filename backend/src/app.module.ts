@@ -43,6 +43,7 @@ import { SeoModule } from './seo/seo.module';
 import { ShowcaseModule } from './showcase/showcase.module';
 import { AppReleasesModule } from './app-releases/app-releases.module';
 import { PublicAnalyticsModule } from './public-analytics/public-analytics.module';
+import { EmailLogModule } from './email-log/email-log.module';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 
 @Module({
@@ -95,6 +96,7 @@ import { HttpExceptionFilter } from './common/filters/http-exception.filter';
     ShowcaseModule,
     AppReleasesModule,
     PublicAnalyticsModule,
+    EmailLogModule,
   ],
   providers: [{ provide: APP_FILTER, useClass: HttpExceptionFilter }],
 })
