@@ -91,6 +91,34 @@ export function useWriterEditor(id: string | undefined) {
     }
   };
 
+  const archive = async (): Promise<boolean> => {
+    return new Promise((resolve) => {
+      Alert.alert(
+        t('writer'),
+        t('writerArchiveConfirm'),
+        [
+          { text: t('close'), style: 'cancel', onPress: () => resolve(false) },
+          {
+            text: t('writerArchive'),
+            style: 'destructive',
+            onPress: async () => {
+              setSaving(true);
+              try {
+                await api.patch(`/news/${article.id}/archive`);
+                resolve(true);
+              } catch (err) {
+                Alert.alert(t('writer'), getApiErrorMessage(err, t('error')));
+                resolve(false);
+              } finally {
+                setSaving(false);
+              }
+            },
+          },
+        ],
+      );
+    });
+  };
+
   const pickCoverPaths = (paths: string[]) => patch({ coverPath: paths[0] ?? null });
 
   const requestBodyImage = async (): Promise<string | null> => {
@@ -104,5 +132,5 @@ export function useWriterEditor(id: string | undefined) {
     }
   };
 
-  return { article, categories, saving, coverOpen, setCoverOpen, patch, save, submit, pickCoverPaths, requestBodyImage, isNew };
+  return { article, categories, saving, coverOpen, setCoverOpen, patch, save, submit, archive, pickCoverPaths, requestBodyImage, isNew };
 }

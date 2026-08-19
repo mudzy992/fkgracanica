@@ -103,6 +103,14 @@ export class NewsController {
     return this.newsService.submitForReview(id, user.id);
   }
 
+  @Patch(':id/archive')
+  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @RequirePermissions('news.submit')
+  @ApiBearerAuth()
+  archiveOwn(@Param('id') id: string, @CurrentUser() user: AuthUser) {
+    return this.newsService.archiveOwn(id, user.id);
+  }
+
   @Delete(':id')
   @UseGuards(JwtAuthGuard, PermissionsGuard)
   @RequirePermissions('news.manage')

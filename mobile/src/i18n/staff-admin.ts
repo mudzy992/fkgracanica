@@ -1,5 +1,7 @@
 export const staffAdminBs = {
   approve: 'Odobri',
+  approveMatchTitle: 'Odobri live report',
+  approveMatchConfirm: 'Odobravanjem se objavljuju statistike igrača. Ova akcija se ne može poništiti.',
   reject: 'Odbij',
   archive: 'Arhiviraj',
   moderator: 'Moderator',
@@ -109,6 +111,8 @@ export const staffAdminBs = {
 
 export const staffAdminEn: Record<keyof typeof staffAdminBs, string> = {
   approve: 'Approve',
+  approveMatchTitle: 'Approve live report',
+  approveMatchConfirm: 'Approving will publish player statistics. This action cannot be undone.',
   reject: 'Reject',
   archive: 'Archive',
   moderator: 'Moderator',

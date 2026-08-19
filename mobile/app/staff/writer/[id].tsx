@@ -56,6 +56,16 @@ export default function WriterEditorScreen() {
           {!editor.isNew ? (
             <PrimaryButton label={t('writerSubmit')} onPress={() => void handleSubmit()} loading={editor.saving} />
           ) : null}
+          {!editor.isNew && editor.article.status === 'DRAFT' ? (
+            <PrimaryButton
+              label={t('writerArchive')}
+              onPress={async () => {
+                const done = await editor.archive();
+                if (done) router.replace('/staff/writer');
+              }}
+              loading={editor.saving}
+            />
+          ) : null}
         </View>
         <MediaPickerSheet
           visible={editor.coverOpen}

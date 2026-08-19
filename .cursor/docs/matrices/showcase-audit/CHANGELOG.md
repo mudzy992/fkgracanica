@@ -1,5 +1,15 @@
 # Changelog — showcase-audit
 
+## 2026-08-19 (mobile-staff gap closure)
+
+- BE: `archiveOwn(id, authorId)` u `news.service.ts` — Writer može arhivirati vlastiti DRAFT (`news.submit` perm)
+- BE: `PATCH /news/:id/archive` endpoint, zaštićen sa `news.submit`
+- Mobile writer: `archive()` u `use-writer-editor.ts` + dugme "Obriši nacrt" u `writer/[id].tsx` (prikazuje se samo za DRAFT)
+- Mobile moderation: `ModerationPreviewSheet` obavijena `ScrollView` (maxHeight 75%) — dugački excerptovi više nisu odsječeni
+- Mobile moderation: live match approve potvrđen `Alert.alert` confirmation (`approveMatch`/`doApproveMatch`) — ireverzibilna akcija zaštićena
+- i18n: `writerArchive`, `writerArchiveConfirm` (BS+EN); `approveMatchTitle`, `approveMatchConfirm` (BS+EN)
+- catalog-modules.ts: mobile-staff 82 → 97, summary ažuriran
+
 ## 2026-08-19
 
 - git pull eac5821: admission scan (Redar), komentator desk polish, live broadcast HUD, events sheet, YouTube orientation

@@ -35,7 +35,7 @@ export const SHOWCASE_MODULES: ShowcaseModule[] = [
   m('ticketing', 'Ulaznice', 100, 'ready', W, 'Stripe + blagajna na webu, sold-out i cancel UX. Mobile buy i sezona su zasebni redovi.'),
   m('notifications', 'Notifikacije', 100, 'ready', W, 'Lista, unread, ikone tipa i deep link na webu. Push je zaseban red.'),
   m('seo', 'SEO', 100, 'ready', ['web'], 'Sitemap, robots i OG share za crawlere (vijest, galerija, igrač, static).'),
-  m('mobile-staff', 'Mobile staff', 82, 'in_progress', ['mobile'], 'Admission scan (Redar): kamera, inspect/validate, overlay, vibracija, manual fallback. Komentator desk + live broadcast + events sheet. Writer/moderation još na čekanju.'),
+  m('mobile-staff', 'Mobile staff', 97, 'in_progress', ['mobile'], 'Admission scan (Redar): kamera, inspect/validate, overlay, vibracija, manual fallback. Komentator desk, live broadcast i events sheet. Writer: lista, editor, DOM body, cover, relacije, save/submit/archive drafta. Moderation: news/gallery/live queue, approve/reject, confirm za live. Admin hub: KPI, CRUD, orders, users.'),
   m('mobile-polish', 'Mobile vizuelni polish', 72, 'in_progress', ['mobile'], 'Live broadcast HUD, events sheet, YouTube stream. Home/liga/tim cinematic. Heritage/gallery/news jos potrebuju polish.'),
   m('email', 'Email obavijesti', 90, 'in_progress', W, 'HTML + FailedEmail log. Šalje se kad klub podesi SMTP (kontakt, članstvo, ulaznice).'),
   m('push', 'Push obavijesti', 72, 'in_progress', ['mobile'], 'Expo tokeni postoje. Dostava i payloadi se dorađuju.'),

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { Pressable, RefreshControl, StyleSheet, Text, View } from 'react-native';
+import { Alert, Pressable, RefreshControl, StyleSheet, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { ListSkeleton } from '../../src/components/ListSkeleton';
@@ -67,9 +67,27 @@ export default function ModerationScreen() {
     void load();
   }, [load]);
 
+  const approveMatch = (id: string) => {
+    Alert.alert(
+      t('approveMatchTitle'),
+      t('approveMatchConfirm'),
+      [
+        { text: t('close'), style: 'cancel' },
+        { text: t('approve'), style: 'default', onPress: () => void doApproveMatch(id) },
+      ],
+    );
+  };
+
+  const doApproveMatch = async (id: string) => {
+    await api.post(`/live/matches/${id}/approve`);
+    setPreview(null);
+    await load();
+  };
+
   const setStatus = async (kind: Kind, id: string, status: 'PUBLISHED' | 'DRAFT' | 'ARCHIVED') => {
     if (kind === 'live') {
-      if (status === 'PUBLISHED') await api.post(`/live/matches/${id}/approve`);
+      if (status === 'PUBLISHED') approveMatch(id);
+      return;
     } else {
       const path = kind === 'news' ? `/news/${id}/status` : `/gallery/${id}/status`;
       await api.patch(path, { status });

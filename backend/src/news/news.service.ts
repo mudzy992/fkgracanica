@@ -121,6 +121,17 @@ export class NewsService {
     return this.updateStatus(id, ContentStatus.PENDING);
   }
 
+  async archiveOwn(id: string, authorId: string) {
+    const item = await this.findOne(id);
+    if (item.authorId !== authorId) {
+      throw new ForbiddenException('Možete arhivirati samo vlastite vijesti');
+    }
+    if (item.status !== ContentStatus.DRAFT) {
+      throw new BadRequestException('Samo nacrt se može arhivirati');
+    }
+    return this.updateStatus(id, ContentStatus.ARCHIVED);
+  }
+
   async remove(id: string) {
     await this.findOne(id);
     return this.prisma.news.delete({ where: { id } });
