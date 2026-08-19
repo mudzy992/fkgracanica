@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { AuthProvider } from '../src/lib/auth';
 import { registerPushDeepLinks } from '../src/lib/push';
+import { trackMobileVisit } from '../src/lib/visitor';
 import { ThemeProvider, useTheme } from '../src/lib/theme-context';
 import { ApkUpdateHost } from '../src/features/app-update/ApkUpdateHost';
 
@@ -15,6 +16,7 @@ function RootStack() {
 
   useEffect(() => {
     void hydrateLanguage();
+    void trackMobileVisit();
     return registerPushDeepLinks();
   }, []);
 

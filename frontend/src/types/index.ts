@@ -286,6 +286,9 @@ export interface DashboardKpis {
   pendingLive: number;
   pendingMemberships: number;
   unreadInbox: number;
+  uniqueVisitorsWeb: number;
+  uniqueVisitorsMobile: number;
+  uniqueVisitorsTotal30d: number;
 }
 
 export interface SearchResults {

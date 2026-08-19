@@ -4,6 +4,7 @@ import { useContactMessages } from '../../../hooks/use-contact-admin';
 import { useApproveMatchReport, usePendingLiveReports } from '../../../hooks/use-live-admin';
 import { useUpdateGalleryStatus } from '../../../hooks/use-content-admin';
 import { useUpdateNewsStatus } from '../../../hooks/use-news-admin';
+import { useVisitorTotals } from '../../../hooks/use-analytics';
 import { Button } from '../../../components/ui/button';
 import { HomeKpiGrid } from './HomeKpiGrid';
 import { HomeQuickActions } from './HomeQuickActions';
@@ -18,6 +19,7 @@ export function ModeratorHome() {
   const publishNews = useUpdateNewsStatus();
   const publishGallery = useUpdateGalleryStatus();
   const approveLive = useApproveMatchReport();
+  const visitors = useVisitorTotals(30);
   const loading = news.isLoading || gallery.isLoading || live.isLoading;
   const unread = inbox.data?.meta.total ?? 0;
   const queue = [
@@ -44,6 +46,14 @@ export function ModeratorHome() {
           { key: 'gallery', label: 'Galerije', value: loading ? '…' : (gallery.data?.length ?? 0), href: '/admin/gallery', hint: 'Na odobrenju' },
           { key: 'live', label: 'Live izvještaji', value: loading ? '…' : (live.data?.length ?? 0), href: '/admin/live/pending', hint: 'Nakon utakmice' },
           { key: 'inbox', label: 'Inbox', value: inbox.isLoading ? '…' : unread, href: '/admin/comms', hint: 'Nepročitano' },
+        ]}
+      />
+      <h2 className="mt-8 mb-3 text-sm font-semibold text-text-muted">Posjetioci (30 dana)</h2>
+      <HomeKpiGrid
+        items={[
+          { key: 'visitorsWeb', label: 'Web', value: visitors.isLoading ? '…' : (visitors.data?.web ?? 0), href: '/admin/analytics', hint: 'Unikatni posjetioci' },
+          { key: 'visitorsMobile', label: 'Mobile', value: visitors.isLoading ? '…' : (visitors.data?.mobile ?? 0), href: '/admin/analytics', hint: 'Unikatni posjetioci' },
+          { key: 'visitorsTotal', label: 'Ukupno', value: visitors.isLoading ? '…' : (visitors.data?.total ?? 0), href: '/admin/analytics', hint: 'Web + mobile' },
         ]}
       />
       <HomeQuickActions

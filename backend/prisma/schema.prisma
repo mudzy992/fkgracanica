@@ -149,6 +149,20 @@ model PushDevice {
   @@index([userId])
 }
 
+// ─── Visitor Analytics ───────────────────────────────────────
+
+model VisitorVisit {
+  id             String   @id @default(cuid())
+  date           DateTime @db.Date
+  platform       String
+  visitorKeyHash String
+  createdAt      DateTime @default(now())
+
+  @@unique([date, platform, visitorKeyHash])
+  @@index([date, platform])
+  @@index([date])
+}
+
 model AuditLog {
   id         String   @id @default(cuid())
   actorId    String?

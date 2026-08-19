@@ -70,3 +70,32 @@ export function useH2H(clubAId?: string, clubBId?: string) {
     enabled: Boolean(clubAId && clubBId && clubAId !== clubBId),
   });
 }
+
+export type VisitorTrendRow = {
+  date: string;
+  web: number;
+  mobile: number;
+  total: number;
+};
+
+export type VisitorTotals = {
+  web: number;
+  mobile: number;
+  total: number;
+};
+
+export function useVisitorTrend(days = 30) {
+  return useQuery({
+    queryKey: ['analytics', 'visitors', 'trend', days],
+    queryFn: async () =>
+      (await api.get<VisitorTrendRow[]>('/public-analytics/trend', { params: { days } })).data,
+  });
+}
+
+export function useVisitorTotals(days = 30) {
+  return useQuery({
+    queryKey: ['analytics', 'visitors', 'totals', days],
+    queryFn: async () =>
+      (await api.get<VisitorTotals>('/public-analytics/totals', { params: { days } })).data,
+  });
+}

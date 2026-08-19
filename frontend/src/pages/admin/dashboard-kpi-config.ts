@@ -2,6 +2,7 @@ import type { LucideIcon } from 'lucide-react';
 import {
   BadgeCheck,
   Calendar,
+  Eye,
   Inbox,
   Newspaper,
   Target,
@@ -23,6 +24,9 @@ export const KPI_ROUTES: Record<string, string> = {
   pendingLive: '/admin/live/pending',
   pendingMemberships: '/admin/membership',
   unreadInbox: '/admin/comms',
+  uniqueVisitorsWeb: '/admin/analytics',
+  uniqueVisitorsMobile: '/admin/analytics',
+  uniqueVisitorsTotal30d: '/admin/analytics',
 };
 
 export const KPI_LABELS: Record<string, string> = {
@@ -38,6 +42,9 @@ export const KPI_LABELS: Record<string, string> = {
   pendingLive: 'Live izvještaji',
   pendingMemberships: 'Članarine na čekanju',
   unreadInbox: 'Nepročitan inbox',
+  uniqueVisitorsWeb: 'Posjetioci web (30d)',
+  uniqueVisitorsMobile: 'Posjetioci mobile (30d)',
+  uniqueVisitorsTotal30d: 'Ukupni posjetioci (30d)',
 };
 
 export const KPI_ICONS: Record<string, LucideIcon> = {
@@ -53,6 +60,9 @@ export const KPI_ICONS: Record<string, LucideIcon> = {
   pendingLive: Calendar,
   pendingMemberships: UserCheck,
   unreadInbox: Inbox,
+  uniqueVisitorsWeb: Eye,
+  uniqueVisitorsMobile: Eye,
+  uniqueVisitorsTotal30d: Eye,
 };
 
 export const QUEUE_KPI_KEYS = [
@@ -66,4 +76,5 @@ export const HEALTH_KPI_KEYS = [
   'activeMemberships',
   'ticketsSold',
   'publishedNews',
+  'uniqueVisitorsTotal30d',
 ] as const;

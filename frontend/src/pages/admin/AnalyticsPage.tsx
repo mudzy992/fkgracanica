@@ -8,8 +8,9 @@ import { useTeamAnalytics } from '../../hooks/use-analytics';
 import { AnalyticsTeamPanel } from './analytics/AnalyticsTeamPanel';
 import { AnalyticsH2hPanel } from './analytics/AnalyticsH2hPanel';
 import { AnalyticsPlayerPanel } from './analytics/AnalyticsPlayerPanel';
+import { AnalyticsVisitorsPanel } from './analytics/AnalyticsVisitorsPanel';
 
-type Tab = 'team' | 'h2h' | 'player';
+type Tab = 'team' | 'h2h' | 'player' | 'visitors';
 
 export function AnalyticsPage() {
   const { t } = useTranslation();
@@ -45,11 +46,16 @@ export function AnalyticsPage() {
         <Button size="sm" variant={tab === 'player' ? 'default' : 'outline'} onClick={() => setTab('player')}>
           Igrači
         </Button>
+        <Button size="sm" variant={tab === 'visitors' ? 'default' : 'outline'} onClick={() => setTab('visitors')}>
+          Posjetioci
+        </Button>
       </div>
       {tab === 'h2h' ? (
         <AnalyticsH2hPanel />
       ) : tab === 'player' ? (
         <AnalyticsPlayerPanel />
+      ) : tab === 'visitors' ? (
+        <AnalyticsVisitorsPanel />
       ) : isError ? (
         <Button variant="outline" onClick={() => void refetch()}>Pokušaj ponovo</Button>
       ) : isLoading || !data ? (

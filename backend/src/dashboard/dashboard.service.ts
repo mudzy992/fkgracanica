@@ -1,10 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { ContentStatus, MatchReportStatus, MembershipStatus } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
+import { PublicAnalyticsService } from '../public-analytics/public-analytics.service';
 
 @Injectable()
 export class DashboardService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly analytics: PublicAnalyticsService,
+  ) {}
 
   async getKpis() {
     const [
@@ -20,6 +24,7 @@ export class DashboardService {
       pendingLive,
       pendingMemberships,
       unreadInbox,
+      visitors,
     ] = await Promise.all([
       this.prisma.user.count({ where: { deletedAt: null } }),
       this.prisma.membership.count({
@@ -46,6 +51,7 @@ export class DashboardService {
       this.prisma.match.count({ where: { reportStatus: MatchReportStatus.PENDING_APPROVAL } }),
       this.prisma.membership.count({ where: { status: MembershipStatus.PENDING } }),
       this.prisma.contactMessage.count({ where: { isRead: false } }),
+      this.analytics.getTotals(30),
     ]);
     return {
       users,
@@ -60,6 +66,9 @@ export class DashboardService {
       pendingLive,
       pendingMemberships,
       unreadInbox,
+      uniqueVisitorsWeb: visitors.web,
+      uniqueVisitorsMobile: visitors.mobile,
+      uniqueVisitorsTotal30d: visitors.total,
     };
   }
 }

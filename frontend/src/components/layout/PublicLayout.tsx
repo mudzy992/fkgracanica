@@ -5,6 +5,7 @@ import { useMemo, useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { usePublicSettings, useModuleFlags } from '../../hooks';
 import { useDynamicFavicon } from '../../hooks/use-dynamic-favicon';
+import { useTrackPublicVisit } from '../../hooks/use-track-public-visit';
 import { useCmsMenu, useCmsPage } from '../../hooks/use-cms-pages';
 import { filterPathsByModule } from '../../lib/route-module-map';
 import { isModuleEnabled } from '../../lib/module-settings-rules';
@@ -35,6 +36,7 @@ export function PublicLayout() {
   const clubName = settings?.['club.name'] ?? 'FK Gračanica';
   const tagline = settings?.['club.tagline'];
   useDynamicFavicon(crestUrl || undefined);
+  useTrackPublicVisit();
   const { data: menu } = useCmsMenu('main');
   const { data: sitePage } = useCmsPage('site');
   const fallbackNav = useFallbackNavItems(moduleFlags);

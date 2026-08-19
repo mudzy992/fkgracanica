@@ -42,6 +42,7 @@ import { JobsModule } from './jobs/jobs.module';
 import { SeoModule } from './seo/seo.module';
 import { ShowcaseModule } from './showcase/showcase.module';
 import { AppReleasesModule } from './app-releases/app-releases.module';
+import { PublicAnalyticsModule } from './public-analytics/public-analytics.module';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 
 @Module({
@@ -93,6 +94,7 @@ import { HttpExceptionFilter } from './common/filters/http-exception.filter';
     SeoModule,
     ShowcaseModule,
     AppReleasesModule,
+    PublicAnalyticsModule,
   ],
   providers: [{ provide: APP_FILTER, useClass: HttpExceptionFilter }],
 })
