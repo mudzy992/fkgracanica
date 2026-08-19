@@ -20,41 +20,62 @@ export function AnalyticsPlayerPanel() {
         value={id}
         onChange={(e) => setId(e.target.value)}
       >
-        <option value="">Igrač</option>
+        <option value="">Odaberi igrača…</option>
         {players.map((p) => (
           <option key={p.id} value={p.id}>
             {p.firstName} {p.lastName}
           </option>
         ))}
       </select>
+
       {isFetching && <p className="text-sm text-text-muted">Učitavanje...</p>}
+
       {data && (
-        <div className="space-y-3 text-sm">
-          <p>
-            Ukupno: {data.totals.appearances} nastupa · {data.totals.goals} golova · {data.totals.assists} asistencija
-          </p>
-          <table className="w-full text-left">
-            <thead>
-              <tr className="text-xs text-text-muted">
-                <th className="py-2">Sezona</th>
-                <th>N</th>
-                <th>G</th>
-                <th>A</th>
-                <th>Min</th>
-              </tr>
-            </thead>
-            <tbody>
-              {data.seasons.map((row) => (
-                <tr key={row.seasonId} className="border-t border-[var(--border-subtle)]">
-                  <td className="py-2">{seasonName(row.seasonId)}</td>
-                  <td>{row.appearances}</td>
-                  <td>{row.goals}</td>
-                  <td>{row.assists}</td>
-                  <td>{row.minutes}</td>
+        <div className="space-y-4">
+          <div className="grid grid-cols-3 gap-3 sm:grid-cols-6 text-center text-sm">
+            {[
+              { label: 'Nastupi', value: data.totals.appearances },
+              { label: 'Golovi', value: data.totals.goals },
+              { label: 'Asistencije', value: data.totals.assists },
+              { label: 'Minute', value: data.totals.minutes },
+              { label: '🟨', value: data.totals.yellowCards },
+              { label: '🟥', value: data.totals.redCards },
+            ].map((s) => (
+              <div key={s.label} className="rounded-xl border border-[var(--border-subtle)] bg-surface/50 px-3 py-2">
+                <p className="text-xs text-text-muted">{s.label}</p>
+                <p className="mt-1 text-xl font-bold tabular-nums">{s.value}</p>
+              </div>
+            ))}
+          </div>
+
+          <div className="overflow-x-auto rounded-xl border border-[var(--border-subtle)]">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-[var(--border-subtle)] text-left text-xs text-text-muted">
+                  <th className="px-4 py-2">Sezona</th>
+                  <th className="px-4 py-2 text-right">N</th>
+                  <th className="px-4 py-2 text-right">G</th>
+                  <th className="px-4 py-2 text-right">A</th>
+                  <th className="px-4 py-2 text-right">Min</th>
+                  <th className="px-4 py-2 text-right">🟨</th>
+                  <th className="px-4 py-2 text-right">🟥</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {data.seasons.map((row) => (
+                  <tr key={row.seasonId} className="border-b border-[var(--border-subtle)] last:border-0">
+                    <td className="px-4 py-2">{seasonName(row.seasonId)}</td>
+                    <td className="px-4 py-2 text-right tabular-nums">{row.appearances}</td>
+                    <td className="px-4 py-2 text-right tabular-nums">{row.goals}</td>
+                    <td className="px-4 py-2 text-right tabular-nums">{row.assists}</td>
+                    <td className="px-4 py-2 text-right tabular-nums">{row.minutes}</td>
+                    <td className="px-4 py-2 text-right tabular-nums">{row.yellowCards}</td>
+                    <td className="px-4 py-2 text-right tabular-nums">{row.redCards}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
     </div>

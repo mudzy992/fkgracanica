@@ -40,7 +40,7 @@ export const SHOWCASE_MODULES: ShowcaseModule[] = [
   m('email', 'Email obavijesti', 90, 'in_progress', W, 'HTML + FailedEmail log. Šalje se kad klub podesi SMTP (kontakt, članstvo, ulaznice).'),
   m('push', 'Push obavijesti', 72, 'in_progress', ['mobile'], 'Expo tokeni postoje. Dostava i payloadi se dorađuju.'),
   m('newsletter', 'Newsletter pretplata', 90, 'in_progress', W, 'Prijava, admin lista i CSV. Kampanje su zaseban red (newsletter-campaigns).'),
-  m('analytics', 'Napredna analitika', 90, 'in_progress', WA, 'Team W/D/L, forma, H2H i admin stranica. Excel export je after_launch.'),
+  m('analytics', 'Napredna analitika', 100, 'ready', WA, 'Team W/D/L, forma badges, H2H s viziaulnim stats/datumima, player sezona po kartama (žute/crvene), visitors trend. Excel export je after_launch.'),
   m('i18n-en', 'Engleski jezik', 60, 'in_progress', W, 'Switcher + public chrome (nav, news, contact). Ostali stringovi još BS inline.'),
   m('cms-builder', 'CMS page builder', 100, 'web_only', ['web', 'admin'], 'Widget forme, enable toggle, custom-html. Namjerno web-only.'),
   m('formation-dnd', 'Formacija drag-and-drop', 100, 'web_only', ['web', 'admin'], 'DnD + vertikalni remap < lg. Namjerno web-only.'),
