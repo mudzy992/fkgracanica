@@ -1,3 +1,5 @@
+import QRCode from 'qrcode';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { EmptyState } from '../../components/public/EmptyState';
 import { PageContainer } from '../../components/public/PageContainer';
@@ -18,6 +20,25 @@ function formatMb(bytes: number): string {
 export function AppDownloadPage() {
   const { t } = useTranslation();
   const { data: latest, isLoading } = useLatestAndroidRelease();
+  const [qrDataUrl, setQrDataUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!latest) {
+      setQrDataUrl(null);
+      return;
+    }
+    let cancelled = false;
+    void QRCode.toDataURL(latestApkDownloadUrl(), { width: 180, margin: 1 })
+      .then((dataUrl) => {
+        if (!cancelled) setQrDataUrl(dataUrl);
+      })
+      .catch(() => {
+        if (!cancelled) setQrDataUrl(null);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [latest]);
 
   return (
     <div className="pb-16">
@@ -44,12 +65,23 @@ export function AppDownloadPage() {
                   <p className="mt-3 max-w-xl text-sm text-text-muted">{latest.releaseNotes}</p>
                 ) : null}
               </div>
-              <a
-                href={latestApkDownloadUrl()}
-                className="inline-flex h-11 shrink-0 items-center justify-center rounded-lg bg-primary px-6 text-sm font-medium text-white hover:bg-primary-light"
-              >
-                {t('appDownload.download')}
-              </a>
+              <div className="flex shrink-0 flex-col items-center gap-4 sm:items-end">
+                <a
+                  href={latestApkDownloadUrl()}
+                  className="inline-flex h-11 items-center justify-center rounded-lg bg-primary px-6 text-sm font-medium text-white hover:bg-primary-light"
+                >
+                  {t('appDownload.download')}
+                </a>
+                {qrDataUrl ? (
+                  <img
+                    src={qrDataUrl}
+                    alt=""
+                    width={180}
+                    height={180}
+                    className="rounded-lg border border-border/40 bg-white p-2"
+                  />
+                ) : null}
+              </div>
             </PremiumCard>
             <InstallGuide version={latest.version} />
           </div>
