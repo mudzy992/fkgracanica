@@ -1,10 +1,11 @@
-import { Body, Controller, Get, Patch, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Patch, Post, Req, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import type { Request } from 'express';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { RefreshDto } from './dto/refresh.dto';
 import { UpdatePreferencesDto } from './dto/update-preferences.dto';
+import { UpdateProfileDto } from './dto/update-profile.dto';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
 import type { AuthUser } from '../common/types/auth-user.type';
@@ -26,6 +27,20 @@ export class AuthController {
   @ApiBearerAuth()
   updatePreferences(@CurrentUser() user: AuthUser, @Body() dto: UpdatePreferencesDto) {
     return this.authService.updatePreferences(user.id, dto);
+  }
+
+  @Patch('profile')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  updateProfile(@CurrentUser() user: AuthUser, @Body() dto: UpdateProfileDto) {
+    return this.authService.updateProfile(user.id, dto.avatarPath);
+  }
+
+  @Delete('profile/avatar')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  deleteProfileAvatar(@CurrentUser() user: AuthUser) {
+    return this.authService.deleteProfileAvatar(user.id);
   }
 
   @Post('login')

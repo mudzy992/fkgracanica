@@ -33,14 +33,12 @@ export default function MoreScreen() {
           onPress={() => router.push('/team')}
         />
       ) : null}
-      {isEnabled('modules.competitions') ? (
-        <ListRow
-          title={t('leagueStats')}
-          subtitle={t('leagueStatsHint')}
-          icon="trophy-outline"
-          onPress={() => router.push('/league')}
-        />
-      ) : null}
+      <ListRow
+        title={t('live')}
+        subtitle={t('liveHint')}
+        icon="radio-outline"
+        onPress={() => router.push('/(tabs)/live')}
+      />
       <ListRow title={t('search')} subtitle={t('searchHint')} icon="search-outline" onPress={() => router.push('/search')} />
       <SectionHeader title={t('moreClub')} />
       <ListRow title={t('heritage')} subtitle={t('heritageHint')} icon="ribbon-outline" onPress={() => router.push('/heritage')} />

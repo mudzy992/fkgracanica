@@ -99,3 +99,17 @@ export function useVisitorTotals(days = 30) {
       (await api.get<VisitorTotals>('/public-analytics/totals', { params: { days } })).data,
   });
 }
+
+export type VisitorGeoRow = {
+  countryCode: string;
+  count: number;
+  percent: number;
+};
+
+export function useVisitorGeo(days = 30) {
+  return useQuery({
+    queryKey: ['analytics', 'visitors', 'geo', days],
+    queryFn: async () =>
+      (await api.get<VisitorGeoRow[]>('/public-analytics/geo', { params: { days } })).data,
+  });
+}

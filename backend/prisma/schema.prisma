@@ -14,6 +14,7 @@ model User {
   passwordHash String
   firstName    String?
   lastName     String?
+  avatarPath   String?
   isActive     Boolean   @default(true)
   notifyInApp      Boolean   @default(true)
   notifyEmail      Boolean   @default(true)
@@ -156,11 +157,14 @@ model VisitorVisit {
   date           DateTime @db.Date
   platform       String
   visitorKeyHash String
+  countryCode    String?
+  region         String?
   createdAt      DateTime @default(now())
 
   @@unique([date, platform, visitorKeyHash])
   @@index([date, platform])
   @@index([date])
+  @@index([countryCode])
 }
 
 model AuditLog {

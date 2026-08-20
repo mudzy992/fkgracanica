@@ -14,12 +14,12 @@ const HOME_SECTIONS = [
       ],
     },
   },
-  { widgetType: 'next-match', config: {} },
   { widgetType: 'last-result', config: {} },
   {
     widgetType: 'news-feed',
     config: { limit: 3, mode: 'latest', viewAllUrl: '/vijesti', viewAllLabel: 'Sve vijesti' },
   },
+  { widgetType: 'club-about-cta', config: {} },
   { widgetType: 'featured-players', config: { limit: 4, viewAllUrl: '/tim' } },
   { widgetType: 'league-table', config: {} },
   {

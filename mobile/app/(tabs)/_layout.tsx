@@ -24,7 +24,7 @@ export default function TabsLayout() {
   const { isAuthenticated, isLoading, user } = useAuth();
   const { colors } = useTheme();
   const { count: unreadCount } = useUnreadNotifications();
-  const { flags, loading: flagsLoading } = useModuleFlags();
+  const { flags, loading: flagsLoading, isEnabled } = useModuleFlags();
 
   if (isLoading || flagsLoading) {
     return <ScreenLoading />;
@@ -81,11 +81,16 @@ export default function TabsLayout() {
         }}
       />
       <Tabs.Screen
-        name="live/index"
+        name="league/index"
         options={{
-          title: t('live'),
-          tabBarIcon: tabIcon('radio', 'radio-outline'),
+          title: t('league'),
+          href: isEnabled('modules.competitions') ? '/(tabs)/league' : null,
+          tabBarIcon: tabIcon('trophy', 'trophy-outline'),
         }}
+      />
+      <Tabs.Screen
+        name="live/index"
+        options={{ href: null }}
       />
       <Tabs.Screen
         name="more"

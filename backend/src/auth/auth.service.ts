@@ -9,6 +9,10 @@ import { randomBytes } from 'crypto';
 import { PrismaService } from '../prisma/prisma.service';
 import { parseExpiresToMs } from '../common/utils/parse-expires.util';
 import { AuditService } from '../audit/audit.service';
+import {
+  assertStoredAvatarPath,
+  removeAvatarFiles,
+} from './auth-avatar.util';
 
 @Injectable()
 export class AuthService {
@@ -65,6 +69,27 @@ export class AuthService {
     return this.me(userId);
   }
 
+  async updateProfile(userId: string, avatarPath: string) {
+    const uploadRoot = this.config.get<string>('UPLOAD_PATH', './uploads');
+    await assertStoredAvatarPath(uploadRoot, avatarPath);
+    const user = await this.requireActiveUser(userId);
+    if (user.avatarPath && user.avatarPath !== avatarPath) {
+      await removeAvatarFiles(uploadRoot, user.avatarPath);
+    }
+    await this.prisma.user.update({ where: { id: userId }, data: { avatarPath } });
+    return this.me(userId);
+  }
+
+  async deleteProfileAvatar(userId: string) {
+    const uploadRoot = this.config.get<string>('UPLOAD_PATH', './uploads');
+    const user = await this.requireActiveUser(userId);
+    if (user.avatarPath) {
+      await removeAvatarFiles(uploadRoot, user.avatarPath);
+      await this.prisma.user.update({ where: { id: userId }, data: { avatarPath: null } });
+    }
+    return this.me(userId);
+  }
+
   async logout(refreshToken: string, userId?: string) {
     await this.prisma.refreshToken.deleteMany({ where: { token: refreshToken } });
     if (userId) {
@@ -108,6 +133,7 @@ export class AuthService {
     email: string;
     firstName: string | null;
     lastName: string | null;
+    avatarPath?: string | null;
     notifyLiveMatch?: boolean;
     notifyPush?: boolean;
     notifyInApp?: boolean;
@@ -117,10 +143,19 @@ export class AuthService {
       email: user.email,
       firstName: user.firstName,
       lastName: user.lastName,
+      avatarPath: user.avatarPath ?? null,
       notifyLiveMatch: user.notifyLiveMatch !== false,
       notifyPush: user.notifyPush !== false,
       notifyInApp: user.notifyInApp !== false,
     };
+  }
+
+  private async requireActiveUser(userId: string) {
+    const user = await this.prisma.user.findFirst({
+      where: { id: userId, isActive: true, deletedAt: null },
+    });
+    if (!user) throw new UnauthorizedException('Korisnik nije pronađen');
+    return user;
   }
 
   private async getUserPermissions(userId: string): Promise<string[]> {

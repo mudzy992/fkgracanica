@@ -149,7 +149,7 @@ export function useCreateTrophy() {
       year: number;
       competition?: string;
       description?: string;
-      imagePath?: string;
+      imagePath?: string | null;
       featured?: boolean;
     }) => (await api.post('/trophies', body)).data,
     onSuccess: () => void qc.invalidateQueries({ queryKey: ['trophies'] }),
@@ -168,7 +168,7 @@ export function useUpdateTrophy() {
       year?: number;
       competition?: string;
       description?: string;
-      imagePath?: string;
+      imagePath?: string | null;
       featured?: boolean;
     }) => (await api.patch(`/trophies/${id}`, body)).data,
     onSuccess: () => void qc.invalidateQueries({ queryKey: ['trophies'] }),

@@ -4,6 +4,7 @@ import {
   resolveSeoMeta,
   type ResolvedSeo,
 } from '../../lib/seo-meta';
+import type { JsonLd } from './seo-json-ld';
 
 export interface SeoInput {
   title?: string;
@@ -14,6 +15,9 @@ export interface SeoInput {
   siteName?: string;
   defaultDescription?: string;
   defaultImage?: string;
+  twitterHandle?: string;
+  robotsIndex?: boolean;
+  jsonLd?: JsonLd | JsonLd[];
 }
 
 function upsertMeta(attr: 'name' | 'property', key: string, content: string) {
@@ -39,7 +43,19 @@ function upsertCanonical(href: string) {
   el.setAttribute('href', href);
 }
 
-function applyResolved(meta: ResolvedSeo) {
+function upsertJsonLd(blocks: JsonLd[]) {
+  document.querySelectorAll('script[type="application/ld+json"][data-seo="1"]').forEach((el) => el.remove());
+  blocks.forEach((block, index) => {
+    const el = document.createElement('script');
+    el.setAttribute('type', 'application/ld+json');
+    el.setAttribute('data-seo', '1');
+    el.setAttribute('data-seo-id', String(index));
+    el.textContent = JSON.stringify(block);
+    document.head.appendChild(el);
+  });
+}
+
+function applyResolved(meta: ResolvedSeo, input: SeoInput) {
   document.title = buildDocumentTitle(meta.title, meta.siteName);
   upsertCanonical(meta.url);
 
@@ -55,11 +71,19 @@ function applyResolved(meta: ResolvedSeo) {
   upsertMeta('name', 'twitter:title', meta.title);
   upsertMeta('name', 'twitter:description', meta.description);
 
+  const handle = input.twitterHandle?.trim().replace(/^@/, '');
+  if (handle) upsertMeta('name', 'twitter:site', `@${handle}`);
+
+  upsertMeta('name', 'robots', input.robotsIndex === false ? 'noindex, nofollow' : 'index, follow');
+
   if (meta.image) {
     upsertMeta('property', 'og:image', meta.image);
     upsertMeta('property', 'og:image:secure_url', meta.image);
     upsertMeta('name', 'twitter:image', meta.image);
   }
+
+  const jsonLd = input.jsonLd ? (Array.isArray(input.jsonLd) ? input.jsonLd : [input.jsonLd]) : [];
+  if (jsonLd.length) upsertJsonLd(jsonLd);
 }
 
 export function applySeoToDocument(input: SeoInput) {
@@ -73,5 +97,5 @@ export function applySeoToDocument(input: SeoInput) {
     defaultDescription: input.defaultDescription ?? 'Službena web stranica FK Gračanica.',
     defaultImage: defaultShareImage(input.defaultImage),
   });
-  applyResolved(meta);
+  applyResolved(meta, input);
 }

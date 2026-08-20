@@ -75,6 +75,20 @@ export const SETTINGS_REGISTRY: SettingDefinition[] = [
     description: 'SEO opis',
   },
   {
+    key: 'seo.robotsIndex',
+    value: 'true',
+    type: SettingType.BOOLEAN,
+    scope: SettingScope.PUBLIC,
+    description: 'Dozvoli indeksiranje u pretraživačima (robots.txt)',
+  },
+  {
+    key: 'seo.twitterHandle',
+    value: '',
+    type: SettingType.STRING,
+    scope: SettingScope.PUBLIC,
+    description: 'Twitter/X handle kluba (npr. fkgracanica)',
+  },
+  {
     key: 'modules.news',
     value: 'true',
     type: SettingType.BOOLEAN,

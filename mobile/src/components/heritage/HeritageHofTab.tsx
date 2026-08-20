@@ -1,78 +1,84 @@
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FlatList, StyleSheet, Text, View, type ViewToken } from 'react-native';
+import { SectionList, StyleSheet, Text, View, type ViewToken } from 'react-native';
 import { useTheme } from '../../lib/theme-context';
 import { spacing, typography } from '../../lib/theme';
 import type { HeritageItem } from './load-heritage';
-import { extractYears } from './heritage-utils';
-import { HeritageHofChapter } from './HeritageHofChapter';
+import { groupHofByYear } from './heritage-utils';
+import { HeritageHofCard } from './HeritageHofCard';
 import { HeritageHofRail } from './HeritageHofRail';
 
-type Props = { items: HeritageItem[] };
+type HofSection = { year: string; data: HeritageItem[] };
 
-function yearTick(item: HeritageItem): string {
-  return extractYears(item.years)[0] ?? item.title.trim().split(/\s+/).pop() ?? item.title;
-}
+type Props = { items: HeritageItem[] };
 
 export function HeritageHofTab({ items }: Props) {
   const { t } = useTranslation();
   const { colors } = useTheme();
-  const listRef = useRef<FlatList<HeritageItem>>(null);
-  const [active, setActive] = useState(0);
-  const ticks = useMemo(
-    () => items.map((item) => ({ id: item.id, label: yearTick(item) })),
-    [items],
-  );
+  const listRef = useRef<SectionList<HeritageItem, HofSection>>(null);
+  const sections = useMemo(() => groupHofByYear(items).map(({ year, items: groupItems }) => ({ year, data: groupItems })), [items]);
+  const [activeYear, setActiveYear] = useState(sections[0]?.year ?? '');
+
+  const ticks = useMemo(() => sections.map(({ year }) => ({ id: year, label: year })), [sections]);
 
   const onViewable = useRef(({ viewableItems }: { viewableItems: ViewToken[] }) => {
-    const index = viewableItems[0]?.index;
-    if (typeof index === 'number') setActive(index);
+    const section = viewableItems[0]?.section as HofSection | undefined;
+    if (section?.year) setActiveYear(section.year);
   }).current;
 
-  const scrollToId = useCallback(
-    (id: string) => {
-      const index = items.findIndex((item) => item.id === id);
-      if (index < 0) return;
-      setActive(index);
-      listRef.current?.scrollToIndex({ index, animated: true, viewPosition: 0.12 });
+  const scrollToYear = useCallback(
+    (year: string) => {
+      const sectionIndex = sections.findIndex((section) => section.year === year);
+      if (sectionIndex < 0) return;
+      setActiveYear(year);
+      const scroll = () =>
+        listRef.current?.scrollToLocation({ sectionIndex, itemIndex: 0, viewPosition: 0.12, animated: true });
+      scroll();
+      setTimeout(scroll, 50);
     },
-    [items],
+    [sections],
   );
 
   if (items.length === 0) return null;
 
   return (
     <View style={[styles.root, { backgroundColor: colors.background }]}>
-      <FlatList
+      <SectionList
         ref={listRef}
-        data={items}
+        sections={sections}
         keyExtractor={(item) => item.id}
         showsVerticalScrollIndicator={false}
         onViewableItemsChanged={onViewable}
         viewabilityConfig={{ itemVisiblePercentThreshold: 55 }}
-        onScrollToIndexFailed={({ index }) => {
-          setTimeout(() => listRef.current?.scrollToIndex({ index, animated: true }), 50);
-        }}
         ListHeaderComponent={
           <Text style={[styles.kicker, { color: colors.textMuted }]}>{t('legends')}</Text>
         }
-        renderItem={({ item }) => <HeritageHofChapter item={item} />}
-        ItemSeparatorComponent={HofGap}
+        renderSectionHeader={({ section }) => (
+          <Text style={[styles.sectionYear, { color: colors.textMuted }]}>{section.year}</Text>
+        )}
+        renderItem={({ item }) => <HeritageHofCard item={item} />}
+        SectionSeparatorComponent={SectionGap}
+        ItemSeparatorComponent={ItemGap}
         contentContainerStyle={styles.list}
       />
-      <HeritageHofRail items={ticks} activeId={items[active]?.id} onSelect={scrollToId} />
+      <HeritageHofRail items={ticks} activeId={activeYear} onSelect={scrollToYear} />
     </View>
   );
 }
 
-function HofGap() {
-  return <View style={styles.gap} />;
+function SectionGap() {
+  return <View style={styles.sectionGap} />;
+}
+
+function ItemGap() {
+  return <View style={styles.itemGap} />;
 }
 
 const styles = StyleSheet.create({
   root: { flex: 1 },
   list: { paddingBottom: spacing.xl },
-  gap: { height: spacing.xl },
+  sectionGap: { height: spacing.lg },
+  itemGap: { height: spacing.md },
   kicker: {
     ...typography.caption,
     fontWeight: '800',
@@ -80,5 +86,14 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
     textAlign: 'center',
     paddingTop: spacing.md,
+  },
+  sectionYear: {
+    ...typography.caption,
+    fontWeight: '800',
+    letterSpacing: 2,
+    textTransform: 'uppercase',
+    textAlign: 'center',
+    paddingTop: spacing.sm,
+    paddingBottom: spacing.xs,
   },
 });

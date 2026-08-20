@@ -2,6 +2,7 @@ import { Injectable, OnModuleInit } from '@nestjs/common';
 import { SettingScope } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { SETTINGS_REGISTRY, settingDefToCreate } from './settings.registry';
+import { applySeoSettingDefaults } from './seo-settings.util';
 import { RealtimeGateway } from '../realtime/realtime.gateway';
 import { NotificationsService } from '../notifications/notifications.service';
 import { AuditService } from '../audit/audit.service';
@@ -68,14 +69,15 @@ export class SettingsService implements OnModuleInit {
     actorId?: string,
   ) {
     const [pub, priv] = await Promise.all([this.getPublic(), this.getPrivate()]);
-    validateModuleSettingUpdates({ ...pub, ...priv, ...updates }, updates);
+    const merged = await applySeoSettingDefaults(this.prisma, updates);
+    validateModuleSettingUpdates({ ...pub, ...priv, ...merged }, merged);
 
-    const keys = Object.keys(updates);
+    const keys = Object.keys(merged);
     await Promise.all(
       keys.map((key) =>
         this.prisma.setting.updateMany({
           where: { key, scope },
-          data: { value: updates[key] },
+          data: { value: merged[key] },
         }),
       ),
     );

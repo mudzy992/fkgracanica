@@ -84,6 +84,19 @@ export class ShareResolvers {
     };
   }
 
+  async fromClubAbout(defaults: SiteDefaults): Promise<PackInput> {
+    const club = await this.prisma.club.findFirst({
+      where: { isOwnClub: true },
+      select: { description: true, crestPath: true },
+    });
+    return {
+      title: 'O klubu',
+      description: club?.description ?? 'Historija i vremenska linija FK Gračanica.',
+      image: mediaPublicUrl(club?.crestPath, 'medium') ?? defaults.crestUrl,
+      url: '/o-klubu',
+    };
+  }
+
   async fromPlayer(id: string, defaults: SiteDefaults): Promise<PackInput> {
     const player = await this.prisma.player.findUnique({ where: { id } });
     const url = `/igrac/${id}`;

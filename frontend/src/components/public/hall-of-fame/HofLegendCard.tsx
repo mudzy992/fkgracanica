@@ -1,4 +1,6 @@
+import { useLayoutEffect, useRef, useState } from 'react';
 import { mediaUrl } from '../../../lib/media';
+import { cn } from '../../../lib/utils';
 import type { HallOfFameEntry } from '../../../types';
 
 interface Props {
@@ -8,6 +10,17 @@ interface Props {
 
 export function HofLegendCard({ entry, onOpen }: Props) {
   const photo = entry.photoPath ?? entry.imagePath;
+  const [expanded, setExpanded] = useState(false);
+  const [overflows, setOverflows] = useState((entry.bio?.length ?? 0) > 300);
+  const bioRef = useRef<HTMLParagraphElement>(null);
+
+  useLayoutEffect(() => {
+    const el = bioRef.current;
+    if (!el || expanded || !entry.bio) return;
+    setOverflows(el.scrollHeight > el.clientHeight + 1 || entry.bio.length > 300);
+  }, [entry.bio, expanded]);
+
+  const showToggle = Boolean(entry.bio) && (expanded || overflows);
 
   return (
     <button
@@ -36,7 +49,33 @@ export function HofLegendCard({ entry, onOpen }: Props) {
         </p>
       )}
       <div className="mx-auto mt-3 h-px w-14 bg-gradient-to-r from-transparent via-amber-300/70 to-transparent" />
-      {entry.bio && <p className="mt-4 line-clamp-5 text-sm leading-relaxed text-slate-300">{entry.bio}</p>}
+      {entry.bio ? (
+        <div className="mt-4 text-left">
+          <p ref={bioRef} className={cn('text-sm leading-relaxed text-slate-300', !expanded && 'line-clamp-5')}>
+            {entry.bio}
+          </p>
+          {showToggle ? (
+            <span
+              role="button"
+              tabIndex={0}
+              onClick={(event) => {
+                event.stopPropagation();
+                setExpanded((value) => !value);
+              }}
+              onKeyDown={(event) => {
+                if (event.key === 'Enter' || event.key === ' ') {
+                  event.preventDefault();
+                  event.stopPropagation();
+                  setExpanded((value) => !value);
+                }
+              }}
+              className="mt-2 inline-block text-sm font-semibold text-primary-light transition hover:text-white"
+            >
+              {expanded ? 'Prikaži manje' : 'Pročitaj više'}
+            </span>
+          ) : null}
+        </div>
+      ) : null}
     </button>
   );
 }

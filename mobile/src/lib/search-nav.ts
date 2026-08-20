@@ -47,11 +47,13 @@ export function flattenSearchResponse(data: unknown): SearchNavItem[] {
   push('matches', asItems(root.matches));
   push('galleries', asItems(root.galleries));
   push('trophies', asItems(root.trophies));
+  push('timeline', asItems(root.timeline));
+  push('hallOfFame', asItems(root.hallOfFame));
   return out;
 }
 
 export function groupSearchItems(items: SearchNavItem[]): { type: string; data: SearchNavItem[] }[] {
-  const order = ['news', 'players', 'clubs', 'matches', 'galleries', 'trophies'];
+  const order = ['news', 'players', 'clubs', 'matches', 'galleries', 'trophies', 'timeline', 'hallOfFame'];
   return order
     .map((type) => ({ type, data: items.filter((item) => item.type === type) }))
     .filter((group) => group.data.length > 0);
@@ -70,6 +72,10 @@ export function searchItemHref(item: SearchNavItem): string | null {
     case 'clubs':
       return item.slug ? `/clubs/${item.slug}` : '/team';
     case 'trophies':
+      return '/heritage';
+    case 'timeline':
+      return '/heritage';
+    case 'hallOfFame':
       return '/heritage';
     default:
       return null;

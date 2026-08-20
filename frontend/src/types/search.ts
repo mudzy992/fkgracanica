@@ -1,7 +1,16 @@
 import type { Club, GalleryItem, Match, NewsItem, Player, Trophy } from './index';
 import type { PaginationMeta } from './pagination';
 
-export const SEARCH_FACETS = ['news', 'players', 'clubs', 'matches', 'galleries', 'trophies'] as const;
+export const SEARCH_FACETS = [
+  'news',
+  'players',
+  'clubs',
+  'matches',
+  'galleries',
+  'trophies',
+  'timeline',
+  'hallOfFame',
+] as const;
 export type SearchFacet = (typeof SEARCH_FACETS)[number];
 
 export const SEARCH_FACET_LABELS: Record<SearchFacet, string> = {
@@ -11,6 +20,8 @@ export const SEARCH_FACET_LABELS: Record<SearchFacet, string> = {
   matches: 'Utakmice',
   galleries: 'Galerije',
   trophies: 'Trofeji',
+  timeline: 'Timeline',
+  hallOfFame: 'Kuća slavnih',
 };
 
 export interface SearchFacets {
@@ -20,6 +31,19 @@ export interface SearchFacets {
   matches: number;
   galleries: number;
   trophies: number;
+  timeline: number;
+  hallOfFame: number;
+}
+
+export interface SearchTimelineItem {
+  id: string;
+  title: string;
+}
+
+export interface SearchHallOfFameItem {
+  id: string;
+  name: string;
+  role?: string | null;
 }
 
 export interface SearchResponse {
@@ -32,4 +56,6 @@ export interface SearchResponse {
   matches: Match[];
   galleries: GalleryItem[];
   trophies: Trophy[];
+  timeline: SearchTimelineItem[];
+  hallOfFame: SearchHallOfFameItem[];
 }

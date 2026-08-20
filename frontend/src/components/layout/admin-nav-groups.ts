@@ -33,6 +33,13 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
         ],
       },
       { to: '/admin/stanje', labelKey: 'admin.stanje', permissions: ['dashboard.read'] },
+      { to: '/admin/analytics', labelKey: 'admin.analytics', permissions: ['analytics.read'] },
+      {
+        to: '/admin/notifications',
+        labelKey: 'notifications.title',
+        permissions: ['dashboard.read', 'news.manage', 'news.submit', 'gallery.manage', 'live.manage'],
+      },
+      { to: '/admin/audit', labelKey: 'admin.audit', permissions: ['audit.read'] },
       {
         to: '/',
         labelKey: 'admin.publicSite',
@@ -40,20 +47,6 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
         external: true,
         permissions: ['dashboard.read'],
       },
-      {
-        to: '/admin/notifications',
-        labelKey: 'notifications.title',
-        permissions: ['dashboard.read', 'news.manage', 'news.submit', 'gallery.manage', 'live.manage'],
-      },
-      { to: '/admin/audit', labelKey: 'admin.audit', permissions: ['audit.read'] },
-    ],
-  },
-  {
-    labelKey: 'admin.navGroup.system',
-    items: [
-      { to: '/admin/settings', labelKey: 'admin.settings', permissions: ['settings.read'] },
-      { to: '/admin/app-releases', labelKey: 'admin.appReleases', permissions: ['app-releases.manage'] },
-      { to: '/admin/users', labelKey: 'admin.usersAndRoles', permissions: ['users.read', 'rbac.read'] },
     ],
   },
   {
@@ -87,18 +80,6 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
     ],
   },
   {
-    labelKey: 'admin.navGroup.competitions',
-    items: [
-      {
-        to: '/admin/competitions',
-        labelKey: 'admin.competitions',
-        permissions: ['competitions.manage', 'matches.manage'],
-      },
-      { to: '/admin/live/pending', labelKey: 'admin.livePending', permissions: ['live.approve'] },
-      { to: '/admin/analytics', labelKey: 'admin.analytics', permissions: ['analytics.read'] },
-    ],
-  },
-  {
     labelKey: 'admin.navGroup.heritage',
     items: [
       {
@@ -107,6 +88,25 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
         permissions: ['hall-of-fame.manage', 'museum.manage'],
         moduleKeys: ['modules.hallOfFame', 'modules.museum'],
       },
+    ],
+  },
+  {
+    labelKey: 'admin.navGroup.competitions',
+    items: [
+      {
+        to: '/admin/competitions',
+        labelKey: 'admin.competitions',
+        permissions: ['competitions.manage', 'matches.manage'],
+      },
+      { to: '/admin/live/pending', labelKey: 'admin.livePending', permissions: ['live.approve'] },
+    ],
+  },
+  {
+    labelKey: 'admin.navGroup.system',
+    items: [
+      { to: '/admin/settings', labelKey: 'admin.settings', permissions: ['settings.read'] },
+      { to: '/admin/app-releases', labelKey: 'admin.appReleases', permissions: ['app-releases.manage'] },
+      { to: '/admin/users', labelKey: 'admin.usersAndRoles', permissions: ['users.read', 'rbac.read'] },
     ],
   },
   {

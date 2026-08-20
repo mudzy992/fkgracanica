@@ -1,19 +1,31 @@
 import { createHash } from 'crypto';
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { resolveVisitGeo } from './visit-geo.util';
+import { isVisitRateLimited } from './visit-rate-limit.util';
 
 @Injectable()
 export class PublicAnalyticsService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async recordVisit(platform: 'web' | 'mobile', visitorId: string): Promise<void> {
+  async recordVisit(platform: 'web' | 'mobile', visitorId: string, ip?: string): Promise<void> {
+    const hash = createHash('sha256').update(visitorId).digest('hex');
+    if (isVisitRateLimited(platform, hash)) return;
+
     const today = new Date();
     today.setUTCHours(0, 0, 0, 0);
-    const hash = createHash('sha256').update(visitorId).digest('hex');
+    const geo = resolveVisitGeo(ip);
+
     await this.prisma.visitorVisit.upsert({
       where: { date_platform_visitorKeyHash: { date: today, platform, visitorKeyHash: hash } },
       update: {},
-      create: { date: today, platform, visitorKeyHash: hash },
+      create: {
+        date: today,
+        platform,
+        visitorKeyHash: hash,
+        countryCode: geo?.countryCode ?? null,
+        region: geo?.region ?? null,
+      },
     });
   }
 
@@ -56,5 +68,27 @@ export class PublicAnalyticsService {
       this.prisma.visitorVisit.count({ where: { platform: 'mobile', date: { gte: since } } }),
     ]);
     return { web, mobile, total: web + mobile };
+  }
+
+  async getGeoStats(days = 30): Promise<{ countryCode: string; count: number; percent: number }[]> {
+    const since = new Date();
+    since.setUTCDate(since.getUTCDate() - days + 1);
+    since.setUTCHours(0, 0, 0, 0);
+
+    const rows = await this.prisma.visitorVisit.groupBy({
+      by: ['countryCode'],
+      where: { date: { gte: since }, countryCode: { not: null } },
+      _count: { id: true },
+    });
+
+    const total = rows.reduce((sum, row) => sum + row._count.id, 0);
+    return rows
+      .filter((row): row is typeof row & { countryCode: string } => Boolean(row.countryCode))
+      .map((row) => ({
+        countryCode: row.countryCode,
+        count: row._count.id,
+        percent: total ? Math.round((row._count.id / total) * 1000) / 10 : 0,
+      }))
+      .sort((a, b) => b.count - a.count);
   }
 }

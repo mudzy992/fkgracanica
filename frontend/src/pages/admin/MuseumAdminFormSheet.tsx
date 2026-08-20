@@ -42,7 +42,7 @@ export function MuseumAdminFormSheet({ open, onOpenChange, edit }: Props) {
       category,
       year: year ? Number(year) : undefined,
       description: description || undefined,
-      imagePath: imagePath || undefined,
+      imagePath: imagePath || null,
     };
     try {
       if (edit) await update.mutateAsync({ id: edit.id, ...body });

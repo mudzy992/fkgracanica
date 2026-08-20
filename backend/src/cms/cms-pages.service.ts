@@ -2,6 +2,7 @@ import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/commo
 import { ContentStatus, Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { validateWidgetConfig } from './widgets/schemas';
+import { cmsSeoDescFromSections } from './cms-seo.util';
 
 const pageInclude = { sections: { orderBy: { sortOrder: 'asc' as const } } };
 
@@ -29,13 +30,17 @@ export class CmsPagesService {
     };
   }
 
-  create(data: Prisma.CmsPageCreateInput) {
-    return this.prisma.cmsPage.create({ data, include: pageInclude });
+  async create(data: Prisma.CmsPageCreateInput) {
+    const page = await this.prisma.cmsPage.create({ data, include: pageInclude });
+    return this.maybeFillSeoDesc(page.id, page.seoDesc, page.sections);
   }
 
   async update(id: string, data: Prisma.CmsPageUpdateInput) {
     await this.ensurePage(id);
-    return this.prisma.cmsPage.update({ where: { id }, data, include: pageInclude });
+    const page = await this.prisma.cmsPage.update({ where: { id }, data, include: pageInclude });
+    const seoDescProvided = data.seoDesc !== undefined;
+    if (seoDescProvided && typeof data.seoDesc === 'string' && data.seoDesc.trim()) return page;
+    return this.maybeFillSeoDesc(page.id, page.seoDesc, page.sections);
   }
 
   async remove(id: string) {
@@ -55,7 +60,7 @@ export class CmsPagesService {
       where: { pageId },
       _max: { sortOrder: true },
     });
-    return this.prisma.cmsPageSection.create({
+    const section = await this.prisma.cmsPageSection.create({
       data: {
         pageId,
         widgetType: body.widgetType,
@@ -64,6 +69,8 @@ export class CmsPagesService {
         enabled: body.enabled ?? true,
       },
     });
+    await this.refreshAutoSeoDesc(pageId);
+    return section;
   }
 
   async updateSection(pageId: string, sectionId: string, body: Record<string, unknown>) {
@@ -72,7 +79,7 @@ export class CmsPagesService {
     const config = body.config !== undefined ? body.config : section.config;
     const validated = validateWidgetConfig(widgetType, config);
     if (!validated.ok) throw new ForbiddenException(validated.error);
-    return this.prisma.cmsPageSection.update({
+    const updated = await this.prisma.cmsPageSection.update({
       where: { id: sectionId },
       data: {
         widgetType,
@@ -80,6 +87,8 @@ export class CmsPagesService {
         ...(body.enabled !== undefined ? { enabled: Boolean(body.enabled) } : {}),
       },
     });
+    await this.refreshAutoSeoDesc(pageId);
+    return updated;
   }
 
   async removeSection(pageId: string, sectionId: string) {
@@ -95,6 +104,31 @@ export class CmsPagesService {
       ),
     );
     return this.prisma.cmsPageSection.findMany({ where: { pageId }, orderBy: { sortOrder: 'asc' } });
+  }
+
+  private async refreshAutoSeoDesc(pageId: string) {
+    const page = await this.prisma.cmsPage.findUnique({ where: { id: pageId }, include: pageInclude });
+    if (!page || page.seoDesc?.trim()) return;
+    await this.maybeFillSeoDesc(pageId, page.seoDesc, page.sections);
+  }
+
+  private async maybeFillSeoDesc(
+    pageId: string,
+    seoDesc: string | null | undefined,
+    sections: { widgetType: string; config: unknown }[],
+  ) {
+    if (seoDesc?.trim()) {
+      return this.prisma.cmsPage.findUnique({ where: { id: pageId }, include: pageInclude });
+    }
+    const generated = cmsSeoDescFromSections(sections);
+    if (!generated) {
+      return this.prisma.cmsPage.findUnique({ where: { id: pageId }, include: pageInclude });
+    }
+    return this.prisma.cmsPage.update({
+      where: { id: pageId },
+      data: { seoDesc: generated },
+      include: pageInclude,
+    });
   }
 
   private async ensurePage(id: string) {

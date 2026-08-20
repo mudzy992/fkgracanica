@@ -20,6 +20,8 @@ const TYPE_KEYS: Record<string, string> = {
   matches: 'matches',
   galleries: 'gallery',
   trophies: 'trophies',
+  timeline: 'timeline',
+  hallOfFame: 'hallOfFame',
 };
 
 export default function SearchScreen() {

@@ -4,7 +4,7 @@ import { motion, useReducedMotion } from 'framer-motion';
 import { useMatches } from '../../../hooks';
 import { formatDateTime } from '../../../lib/utils';
 import { matchRoundLabel } from '../../../lib/round-utils';
-import { pickNextAndLast } from './hero-match-utils';
+import { isHeroMatchDockVisible, pickNextAndLast } from './hero-match-utils';
 
 interface Props {
   showLast: boolean;
@@ -15,7 +15,7 @@ export function HeroMatchDock({ showLast }: Props) {
   const { data } = useMatches();
   const { next, last } = pickNextAndLast(data);
 
-  if (!next && !(showLast && last)) return null;
+  if (!isHeroMatchDockVisible(data, true, showLast)) return null;
 
   return (
     <motion.div
@@ -26,7 +26,7 @@ export function HeroMatchDock({ showLast }: Props) {
     >
       <div className="mx-auto max-w-6xl px-4 py-4 sm:px-6 sm:py-5">
         <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between lg:gap-6">
-          {next ? (
+          {next && (
             <Link to={`/utakmice/${next.id}`} className="group flex-1">
               <div className="flex flex-col items-center gap-3 md:flex-row md:justify-between md:gap-4">
                 <div className="flex items-center gap-2">
@@ -58,8 +58,6 @@ export function HeroMatchDock({ showLast }: Props) {
                 </div>
               </div>
             </Link>
-          ) : (
-            <p className="flex-1 text-center text-sm text-white/40">Nema zakazane utakmice</p>
           )}
 
           {showLast && last && (

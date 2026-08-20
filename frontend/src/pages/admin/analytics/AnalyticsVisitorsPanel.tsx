@@ -1,10 +1,13 @@
-import { useVisitorTrend, useVisitorTotals } from '../../../hooks/use-analytics';
+import { useVisitorGeo, useVisitorTrend, useVisitorTotals } from '../../../hooks/use-analytics';
+import { AnalyticsGeoPanel } from './AnalyticsGeoPanel';
+import { AnalyticsVisitorsTrendChart } from './AnalyticsVisitorsTrendChart';
 
 export function AnalyticsVisitorsPanel() {
   const { data: totals, isLoading: totalsLoading } = useVisitorTotals(30);
   const { data: trend, isLoading: trendLoading } = useVisitorTrend(30);
+  const { data: geo, isLoading: geoLoading } = useVisitorGeo(30);
 
-  if (totalsLoading || trendLoading) {
+  if (totalsLoading || trendLoading || geoLoading) {
     return <p className="text-sm text-text-muted">Učitavanje posjetilaca…</p>;
   }
 
@@ -29,6 +32,13 @@ export function AnalyticsVisitorsPanel() {
       {trend && trend.length > 0 && (
         <div>
           <h3 className="mb-3 text-sm font-semibold text-text-muted">Dnevni trend (30 dana)</h3>
+          <AnalyticsVisitorsTrendChart trend={trend} />
+        </div>
+      )}
+
+      {trend && trend.length > 0 && (
+        <div>
+          <h3 className="mb-3 text-sm font-semibold text-text-muted">Tabela posjeta</h3>
           <div className="overflow-x-auto rounded-xl border border-[var(--border-subtle)]">
             <table className="w-full text-sm">
               <thead>
@@ -53,6 +63,11 @@ export function AnalyticsVisitorsPanel() {
           </div>
         </div>
       )}
+
+      <div>
+        <h3 className="mb-3 text-sm font-semibold text-text-muted">Geo distribucija (30 dana)</h3>
+        <AnalyticsGeoPanel rows={geo ?? []} />
+      </div>
     </div>
   );
 }

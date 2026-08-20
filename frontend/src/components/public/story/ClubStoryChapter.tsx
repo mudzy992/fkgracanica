@@ -2,8 +2,8 @@ import { motion, useReducedMotion } from 'framer-motion';
 import { mediaUrl } from '../../../lib/media';
 import { defaultTransition, fadeUp } from '../../../lib/motion/presets';
 import type { ClubTimelineEvent } from '../../../types';
-import { RichContent } from '../RichContent';
 import { ClubStoryChapterBg } from './ClubStoryChapterBg';
+import { ExpandableRichContent } from './ExpandableRichContent';
 
 interface Props {
   event: ClubTimelineEvent;
@@ -42,7 +42,10 @@ export function ClubStoryChapter({ event }: Props) {
               {event.title}
             </h2>
             {event.description && (
-              <RichContent html={event.description} className="mt-4 text-base text-white/70 sm:text-lg [&_p]:text-inherit" />
+              <ExpandableRichContent
+                html={event.description}
+                className="mt-4 text-base text-white/70 sm:text-lg"
+              />
             )}
           </motion.div>
         </div>

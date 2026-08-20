@@ -77,13 +77,15 @@ export default function HomeScreen() {
         />
       </HomeFadeSection>
 
-      <HomeFadeSection delay={60}>
-        <View style={styles.padded}>
-          <HomeSectionShell topGap="compact">
-            <HomeMatchWidget featured={featuredMatch} lastResult={lastResult} onOpenMatch={openMatch} />
-          </HomeSectionShell>
-        </View>
-      </HomeFadeSection>
+      {featuredMatch ? (
+        <HomeFadeSection delay={60}>
+          <View style={styles.padded}>
+            <HomeSectionShell topGap="compact">
+              <HomeMatchWidget featured={featuredMatch} lastResult={lastResult} onOpenMatch={openMatch} />
+            </HomeSectionShell>
+          </View>
+        </HomeFadeSection>
+      ) : null}
 
       <HomeFadeSection delay={120}>
         <View style={styles.padded}>
@@ -93,30 +95,8 @@ export default function HomeScreen() {
         </View>
       </HomeFadeSection>
 
-      <HomeFadeSection delay={160}>
-        <View style={styles.padded}>
-          <HomeSectionShell>
-            <HomeFeaturedPlayers players={extras.players} />
-          </HomeSectionShell>
-        </View>
-      </HomeFadeSection>
-
-      <HomeFadeSection delay={200}>
-        <View style={styles.padded}>
-          <HomeSectionShell>
-            <HomeLeagueSnippet rows={extras.leagueRows} />
-          </HomeSectionShell>
-        </View>
-      </HomeFadeSection>
-
-      <HomeFadeSection delay={240}>
-        <HomeSectionShell variant="gallery">
-          <HomeGalleryPreview items={extras.gallery} />
-        </HomeSectionShell>
-      </HomeFadeSection>
-
       {extras.timeline.length > 0 ? (
-        <HomeFadeSection delay={260}>
+        <HomeFadeSection delay={160}>
           <View style={styles.padded}>
             <HomeSectionShell>
               <HomeHeritageCta items={extras.timeline} span={extras.timelineSpan} />
@@ -125,8 +105,30 @@ export default function HomeScreen() {
         </HomeFadeSection>
       ) : null}
 
+      <HomeFadeSection delay={200}>
+        <View style={styles.padded}>
+          <HomeSectionShell>
+            <HomeFeaturedPlayers players={extras.players} />
+          </HomeSectionShell>
+        </View>
+      </HomeFadeSection>
+
+      <HomeFadeSection delay={240}>
+        <View style={styles.padded}>
+          <HomeSectionShell>
+            <HomeLeagueSnippet rows={extras.leagueRows} />
+          </HomeSectionShell>
+        </View>
+      </HomeFadeSection>
+
+      <HomeFadeSection delay={280}>
+        <HomeSectionShell variant="gallery">
+          <HomeGalleryPreview items={extras.gallery} />
+        </HomeSectionShell>
+      </HomeFadeSection>
+
       {showMembership ? (
-        <HomeFadeSection delay={280}>
+        <HomeFadeSection delay={320}>
           <View style={styles.padded}>
             <HomeSectionShell>
               <HomeMembershipBand />
@@ -135,7 +137,7 @@ export default function HomeScreen() {
         </HomeFadeSection>
       ) : null}
 
-      <HomeFadeSection delay={320}>
+      <HomeFadeSection delay={360}>
         <View style={styles.padded}>
           <HomeSectionShell>
             <HomeTrophiesStrip items={extras.trophies} />
@@ -143,7 +145,7 @@ export default function HomeScreen() {
         </View>
       </HomeFadeSection>
 
-      <HomeFadeSection delay={360}>
+      <HomeFadeSection delay={400}>
         <HomeSectionShell variant="sponsors">
           <HomeSponsorsStrip items={extras.sponsors} />
         </HomeSectionShell>

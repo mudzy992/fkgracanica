@@ -37,7 +37,7 @@ export function HallOfFameAdminFormSheet({ open, onOpenChange, edit }: Props) {
       role,
       years: years || undefined,
       bio: bio || undefined,
-      imagePath: imagePath || undefined,
+      imagePath: imagePath || null,
     };
     try {
       if (edit) await update.mutateAsync({ id: edit.id, ...body });

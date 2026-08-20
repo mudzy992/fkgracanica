@@ -97,6 +97,37 @@ export function SearchResultSections({ data, type }: { data: SearchResponse; typ
         ),
       })),
     },
+    {
+      key: 'timeline',
+      title: 'Timeline',
+      items: (data.timeline ?? []).map((event) => ({
+        id: event.id,
+        node: (
+          <Link to={`/o-klubu#${event.id}`}>
+            <Card className="hover:shadow-sm">
+              <CardContent className="p-4">{event.title}</CardContent>
+            </Card>
+          </Link>
+        ),
+      })),
+    },
+    {
+      key: 'hallOfFame',
+      title: 'Kuća slavnih',
+      items: (data.hallOfFame ?? []).map((entry) => ({
+        id: entry.id,
+        node: (
+          <Link to="/hall-of-fame">
+            <Card className="hover:shadow-sm">
+              <CardContent className="p-4">
+                {entry.name}
+                {entry.role ? ` — ${entry.role}` : ''}
+              </CardContent>
+            </Card>
+          </Link>
+        ),
+      })),
+    },
   ];
 
   const visible = type ? sections.filter((s) => s.key === type) : sections.filter((s) => s.items.length > 0);

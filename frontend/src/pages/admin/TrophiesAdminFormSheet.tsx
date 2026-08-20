@@ -45,7 +45,7 @@ export function TrophiesAdminFormSheet({ open, onOpenChange, edit }: Props) {
         year,
         competition: competition || undefined,
         description: description || undefined,
-        imagePath: imagePath || undefined,
+        imagePath: imagePath || null,
         featured,
       };
       if (edit) await update.mutateAsync({ id: edit.id, ...body });

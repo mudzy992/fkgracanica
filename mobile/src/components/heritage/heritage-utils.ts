@@ -19,6 +19,22 @@ export function extractYears(years?: string): string[] {
   return years.match(/\d{4}/g) ?? [];
 }
 
+export function groupHofByYear(items: HeritageItem[]): { year: string; items: HeritageItem[] }[] {
+  const map = new Map<string, HeritageItem[]>();
+  for (const item of items) {
+    const year = extractYears(item.years)[0] ?? '';
+    const bucket = map.get(year) ?? [];
+    bucket.push(item);
+    map.set(year, bucket);
+  }
+  return [...map.entries()]
+    .map(([year, groupItems]) => ({
+      year,
+      items: [...groupItems].sort((a, b) => a.title.localeCompare(b.title, 'bs')),
+    }))
+    .sort((a, b) => (Number(b.year) || 0) - (Number(a.year) || 0) || b.year.localeCompare(a.year));
+}
+
 const MUSEUM_I18N: Record<string, string> = {
   artifact: 'museumArtifact',
   photo: 'museumPhoto',

@@ -9,7 +9,6 @@ import { HofLegendDialog } from '../../components/public/hall-of-fame/HofLegendD
 import { Reveal } from '../../lib/motion/Reveal';
 import { Seo } from '../../components/seo/Seo';
 import { EmptyState } from '../../components/public/EmptyState';
-import { Button } from '../../components/ui/button';
 import { Skeleton } from '../../components/ui/skeleton';
 import type { HallOfFameEntry } from '../../types';
 
@@ -18,26 +17,33 @@ function extractYears(years?: string | null): string[] {
   return years.match(/\d{4}/g) ?? [];
 }
 
+function groupHofByYear(entries: HallOfFameEntry[]): { year: string; entries: HallOfFameEntry[] }[] {
+  const map = new Map<string, HallOfFameEntry[]>();
+  for (const entry of entries) {
+    const year = extractYears(entry.years)[0] ?? '';
+    const bucket = map.get(year) ?? [];
+    bucket.push(entry);
+    map.set(year, bucket);
+  }
+  return [...map.entries()]
+    .map(([year, groupEntries]) => ({
+      year,
+      entries: [...groupEntries].sort((a, b) => a.name.localeCompare(b.name, 'bs')),
+    }))
+    .sort((a, b) => (Number(b.year) || 0) - (Number(a.year) || 0) || b.year.localeCompare(a.year));
+}
+
 export function HallOfFamePage() {
   const { data, isLoading } = useHallOfFame();
-  const [year, setYear] = useState<string | undefined>();
   const [activeEntry, setActiveEntry] = useState<HallOfFameEntry | null>(null);
 
-  const years = useMemo(() => {
-    const set = new Set<string>();
-    data?.forEach((e) => extractYears(e.years).forEach((y) => set.add(y)));
-    return [...set].sort((a, b) => Number(b) - Number(a));
-  }, [data]);
-
-  const filtered = useMemo(() => {
-    if (!year) return data;
-    return data?.filter((e) => extractYears(e.years).includes(year));
-  }, [data, year]);
+  const yearCount = useMemo(() => groupHofByYear(data ?? []).length, [data]);
+  const sections = useMemo(() => groupHofByYear(data ?? []), [data]);
 
   return (
     <div className="overflow-hidden bg-[linear-gradient(180deg,#030712_0%,#0b1220_42%,#161006_100%)] pb-16 sm:pb-20">
       <Seo title="Kuća slavnih" description="Legende FK Gračanica" />
-      <HallOfFameCinematicHero totalCount={data?.length ?? 0} yearCount={years.length} />
+      <HallOfFameCinematicHero totalCount={data?.length ?? 0} yearCount={yearCount} />
       <PageContainer className="py-10 sm:py-12">
         <div className="rounded-[2rem] border border-white/10 bg-white/5 p-5 backdrop-blur-sm sm:p-6">
           <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
@@ -53,37 +59,31 @@ export function HallOfFamePage() {
               Nazad na O klubu
             </Link>
           </div>
-          {years.length > 0 && (
-            <div className="mt-6 flex flex-wrap gap-2">
-              <Button size="sm" variant={!year ? 'default' : 'outline'} onClick={() => setYear(undefined)}>
-                Sve ere
-              </Button>
-              {years.map((y) => (
-                <Button
-                  key={y}
-                  size="sm"
-                  variant={year === y ? 'default' : 'outline'}
-                  onClick={() => setYear(y)}
-                >
-                  {y}
-                </Button>
-              ))}
-            </div>
-          )}
         </div>
 
-        {!isLoading && (filtered?.length ?? 0) === 0 && <EmptyState message="Nema unosa u Kući slavnih." />}
-        <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {isLoading
-            ? Array.from({ length: 6 }).map((_, i) => (
-                <Skeleton key={i} className="h-80 rounded-[1.75rem] bg-white/10" />
-              ))
-            : filtered?.map((entry, i) => (
-                <Reveal key={entry.id} delay={Math.min(i * 0.05, 0.3)}>
-                  <HofLegendCard entry={entry} onOpen={setActiveEntry} />
-                </Reveal>
-              ))}
-        </div>
+        {!isLoading && sections.length === 0 && <EmptyState message="Nema unosa u Kući slavnih." />}
+        {isLoading
+          ? (
+              <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                {Array.from({ length: 6 }).map((_, i) => (
+                  <Skeleton key={i} className="h-80 rounded-[1.75rem] bg-white/10" />
+                ))}
+              </div>
+            )
+          : sections.map((section) => (
+              <section key={section.year} className="mt-10 first:mt-8">
+                <h2 className="font-display text-3xl font-bold tracking-tight text-amber-100 sm:text-4xl">
+                  {section.year}
+                </h2>
+                <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                  {section.entries.map((entry, i) => (
+                    <Reveal key={entry.id} delay={Math.min(i * 0.05, 0.3)}>
+                      <HofLegendCard entry={entry} onOpen={setActiveEntry} />
+                    </Reveal>
+                  ))}
+                </div>
+              </section>
+            ))}
         <div className="mt-10 rounded-[2rem] border border-amber-300/15 bg-[linear-gradient(180deg,rgba(245,158,11,0.12),rgba(15,23,42,0.25))] p-6 sm:p-8">
           <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-amber-100">Završna nota</p>
           <p className="font-display mt-3 max-w-3xl text-2xl font-bold tracking-tight text-white sm:text-3xl">

@@ -23,7 +23,7 @@ export class SeoService {
 
   async buildSitemap() {
     const base = sitePublicUrl();
-    const [news, galleries, players] = await Promise.all([
+    const [news, galleries, players, timeline, hallOfFame, museum] = await Promise.all([
       this.prisma.news.findMany({
         where: { status: ContentStatus.PUBLISHED },
         select: { slug: true, updatedAt: true },
@@ -36,6 +36,15 @@ export class SeoService {
         where: { isActive: true },
         select: { id: true, updatedAt: true },
       }),
+      this.prisma.clubTimelineEvent.findMany({
+        select: { id: true, updatedAt: true },
+      }),
+      this.prisma.hallOfFameEntry.findMany({
+        select: { id: true, updatedAt: true },
+      }),
+      this.prisma.museumItem.findMany({
+        select: { id: true, updatedAt: true },
+      }),
     ]);
     const now = new Date().toISOString();
     const urls = [
@@ -43,6 +52,12 @@ export class SeoService {
       ...news.map((n) => ({ loc: `${base}/vijesti/${n.slug}`, lastmod: n.updatedAt.toISOString() })),
       ...galleries.map((g) => ({ loc: `${base}/galerija/${g.slug}`, lastmod: g.updatedAt.toISOString() })),
       ...players.map((p) => ({ loc: `${base}/igrac/${p.id}`, lastmod: p.updatedAt.toISOString() })),
+      ...timeline.map((e) => ({ loc: `${base}/o-klubu#${e.id}`, lastmod: e.updatedAt.toISOString() })),
+      ...hallOfFame.map((e) => ({
+        loc: `${base}/o-klubu/kuca-slavnih#${e.id}`,
+        lastmod: e.updatedAt.toISOString(),
+      })),
+      ...museum.map((i) => ({ loc: `${base}/muzej#${i.id}`, lastmod: i.updatedAt.toISOString() })),
     ];
     const body = urls
       .map(
@@ -53,8 +68,11 @@ export class SeoService {
     return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${body}\n</urlset>`;
   }
 
-  buildRobots() {
+  async buildRobots() {
     const api = (process.env.API_PUBLIC_URL ?? sitePublicUrl()).replace(/\/$/, '');
+    const setting = await this.prisma.setting.findUnique({ where: { key: 'seo.robotsIndex' } });
+    const robotsIndex = setting?.value !== 'false';
+    if (!robotsIndex) return 'User-agent: *\nDisallow: /\n';
     return `User-agent: *\nAllow: /\nSitemap: ${api}/api/v1/sitemap.xml\n`;
   }
 
@@ -69,6 +87,10 @@ export class SeoService {
         image: defaults.crestUrl,
         url: '/',
       }, defaults);
+    }
+
+    if (normalized === '/o-klubu') {
+      return this.pack(await this.resolvers.fromClubAbout(defaults), defaults);
     }
 
     const staticPage = STATIC_SHARE_PAGES[normalized];
@@ -102,7 +124,7 @@ export class SeoService {
 
   private async loadSiteDefaults(): Promise<SiteDefaults> {
     const settings = await this.prisma.setting.findMany({
-      where: { key: { in: ['club.name', 'seo.title', 'seo.description', 'club.crestUrl'] } },
+      where: { key: { in: ['club.name', 'seo.title', 'seo.description', 'club.crestUrl', 'seo.twitterHandle'] } },
     });
     const map = Object.fromEntries(settings.map((s) => [s.key, s.value]));
     const siteName = map['club.name']?.trim() || map['seo.title']?.trim() || 'FK Gračanica';

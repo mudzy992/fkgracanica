@@ -1,7 +1,10 @@
 export const STATIC_SHARE_PAGES: Record<string, { title: string; description: string }> = {
   '/tim': { title: 'Tim', description: 'Prva ekipa FK Gračanica — sastav, formacija i profili igrača.' },
   '/liga': { title: 'Liga', description: 'Tabela, kola i statistika takmičenja.' },
-  '/o-klubu': { title: 'O klubu', description: 'Historija i vremenska linija FK Gračanica.' },
+  '/o-klubu/kuca-slavnih': {
+    title: 'Kuća slavnih',
+    description: 'Legende i zaslužni igrači FK Gračanica.',
+  },
   '/sponzori': { title: 'Sponzori', description: 'Partneri i sponzori FK Gračanica.' },
   '/trofeji': { title: 'Trofeji', description: 'Pehari i priznanja kluba.' },
   '/hall-of-fame': { title: 'Hall of Fame', description: 'Legende i zaslužni igrači FK Gračanica.' },
@@ -16,6 +19,7 @@ export const STATIC_SHARE_PAGES: Record<string, { title: string; description: st
 export const SITEMAP_STATIC_PATHS = [
   '',
   '/o-klubu',
+  '/o-klubu/kuca-slavnih',
   '/vijesti',
   '/galerija',
   '/tim',

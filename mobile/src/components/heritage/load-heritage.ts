@@ -6,7 +6,7 @@ export type HeritageTab = 'sponsors' | 'trophies' | 'timeline' | 'hall' | 'museu
 const HERITAGE_TABS: HeritageTab[] = ['sponsors', 'trophies', 'timeline', 'hall', 'museum'];
 
 export function parseHeritageTab(value?: string): HeritageTab {
-  return HERITAGE_TABS.includes(value as HeritageTab) ? (value as HeritageTab) : 'trophies';
+  return HERITAGE_TABS.includes(value as HeritageTab) ? (value as HeritageTab) : 'timeline';
 }
 
 export type HeritageItem = {

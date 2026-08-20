@@ -43,6 +43,7 @@ export function NewsDetailPage() {
         image={mediaUrl(data.coverPath, 'medium')}
         url={`/vijesti/${data.slug}`}
         type="article"
+        publishedAt={data.publishedAt}
       />
       <NewsArticleHero
         title={data.title}

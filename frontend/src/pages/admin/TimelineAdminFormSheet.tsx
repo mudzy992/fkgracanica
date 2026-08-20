@@ -39,7 +39,7 @@ export function TimelineAdminFormSheet({ open, onOpenChange, edit }: Props) {
         year: Number(year),
         title,
         description: description || undefined,
-        imagePath: imagePath || undefined,
+        imagePath: imagePath || null,
       };
       if (edit) await update.mutateAsync({ id: edit.id, ...body });
       else await create.mutateAsync(body);
