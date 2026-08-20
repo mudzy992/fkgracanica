@@ -4,19 +4,19 @@ overview: Dodati minimalan first-party tracking za unique public posjetioce na w
 todos:
   - id: schema-visit-model
     content: Definisati Prisma model i migraciju za dnevni unique visitor tracking sa indeksima i unique pravilom.
-    status: pending
+    status: completed
   - id: public-track-endpoint
     content: Dodati backend endpoint i servis za idempotentan upis public web/mobile posjete po danu.
-    status: pending
+    status: completed
   - id: client-identity-hooks
     content: Dodati web local storage i mobile SecureStore identitet te okidanje tracking poziva iz public layout/root layout ulaza.
-    status: pending
+    status: completed
   - id: dashboard-kpis
     content: Proširiti dashboard KPI payload i label mape za web admin i mobile admin prikaz.
-    status: pending
+    status: completed
   - id: moderator-analytics-view
     content: Dodati moderator pregled visitor KPI sažetka i analytics trend read endpoint za detaljniji uvid.
-    status: pending
+    status: completed
 isProject: false
 ---
 
