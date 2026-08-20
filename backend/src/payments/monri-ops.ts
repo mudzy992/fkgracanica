@@ -1,6 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { JobsService } from '../jobs/jobs.module';
+import { NotificationsService } from '../notifications/notifications.service';
 import { confirmMembershipFlow, confirmTicketOrderFlow } from './stripe-confirm.flow';
 import { confirmSeasonPassFlow } from '../ticketing/season-pass-confirm.util';
 import { notifyMembershipActive, notifySeasonPassActive, notifyTicketPaid } from './payment-notify';
@@ -18,6 +19,7 @@ export class MonriOps {
   constructor(
     private readonly prisma: PrismaService,
     private readonly jobs: JobsService,
+    private readonly notifications: NotificationsService,
   ) {}
 
   async merchantKey() {
@@ -38,7 +40,7 @@ export class MonriOps {
     });
     if (!order) throw new BadRequestException('Narudžba nije pronađena');
     const fresh = await confirmTicketOrderFlow(this.prisma, ref.id);
-    if (fresh) await notifyTicketPaid(this.prisma, this.jobs, ref.id);
+    if (fresh) await notifyTicketPaid(this.prisma, this.jobs, ref.id, this.notifications);
     return { orderId: ref.id, status: 'paid' as const };
   }
 
@@ -51,7 +53,7 @@ export class MonriOps {
     });
     if (!membership) throw new BadRequestException('Članstvo nije pronađeno');
     const fresh = await confirmMembershipFlow(this.prisma, ref.id);
-    if (fresh) await notifyMembershipActive(this.prisma, this.jobs, ref.id);
+    if (fresh) await notifyMembershipActive(this.prisma, this.jobs, ref.id, this.notifications);
     return { membershipId: ref.id, status: 'ACTIVE' as const };
   }
 
@@ -67,7 +69,7 @@ export class MonriOps {
       paymentProvider: 'monri',
       externalId: sessionId,
     });
-    if (fresh) await notifySeasonPassActive(this.prisma, this.jobs, ref.id);
+    if (fresh) await notifySeasonPassActive(this.prisma, this.jobs, ref.id, this.notifications);
     return { passId: ref.id, status: 'ACTIVE' as const };
   }
 
@@ -84,18 +86,18 @@ export class MonriOps {
     const ref = parseMonriRef(payload.order_number);
     if (ref?.kind === 'tickets') {
       const fresh = await confirmTicketOrderFlow(this.prisma, ref.id);
-      if (fresh) await notifyTicketPaid(this.prisma, this.jobs, ref.id);
+      if (fresh) await notifyTicketPaid(this.prisma, this.jobs, ref.id, this.notifications);
     }
     if (ref?.kind === 'membership') {
       const fresh = await confirmMembershipFlow(this.prisma, ref.id);
-      if (fresh) await notifyMembershipActive(this.prisma, this.jobs, ref.id);
+      if (fresh) await notifyMembershipActive(this.prisma, this.jobs, ref.id, this.notifications);
     }
     if (ref?.kind === 'season') {
       const fresh = await confirmSeasonPassFlow(this.prisma, ref.id, {
         paymentProvider: 'monri',
         externalId: payload.order_number,
       });
-      if (fresh) await notifySeasonPassActive(this.prisma, this.jobs, ref.id);
+      if (fresh) await notifySeasonPassActive(this.prisma, this.jobs, ref.id, this.notifications);
     }
     return { received: true };
   }

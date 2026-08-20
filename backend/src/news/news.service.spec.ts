@@ -3,6 +3,7 @@ import { NotFoundException } from '@nestjs/common';
 import { ContentStatus } from '@prisma/client';
 import { NewsService } from './news.service';
 import { PrismaService } from '../prisma/prisma.service';
+import { NotificationsService } from '../notifications/notifications.service';
 
 describe('NewsService', () => {
   let service: NewsService;
@@ -19,6 +20,7 @@ describe('NewsService', () => {
       providers: [
         NewsService,
         { provide: PrismaService, useValue: prisma },
+        { provide: NotificationsService, useValue: { broadcast: jest.fn() } },
       ],
     }).compile();
     service = module.get(NewsService);

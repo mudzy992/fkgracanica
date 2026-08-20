@@ -3,6 +3,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { PaymentsReadinessService } from '../payments/payments-readiness.service';
 import { TicketingOrdersService } from './ticketing-orders.service';
 import { JobsService } from '../jobs/jobs.module';
+import { NotificationsService } from '../notifications/notifications.service';
 import { notifyTicketPaid } from '../payments/payment-notify';
 import {
   getMemberDiscountPercent,
@@ -24,6 +25,7 @@ export class TicketingService {
     private readonly payments: PaymentsReadinessService,
     private readonly orders: TicketingOrdersService,
     private readonly jobs: JobsService,
+    private readonly notifications: NotificationsService,
   ) {}
 
   reserve(
@@ -46,7 +48,7 @@ export class TicketingService {
 
   async confirmBoxOfficePayment(orderId: string) {
     const order = await this.orders.confirmBoxOfficePayment(orderId);
-    if (order) await notifyTicketPaid(this.prisma, this.jobs, orderId);
+    if (order) await notifyTicketPaid(this.prisma, this.jobs, orderId, this.notifications);
     return order;
   }
 

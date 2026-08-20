@@ -6,6 +6,7 @@ import { AuthService } from '../auth/auth.service';
 import { PaymentsReadinessService } from '../payments/payments-readiness.service';
 import { generateQrCode } from '../common/utils/qr.util';
 import { JobsService } from '../jobs/jobs.module';
+import { NotificationsService } from '../notifications/notifications.service';
 import { notifyMembershipActive } from '../payments/payment-notify';
 import type { JoinMembershipDto } from './dto/join-membership.dto';
 import { resolveExpiredMany, resolveExpiredOne } from './membership-expiry.util';
@@ -30,6 +31,7 @@ export class MembershipService {
     private readonly auth: AuthService,
     private readonly payments: PaymentsReadinessService,
     private readonly jobs: JobsService,
+    private readonly notifications: NotificationsService,
   ) {}
 
   async joinOnline(dto: JoinMembershipDto) {
@@ -140,7 +142,7 @@ export class MembershipService {
       },
       update: {},
     });
-    await notifyMembershipActive(this.prisma, this.jobs, id);
+    await notifyMembershipActive(this.prisma, this.jobs, id, this.notifications);
     return { membership, card };
   }
 

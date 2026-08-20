@@ -128,6 +128,43 @@ export class NotificationsService {
     });
   }
 
+  async broadcast(input: { title: string; body: string; type: string; path: string }) {
+    const users = await this.prisma.user.findMany({
+      where: {
+        deletedAt: null,
+        isActive: true,
+        notifyPush: true,
+        pushDevices: { some: {} },
+      },
+      select: {
+        id: true,
+        notifyInApp: true,
+        notifyPush: true,
+        pushDevices: { select: { expoPushToken: true } },
+      },
+    });
+    await Promise.all(
+      users.map(async (user) => {
+        const notification = await this.prisma.notification.create({
+          data: {
+            userId: user.id,
+            title: input.title,
+            body: input.body,
+            type: input.type,
+            metadata: { path: input.path },
+          },
+        });
+        if (user.notifyInApp !== false) {
+          this.realtime.emitNotificationNew(user.id, notification);
+        }
+        await this.delivery.deliverPushOnly(
+          { notifyPush: true, pushDevices: user.pushDevices },
+          input,
+        );
+      }),
+    );
+  }
+
   async unregisterDevice(userId: string, token: string) {
     await this.prisma.pushDevice.deleteMany({
       where: { userId, expoPushToken: token },

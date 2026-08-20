@@ -45,7 +45,7 @@ export class LivePhaseService {
       },
     });
     this.realtime.emitMatchStatus(matchId, match);
-    void this.liveFanout.fanout(matchId, MatchEventType.FULL_TIME);
+    void this.liveFanout.fanout(matchId, { type: MatchEventType.FULL_TIME, minute });
     return match;
   }
 
@@ -72,7 +72,7 @@ export class LivePhaseService {
       },
     });
     this.realtime.emitMatchStatus(matchId, match);
-    void this.liveFanout.fanout(matchId, MatchEventType.EXTRA_TIME);
+    void this.liveFanout.fanout(matchId, { type: MatchEventType.EXTRA_TIME, minute });
     return match;
   }
 
@@ -90,7 +90,7 @@ export class LivePhaseService {
       data: { status: MatchStatus.HALFTIME, liveBreak: LiveBreak.ET_HT, minute, clockStartedAt: null },
     });
     this.realtime.emitMatchStatus(matchId, match);
-    void this.liveFanout.fanout(matchId, MatchEventType.HALFTIME);
+    void this.liveFanout.fanout(matchId, { type: MatchEventType.HALFTIME, minute });
     return match;
   }
 
@@ -114,7 +114,7 @@ export class LivePhaseService {
       },
     });
     this.realtime.emitMatchStatus(matchId, match);
-    void this.liveFanout.fanout(matchId, MatchEventType.SECOND_HALF);
+    void this.liveFanout.fanout(matchId, { type: MatchEventType.SECOND_HALF, minute });
     return match;
   }
 
@@ -138,7 +138,7 @@ export class LivePhaseService {
       },
     });
     this.realtime.emitMatchStatus(matchId, match);
-    void this.liveFanout.fanout(matchId, MatchEventType.FULL_TIME);
+    void this.liveFanout.fanout(matchId, { type: MatchEventType.FULL_TIME, minute });
     return match;
   }
 
@@ -165,7 +165,7 @@ export class LivePhaseService {
       },
     });
     this.realtime.emitMatchStatus(matchId, match);
-    void this.liveFanout.fanout(matchId, MatchEventType.COMMENT, 'Izvođenje penala');
+    void this.liveFanout.fanout(matchId, { type: MatchEventType.COMMENT, minute, description: 'Izvođenje penala' });
     return match;
   }
 
@@ -185,7 +185,10 @@ export class LivePhaseService {
       },
     });
     this.realtime.emitMatchStatus(matchId, match);
-    void this.liveFanout.fanout(matchId, MatchEventType.FULL_TIME);
+    void this.liveFanout.fanout(matchId, {
+      type: MatchEventType.FULL_TIME,
+      minute: current.minute ?? 120,
+    });
     return match;
   }
 }

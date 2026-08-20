@@ -6,6 +6,7 @@ import { confirmMembershipFlow, confirmTicketOrderFlow } from '../stripe-confirm
 import { notifyMembershipActive, notifyTicketPaid } from '../payment-notify';
 import { applyStripePaidMeta, confirmStripeSeasonPass } from '../stripe-paid.util';
 import { JobsService } from '../../jobs/jobs.module';
+import { NotificationsService } from '../../notifications/notifications.service';
 import { createSimpleStripeCheckout } from '../stripe-checkout.util';
 import type { CheckoutSessionResult, PaymentProvider } from './payment-provider.interface';
 
@@ -17,6 +18,7 @@ export class StripeProvider implements PaymentProvider {
     private readonly prisma: PrismaService,
     private readonly readiness: PaymentsReadinessService,
     private readonly jobs: JobsService,
+    private readonly notifications: NotificationsService,
   ) {}
 
   isReady() {
@@ -129,7 +131,7 @@ export class StripeProvider implements PaymentProvider {
 
     if (session.payment_status === 'paid') {
       const fresh = await confirmTicketOrderFlow(this.prisma, meta.orderId);
-      if (fresh) await notifyTicketPaid(this.prisma, this.jobs, meta.orderId);
+      if (fresh) await notifyTicketPaid(this.prisma, this.jobs, meta.orderId, this.notifications);
       return { orderId: meta.orderId, status: 'paid' as const };
     }
 
@@ -155,7 +157,7 @@ export class StripeProvider implements PaymentProvider {
 
     if (session.payment_status === 'paid') {
       const fresh = await confirmMembershipFlow(this.prisma, meta.membershipId);
-      if (fresh) await notifyMembershipActive(this.prisma, this.jobs, meta.membershipId);
+      if (fresh) await notifyMembershipActive(this.prisma, this.jobs, meta.membershipId, this.notifications);
       return { membershipId: meta.membershipId, status: 'ACTIVE' as const };
     }
 
@@ -169,7 +171,7 @@ export class StripeProvider implements PaymentProvider {
   async confirmSeasonPassSession(sessionId: string, userId: string) {
     const stripe = await this.client();
     const session = await stripe.checkout.sessions.retrieve(sessionId);
-    return confirmStripeSeasonPass(this.prisma, this.jobs, session, userId, sessionId);
+    return confirmStripeSeasonPass(this.prisma, this.jobs, session, userId, sessionId, this.notifications);
   }
 
   async handleWebhook(rawBody: Buffer, signature: string) {
@@ -185,7 +187,7 @@ export class StripeProvider implements PaymentProvider {
     if (event.type === 'checkout.session.completed') {
       const session = event.data.object as Stripe.Checkout.Session;
       if (session.payment_status !== 'paid') return { received: true };
-      await applyStripePaidMeta(this.prisma, this.jobs, session.metadata ?? {}, session.id);
+      await applyStripePaidMeta(this.prisma, this.jobs, session.metadata ?? {}, session.id, this.notifications);
     }
     return { received: true };
   }

@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { ContentStatus } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
+import { NotificationsService } from '../notifications/notifications.service';
 import { slugify } from '../common/utils/slug.util';
 import {
   mapNewsUpdate,
@@ -34,7 +35,10 @@ export interface NewsWriteInput {
 
 @Injectable()
 export class NewsService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly notifications: NotificationsService,
+  ) {}
 
   findAll(status?: ContentStatus, categoryId?: string) {
     return this.prisma.news.findMany({
@@ -99,8 +103,8 @@ export class NewsService {
   }
 
   async updateStatus(id: string, status: ContentStatus) {
-    await this.findOne(id);
-    return this.prisma.news.update({
+    const previous = await this.findOne(id);
+    const updated = await this.prisma.news.update({
       where: { id },
       data: {
         status,
@@ -108,6 +112,18 @@ export class NewsService {
       },
       include: newsInclude,
     });
+    if (
+      status === ContentStatus.PUBLISHED &&
+      previous.status !== ContentStatus.PUBLISHED
+    ) {
+      void this.notifications.broadcast({
+        title: '📰 Nova vijest',
+        body: updated.title,
+        type: 'news.published',
+        path: `/news/${updated.slug}`,
+      });
+    }
+    return updated;
   }
 
   async submitForReview(id: string, authorId: string) {

@@ -38,7 +38,7 @@ export class LiveClockOpsService {
     this.realtime.emitMatchEvent(matchId, kickoff);
     this.realtime.emitMatchStatus(matchId, match);
     await emitLiveClock(this.prisma, this.realtime, matchId);
-    void this.liveFanout.fanout(matchId, MatchEventType.KICKOFF);
+    void this.liveFanout.fanout(matchId, kickoff);
     return match;
   }
 
@@ -63,7 +63,7 @@ export class LiveClockOpsService {
     this.realtime.emitMatchEvent(matchId, event);
     this.realtime.emitMatchStatus(matchId, match);
     await emitLiveClock(this.prisma, this.realtime, matchId);
-    void this.liveFanout.fanout(matchId, MatchEventType.COMMENT, event.description);
+    void this.liveFanout.fanout(matchId, event);
     return match;
   }
 
@@ -82,7 +82,7 @@ export class LiveClockOpsService {
       },
     });
     this.realtime.emitMatchStatus(matchId, match);
-    void this.liveFanout.fanout(matchId, MatchEventType.FULL_TIME);
+    void this.liveFanout.fanout(matchId, { type: MatchEventType.FULL_TIME, minute });
     return match;
   }
 
@@ -105,7 +105,7 @@ export class LiveClockOpsService {
       },
     });
     this.realtime.emitMatchStatus(matchId, match);
-    void this.liveFanout.fanout(matchId, MatchEventType.HALFTIME);
+    void this.liveFanout.fanout(matchId, { type: MatchEventType.HALFTIME, minute });
     return match;
   }
 
@@ -130,7 +130,7 @@ export class LiveClockOpsService {
     });
     this.realtime.emitMatchStatus(matchId, match);
     await emitLiveClock(this.prisma, this.realtime, matchId);
-    void this.liveFanout.fanout(matchId, MatchEventType.SECOND_HALF);
+    void this.liveFanout.fanout(matchId, { type: MatchEventType.SECOND_HALF, minute });
     return match;
   }
 }

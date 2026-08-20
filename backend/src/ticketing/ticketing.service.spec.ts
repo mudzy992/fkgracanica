@@ -16,6 +16,7 @@ describe('TicketingService.validateTicket', () => {
     {} as PaymentsReadinessService,
     {} as TicketingOrdersService,
     {} as import('../jobs/jobs.module').JobsService,
+    {} as import('../notifications/notifications.service').NotificationsService,
   );
   const baseTicket = {
     id: 't1',

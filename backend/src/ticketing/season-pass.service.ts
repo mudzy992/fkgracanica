@@ -2,6 +2,9 @@ import { BadRequestException, Injectable, NotFoundException } from '@nestjs/comm
 import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { PaymentsReadinessService } from '../payments/payments-readiness.service';
+import { JobsService } from '../jobs/jobs.module';
+import { NotificationsService } from '../notifications/notifications.service';
+import { notifySeasonPassActive } from '../payments/payment-notify';
 import { generateQrCode } from '../common/utils/qr.util';
 import { countActivePasses } from './season-pass-capacity.util';
 import { getStadiumCapacity } from './ticketing-query.util';
@@ -16,6 +19,8 @@ export class SeasonPassService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly payments: PaymentsReadinessService,
+    private readonly jobs: JobsService,
+    private readonly notifications: NotificationsService,
   ) {}
 
   async offer() {
@@ -92,11 +97,13 @@ export class SeasonPassService {
     const user = await this.prisma.user.findUnique({ where: { email } });
     if (!user) throw new NotFoundException('Korisnik nije pronađen');
     const pass = await this.openPending(user.id);
-    return this.prisma.seasonPass.update({
+    const active = await this.prisma.seasonPass.update({
       where: { id: pass.id },
       data: { status: 'ACTIVE', paymentProvider: 'box_office' },
       include: passInclude,
     });
+    await notifySeasonPassActive(this.prisma, this.jobs, pass.id, this.notifications);
+    return active;
   }
 
   async assertPayable(passId: string, userId: string) {

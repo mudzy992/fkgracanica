@@ -46,7 +46,7 @@ export class LiveService {
     await this.applyEventScore(matchId, current, data, minute);
     this.realtime.emitMatchEvent(matchId, event);
     await emitLiveClock(this.prisma, this.realtime, matchId);
-    void this.liveFanout.fanout(matchId, data.type, data.description);
+    void this.liveFanout.fanout(matchId, event);
     return event;
   }
 

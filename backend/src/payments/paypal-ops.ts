@@ -1,6 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { JobsService } from '../jobs/jobs.module';
+import { NotificationsService } from '../notifications/notifications.service';
 import { confirmMembershipFlow, confirmTicketOrderFlow } from './stripe-confirm.flow';
 import { confirmSeasonPassFlow } from '../ticketing/season-pass-confirm.util';
 import { notifyMembershipActive, notifySeasonPassActive, notifyTicketPaid } from './payment-notify';
@@ -31,6 +32,7 @@ export class PaypalOps {
   constructor(
     private readonly prisma: PrismaService,
     private readonly jobs: JobsService,
+    private readonly notifications: NotificationsService,
   ) {}
 
   async ctx(): Promise<PaypalCtx> {
@@ -63,7 +65,7 @@ export class PaypalOps {
     });
     if (!row) throw new BadRequestException('Narudžba nije pronađena');
     const fresh = await confirmTicketOrderFlow(this.prisma, meta.id);
-    if (fresh) await notifyTicketPaid(this.prisma, this.jobs, meta.id);
+    if (fresh) await notifyTicketPaid(this.prisma, this.jobs, meta.id, this.notifications);
     return { orderId: meta.id, status: 'paid' as const };
   }
 
@@ -76,7 +78,7 @@ export class PaypalOps {
     });
     if (!membership) throw new BadRequestException('Članstvo nije pronađeno');
     const fresh = await confirmMembershipFlow(this.prisma, meta.id);
-    if (fresh) await notifyMembershipActive(this.prisma, this.jobs, meta.id);
+    if (fresh) await notifyMembershipActive(this.prisma, this.jobs, meta.id, this.notifications);
     return { membershipId: meta.id, status: 'ACTIVE' as const };
   }
 
@@ -92,7 +94,7 @@ export class PaypalOps {
       paymentProvider: 'paypal',
       externalId: sessionId,
     });
-    if (fresh) await notifySeasonPassActive(this.prisma, this.jobs, meta.id);
+    if (fresh) await notifySeasonPassActive(this.prisma, this.jobs, meta.id, this.notifications);
     return { passId: meta.id, status: 'ACTIVE' as const };
   }
 
@@ -111,18 +113,18 @@ export class PaypalOps {
     }
     if (meta?.kind === 'tickets') {
       const fresh = await confirmTicketOrderFlow(this.prisma, meta.id);
-      if (fresh) await notifyTicketPaid(this.prisma, this.jobs, meta.id);
+      if (fresh) await notifyTicketPaid(this.prisma, this.jobs, meta.id, this.notifications);
     }
     if (meta?.kind === 'membership') {
       const fresh = await confirmMembershipFlow(this.prisma, meta.id);
-      if (fresh) await notifyMembershipActive(this.prisma, this.jobs, meta.id);
+      if (fresh) await notifyMembershipActive(this.prisma, this.jobs, meta.id, this.notifications);
     }
     if (meta?.kind === 'season') {
       const fresh = await confirmSeasonPassFlow(this.prisma, meta.id, {
         paymentProvider: 'paypal',
         externalId: orderId,
       });
-      if (fresh) await notifySeasonPassActive(this.prisma, this.jobs, meta.id);
+      if (fresh) await notifySeasonPassActive(this.prisma, this.jobs, meta.id, this.notifications);
     }
     return { received: true };
   }

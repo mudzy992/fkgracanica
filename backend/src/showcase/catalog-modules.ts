@@ -38,7 +38,7 @@ export const SHOWCASE_MODULES: ShowcaseModule[] = [
   m('mobile-staff', 'Mobile staff', 97, 'in_progress', ['mobile'], 'Admission scan (Redar): kamera, inspect/validate, overlay, vibracija, manual fallback. Komentator desk, live broadcast i events sheet. Writer: lista, editor, DOM body, cover, relacije, save/submit/archive drafta. Moderation: news/gallery/live queue, approve/reject, confirm za live. Admin hub: KPI, CRUD, orders, users.'),
   m('mobile-polish', 'Mobile vizuelni polish', 72, 'in_progress', ['mobile'], 'Live broadcast HUD, events sheet, YouTube stream. Home/liga/tim cinematic. Heritage/gallery/news jos potrebuju polish.'),
   m('email', 'Email obavijesti', 100, 'ready', W, 'HTML template (kontakt/članstvo/ulaznice/sezonska). FailedEmail log u DB. Admin Email log panel u /admin/comms.'),
-  m('push', 'Push obavijesti', 72, 'in_progress', ['mobile'], 'Expo tokeni postoje. Dostava i payloadi se dorađuju.'),
+  m('push', 'Push obavijesti', 100, 'ready', ['mobile'], 'Expo tokeni + live fanout (gol/karton/izmjena sa igračima), ticket/članstvo/sezonska, news broadcast. Deeplink path u payloadu.'),
   m('newsletter', 'Newsletter pretplata', 100, 'ready', W, 'Prijava, odjava (link/token), admin lista, CSV export. Kampanje su zaseban red (newsletter-campaigns).'),
   m('analytics', 'Napredna analitika', 100, 'ready', WA, 'Team W/D/L, forma badges, H2H s viziaulnim stats/datumima, player sezona po kartama (žute/crvene), visitors trend. Excel export je after_launch.'),
   m('i18n-en', 'Engleski jezik', 60, 'in_progress', W, 'Switcher + public chrome (nav, news, contact). Ostali stringovi još BS inline.'),
