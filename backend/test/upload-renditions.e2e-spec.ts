@@ -8,11 +8,10 @@ loadEnv({ path: resolve(__dirname, '../../.env') });
 const uploadDir = mkdtempSync(join(tmpdir(), 'fk-upload-test-'));
 process.env.UPLOAD_PATH = uploadDir;
 
-import { INestApplication, ValidationPipe } from '@nestjs/common';
+import { ValidationPipe } from '@nestjs/common';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { Test, TestingModule } from '@nestjs/testing';
 import request from 'supertest';
-import { App } from 'supertest/types';
 import { AppModule } from '../src/app.module';
 
 const PNG_1X1 = Buffer.from(
@@ -21,7 +20,7 @@ const PNG_1X1 = Buffer.from(
 );
 
 describe('Upload renditions (e2e)', () => {
-  let app: INestApplication<App>;
+  let app: NestExpressApplication;
   let accessToken: string;
 
   beforeAll(async () => {

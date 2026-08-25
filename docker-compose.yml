@@ -37,6 +37,14 @@ services:
       UPLOAD_PATH: /app/uploads
       API_PUBLIC_URL: https://fkgracanica.ba101.top/backend
       SOCKET_IO_PATH: /socket.io
+      # Unutar Docker mreže "web" (Traefik) baza je dostupna preko naziva
+      # servisa "postgres", ne preko javnog hosta sql.ba101.top — zato
+      # ovdje eksplicitno pravimo internu konekcionu nit i njome
+      # prepisujemo DATABASE_URL iz .env (koji ostaje sa javnim hostom,
+      # za CLI/migracije van kontejnera). DB_PROVIDER je informativan —
+      # koji provider je aktivan vidi u prisma/schema.prisma.
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+      DB_PROVIDER: postgres
     volumes:
       - /mnt/shared-app-files/fkgracanica:/app/uploads
     networks:

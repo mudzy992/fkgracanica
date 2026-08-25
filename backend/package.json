@@ -37,7 +37,7 @@
     "@nestjs/swagger": "^11.4.4",
     "@nestjs/throttler": "^6.5.0",
     "@nestjs/websockets": "^11.1.27",
-    "@prisma/adapter-mariadb": "^7.8.0",
+    "@prisma/adapter-pg": "^7.8.0",
     "@prisma/client": "^7.8.0",
     "bcrypt": "^6.0.0",
     "bullmq": "^5.79.1",
@@ -47,7 +47,7 @@
     "geoip-lite": "^2.0.3",
     "helmet": "^8.2.0",
     "ioredis": "^5.11.1",
-    "mariadb": "^3.5.3",
+    "pg": "^8.13.1",
     "nodemailer": "^9.0.3",
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",
@@ -58,6 +58,7 @@
     "socket.io": "^4.8.3",
     "stripe": "^22.3.0"
   },
+  "_comment_mysql_backup": "MySQL/MariaDB zavisnosti (@prisma/adapter-mariadb, mariadb) NAMJERNO uklonjene iz dependencies jer aktivni provider je sad Postgres. Originalni package.json je sačuvan u backend/prisma-mysql-backup/ za rollback — vidi docs/mysql-to-postgres-migration.md.",
   "devDependencies": {
     "@eslint/eslintrc": "^3.2.0",
     "@eslint/js": "^9.18.0",
@@ -72,6 +73,7 @@
     "@types/node": "^24.0.0",
     "@types/nodemailer": "^8.0.1",
     "@types/passport-jwt": "^4.0.1",
+    "@types/pg": "^8.11.10",
     "@types/supertest": "^7.0.0",
     "eslint": "^9.18.0",
     "eslint-config-prettier": "^10.0.1",

@@ -3,7 +3,7 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
+  provider = "postgresql"
 }
 
 // ─── Auth & RBAC ─────────────────────────────────────────────
@@ -308,7 +308,7 @@ model News {
   title       String
   slug        String        @unique
   excerpt     String?       @db.Text
-  content     String        @db.LongText
+  content     String        @db.Text
   coverPath   String?
   videoUrl    String?
   galleryId   String?
@@ -463,7 +463,7 @@ model HallOfFameEntry {
   name        String
   role        String
   years       String?
-  bio         String?  @db.LongText
+  bio         String?  @db.Text
   imagePath   String?
   achievements Json?
   createdAt   DateTime @default(now())

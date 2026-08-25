@@ -8,7 +8,7 @@ RUN npm ci
 
 FROM deps AS build
 COPY . .
-ARG DATABASE_URL=mysql://build:build@localhost:3306/fkgracanica
+ARG DATABASE_URL=postgresql://build:build@localhost:5432/fkgracanica
 ENV DATABASE_URL=$DATABASE_URL
 RUN npx prisma generate
 RUN npm run build

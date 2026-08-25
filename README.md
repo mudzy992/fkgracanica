@@ -5,7 +5,7 @@ Digitalna platforma za FK Gračanica — javni portal, admin CMS, live centar, �
 ## Struktura
 
 ```
-backend/   NestJS + Prisma 7 + MySQL + Socket.IO
+backend/   NestJS + Prisma 7 + PostgreSQL + Socket.IO
 frontend/  React + Vite + Tailwind
 mobile/    Expo (React Native)
 ```
@@ -13,8 +13,12 @@ mobile/    Expo (React Native)
 ## Preduvjeti
 
 - Node.js 20+
-- MySQL (dev: `sql.ba101.top`)
+- PostgreSQL (dev/prod: `sql.ba101.top`, baza `fkgracanica`)
 - Redis (opciono, `docker compose up -d`)
+
+> Projekat je migriran sa MySQL na PostgreSQL. MySQL konfiguracija je
+> sačuvana kao backup u `backend/prisma-mysql-backup/` (nije aktivna).
+> Detalji: [`docs/mysql-to-postgres-migration.md`](docs/mysql-to-postgres-migration.md).
 
 ## Setup
 
