@@ -1,1 +1,0 @@
-ALTER TABLE `Club` ADD COLUMN `shortName` VARCHAR(191) NULL;

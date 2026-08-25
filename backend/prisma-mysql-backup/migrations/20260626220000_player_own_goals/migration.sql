@@ -1,1 +1,0 @@
-ALTER TABLE `PlayerStatistics` ADD COLUMN `ownGoals` INTEGER NOT NULL DEFAULT 0;
