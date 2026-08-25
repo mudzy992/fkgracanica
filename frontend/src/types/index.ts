@@ -23,6 +23,7 @@ export interface User {
   email: string;
   firstName: string | null;
   lastName: string | null;
+  avatarPath?: string | null;
   permissions?: string[];
   notifyLiveMatch?: boolean;
   notifyPush?: boolean;

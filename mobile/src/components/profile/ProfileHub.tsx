@@ -1,12 +1,15 @@
 import { useRouter } from 'expo-router';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { ListRow } from '../primitives/ListRow';
 import { SectionHeader } from '../primitives/SectionHeader';
+import { RemoteImage } from '../RemoteImage';
 import { useAuth } from '../../lib/auth';
 import { api } from '../../lib/api';
 import { isStaffUser } from '../../lib/permissions';
 import { setAppLanguage } from '../../i18n';
+import { uploadMedia } from '../../lib/upload-media';
 import { useTheme } from '../../lib/theme-context';
 import { spacing, typography } from '../../lib/theme';
 
@@ -15,6 +18,7 @@ export function ProfileHub() {
   const router = useRouter();
   const { user, logout, refreshUser } = useAuth();
   const { colors } = useTheme();
+  const [busy, setBusy] = useState(false);
   const nextLang = i18n.language === 'en' ? 'bs' : 'en';
   const displayName = user?.firstName
     ? `${user.firstName} ${user.lastName ?? ''}`.trim()
@@ -27,14 +31,68 @@ export function ProfileHub() {
       .map((part) => part[0]?.toUpperCase() ?? '')
       .join('') || '?';
 
+  const handleUpload = async () => {
+    if (busy) return;
+    setBusy(true);
+    try {
+      const path = await uploadMedia();
+      await api.patch('/auth/profile', { avatarPath: path });
+      await refreshUser();
+    } catch (error) {
+      if (error instanceof Error && error.message === 'cancelled') return;
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (busy || !user?.avatarPath) return;
+    setBusy(true);
+    try {
+      await api.delete('/auth/profile/avatar');
+      await refreshUser();
+    } finally {
+      setBusy(false);
+    }
+  };
+
   return (
     <View style={styles.wrap}>
       <View style={[styles.hero, { backgroundColor: colors.background }]}>
-        <View style={[styles.avatar, { backgroundColor: colors.primary }]}>
-          <Text style={[styles.initials, { color: colors.white }]}>{initials}</Text>
-        </View>
+        {user?.avatarPath ? (
+          <RemoteImage
+            path={user.avatarPath}
+            variant="medium"
+            contentFit="cover"
+            style={styles.avatar}
+          />
+        ) : (
+          <View style={[styles.avatar, { backgroundColor: colors.primary }]}>
+            <Text style={[styles.initials, { color: colors.white }]}>{initials}</Text>
+          </View>
+        )}
         <Text style={[styles.name, { color: colors.text }]}>{displayName}</Text>
         <Text style={[styles.email, { color: colors.textMuted }]}>{user?.email}</Text>
+        <View style={styles.avatarActions}>
+          <Pressable
+            style={[styles.avatarBtn, { borderColor: colors.border, opacity: busy ? 0.6 : 1 }]}
+            disabled={busy}
+            onPress={() => void handleUpload()}
+          >
+            <Text style={[styles.avatarBtnText, { color: colors.text }]}>
+              {user?.avatarPath ? 'Promijeni sliku' : 'Dodaj sliku'}
+            </Text>
+          </Pressable>
+          {user?.avatarPath ? (
+            <Pressable
+              style={[styles.avatarBtn, { borderColor: colors.border, opacity: busy ? 0.6 : 1 }]}
+              disabled={busy}
+              onPress={() => void handleDelete()}
+            >
+              <Text style={[styles.avatarBtnText, { color: colors.danger }]}>Obriši</Text>
+            </Pressable>
+          ) : null}
+        </View>
       </View>
       <SectionHeader title={t('accountTools')} />
       <ListRow title={t('membership')} icon="id-card-outline" onPress={() => router.push('/membership')} />
@@ -75,9 +133,23 @@ export function ProfileHub() {
 
 const styles = StyleSheet.create({
   wrap: { gap: spacing.sm },
-  hero: { alignItems: 'center', borderRadius: 20, paddingVertical: spacing.xl, paddingHorizontal: spacing.md, gap: spacing.sm },
+  hero: {
+    alignItems: 'center',
+    borderRadius: 20,
+    paddingVertical: spacing.xl,
+    paddingHorizontal: spacing.md,
+    gap: spacing.sm,
+  },
   avatar: { width: 72, height: 72, borderRadius: 36, alignItems: 'center', justifyContent: 'center' },
   initials: { ...typography.title, fontSize: 22 },
   name: { ...typography.title, fontWeight: '800', textAlign: 'center' },
   email: { ...typography.caption },
+  avatarActions: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: spacing.sm, marginTop: spacing.xs },
+  avatarBtn: {
+    borderWidth: 1,
+    borderRadius: 999,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.xs,
+  },
+  avatarBtnText: { ...typography.caption, fontWeight: '700' },
 });

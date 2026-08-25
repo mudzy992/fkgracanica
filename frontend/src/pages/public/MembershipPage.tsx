@@ -5,6 +5,7 @@ import { useTicketingPublicConfig } from '../../hooks/use-ticketing';
 import { useMembershipPaymentReturn } from '../../hooks/use-membership-payment-return';
 import { useClearPaymentParams } from '../../hooks/use-clear-payment-params';
 import { LiveNotifyToggle } from '../../components/account/LiveNotifyToggle';
+import { ProfileAvatarEditor } from '../../components/account/ProfileAvatarEditor';
 import { MemberHomeStrip } from '../../components/membership/MemberHomeStrip';
 import { MembershipPurchasePanel } from '../../components/membership/MembershipPurchasePanel';
 import { MyTicketsPanel } from '../../components/ticketing/MyTicketsPanel';
@@ -64,6 +65,7 @@ export function MembershipPage() {
         }
       >
         {accountMode && <MemberHomeStrip />}
+        {accountMode && <ProfileAvatarEditor />}
         {accountMode && <LiveNotifyToggle />}
         {accountMode && (
           <AccountSectionTabs active={tab} onChange={setTab} showTickets={showTickets} />
