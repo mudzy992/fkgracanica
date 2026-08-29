@@ -1,0 +1,75 @@
+services:
+
+  backend:
+    image: fkgracanica-backend:prod
+
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      args:
+        DATABASE_URL: ${DATABASE_URL}
+
+    environment:
+      NODE_ENV: production
+      PORT: ${PORT}
+
+      DATABASE_URL: ${DATABASE_URL}
+      DB_PROVIDER: ${DB_PROVIDER}
+
+      REDIS_URL: ${REDIS_URL}
+
+      UPLOAD_PATH: ${UPLOAD_PATH}
+
+      API_PUBLIC_URL: ${API_PUBLIC_URL}
+      SOCKET_IO_PATH: ${SOCKET_IO_PATH}
+
+      CORS_ORIGINS: ${CORS_ORIGINS}
+
+      JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET}
+      JWT_ACCESS_EXPIRES: ${JWT_ACCESS_EXPIRES}
+      JWT_REFRESH_EXPIRES: ${JWT_REFRESH_EXPIRES}
+
+      ADMIN_EMAIL: ${ADMIN_EMAIL}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+
+    volumes:
+      - /mnt/shared-app-files/fkgracanica:/app/uploads
+
+    networks:
+      - db_net
+      - redis_net
+
+    restart: unless-stopped
+
+
+  frontend:
+    image: fkgracanica-frontend:prod
+
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        VITE_API_URL: ${VITE_API_URL}
+        VITE_REALTIME_URL: ${VITE_REALTIME_URL}
+        VITE_SOCKET_IO_PATH: ${VITE_SOCKET_IO_PATH}
+        EXPO_PUBLIC_API_URL: ${EXPO_PUBLIC_API_URL}
+        EXPO_PUBLIC_REALTIME_URL: ${EXPO_PUBLIC_REALTIME_URL}
+        EXPO_PUBLIC_SOCKET_IO_PATH: ${EXPO_PUBLIC_SOCKET_IO_PATH}
+
+    environment:
+      INTERNAL_API_URL: ${INTERNAL_API_URL}
+
+    depends_on:
+      - backend
+
+    restart: unless-stopped
+
+
+networks:
+
+  db_net:
+    external: true
+
+  redis_net:
+    external: true
