@@ -1,21 +1,23 @@
 import { io, type Socket } from 'socket.io-client';
 
-const API_URL = process.env.EXPO_PUBLIC_API_URL ?? 'http://localhost:3000/api/v1';
+const API_URL =
+  process.env.EXPO_PUBLIC_API_URL ??
+  'https://api.fkgracanica.ba101.top/api/v1';
+
 const API_ORIGIN = API_URL.replace(/\/api\/v1\/?$/, '');
 
 function resolveRealtimeUrl(): string {
-  if (process.env.EXPO_PUBLIC_REALTIME_URL) return process.env.EXPO_PUBLIC_REALTIME_URL;
-  if (API_ORIGIN.endsWith('/backend')) {
-    return `${API_ORIGIN.replace(/\/backend\/?$/, '')}/realtime`;
-  }
-  return `${API_ORIGIN}/realtime`;
+  return (
+    process.env.EXPO_PUBLIC_REALTIME_URL ??
+    `${API_ORIGIN}/realtime`
+  );
 }
 
 function resolveSocketPath(): string {
-  if (process.env.EXPO_PUBLIC_SOCKET_IO_PATH) {
-    return process.env.EXPO_PUBLIC_SOCKET_IO_PATH;
-  }
-  return API_ORIGIN.endsWith('/backend') ? '/backend/socket.io' : '/socket.io';
+  return (
+    process.env.EXPO_PUBLIC_SOCKET_IO_PATH ??
+    '/socket.io'
+  );
 }
 
 let socket: Socket | null = null;
@@ -32,6 +34,7 @@ export function getRealtimeSocket(): Socket {
       reconnectionDelayMax: 10000,
     });
   }
+
   return socket;
 }
 
@@ -52,15 +55,21 @@ const reconnectOpts = {
 
 /** Authenticated socket for user:{id} rooms (notifications). */
 export function getAuthRealtimeSocket(token: string): Socket {
-  if (authSocket && authToken === token) return authSocket;
+  if (authSocket && authToken === token) {
+    return authSocket;
+  }
+
   disconnectAuthRealtimeSocket();
+
   authToken = token;
+
   authSocket = io(resolveRealtimeUrl(), {
     path: resolveSocketPath(),
     transports: ['websocket', 'polling'],
     auth: { token },
     ...reconnectOpts,
   });
+
   return authSocket;
 }
 

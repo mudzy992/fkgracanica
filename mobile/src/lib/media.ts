@@ -1,5 +1,5 @@
 const API_URL =
-  process.env.EXPO_PUBLIC_API_URL ?? 'https://fkgracanica.ba101.top/backend/api/v1';
+  process.env.EXPO_PUBLIC_API_URL ?? 'https://api.fkgracanica.ba101.top/api/v1';
 
 export type MediaVariant = 'thumb' | 'medium' | 'original';
 

@@ -3,47 +3,61 @@
     "version": ">= 16.0.0",
     "appVersionSource": "remote"
   },
+
   "build": {
     "android-base": {
       "android": {
         "image": "latest"
       }
     },
+
     "development": {
       "extends": "android-base",
       "developmentClient": true,
       "distribution": "internal",
       "env": {
         "NODE_ENV": "development",
-        "EAS_BUILD_DISABLE_EXPO_DOCTOR": "1"
+        "EAS_BUILD_DISABLE_EXPO_DOCTOR": "1",
+        "EXPO_PUBLIC_API_URL": "https://api.fkgracanica.ba101.top/api/v1",
+        "EXPO_PUBLIC_REALTIME_URL": "https://api.fkgracanica.ba101.top/realtime",
+        "EXPO_PUBLIC_SOCKET_IO_PATH": "/socket.io"
       },
       "android": {
         "buildType": "apk"
       }
     },
+
     "preview": {
       "extends": "android-base",
       "distribution": "internal",
       "env": {
         "NODE_ENV": "production",
-        "EAS_BUILD_DISABLE_EXPO_DOCTOR": "1"
+        "EAS_BUILD_DISABLE_EXPO_DOCTOR": "1",
+        "EXPO_PUBLIC_API_URL": "https://api.fkgracanica.ba101.top/api/v1",
+        "EXPO_PUBLIC_REALTIME_URL": "https://api.fkgracanica.ba101.top/realtime",
+        "EXPO_PUBLIC_SOCKET_IO_PATH": "/socket.io"
       },
       "android": {
         "buildType": "apk"
       }
     },
+
     "production": {
       "extends": "android-base",
       "autoIncrement": true,
       "env": {
         "NODE_ENV": "production",
-        "EAS_BUILD_DISABLE_EXPO_DOCTOR": "1"
+        "EAS_BUILD_DISABLE_EXPO_DOCTOR": "1",
+        "EXPO_PUBLIC_API_URL": "https://api.fkgracanica.ba101.top/api/v1",
+        "EXPO_PUBLIC_REALTIME_URL": "https://api.fkgracanica.ba101.top/realtime",
+        "EXPO_PUBLIC_SOCKET_IO_PATH": "/socket.io"
       },
       "android": {
         "buildType": "apk"
       }
     }
   },
+
   "submit": {
     "production": {
       "android": {

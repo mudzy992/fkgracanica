@@ -4,7 +4,7 @@ import type { LoginResponse, User } from '../types/api';
 
 /** Set via `.env` — see `.env.example`. Prod default for device smoke. */
 export const API_URL =
-  process.env.EXPO_PUBLIC_API_URL ?? 'https://fkgracanica.ba101.top/backend/api/v1';
+  process.env.EXPO_PUBLIC_API_URL ?? 'https://api.fkgracanica.ba101.top/api/v1';
 
 const ACCESS_TOKEN_KEY = 'fk_access_token';
 const REFRESH_TOKEN_KEY = 'fk_refresh_token';
