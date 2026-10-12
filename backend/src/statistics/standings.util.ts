@@ -59,6 +59,7 @@ function sortStandings(rows: StandingRow[]) {
     (a, b) =>
       b.points - a.points ||
       b.goalDifference - a.goalDifference ||
+      b.goalsFor - a.goalsFor ||
       a.clubName.localeCompare(b.clubName, 'bs'),
   );
 }

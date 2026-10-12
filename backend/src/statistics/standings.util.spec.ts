@@ -48,6 +48,52 @@ describe('standings.util', () => {
     expect(home.formMatches[4].result).toBe('L');
   });
 
+  it('ranks by goals scored when points and goal difference are equal', () => {
+    const opp = { name: 'Opp', slug: 'opp' };
+    const mk = (
+      id: string,
+      homeId: string,
+      awayId: string,
+      homeScore: number,
+      awayScore: number,
+      homeClub: { name: string; slug: string },
+      awayClub: { name: string; slug: string },
+    ) => ({
+      id,
+      homeClubId: homeId,
+      awayClubId: awayId,
+      homeScore,
+      awayScore,
+      status: 'FINISHED',
+      scheduledAt: `2026-02-${String(parseInt(id.slice(1), 10) + 10).padStart(2, '0')}`,
+      homeClub,
+      awayClub,
+    });
+    const g = { name: 'Gračanica', slug: 'gracanica' };
+    const d = { name: 'Dijamant', slug: 'dijamant' };
+    const rows = computeStandings(
+      [
+        mk('g1', 'gracanica', 'opp', 4, 2, g, opp),
+        mk('g2', 'gracanica', 'opp', 2, 1, g, opp),
+        mk('g3', 'gracanica', 'opp', 2, 1, g, opp),
+        mk('g4', 'opp', 'gracanica', 2, 1, opp, g),
+        mk('g5', 'opp', 'gracanica', 1, 0, opp, g),
+        mk('d1', 'dijamant', 'opp', 2, 0, d, opp),
+        mk('d2', 'dijamant', 'opp', 2, 0, d, opp),
+        mk('d3', 'dijamant', 'opp', 3, 1, d, opp),
+        mk('d4', 'opp', 'dijamant', 2, 0, opp, d),
+        mk('d5', 'opp', 'dijamant', 2, 0, opp, d),
+      ],
+      [
+        { id: 'gracanica', name: g.name, slug: g.slug },
+        { id: 'dijamant', name: d.name, slug: d.slug },
+        { id: 'opp', name: opp.name, slug: opp.slug },
+      ],
+    );
+    const tied = rows.filter((r) => r.points === 9 && r.goalDifference === 2);
+    expect(tied.map((r) => r.clubName)).toEqual(['Gračanica', 'Dijamant']);
+  });
+
   it('includes participants with zero stats when no matches played', () => {
     const rows = computeStandings(
       [],
