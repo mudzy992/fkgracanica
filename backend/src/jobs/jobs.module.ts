@@ -5,6 +5,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { tallyCampaignEmail } from '../newsletter/newsletter-campaign-tally';
 import { RealtimeGateway } from '../realtime/realtime.gateway';
 import { RealtimeModule } from '../realtime/realtime.module';
+import { buildRedisTlsOptions } from '../common/utils/redis-tls.util';
 
 export type EmailPayload = {
   to: string;
@@ -17,7 +18,7 @@ export type EmailPayload = {
 @Injectable()
 export class JobsService implements OnModuleDestroy {
   private readonly logger = new Logger(JobsService.name);
-  private readonly connection: { url: string } | null;
+  private readonly connection: { url: string; tls?: { ca: Buffer } } | null;
   private readonly emailQueue: Queue | null;
   private readonly worker: Worker | null;
 
@@ -32,7 +33,10 @@ export class JobsService implements OnModuleDestroy {
       this.worker = null;
       return;
     }
-    this.connection = { url };
+    // BullMQ proslijeđuje { url, ...rest } ioredis-u: rediss:// pali TLS,
+    // a tls.ca (iz REDIS_TLS_CA) rješava "self-signed certificate in
+    // certificate chain" prema privatnom Coolify CA-u.
+    this.connection = { url, ...buildRedisTlsOptions(url) };
     this.emailQueue = new Queue('email', { connection: this.connection });
     this.worker = new Worker(
       'email',

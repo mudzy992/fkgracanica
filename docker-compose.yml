@@ -17,11 +17,14 @@ services:
       DB_PROVIDER: ${DB_PROVIDER}
 
       REDIS_URL: ${REDIS_URL}
-      # Node (ioredis za rediss:// kao i `prisma migrate deploy` pri startu)
-      # vjeruje Coolify CA-u — bez ovoga TLS prema Redisu/Postgresu sa
-      # privatnim CA-om odbija vezu (ioredis i Prisma CLI ne čitaju
-      # sslrootcert fajl, nego Node default root store).
-      NODE_EXTRA_CERTS: ${NODE_EXTRA_CERTS:-/etc/ssl/certs/coolify-ca.crt}
+      # Eksplicitni CA za ioredis (rediss://) — backend ga čita direktno
+      # (common/utils/redis-tls.util.ts) i proslijeđuje kao tls.ca.
+      # Bez ovoga: "self-signed certificate in certificate chain".
+      REDIS_TLS_CA: /run/secrets/redis-ca.crt
+      # Node root store dopuna — nužna za `prisma migrate deploy` (Prisma
+      # CLI ignoriše sslrootcert i vjeruje samo Node root store-u); za
+      # runtime Postgres služi sslrootcert iz DATABASE_URL-a.
+      NODE_EXTRA_CERTS: /etc/ssl/certs/coolify-ca.crt
 
       UPLOAD_PATH: ${UPLOAD_PATH}
 
