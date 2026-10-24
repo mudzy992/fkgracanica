@@ -17,6 +17,11 @@ services:
       DB_PROVIDER: ${DB_PROVIDER}
 
       REDIS_URL: ${REDIS_URL}
+      # Node (ioredis za rediss:// kao i `prisma migrate deploy` pri startu)
+      # vjeruje Coolify CA-u — bez ovoga TLS prema Redisu/Postgresu sa
+      # privatnim CA-om odbija vezu (ioredis i Prisma CLI ne čitaju
+      # sslrootcert fajl, nego Node default root store).
+      NODE_EXTRA_CERTS: ${NODE_EXTRA_CERTS:-/etc/ssl/certs/coolify-ca.crt}
 
       UPLOAD_PATH: ${UPLOAD_PATH}
 
@@ -35,6 +40,10 @@ services:
 
     volumes:
       - /mnt/shared-app-files/fkgracanica:/app/uploads
+      # TLS CA za Redis (rediss://) — vidi REDIS_URL u .env
+      - /data/coolify/ssl/redis-core/redis-ca.crt:/run/secrets/redis-ca.crt:ro
+      # Coolify CA za Postgres (?sslmode=verify-full&sslrootcert=/etc/ssl/certs/coolify-ca.crt)
+      - /data/coolify/ssl/coolify-ca.crt:/etc/ssl/certs/coolify-ca.crt:ro
 
     networks:
       - db_net
