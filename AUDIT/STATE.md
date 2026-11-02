@@ -7,10 +7,10 @@
 | Polje | Vrijednost |
 |-------|------------|
 | **Aktivna grana** | `arena/290a6f13-fkgracanica` |
-| **Trenutna faza** | CI-01 ✔ → **INF-01 ✔ ZATVOREN** → sljedeći: **INF-02** (.env.example čišćenje po D-004) |
-| **Trenutni segment** | **INF-01 zatvoren 2026-11-02**; sljedeći segment **INF-02** |
-| **Zadnji commit** | `2f4ce40` fix(frontend): sinhronizacija standalone package-lock [INF-01/F-019] | |
-| **Zadnji CI run** | ✅ **`41501622108` success** (`2f4ce40` — F-019 fix) https://github.com/mudzy992/fkgracanica/actions/runs/41501622108 ; INF-01: `41487834266` ✅ (zatvaranje), `41485825537` ✅, `41483596127` ✅, `41483038067` ❌ → allowlist. CI-01 historija: 9 ❌ → `41463437281` ✅ → `41464319145` ✅ (tabela u segments/CI-01.md). |
+| **Trenutna faza** | CI-01 ✔ → INF-01 ✔ → **INF-02 ✔ ZATVOREN** → sljedeći: **BE-01** (backend fundamenti) |
+| **Trenutni segment** | **INF-02 zatvoren 2026-11-02**; sljedeći segment **BE-01** |
+| **Zadnji commit** | `f5ec734` chore(ci): secrets-ban bez .env allowlist + pre-commit skaner [INF-02] | |
+| **Zadnji CI run** | ✅ **`41504684855` success** (`6cd18d9`+`f5ec734` — INF-02) https://github.com/mudzy992/fkgracanica/actions/runs/41504684855 ; F-019: `41501622108` ✅, `41502258102` ✅; INF-01: `41487834266` ✅, `41485825537` ✅, `41483596127` ✅, `41483038067` ❌ → allowlist. CI-01: 9 ❌ → `41463437281` ✅ → `41464319145` ✅ (tabela u segments/CI-01.md). |
 | **check:all** | `npm run check:all` → **6/6** (check-coverage, file-size, console-ban, secrets-ban, layer-deps, docs-links); u CI-ju jobovi `audit-gate` + `standards`; pre-push hook pokreće `check:all` |
 
 ## Šta je urađeno (hronološki)
@@ -117,20 +117,36 @@
   (COPY na liniji 35) — naš `frontend/Dockerfile` ima COPY na 10 i nijedna
   historijska verzija ne odgovara → provjeriti Coolify git izvor/branch/Dockerfile.
 
+### SEGMENT INF-02 — 2026-11-02 (ZATVOREN ✅)
+
+- Q-04 ✔/D-004 → čišćenje **sprovedeno**: `.env.example` 2× F-001 → `change-me`
+  (+ D-004 komentar), REDIS primjer `<CHANGE_ME_URL_ENCODED>` (J-02-04).
+- `secrets-ban`: uklonjena zastarjela `.env*` allowlist stavka → `.env.example`
+  sada skeniran; **negativni test** (F-001 vraćen u fajl) → exit 1 ✓.
+- Novi `.githooks/pre-commit` (brzi tajni skaner; pun `check:all` ide na
+  pre-push + CI); `core.hooksPath` **vraćen** nakon re-kloanja — hook upalio
+  uživo na commitima `6cd18d9`/`f5ec734`.
+- `rotate-secrets.sh` audit ✓ (zdrav: `openssl rand`, radi na nepostojećem
+  `.env`-u; D-004 → rotacija nije potrebna; hint `db:seed` postoji).
+- F-001 dokaz ostaje **samo** u allowlist dokumentima (`AUDIT/` ×3,
+  `docs/DECISIONS.md`, `docs/_retired/` ×1); `.env` nije trackan;
+  git historija **bez rewritea** (D-004).
+- CI ✅ `41504684855`; `check:all` 6/6; matrica 1285 fajlova (INF-02: 3 reda).
+- Segment dokument: `AUDIT/segments/INF-02.md` (Status segmenta: ZATVOREN).
+
 ## Šta je sljedeće (tačan sljedeći korak)
 
-1. **INF-02** — čišćenje `.env.example` po **D-004** (ukloniti F-001 lozinku → novi
-   placeholder) + ukloniti `AUDIT/`/`.env.example` allowlist stavku za tu tajnu u
-   `scripts/standards/secrets-ban.mjs` (sad se smije dirati: Q-04 odgovoren).
-2. Zatim **BE-01** (error model/config/logging temelj) → BE-02…08 → FE → MOB → CI-02/03/04 → E2E-01.
-3. Svaki segment: `AUDIT/segments/<ID>.md` + matrica + zelen CI + izvještaj (standard iz CI-01/INF-01).
+1. **BE-01** (backend fundamenti: error model/config/logging temelj; odluke o
+   throttler F-004 i globalnom guardu F-014 — vidljive promjene traže odobrenje).
+2. Zatim BE-02…08 → FE → MOB → CI-02/03/04 → E2E-01 (INF-03 paralelno kad zatreba).
+3. Svaki segment: `AUDIT/segments/<ID>.md` + matrica + zelen CI + izvještaj (standard iz CI-01/INF-01/INF-02).
 
 ## Otvorena pitanja za korisnika (BLOKATORI)
 
 - **Q-01** root README: zadržati (ažuriran) ili penzionisati?
 - **Q-02** `.cursor/plans/**` penzionisati? (preporuka: DA; matrice/`rules` ostaju)
 - **Q-03** mobile smoke checkliste: žive? (preporuka: da, zadržati)
-- **Q-04** ✔ ODGOVORENO (D-004): **nije stvarna lozinka** → bez rotacije/rewrite; čišćenje `.env.example` u **INF-02**
+- **Q-04** ✔ ODGOVORENO (D-004): **nije stvarna lozinka** → bez rotacije/rewrite; čišćenje `.env.example` **Sprovedeno u INF-02** ✔
 - **Q-05** ✔ ODGOVORENO (D-005): **Coolify; Traefik ne postoji** → `docker-compose1.yaml` penzionisan (INF-01)
 - **Q-06** ✔ ODGOVORENO (KAPIJA 2): CI-01 prvi; raniji pushovi bez CI-a evidentirani.
 - **Q-07** saglasnost produkcione baze sa jedinom `init_postgres` migracijom?
