@@ -1,5 +1,5 @@
 /**
- * Odobrenih 71 javna ruta — BE-02 / Q-12(a) — D-006.
+ * Odobrenih 70 javnih ruta (71 − gallery/:id zaštićen u BE-04/P-B04-1) — BE-02 / Q-12(a) — D-006.
  *
  * Izvor: audit javnih ruta iz `AUDIT/segments/BE-01.md` (aneks), potvrđen
  * Nest metapodacima u `route-access.spec.ts`. Svaka promjena (nova javna
@@ -22,7 +22,6 @@ export const APPROVED_PUBLIC = [
   'GET /api/v1/cms/widgets',
   'GET /api/v1/competitions',
   'GET /api/v1/gallery',
-  'GET /api/v1/gallery/:id',
   'GET /api/v1/gallery/slug/:slug',
   'GET /api/v1/hall-of-fame',
   'GET /api/v1/health',

@@ -73,6 +73,15 @@ export class NewsService {
     return item;
   }
 
+  /** BE-04/P-B04-1: laka provjera za javne rute (komentari drafta nisu javni). */
+  async isPublished(id: string) {
+    const news = await this.prisma.news.findUnique({
+      where: { id },
+      select: { status: true },
+    });
+    return news?.status === ContentStatus.PUBLISHED;
+  }
+
   async create(data: NewsWriteInput) {
     const slug = await this.uniqueSlug(
       data.slug?.trim() || slugify(data.title),

@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  NotFoundException,
   Param,
   Patch,
   Post,
@@ -31,10 +32,16 @@ export class NewsController {
   @Get()
   @Public()
   findAll(
+    @CurrentUser() user: AuthUser | undefined,
     @Query('status') status?: ContentStatus,
     @Query('categoryId') categoryId?: string,
   ) {
-    return this.newsService.findAll(status, categoryId);
+    // BE-04/P-B04-1: draft/PENDING lista samo za prijavljene (admin paneli
+    // šalju Bearer); anonimci (portal/mobilni) uvijek vide samo PUBLISHED.
+    return this.newsService.findAll(
+      user ? status : ContentStatus.PUBLISHED,
+      categoryId,
+    );
   }
 
   @Get('published')
@@ -51,7 +58,14 @@ export class NewsController {
 
   @Get(':newsId/comments')
   @Public()
-  findComments(@Param('newsId') newsId: string) {
+  async findComments(
+    @CurrentUser() user: AuthUser | undefined,
+    @Param('newsId') newsId: string,
+  ) {
+    // BE-04/P-B04-1: komentari na draft vijest nisu javni.
+    if (!user && !(await this.newsService.isPublished(newsId))) {
+      throw new NotFoundException('Vijest nije pronađena');
+    }
     return this.commentsService.findByNews(newsId);
   }
 
@@ -76,8 +90,17 @@ export class NewsController {
 
   @Get(':id')
   @Public()
-  findOne(@Param('id') id: string) {
-    return this.newsService.findOne(id);
+  async findOne(
+    @CurrentUser() user: AuthUser | undefined,
+    @Param('id') id: string,
+  ) {
+    const item = await this.newsService.findOne(id);
+    // BE-04/P-B04-1 (CMS obrazac): javni čitaoc vidi samo PUBLISHED;
+    // za draft isto 404 — ne otkrivamo ni postojanje.
+    if (!user && item.status !== ContentStatus.PUBLISHED) {
+      throw new NotFoundException('Vijest nije pronađena');
+    }
+    return item;
   }
 
   @Post()

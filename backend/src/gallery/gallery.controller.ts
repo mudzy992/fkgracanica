@@ -14,6 +14,8 @@ import { ContentStatus } from '@prisma/client';
 import { GalleryService } from './gallery.service';
 import { PermissionsGuard } from '../common/guards/permissions.guard';
 import { RequirePermissions } from '../common/decorators/permissions.decorator';
+import { CurrentUser } from '../common/decorators/current-user.decorator';
+import type { AuthUser } from '../common/types/auth-user.type';
 
 import { Public } from '../common/decorators/public.decorator';
 @ApiTags('gallery')
@@ -23,8 +25,14 @@ export class GalleryController {
 
   @Get()
   @Public()
-  findAll(@Query('status') status?: ContentStatus) {
-    return this.galleryService.findAll(status);
+  findAll(
+    @CurrentUser() user: AuthUser | undefined,
+    @Query('status') status?: ContentStatus,
+  ) {
+    // BE-04/P-B04-1: anonimci (portal, mobile home) uvijek vide samo
+    // PUBLISHED — prije je barem /gallery vraćao i draft albume; status
+    // filter (npr. PENDING moderacija) vrijedi samo za prijavljene.
+    return this.galleryService.findAll(user ? status : ContentStatus.PUBLISHED);
   }
 
   @Get('slug/:slug')
@@ -33,8 +41,9 @@ export class GalleryController {
     return this.galleryService.findBySlug(slug);
   }
 
+  // BE-04/P-B04-1: @Public UKLONJEN — javni čitaoci koriste slug;
+  // :id pozivaju isključivo admin paneli (globalni guard → 401 za anon).
   @Get(':id')
-  @Public()
   findOne(@Param('id') id: string) {
     return this.galleryService.findOne(id);
   }

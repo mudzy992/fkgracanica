@@ -14,6 +14,8 @@ import { ContentStatus } from '@prisma/client';
 import { CmsPagesService } from './cms-pages.service';
 import { PermissionsGuard } from '../common/guards/permissions.guard';
 import { RequirePermissions } from '../common/decorators/permissions.decorator';
+import { CurrentUser } from '../common/decorators/current-user.decorator';
+import type { AuthUser } from '../common/types/auth-user.type';
 import { widgetMeta } from './widgets/schemas';
 
 import { Public } from '../common/decorators/public.decorator';
@@ -33,14 +35,23 @@ export class CmsPagesController {
 
   @Get('pages')
   @Public()
-  findAll(@Query('admin') admin?: string) {
-    return this.pages.findAll(admin === '1');
+  findAll(
+    @CurrentUser() user: AuthUser | undefined,
+    @Query('admin') admin?: string,
+  ) {
+    // BE-04/P-B04-1: admin flag vrijedi SAMO uz prijavljenog korisnika
+    // (tiha autorizacija) — anon `?admin=1` se ponaša kao da ne postoji.
+    return this.pages.findAll(admin === '1' && !!user);
   }
 
   @Get('pages/:slug')
   @Public()
-  findBySlug(@Param('slug') slug: string, @Query('admin') admin?: string) {
-    return this.pages.findBySlug(slug, admin === '1');
+  findBySlug(
+    @CurrentUser() user: AuthUser | undefined,
+    @Param('slug') slug: string,
+    @Query('admin') admin?: string,
+  ) {
+    return this.pages.findBySlug(slug, admin === '1' && !!user);
   }
 
   @Post('pages')
