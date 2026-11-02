@@ -87,7 +87,7 @@ export class AppReleasesService {
             : undefined,
         forceUpdate: dto.forceUpdate,
         minSupportedVersionCode: dto.minSupportedVersionCode,
-        status: dto.status as AppReleaseStatus | undefined,
+        status: dto.status,
       },
     });
   }

@@ -179,10 +179,7 @@ export class PaymentsController {
   @Post('webhooks/paypal')
   paypalWebhook(@Req() req: RawBodyRequest<Request>) {
     const raw = req.rawBody ?? Buffer.from('');
-    return this.service.handlePaypalWebhook(
-      raw,
-      req.headers as Record<string, string | string[] | undefined>,
-    );
+    return this.service.handlePaypalWebhook(raw, req.headers);
   }
 
   @Get('monri/form')
@@ -199,9 +196,6 @@ export class PaymentsController {
   @Post('webhooks/monri')
   monriWebhook(@Req() req: RawBodyRequest<Request>) {
     const raw = req.rawBody ?? Buffer.from('');
-    return this.service.handleMonriWebhook(
-      raw,
-      req.headers as Record<string, string | string[] | undefined>,
-    );
+    return this.service.handleMonriWebhook(raw, req.headers);
   }
 }

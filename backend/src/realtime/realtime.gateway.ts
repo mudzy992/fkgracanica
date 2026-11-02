@@ -11,6 +11,8 @@ import { Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { Server, Socket } from 'socket.io';
+
+type SocketData = { public?: boolean; userId?: string };
 import { PrismaService } from '../prisma/prisma.service';
 
 @WebSocketGateway({
@@ -32,7 +34,7 @@ export class RealtimeGateway
     private readonly prisma: PrismaService,
   ) {}
 
-  async handleConnection(client: Socket) {
+  async handleConnection(client: Socket<SocketData>) {
     const token =
       (client.handshake.auth?.token as string) ||
       (client.handshake.headers.authorization?.replace('Bearer ', '') ?? '');
@@ -62,13 +64,13 @@ export class RealtimeGateway
     }
   }
 
-  handleDisconnect(client: Socket) {
+  handleDisconnect(client: Socket<SocketData>) {
     this.logger.debug(`Client disconnected: ${client.data.userId ?? 'public'}`);
   }
 
   @SubscribeMessage('match:join')
   handleMatchJoin(
-    @ConnectedSocket() client: Socket,
+    @ConnectedSocket() client: Socket<SocketData>,
     @MessageBody() body: { matchId?: string },
   ) {
     if (!body?.matchId) return { ok: false };
@@ -78,7 +80,7 @@ export class RealtimeGateway
 
   @SubscribeMessage('match:leave')
   handleMatchLeave(
-    @ConnectedSocket() client: Socket,
+    @ConnectedSocket() client: Socket<SocketData>,
     @MessageBody() body: { matchId?: string },
   ) {
     if (body?.matchId) client.leave(`match:${body.matchId}`);
@@ -86,14 +88,14 @@ export class RealtimeGateway
   }
 
   @SubscribeMessage('newsletter:join')
-  handleNewsletterJoin(@ConnectedSocket() client: Socket) {
+  handleNewsletterJoin(@ConnectedSocket() client: Socket<SocketData>) {
     if (!client.data.userId) return { ok: false };
     client.join('newsletter');
     return { ok: true };
   }
 
   @SubscribeMessage('newsletter:leave')
-  handleNewsletterLeave(@ConnectedSocket() client: Socket) {
+  handleNewsletterLeave(@ConnectedSocket() client: Socket<SocketData>) {
     client.leave('newsletter');
     return { ok: true };
   }

@@ -43,7 +43,7 @@ export class MonriProvider implements PaymentProvider {
   async createTicketCheckout(
     orderId: string,
     successUrl: string,
-    cancelUrl: string,
+    _cancelUrl: string,
   ) {
     const order = await this.prisma.ticketOrder.findUnique({
       where: { id: orderId },
@@ -64,25 +64,26 @@ export class MonriProvider implements PaymentProvider {
     return this.bridgeUrl(successUrl, orderNumber);
   }
 
-  async createMembershipCheckout(
+  createMembershipCheckout(
     membershipId: string,
     _amount: number,
     successUrl: string,
     _cancelUrl: string,
-  ) {
-    return this.bridgeUrl(
-      successUrl,
-      monriOrderNumber('membership', membershipId),
+  ): Promise<CheckoutSessionResult> {
+    return Promise.resolve(
+      this.bridgeUrl(successUrl, monriOrderNumber('membership', membershipId)),
     );
   }
 
-  async createSeasonPassCheckout(
+  createSeasonPassCheckout(
     passId: string,
     _amount: number,
     successUrl: string,
     _cancelUrl: string,
-  ) {
-    return this.bridgeUrl(successUrl, monriOrderNumber('season', passId));
+  ): Promise<CheckoutSessionResult> {
+    return Promise.resolve(
+      this.bridgeUrl(successUrl, monriOrderNumber('season', passId)),
+    );
   }
 
   confirmTicketSession(sessionId: string, userId: string, returnUrl?: string) {

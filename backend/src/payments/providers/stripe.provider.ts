@@ -227,7 +227,7 @@ export class StripeProvider implements PaymentProvider {
     );
 
     if (event.type === 'checkout.session.completed') {
-      const session = event.data.object as Stripe.Checkout.Session;
+      const session = event.data.object;
       if (session.payment_status !== 'paid') return { received: true };
       await applyStripePaidMeta(
         this.prisma,

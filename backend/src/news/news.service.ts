@@ -104,7 +104,7 @@ export class NewsService {
     const relatedPlayerIds = data.relatedPlayerIds as string[] | undefined;
     const update = mapNewsUpdate(data);
     if (typeof update.slug === 'string' && update.slug) {
-      update.slug = await this.uniqueSlug(update.slug as string, id);
+      update.slug = await this.uniqueSlug(update.slug, id);
     }
     if (update.scheduledAt)
       update.scheduledAt = new Date(update.scheduledAt as string);

@@ -154,7 +154,7 @@ export class PaymentsService {
       return this.monri.confirmMembershipSession(sessionId, userId, returnUrl);
     if (id === 'stripe')
       return this.stripe.confirmMembershipSession(sessionId, userId);
-    throw new NotImplementedException(`${id} confirm u pripremi`);
+    throw new NotImplementedException(`${String(id)} confirm u pripremi`);
   }
 
   async confirmTicketSession(
@@ -171,7 +171,7 @@ export class PaymentsService {
       return this.monri.confirmTicketSession(sessionId, userId, returnUrl);
     if (id === 'stripe')
       return this.stripe.confirmTicketSession(sessionId, userId);
-    throw new NotImplementedException(`${id} confirm u pripremi`);
+    throw new NotImplementedException(`${String(id)} confirm u pripremi`);
   }
 
   async confirmSeasonPassSession(
@@ -188,7 +188,7 @@ export class PaymentsService {
       return this.monri.confirmSeasonPassSession(sessionId, userId, returnUrl);
     if (id === 'stripe')
       return this.stripe.confirmSeasonPassSession(sessionId, userId);
-    throw new NotImplementedException(`${id} confirm u pripremi`);
+    throw new NotImplementedException(`${String(id)} confirm u pripremi`);
   }
 
   private async providerFromExternalId(
