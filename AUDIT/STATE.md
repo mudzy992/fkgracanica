@@ -9,8 +9,8 @@
 | **Aktivna grana** | `arena/290a6f13-fkgracanica` |
 | **Trenutna faza** | FAZA 1 završena → **KAPIJA 1** (čeka odobrenje) |
 | **Trenutni segment** | nijedan otvoren (master plan = FAZA 2, čeka odobrenje) |
-| **Zadnji commit** | `b0376a5` (fix(redis-tls): explicit CA…) — prethodna sesija; **ovaj commit: vidi ispod** |
-| **Zadnji CI run** | **N/A — CI ne postoji** (`.github/` nikad u historiji; F-002 → Q-06, segment CI-01) |
+| **Zadnji commit** | `583214a` (docs(audit): FAZA 0+1…) — pushan na origin |
+| **Zadnji CI run** | **N/A — nema runova**: `gh run list` prazan, `.github/` ne postoji (F-002 → Q-06, segment CI-01). Push `583214a` je BEZ CI-a i to je eksplicitno evidentirano. |
 | **check:all** | ne postoji (scripts/standards/ = FAZA 3) |
 
 ## Šta je urađeno (hronološki)
@@ -35,6 +35,9 @@
   Odgođeno uz pitanja: root README (Q-01), `.cursor/plans` (Q-02), smoke checkliste (Q-03).
 - Nova dokumentacija (izvor istine): `docs/{ARCHITECTURE,INFRASTRUCTURE,BACKEND,FRONTEND,MOBILE,TESTING,CI,CONVENTIONS,DECISIONS}.md`; linkovi u root `README.md` ažurirani.
 - Napomena: `.env.example` i dalje sadrži F-001 lozinku — **ne diram** dok ne stigne Q-04.
+- Commit `583214a` pushan; `gh run list` → prazno (nema CI-ja). Lokalne provjere:
+  eslint čist na TS izmjenama iz prethodne sesije; YAML compose validiran; `check:all`
+  ne postoji (FAZA 3).
 
 ## Šta je sljedeće (tačan sljedeći korak)
 
