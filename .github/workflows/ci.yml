@@ -79,13 +79,23 @@ jobs:
         working-directory: backend
         run: |
           set +e
-          npx eslint "{src,apps,libs,test}/**/*.ts" -f unix > /tmp/eslint.out 2>&1
+          npx eslint "{src,apps,libs,test}/**/*.ts" -f json -o /tmp/eslint.json 2>/tmp/eslint.err
           code=$?
           if [ $code -ne 0 ]; then
-            # puni izlaz (s fajlovima) kao JEDNA annotacija — %0A = newline
-            { printf '::error title=eslint full::'; awk 'NR>1{printf "%%0A"} {printf "%s", $0}' /tmp/eslint.out | head -c 60000; printf '\n'; }
+            python3 - <<'PYEOF' > /tmp/lines.txt
+          import json
+          try:
+              data = json.load(open('/tmp/eslint.json'))
+          except Exception as e:
+              print(f'eslint json parse: {e}'); raise SystemExit
+          for f in data:
+              for m in f.get('messages', []):
+                  sev = 'error' if m.get('severity') == 2 else 'warn'
+                  print(f"{f['filePath'].replace('/home/user/fkgracanica/','')}:{m.get('line')}:{m.get('column')} [{sev}] {m.get('ruleId')}: {m.get('message')}")
+          PYEOF
+            { printf '::error title=eslint full::'; awk 'NR>1{printf "%%0A"} {printf "%s", $0}' /tmp/lines.txt | head -c 60000; printf '\n'; }
           fi
-          tail -3 /tmp/eslint.out
+          wc -l /tmp/lines.txt 2>/dev/null; tail -3 /tmp/eslint.err 2>/dev/null
           exit $code
       - name: frontend build (tsc -b + vite)
         run: npm run build -w frontend
