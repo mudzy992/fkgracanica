@@ -1,10 +1,24 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { mkdir, writeFile } from 'fs/promises';
 import { join, extname } from 'path';
 import { randomUUID } from 'crypto';
 import { ImageRenditionService } from './image-rendition.service';
 import { isImageMime, toPublicUrl } from './upload.util';
+
+/**
+ * BE-04/P-B04-2 (odobreno): allowlist ekstenzija — uz `isImageMime`
+ * (image/* bez SVG-a) zatvara stored XSS (upload .html/.svg na javnu
+ * static rutu `/api/v1/uploads/files/`).
+ */
+const ALLOWED_IMAGE_EXTS = new Set([
+  '.jpg',
+  '.jpeg',
+  '.png',
+  '.webp',
+  '.avif',
+  '.gif',
+]);
 
 export interface SavedFile {
   filename: string;
@@ -27,9 +41,19 @@ export class UploadService {
   ) {}
 
   async saveFile(file: Express.Multer.File): Promise<SavedFile> {
+    // BE-04/P-B04-2: validacija PRIJE bilo kakvog upisa na disk.
+    if (!file) {
+      throw new BadRequestException('Nedostaje fajl');
+    }
+    const ext = extname(file.originalname).toLowerCase();
+    if (!isImageMime(file.mimetype) || !ALLOWED_IMAGE_EXTS.has(ext)) {
+      throw new BadRequestException(
+        'Dozvoljene su samo slike (jpg, jpeg, png, webp, avif, gif)',
+      );
+    }
+
     const uploadRoot = this.config.get<string>('UPLOAD_PATH', './uploads');
     const id = randomUUID();
-    const ext = extname(file.originalname).toLowerCase() || '.bin';
     const filename = `${id}${ext}`;
     const relativePath = join('originals', filename).replace(/\\/g, '/');
 
