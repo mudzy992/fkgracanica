@@ -7,11 +7,11 @@
 | Polje | Vrijednost |
 |-------|------------|
 | **Aktivna grana** | `arena/290a6f13-fkgracanica` |
-| **Trenutna faza** | CI-01 ✔ → **INF-01 u toku** (Q-04/Q-05 odgovoreni → INF-02 odblokiran) |
-| **Trenutni segment** | **INF-01** (compose hardening; otvoren 2026-11-02) |
-| **Zadnji commit** | `aa30604` docs(audit): CI-01 ZATVOREN… [CI-01] | |
-| **Zadnji CI run** | ✅ **`41464319145` success** (zatvaranje CI-01, sva 3 joba) + prvi zelen `41463437281`; obje: https://github.com/mudzy992/fkgracanica/actions/runs/41464319145 ; 9 prethodnih ❌ → popravljeno (tabela u segments/CI-01.md): `gh run list` prazan, `.github/` ne postoji (F-002 → Q-06, segment CI-01). Pushovi do CI-01 su BEZ CI-a i to je eksplicitno evidentirano (Q-06). |
-| **check:all** | ne postoji kao `npm` skripta (Q-09); audit gate = `node scripts/audit/check-coverage.mjs` (lokalno; u CI-ju kao `audit-gate` job tek nakon CI-01) |
+| **Trenutna faza** | CI-01 ✔ → **INF-01 ✔ ZATVOREN** → sljedeći: **INF-02** (.env.example čišćenje po D-004) |
+| **Trenutni segment** | **INF-01 zatvoren 2026-11-02**; sljedeći segment **INF-02** |
+| **Zadnji commit** | `2a93534` fix(compose): log rotacija i no-new-privileges [INF-01] (zatvarajući docs commit slijedi) | |
+| **Zadnji CI run** | ✅ **`41485825537` success** (`7c4fb5f`+`2a93534`, sva 3 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41485825537 ; prije toga `41483596127` ✅ (`9a7fbc2`) i `41483038067` ❌ → secrets-ban allowlist (D-004 dokaz). CI-01 historija: 9 ❌ → `41463437281` ✅ → `41464319145` ✅ (tabela u segments/CI-01.md). |
+| **check:all** | `npm run check:all` → **6/6** (check-coverage, file-size, console-ban, secrets-ban, layer-deps, docs-links); u CI-ju jobovi `audit-gate` + `standards`; pre-push hook pokreće `check:all` |
 
 ## Šta je urađeno (hronološki)
 
@@ -79,12 +79,31 @@
   17 type-aware grešaka, zastarijeli newsInclude asert, unused importi).
   Segment dokument: `AUDIT/segments/CI-01.md` (Status segmenta: ZATVOREN).
 
+### SEGMENT INF-01 — 2026-11-02 (ZATVOREN ✅)
+
+- Q-04 ✔ (D-004: `Mojalozinka!1` nije stvarna lozinka → bez rotacije/rewrite) i Q-05 ✔
+  (D-005: samo Coolify, Traefik ne postoji) → segment odblokiran.
+- I-01-01: `docker-compose1.yaml` penzionisan u `docs/_retired/` (banner + INDEX +
+  INFRASTRUCTURE + inventory referenca).
+- Odobrenje korisnika **„Može, odobravam sve"** (2026-11-02) → primijenjeno:
+  - I-01-08: `frontend/Dockerfile` → `RUN npm ci` bez `--package-lock-only` (`7c4fb5f`);
+  - I-01-02: frontend runner `USER node` — provjeren og-server: read-only, port 3000 (`7c4fb5f`);
+  - I-01-03: `logging: json-file 10m×3` na backend + frontend (`2a93534`);
+  - I-01-04: `security_opt: no-new-privileges:true` na oba servisa (`2a93534`);
+  - I-01-05 (`condition: service_healthy`): odgođeno — preporuka DEFER prihvaćena
+    (HEALTHCHECK alat u backend slici nije garantovan → rizik blokade starta frontenda).
+- Prvi push segmenta ❌ `41483038067` (secrets-ban na D-004 dokazu u DECISIONS.md) →
+  allowlist poprava `9a7fbc2` → ✅ `41483596127` → hardening → ✅ `41485825537`.
+- Lokalno: `check:all` 6/6, compose YAML validan, matrica 1284 fajla (INF-01: 3 reda).
+- Segment dokument: `AUDIT/segments/INF-01.md` (Status segmenta: ZATVOREN).
+
 ## Šta je sljedeće (tačan sljedeći korak)
 
-1. **INF-01** (compose/env audit) — ali INF-02 (tajne) čeka **Q-04**, INF-01/03 čekaju **Q-05**
-   → zamoliti korisnika za Q-04/Q-05 prije nego krene INF.
-2. Bez blokatora dalje: **BE-01** (error model/config/logging temelj) → BE-02…08 → FE → MOB.
-3. Svaki segment: `AUDIT/segments/<ID>.md` + matrica + zelen CI (sada postoji!) + izvještaj.
+1. **INF-02** — čišćenje `.env.example` po **D-004** (ukloniti F-001 lozinku → novi
+   placeholder) + ukloniti `AUDIT/`/`.env.example` allowlist stavku za tu tajnu u
+   `scripts/standards/secrets-ban.mjs` (sad se smije dirati: Q-04 odgovoren).
+2. Zatim **BE-01** (error model/config/logging temelj) → BE-02…08 → FE → MOB → CI-02/03/04 → E2E-01.
+3. Svaki segment: `AUDIT/segments/<ID>.md` + matrica + zelen CI + izvještaj (standard iz CI-01/INF-01).
 
 ## Otvorena pitanja za korisnika (BLOKATORI)
 
