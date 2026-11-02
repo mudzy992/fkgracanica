@@ -48,3 +48,27 @@
 | `scripts/rotate-secrets.sh` | rotacija JWT + ADMIN_PASSWORD u `.env` |
 | `scripts/setup-upload-dir.sh` | priprema upload direktorija |
 | `scripts/qa-live-commentator.mjs`, `qa-live-reset.sh` | QA pomoci za live centar |
+
+## Audit pokrivenost (COVERAGE_MATRIX + segmenti)
+
+Svaki izvorni fajl u repu mora imati red u **`AUDIT/COVERAGE_MATRIX.csv`**
+(kolone: `file,layer,module,loc,status,findings,segment,date`), a svaki segment
+mora imati dokument **`AUDIT/segments/<ID>.md`** (obavezno polje u dnu:
+`Status segmenta: OTVOREN | ZATVOREN`).
+
+- **Dozvoljeni statusi:** `nepregledano`, `u toku`, `pregledano`, `popravljeno`,
+  `pokriveno testom`.
+- **Redoslijed rada po segmentu:**
+  1. otvori `AUDIT/segments/<ID>.md` (mapa: `docs/CI.md` §5 / `AUDIT/02_MASTER_AUDIT_PLAN.md` §2);
+  2. u matrici dodijeli fajlove segmentu i prebacuj status (→ `u toku` → `pregledano` →
+     `popravljeno` → `pokriveno testom` — uvijek uz `date` i `findings`);
+  3. izvrši segment po planu (CI prvo: lockfile fix, pipeline, smoke, hookovi);
+  4. stavi `Status segmenta: ZATVOREN` tek kad je SVIH 15 kriterijuma ispunjeno;
+  5. commit: `type(scope): opis [ID]`.
+- **Nikad ne ručno mijenjaj** kolone `file/layer/module/loc` — regeneriše ih
+  `node scripts/audit/inventory.mjs` (statusi se čuvaju).
+- **Gate (lokalno + budući CI `audit-gate` job):**
+  `node scripts/audit/check-coverage.mjs` mora biti exit 0 prije pusha — pada na:
+  fajl van matrice, zastario red, `ZATVOREN` segment s nepregledanim fajlom, loš status.
+- Izuzeci iz inventara (node_modules, docs, dist, .cursor, …) su eksplicitni u
+  `scripts/audit/inventory.mjs` (`EXCLUDE_DIRS/EXCLUDE_FILES`) — svaki s razlogom.
