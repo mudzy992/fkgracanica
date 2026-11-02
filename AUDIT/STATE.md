@@ -9,8 +9,8 @@
 | **Aktivna grana** | `arena/290a6f13-fkgracanica` |
 | **Trenutna faza** | CI-01 ✔ → **INF-01 ✔ ZATVOREN** → sljedeći: **INF-02** (.env.example čišćenje po D-004) |
 | **Trenutni segment** | **INF-01 zatvoren 2026-11-02**; sljedeći segment **INF-02** |
-| **Zadnji commit** | `2280928` docs(audit): INF-01 ZATVOREN — segment, matrica, STATE [INF-01] | |
-| **Zadnji CI run** | ✅ **`41485825537` success** (`7c4fb5f`+`2a93534`, sva 3 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41485825537 ; prije toga `41483596127` ✅ (`9a7fbc2`) i `41483038067` ❌ → secrets-ban allowlist (D-004 dokaz). CI-01 historija: 9 ❌ → `41463437281` ✅ → `41464319145` ✅ (tabela u segments/CI-01.md). |
+| **Zadnji commit** | `2f4ce40` fix(frontend): sinhronizacija standalone package-lock [INF-01/F-019] | |
+| **Zadnji CI run** | ✅ **`41501622108` success** (`2f4ce40` — F-019 fix) https://github.com/mudzy992/fkgracanica/actions/runs/41501622108 ; INF-01: `41487834266` ✅ (zatvaranje), `41485825537` ✅, `41483596127` ✅, `41483038067` ❌ → allowlist. CI-01 historija: 9 ❌ → `41463437281` ✅ → `41464319145` ✅ (tabela u segments/CI-01.md). |
 | **check:all** | `npm run check:all` → **6/6** (check-coverage, file-size, console-ban, secrets-ban, layer-deps, docs-links); u CI-ju jobovi `audit-gate` + `standards`; pre-push hook pokreće `check:all` |
 
 ## Šta je urađeno (hronološki)
@@ -96,6 +96,26 @@
   allowlist poprava `9a7fbc2` → ✅ `41483596127` → hardening → ✅ `41485825537`.
 - Lokalno: `check:all` 6/6, compose YAML validan, matrica 1284 fajla (INF-01: 3 reda).
 - Segment dokument: `AUDIT/segments/INF-01.md` (Status segmenta: ZATVOREN).
+
+### INCIDENT nakon zatvaranja — F-019 (Coolify build pao, 2026-11-02 17:12)
+
+- **Lanac**: CI-01 tačni pinovi u `frontend/package.json` (@types/react 19.2.18,
+  @types/react-dom 19.2.7, tiptap 3.28.0) → root lock sinhron (GitHub CI zelen),
+  ALI standalone `frontend/package-lock.json` (njega koristi Docker build)
+  **nikad regenerisan** (`scripts/sync-docker-locks.sh` postojao — nepokrenut) →
+  I-01-08 (odobren) uklonio `--package-lock-only` masku → Coolify `npm ci`
+  (npm 10.9.9) pao: `lock file's @types/react@19.2.17 does not satisfy 19.2.18`.
+- **Fix `2f4ce40` (F-019)**: hirurška sinhronizacija **15+/15−** — 2 @types bloka
+  (version/resolved/integrity) + 9 root-mirror stavki; `package.json` netaknut;
+  svih 22 `libc` polja sačuvano (alpine/musl build).
+- **Odbijen puni regen `sync-docker-locks.sh`**: regeneriše lock OD NULE →
+  react 19.2.7→19.3.1, vite 8.1.5→8.3.5 (1629 reda) = nedozvoljena promjena
+  ponašanja → revertiran; preporuka za hardening alata čeka odobrenje.
+- **Verifikacija**: standalone `npm ci` exit 0 na npm 10.9.8 i **npm 10.9.9
+  (tačno Coolify)**; GitHub CI ✅ `41501622108`.
+- **Otvoreno (pitanje korisniku)**: Coolify log pokazuje `Dockerfile:37`
+  (COPY na liniji 35) — naš `frontend/Dockerfile` ima COPY na 10 i nijedna
+  historijska verzija ne odgovara → provjeriti Coolify git izvor/branch/Dockerfile.
 
 ## Šta je sljedeće (tačan sljedeći korak)
 

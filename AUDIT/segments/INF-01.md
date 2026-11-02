@@ -60,4 +60,19 @@
 `feb44e3` (penzija compose1 + audit + D-004/D-005) → `9a7fbc2` (allowlist) →
 `7c4fb5f` (frontend Dockerfile) → `2a93534` (compose hardening) → zatvarajući docs commit.
 
+## Napomena nakon zatvaranja — F-019 (2026-11-02)
+
+| Polje | Vrijednost |
+|-------|------------|
+| **Nalaz (F-019)** | Standalone `frontend/package-lock.json` nikad sinhronizovan nakon CI-01 pinova (`scripts/sync-docker-locks.sh` postojao — nepokrenut); drift je maskirao `--package-lock-only` (I-01-08), koji je uklonjen po odobrenju → Coolify build pao (EUSAGE: @types/react 19.2.17 vs package.json 19.2.18) |
+| **Popravka** | `2f4ce40` — hirurška sinhronizacija **15+/15−** (2 @types bloka + 9 root-mirror stavki: tiptap `3.28.0`, @types `19.2.18`/`19.2.7`); `package.json` netaknut; **22 `libc` polja sačuvana** (alpine/musl); puni regen alata ODBIJEN (react 19.3.1/vite 8.3.5 drift, 1629 reda) |
+| **Verifikacija** | standalone `npm ci` **exit 0** na npm 10.9.8 i **npm 10.9.9 (tačno Coolify)**; GitHub CI ✅ **`41501622108`** |
+| **Status** | ✅ **RIJEŠENO** |
+
+Otvoreno: Coolify log navodi `Dockerfile:37` (COPY na liniji 35), a naš
+`frontend/Dockerfile` ima COPY na 10 (nijedna historijska verzija ne odgovara)
+→ pitanje korisniku: Coolify git izvor/branch + da li je Dockerfile mijenjan.
+Preporuka (čeka odobrenje): hardening `sync-docker-locks.sh` na minimalni sync
+(kopiraj postojeći lock pa popravi) umjesto full re-resolvea.
+
 ## Status segmenta: ZATVOREN
