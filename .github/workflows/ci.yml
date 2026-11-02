@@ -63,11 +63,30 @@ jobs:
         working-directory: backend
       - name: backend build (nest/tsc)
         run: npm run build -w backend
+      # Napomena: logovi runa nisu čitljivi iz dev sanduća (blob EOF) → na FAILURE
+      # cijeli izlaz stavljamo u ::error annotaciju (vidi se u annotations API-ju/run stranici).
       - name: backend unit testovi (jest; e2e dolazi u CI-02)
-        run: npm run test -w backend -- --ci
+        run: |
+          set +e
+          npm run test -w backend -- --ci > /tmp/jest.out 2>&1
+          code=$?
+          if [ $code -ne 0 ]; then
+            { echo "::error title=jest failure::"; head -c 60000 /tmp/jest.out | sed 's/^/::error title=jest::/'; } > /tmp/jest.ann
+            grep -E "^(FAIL |Tests:|Test Suites:)" /tmp/jest.out | head -20 | sed 's/^/::error title=jest::/'
+          fi
+          tail -8 /tmp/jest.out
+          exit $code
       - name: backend lint (eslint, check-only)
-        run: npx eslint "{src,apps,libs,test}/**/*.ts"
         working-directory: backend
+        run: |
+          set +e
+          npx eslint "{src,apps,libs,test}/**/*.ts" > /tmp/eslint.out 2>&1
+          code=$?
+          if [ $code -ne 0 ]; then
+            grep -E "error|warning" /tmp/eslint.out | head -40 | sed 's/^/::error title=eslint::/'
+          fi
+          tail -3 /tmp/eslint.out
+          exit $code
       - name: frontend build (tsc -b + vite)
         run: npm run build -w frontend
       - name: frontend lint (oxlint)
