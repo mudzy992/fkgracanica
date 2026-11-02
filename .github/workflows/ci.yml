@@ -71,8 +71,7 @@ jobs:
           npm run test -w backend -- --ci > /tmp/jest.out 2>&1
           code=$?
           if [ $code -ne 0 ]; then
-            { echo "::error title=jest failure::"; head -c 60000 /tmp/jest.out | sed 's/^/::error title=jest::/'; } > /tmp/jest.ann
-            grep -E "^(FAIL |Tests:|Test Suites:)" /tmp/jest.out | head -20 | sed 's/^/::error title=jest::/'
+            { printf '::error title=jest full::'; awk 'NR>1{printf "%%0A"} {printf "%s", $0}' /tmp/jest.out | head -c 60000; printf '\n'; }
           fi
           tail -8 /tmp/jest.out
           exit $code
@@ -80,10 +79,11 @@ jobs:
         working-directory: backend
         run: |
           set +e
-          npx eslint "{src,apps,libs,test}/**/*.ts" > /tmp/eslint.out 2>&1
+          npx eslint "{src,apps,libs,test}/**/*.ts" -f unix > /tmp/eslint.out 2>&1
           code=$?
           if [ $code -ne 0 ]; then
-            grep -E "error|warning" /tmp/eslint.out | head -40 | sed 's/^/::error title=eslint::/'
+            # puni izlaz (s fajlovima) kao JEDNA annotacija — %0A = newline
+            { printf '::error title=eslint full::'; awk 'NR>1{printf "%%0A"} {printf "%s", $0}' /tmp/eslint.out | head -c 60000; printf '\n'; }
           fi
           tail -3 /tmp/eslint.out
           exit $code

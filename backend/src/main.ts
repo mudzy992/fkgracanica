@@ -7,7 +7,6 @@ import { ConfigService } from '@nestjs/config';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import helmet from 'helmet';
-import { join } from 'path';
 import { AppModule } from './app.module';
 
 async function bootstrap() {

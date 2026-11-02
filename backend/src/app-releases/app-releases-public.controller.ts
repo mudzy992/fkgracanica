@@ -13,12 +13,10 @@ export class AppReleasesPublicController {
   async downloadLatestAndroid(@Res() res: Response) {
     const file = await this.appReleases.resolveLatestAndroidDownload();
     if (!file) {
-      res
-        .status(404)
-        .json({
-          statusCode: 404,
-          message: 'Nema objavljenog Android release-a.',
-        });
+      res.status(404).json({
+        statusCode: 404,
+        message: 'Nema objavljenog Android release-a.',
+      });
       return;
     }
     streamApkFile(
