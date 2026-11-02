@@ -1,4 +1,5 @@
 "file","layer","module","loc","status","findings","segment","date"
+".githooks/pre-commit","infra","root","8","nepregledano","","",""
 ".githooks/pre-push","infra","root","7","pregledano","F-015/F-016/F-017/F-018 (CI-01)","CI-01","2026-11-02"
 ".github/workflows/ci.yml","infra","root","132","pregledano","F-015/F-016/F-017/F-018 (CI-01)","CI-01","2026-11-02"
 "backend/Dockerfile","backend","root","35","nepregledano","","",""
@@ -1280,6 +1281,6 @@
 "scripts/standards/docs-links.mjs","scripts","scripts","66","pregledano","F-015/F-016/F-017/F-018 (CI-01)","CI-01","2026-11-02"
 "scripts/standards/file-size.mjs","scripts","scripts","54","pregledano","F-015/F-016/F-017/F-018 (CI-01)","CI-01","2026-11-02"
 "scripts/standards/layer-deps.mjs","scripts","scripts","73","pregledano","F-015/F-016/F-017/F-018 (CI-01)","CI-01","2026-11-02"
-"scripts/standards/secrets-ban.mjs","scripts","scripts","106","pregledano","F-015/F-016/F-017/F-018 (CI-01)","CI-01","2026-11-02"
+"scripts/standards/secrets-ban.mjs","scripts","scripts","108","pregledano","F-015/F-016/F-017/F-018 (CI-01)","CI-01","2026-11-02"
 "scripts/sync-backend-lock.sh","scripts","scripts","4","nepregledano","","",""
 "scripts/sync-docker-locks.sh","scripts","scripts","19","nepregledano","","",""

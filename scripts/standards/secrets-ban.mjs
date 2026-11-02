@@ -3,10 +3,13 @@
  * secrets-ban — regex provjera tajni u TRACKED fajlovima (F-001 se ne smije ponoviti).
  *
  * Eksplicitni izuzeci (allowlist, svaki s razlogom):
- *   .env.example     — F-001 (Q-04/INF-02 drži rješenje; ne smije se dirati bez rotacije)
  *   AUDIT/**         — nalazi dokumentuju F-001 kao dokaz (ne dirati)
  *   docs/_retired/** — penzionisani dokumenti s F-001 dokazom (baner + INDEX)
  *   package-lock.json — sadrži integrity hashove (nije tajna)
+ *
+ * INF-02 (D-004): `.env*` allowlist UKLONJEN — `.env.example` je očišćen
+ * (placeholder umjesto lažne F-001 lozinke); `.env` smije biti trackan samo
+ * ako je čist (a u praksi NIJE trackan — vidi git ls-files).
  *
  * Sve ostalo: bilo koji novi pogodak = GREŠKA (exit 1).
  */
@@ -18,7 +21,6 @@ import { fileURLToPath } from 'node:url';
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 
 const ALLOW = [
-  { re: /^\.env(\..*)?$/, reason: 'F-001 — poznati nalaz, čeka Q-04/INF-02 (rotacija + čišćenje)' },
   { re: /^AUDIT\//, reason: 'audit nalazi dokumentuju F-001 kao dokaz' },
   { re: /^docs\/DECISIONS\.md$/, reason: 'D-004 citira F-001 string kao dokaz da NIJE stvarna lozinka (dokument odluke)' },
   { re: /^docs\/_retired\//, reason: 'penzionisani dokumenti — F-001 dokaz pod banerom' },
@@ -93,7 +95,7 @@ function run() {
 
 function report(errors) {
   if (!errors.length) {
-    console.log('secrets-ban: OK (nema novih tajni u trackanim fajlovima; poznati F-001 pod allowlistom)');
+    console.log('secrets-ban: OK (nema tajni u trackanim fajlovima; F-001 dokaz samo u allowlist dokumentima — AUDIT/DECISIONS/_retired)');
     return 0;
   }
   for (const e of errors) console.error(`  [${e.rule}] GDJE: ${e.where}\n           ZAŠTO: ${e.why}\n           KAKO:  ${e.how}\n`);

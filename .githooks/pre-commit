@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+# INF-02: pre-commit tajni skaner (brz) — hvata F-001-klasu PRIJE nego što
+# tajna uđe u commit. Pun `npm run check:all` ide na pre-push hook + CI.
+# Aktivno samo ako je hooksPath podešen: `git config core.hooksPath .githooks`
+set -euo pipefail
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+node "$ROOT/scripts/standards/secrets-ban.mjs"
