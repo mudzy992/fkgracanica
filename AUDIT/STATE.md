@@ -7,8 +7,8 @@
 | Polje | Vrijednost |
 |-------|------------|
 | **Aktivna grana** | `arena/290a6f13-fkgracanica` |
-| **Trenutna faza** | CI-01 ✔ INF-01 ✔ INF-02 ✔ BE-01 ✔ BE-02 ✔ **BE-03 ✔** → sljedeći: **BE-04** (CMS/vijesti/galerija/media) |
-| **Trenutni segment** | **BE-03 zatvoren 2026-11-02**; sljedeći segment **BE-04** |
+| **Trenutna faza** | CI-01 ✔ INF-01 ✔ INF-02 ✔ BE-01 ✔ BE-02 ✔ BE-03 ✔ → **BE-04 u toku** (audit gotov; P-B04-1/2 čekaju odobrenje) |
+| **Trenutni segment** | **BE-04** (otvoren 2026-11-02; nalazi B-04-01…08 u segments/BE-04.md) |
 | **Zadnji commit** | `d554c9d` test(backend): unit specevi settings/audit/notifikacije [BE-03] | |
 | **Zadnji CI run** | ✅ **`41526155487` success** (`80cc782` — zatvaranje BE-02); BE-02: `41525406239` ✅; BE-01: `41514035483` ✅, `41512922531` ✅, `41508476303` ✅; INF-02: `41505739758` ✅, `41504684855` ✅ |
 | **check:all** | `npm run check:all` → **6/6** (check-coverage, file-size, console-ban, secrets-ban, layer-deps, docs-links); u CI-ju jobovi `audit-gate` + `standards`; pre-push hook pokreće `check:all` |
@@ -181,11 +181,27 @@
 - `docs/TESTING.md` + `docs/BACKEND.md` brojevi ažurirani.
 - Segment dokument: `AUDIT/segments/BE-03.md` (Status segmenta: ZATVOREN).
 
+### SEGMENT BE-04 — 2026-11-02 (u toku: audit gotov, P-B04-1/2 čekaju odobrenje)
+
+- Audit 29 fajlova (cms/news/gallery/media/upload) **bez izmjena koda**
+  (pravilo 1) → `AUDIT/segments/BE-04.md`.
+- **Kritični nalazi — DRAFT LEAK** (B-04-01…05): javne `GET /news`
+  (bez filtera + `?status=`), `GET /news/:id` (findOne bez statusa),
+  `GET /gallery` (barem mobile home vidi draftove!), `GET /gallery/:id`,
+  **CMS `?admin=1` na @Public ruti** (anon otključava nacrte stranica).
+- **B-04-06 upload**: memoryStorage BEZ fileSize limita (OOM) + bilo koji
+  ext na javnoj static ruti (stored XSS: .html/.svg) — isImageMime samo
+  za rendicije.
+- **Predlozi čekaju odobrenje**: **P-B04-1** (tiha autorizacija na @Public
+  rutama + anon→PUBLISHED/404 filteri — **0 FE/MOB izmjena**) i
+  **P-B04-2** (upload: image-only allowlist + 16MB limit).
+
 ## Šta je sljedeće (tačan sljedeći korak)
 
-1. **BE-04** (CMS + vijesti + galerija + media/upload — veliki segment):
-   audit stranica/bez blokatora; backlog predloga: P-B02-1/2/3 + P-B03-1
-   (trivijalni hardening, čekaju odobrenje — ne blokiraju).
+1. **BE-04** — čeka odobrenje: **P-B04-1** (draft leak: tiha autorizacija +
+   anon filteri, 0 FE izmjena) + **P-B04-2** (upload: slike-only + 16MB).
+   Nakon odobrenja: implementacija + testovi + zelen CI → ZATVOREN.
+   Backlog: P-B02-1/2/3, P-B03-1 (trivijalni, ne blokiraju).
 2. Zatim BE-02…08 → FE → MOB → CI-02/03/04 → E2E-01 (INF-03 paralelno kad zatreba).
 3. Svaki segment: `AUDIT/segments/<ID>.md` + matrica + zelen CI + izvještaj (standard iz CI-01/INF-01/INF-02).
 
