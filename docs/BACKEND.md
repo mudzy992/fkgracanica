@@ -30,9 +30,20 @@ npm run prisma:generate | prisma:migrate | prisma:seed | prisma:seed:rbac
 
 - Prefiks: `/api/v1` (`main.ts`), Swagger: `/api/docs`, health: `/api/v1/health` (`SELECT 1`).
 - Autentikacija: JWT access (kratki) + refresh token; login endpointi u `auth/`.
-- RBAC: 6 rola (seed: `prisma/seed/rbac.ts`) + permission tabele; guardovi lokalni
-  (`@UseGuards` u 41 fajlu — **nema globalnog `APP_GUARD`**, konzistentnost = nalaz F-014,
-  dubinski audit u BE segmentima).
+- RBAC: 6 rola (seed: `prisma/seed/rbac.ts`) + permission tabele; guardovi su
+  **klasni ili method-level** (`@UseGuards`) — audit u BE-01: **192 zaštićene /
+  71 javna ruta** (spisak u `AUDIT/segments/BE-01.md`); globalni `APP_GUARD`
+  se razmatra u **BE-02** (odluka Q-12(a)).
+- **Error ugovor** (globalni `common/filters/http-exception.filter.ts`, BE-01):
+  `{ statusCode, message, timestamp, path }` — FE i MOB čitaju `message`;
+  Prisma greške: `P2002→409`, `P2025→404`, `P2006→400`, ostalo → 500.
+  `message`/status kodove NE mijenjati bez usklađivanja oba klijenta (pravilo 1).
+- **Rate limiting** (BE-01/Q-11): globalno **100 req/60s** po IP + **10/60s** na
+  `POST auth/login` i `auth/refresh`; `trust proxy = 1` (Coolify proxy) u `main.ts`.
+- **Env validacija** (BE-01/P1): `config/env.validate.ts` — app odbija start bez
+  `DATABASE_URL`, `JWT_ACCESS_SECRET`, `JWT_REFRESH_SECRET` (jasna poruka).
+  Tipizirana konfiguracija: `config/configuration.ts` (ključevi: `port`,
+  `databaseUrl`, `corsOrigins`, …); nova env varijabla → tamo + `.env.example`.
 - Realtime: Socket.IO path iz `SOCKET_IO_PATH` (default `/socket.io`), sobe `match:*`, `newsletter`.
 
 ## Queue / keš (opciono, TLS)
@@ -45,8 +56,8 @@ npm run prisma:generate | prisma:migrate | prisma:seed | prisma:seed:rbac
 
 | Tema | Stanje |
 |------|--------|
-| Rate limiting | ❌ `@nestjs/throttler` instaliran, **nekorišten** (F-004); samo custom limit za public-analytics |
+| Rate limiting | ✅ globalno 100/60s + auth 10/60s + `trust proxy` (BE-01/Q-11); custom limit za public-analytics ostaje |
 | Migracije | 1 fajl (`init_postgres`) — provjeriti saglasnost sa produkcijom (Q-07) |
 | Testovi | 32 unit + 8 e2e; **bez coverage praga**; e2e zahtijeva bazu/redis |
-| Error model / validacija / logging | za dubinski audit (segmenti BE-xx) — ne tvrditi prije pregleda |
-| Tajne | `.env` nije trackan; `.env.example` sadrži sumnjivu lozinku (F-001/Q-04) |
+| Error model / validacija / logging | ✅ error filter + env validacija + config modul (BE-01, ugovor gore); ⏳ logging konvencija = **INF-03** |
+| Tajne | ✅ `.env` nije trackan; `.env.example` očišćen (F-001 → D-004 → **INF-02**) |
