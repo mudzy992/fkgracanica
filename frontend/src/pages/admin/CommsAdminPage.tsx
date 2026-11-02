@@ -47,8 +47,6 @@ export function CommsAdminPage() {
     return list;
   }, [canContact, canNewsletter, canEmailLog]);
 
-  if (!canContact && !canNewsletter && !canEmailLog) return <Navigate to="/admin" replace />;
-
   const tabParam = searchParams.get('tab');
   const activeTab = resolveTab(tabParam, canContact, canNewsletter, canEmailLog);
 
@@ -57,6 +55,8 @@ export function CommsAdminPage() {
       setSearchParams({ tab: activeTab }, { replace: true });
     }
   }, [tabParam, activeTab, setSearchParams]);
+
+  if (!canContact && !canNewsletter && !canEmailLog) return <Navigate to="/admin" replace />;
 
   const setTab = (tab: Tab) => setSearchParams({ tab }, { replace: true });
 

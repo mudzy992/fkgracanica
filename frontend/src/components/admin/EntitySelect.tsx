@@ -44,7 +44,11 @@ export function EntitySelect<T extends object>(props: StaticProps | AsyncProps<T
       </div>
     );
   }
+  // Async grana ima hookove → odvojena komponenta (hookovi moraju biti bezuslovni)
+  return <AsyncEntitySelect {...props} />;
+}
 
+function AsyncEntitySelect<T extends object>(props: AsyncProps<T>) {
   const {
     endpoint,
     labelKey,

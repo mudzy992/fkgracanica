@@ -37,8 +37,6 @@ export function UsersRolesPage() {
     return list;
   }, [canUsers, canRoles, t]);
 
-  if (!canUsers && !canRoles) return <Navigate to="/admin" replace />;
-
   const tabParam = searchParams.get('tab');
   const activeTab = resolveTab(tabParam, canUsers, canRoles);
 
@@ -47,6 +45,8 @@ export function UsersRolesPage() {
       setSearchParams({ tab: activeTab }, { replace: true });
     }
   }, [tabParam, activeTab, setSearchParams]);
+
+  if (!canUsers && !canRoles) return <Navigate to="/admin" replace />;
 
   const setTab = (tab: Tab) => setSearchParams({ tab }, { replace: true });
 

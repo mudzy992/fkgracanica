@@ -78,7 +78,7 @@ export function useEndMatch() {
   });
 }
 
-function phaseMutation(path: string) {
+function usePhaseMutation(path: string) {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (matchId: string) => (await api.post<Match>(`/live/matches/${matchId}/${path}`)).data,
@@ -86,13 +86,13 @@ function phaseMutation(path: string) {
   });
 }
 
-export const useFinishRegularTime = () => phaseMutation('regular-time/end');
-export const useStartExtraTime = () => phaseMutation('extra-time/start');
-export const useExtraTimeHalftime = () => phaseMutation('extra-time/halftime');
-export const useResumeExtraSecond = () => phaseMutation('extra-time/resume');
-export const useFinishExtraTime = () => phaseMutation('extra-time/end');
-export const useStartPenalties = () => phaseMutation('penalties/start');
-export const useEndAfterPenalties = () => phaseMutation('penalties/end');
+export const useFinishRegularTime = () => usePhaseMutation('regular-time/end');
+export const useStartExtraTime = () => usePhaseMutation('extra-time/start');
+export const useExtraTimeHalftime = () => usePhaseMutation('extra-time/halftime');
+export const useResumeExtraSecond = () => usePhaseMutation('extra-time/resume');
+export const useFinishExtraTime = () => usePhaseMutation('extra-time/end');
+export const useStartPenalties = () => usePhaseMutation('penalties/start');
+export const useEndAfterPenalties = () => usePhaseMutation('penalties/end');
 
 export function useApproveMatchReport() {
   const qc = useQueryClient();

@@ -41,8 +41,6 @@ export function HeritageAdminPage() {
     return list;
   }, [canHof, canMuseum]);
 
-  if (!canHof && !canMuseum) return <Navigate to="/admin" replace />;
-
   const tabParam = searchParams.get('tab');
   const activeTab = resolveTab(tabParam, canHof, canMuseum);
 
@@ -51,6 +49,8 @@ export function HeritageAdminPage() {
       setSearchParams({ tab: activeTab }, { replace: true });
     }
   }, [tabParam, activeTab, setSearchParams]);
+
+  if (!canHof && !canMuseum) return <Navigate to="/admin" replace />;
 
   const setTab = (tab: Tab) => setSearchParams({ tab }, { replace: true });
 
