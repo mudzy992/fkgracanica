@@ -7,10 +7,10 @@
 | Polje | Vrijednost |
 |-------|------------|
 | **Aktivna grana** | `arena/290a6f13-fkgracanica` |
-| **Trenutna faza** | CI-01 ✔ INF-01 ✔ INF-02 ✔ **BE-01 ✔** → sljedeći: **BE-02** (auth + RBAC) |
-| **Trenutni segment** | **BE-01 zatvoren 2026-11-02** (D-006); sljedeći segment **BE-02** |
-| **Zadnji commit** | `f062097` feat(backend): error filter +path i Prisma mapping [BE-01] | |
-| **Zadnji CI run** | ✅ **`41512922531` success** (`675d5ce`+`f062097` — BE-01 implementacija, sva 3 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41512922531 ; INF-02: `41505739758` ✅, `41504684855` ✅; F-019: `41501622108` ✅; INF-01: `41487834266` ✅, `41485825537` ✅, `41483596127` ✅, `41483038067` ❌ → allowlist. CI-01: 9 ❌ → `41463437281` ✅ → `41464319145` ✅. |
+| **Trenutna faza** | CI-01 ✔ INF-01 ✔ INF-02 ✔ BE-01 ✔ **BE-02 ✔** → sljedeći: **BE-03** (settings/audit/notifikacije) |
+| **Trenutni segment** | **BE-02 zatvoren 2026-11-02**; sljedeći segment **BE-03** |
+| **Zadnji commit** | `f357813` test(backend): route-access invariant + jwt-auth guard spec [BE-02] | |
+| **Zadnji CI run** | ✅ **`41525406239` success** (`245f066`+`a087b66`+`f357813` — BE-02, sva 3 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41525406239 ; BE-01: `41514035483` ✅, `41512922531` ✅, `41508476303` ✅; INF-02: `41505739758` ✅, `41504684855` ✅; F-019: `41501622108` ✅; INF-01: `41487834266` ✅… |
 | **check:all** | `npm run check:all` → **6/6** (check-coverage, file-size, console-ban, secrets-ban, layer-deps, docs-links); u CI-ju jobovi `audit-gate` + `standards`; pre-push hook pokreće `check:all` |
 
 ## Šta je urađeno (hronološki)
@@ -151,11 +151,28 @@
   **CI ✅ `41512922531`** (nest build + cijeli jest + eslint s generisanom Prisma).
 - Segment dokument: `AUDIT/segments/BE-01.md` (Status segmenta: ZATVOREN).
 
+### SEGMENT BE-02 — 2026-11-02 (ZATVOREN ✅)
+
+- Audit auth/rbac/users: **sloj zdrav** (bcrypt10, jednokratna refresh rotacija,
+  per-request permissions, RBAC vezan — 0 violacija). Nalazi: B-02-01 (timing
+  enumeration), B-02-02 (logout ownership), B-02-03 (JWT_EXPIRES format) =
+  **trivijalni predlozi otvoreni**; B-02-04 `clubs/own` = site-level javan
+  (false alarm iz BE-01 aneksa — riješen `@Public`).
+- **Q-12(a) implementiran** (`245f066`+`a087b66`): globalni JwtAuthGuard
+  (default-deny, **http-only** — WS preskače jer gateway ima vlastitu auth +
+  public live klijente) + `@Public` na **71** javnoj ruti + strip JwtAuthGuard
+  iz41 kontrolera. **Korekcija BE-01**: throttler `skipIf` → samo HTTP (B-02-05).
+- **Testovi** (`f357813`): `route-access.spec` — invariant preko STVARNIH Nest
+  metapodataka (71==71), `jwt-auth.guard.spec` — public/ws skip; lokalno 13/13.
+- **Incident**: treći re-klon workspacea (`.git`→`b7f1d3d`, node_modules obrisan)
+  → `fetch --unshallow` + mixed reset; sav rad na GitHubu, ništa izgubljeno.
+- CI ✅ **`41525406239`**; `check:all` 6/6; matrica: 54 reda → BE-02 (ukupno1291).
+- Segment dokument: `AUDIT/segments/BE-02.md` (Status segmenta: ZATVOREN).
+
 ## Šta je sljedeće (tačan sljedeći korak)
 
-1. **BE-02** (auth + RBAC + users): koristiti aneks javnih ruta iz BE-01;
-   odluka Q-12: globalni APP_GUARD + `@Public` (uz testove javno-vs-zaštićeno);
-   provjeriti sumnjivo `GET clubs/own`.
+1. **BE-03** (settings + audit + notifikacije + email-log) — bez blokatora;
+   opciono prije: 3 trivijalna predloga iz BE-02 (P-B02-1/2/3) ako korisnik odobri.
 2. Zatim BE-02…08 → FE → MOB → CI-02/03/04 → E2E-01 (INF-03 paralelno kad zatreba).
 3. Svaki segment: `AUDIT/segments/<ID>.md` + matrica + zelen CI + izvještaj (standard iz CI-01/INF-01/INF-02).
 

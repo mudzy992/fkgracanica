@@ -30,10 +30,12 @@ npm run prisma:generate | prisma:migrate | prisma:seed | prisma:seed:rbac
 
 - Prefiks: `/api/v1` (`main.ts`), Swagger: `/api/docs`, health: `/api/v1/health` (`SELECT 1`).
 - Autentikacija: JWT access (kratki) + refresh token; login endpointi u `auth/`.
-- RBAC: 6 rola (seed: `prisma/seed/rbac.ts`) + permission tabele; guardovi su
-  **klasni ili method-level** (`@UseGuards`) — audit u BE-01: **192 zaštićene /
-  71 javna ruta** (spisak u `AUDIT/segments/BE-01.md`); globalni `APP_GUARD`
-  se razmatra u **BE-02** (odluka Q-12(a)).
+- RBAC: 6 rola (seed: `prisma/seed/rbac.ts`) + permission tabele.
+  **Globalni `JwtAuthGuard` (BE-02/D-006)** = default-deny za sav HTTP; javne
+  rute nose `@Public()` (**71 ruta** — invariant testa `route-access.spec.ts`,
+  popis u `guards/approved-public-routes.ts`); `PermissionsGuard` + `@RequirePermissions`
+  ostaju lokalni po ruti (audit: 0 violacija). WS autentikacija = vlastiti
+  handshake realtime gatewaya (token ili public klijent).
 - **Error ugovor** (globalni `common/filters/http-exception.filter.ts`, BE-01):
   `{ statusCode, message, timestamp, path }` — FE i MOB čitaju `message`;
   Prisma greške: `P2002→409`, `P2025→404`, `P2006→400`, ostalo → 500.
