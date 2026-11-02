@@ -1,3 +1,8 @@
+# ⚠️ PENZIONISANO (retired) 2026-11-02 — D-005 (Q-05): Traefik NE POSTOJI u
+# infrastrukturi; jedini produkcioni okvir je Coolify → docker-compose.yml.
+# Ovaj fajl je historijski dokaz (stari Traefik stack s vlastitim redis servisom).
+# NE KORISTITI za deploy. Indeks penzionisanih fajlova: docs/_retired/INDEX.md
+#
 # Produkcija — Traefik (mreža web), TLS le, host fkgracanica.ba101.top
 # Prije prvog up: ./scripts/setup-upload-dir.sh  (chown 999:999 za user `app` u kontejneru)
 # Build: docker compose build && docker compose up -d

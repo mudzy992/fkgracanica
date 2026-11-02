@@ -9,7 +9,7 @@
 | Fajl | Uloga | Status |
 |------|-------|--------|
 | `docker-compose.yml` | **Produkcija (Coolify)** — backend + frontend; eksterne mreže `db_net`, `redis_net`; TLS CA mount-ovi | AKTIVAN |
-| `docker-compose1.yaml` | Starija Traefik varijanta (vlastiti `redis` servis, mreža `web`, Traefik labeli) | vjerojatno legacy — Q-05 |
+| `docs/_retired/docker-compose1.yaml` | ~~Starija Traefik varijanta~~ **PENZIONISANA** (D-005: Traefik ne postoji u infra) | jedini izvor istine: `docker-compose.yml` (Coolify) |
 | `backend/Dockerfile` | Multi-stage (deps → build → runner), node:22-bookworm-slim, non-root `app` korisnik, `HEALTHCHECK`, CMD: `prisma migrate deploy && node dist/src/main.js` | AKTIVAN |
 | `frontend/Dockerfile` | Build (Vite) + statički/servirani frontend | AKTIVAN |
 | `scripts/docker-prod-build.sh` | `docker compose build --pull` + prune dangling | AKTIVAN |

@@ -1,3 +1,8 @@
+# Produkcioni compose — COOLIFY (D-005 / Q-05: "Coolify; Traefik ne postoji").
+# Jedini izvor istine za infrastrukturu. Stari Traefik stack penzionisan je u
+# docs/_retired/docker-compose1.yaml (NE KORISTITI).
+# Audit/hardening nalazi: AUDIT/segments/INF-01.md
+#
 services:
 
   backend:

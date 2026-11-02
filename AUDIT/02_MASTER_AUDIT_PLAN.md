@@ -174,8 +174,8 @@ preporuka: **zero-dep**; husky samo ako kasnije pokaže potrebu.
 | Q-01 | Root README: zadržati/penzionisati? | ništa hitno |
 | Q-02 | `.cursor/plans/**` penzionisati? | čišćenje repo-a (može bilo kad) |
 | Q-03 | Mobile smoke checkliste žive? | MOB segmenti (dokumentacija) |
-| Q-04 | ⚠️ F-001 stvarna lozinka? | **INF-02** |
-| Q-05 | Coolify vs Traefik compose? | **INF-01, INF-03** |
+| Q-04 | ✔ **ODGOVORENO (D-004): NIJE stvarna lozinka** — rotacija/history rewrite nepotrebni; čišćenje `.env.example` → INF-02 | INF-02 |
+| Q-05 | ✔ **ODGOVORENO (D-005): Coolify; Traefik ne postoji** — compose1 penzionisan | INF-01, INF-03 (odblokirano) |
 | Q-06 | CI-01 prvi + rad bez CI-a do tada | **CI-01** (odobrenje kretanja) |
 | Q-07 | Produkciona baza vs `init_postgres` | BE segmenti s migracijama |
 | Q-08 | Tačan runtime host za verify-full | INF-03, deployment provjere |

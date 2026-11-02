@@ -47,7 +47,7 @@ const INCLUDE_EXT = new Set([
 ]);
 
 /** Fajlovi bez ekstenzije koje uključujemo. */
-const INCLUDE_NAMES = new Set(['Dockerfile', 'docker-compose.yml', 'docker-compose1.yaml', 'pre-push', 'pre-commit', 'commit-msg']);
+const INCLUDE_NAMES = new Set(['Dockerfile', 'docker-compose.yml', 'pre-push', 'pre-commit', 'commit-msg']);
 
 function layerOf(rel) {
   const top = rel.split(sep)[0];

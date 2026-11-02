@@ -17,6 +17,7 @@
 | `docs/club-launch/04_sadrzaj-operativa.md` → `docs/_retired/docs/club-launch/04_sadrzaj-operativa.md` | Sadržajni unos: vijesti, galerija, CMS, članarine, ulaznice. |
 | `backend/README.md` → `docs/_retired/backend/README.md` | Netaknuti NestJS template README — bez informacije o projektu. |
 | `frontend/README.md` → `docs/_retired/frontend/README.md` | Netaknuti Vite/React template README — bez informacije o projektu. |
+| `docker-compose1.yaml` | Traefik compose varijanta (legacy stack: redis bez TLS, Traefik labeli) | D-005 (Q-05: Traefik ne postoji) — INF-01, 2026-11-02 |
 
 ## Još NIJE penzionisano (čeka odluku na KAPIJI 1)
 

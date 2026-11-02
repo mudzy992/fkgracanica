@@ -7,8 +7,8 @@
 | Polje | Vrijednost |
 |-------|------------|
 | **Aktivna grana** | `arena/290a6f13-fkgracanica` |
-| **Trenutna faza** | **CI-01 ZATVOREN** (2026-11-02) → sljedeći: **INF-01** (blokira Q-04/Q-05) |
-| **Trenutni segment** | nijedan otvoren (CI-01 zatvoren, vidi AUDIT/segments/CI-01.md) |
+| **Trenutna faza** | CI-01 ✔ → **INF-01 u toku** (Q-04/Q-05 odgovoreni → INF-02 odblokiran) |
+| **Trenutni segment** | **INF-01** (compose hardening; otvoren 2026-11-02) |
 | **Zadnji commit** | `aa30604` docs(audit): CI-01 ZATVOREN… [CI-01] | |
 | **Zadnji CI run** | ✅ **`41464319145` success** (zatvaranje CI-01, sva 3 joba) + prvi zelen `41463437281`; obje: https://github.com/mudzy992/fkgracanica/actions/runs/41464319145 ; 9 prethodnih ❌ → popravljeno (tabela u segments/CI-01.md): `gh run list` prazan, `.github/` ne postoji (F-002 → Q-06, segment CI-01). Pushovi do CI-01 su BEZ CI-a i to je eksplicitno evidentirano (Q-06). |
 | **check:all** | ne postoji kao `npm` skripta (Q-09); audit gate = `node scripts/audit/check-coverage.mjs` (lokalno; u CI-ju kao `audit-gate` job tek nakon CI-01) |
@@ -91,8 +91,8 @@
 - **Q-01** root README: zadržati (ažuriran) ili penzionisati?
 - **Q-02** `.cursor/plans/**` penzionisati? (preporuka: DA; matrice/`rules` ostaju)
 - **Q-03** mobile smoke checkliste: žive? (preporuka: da, zadržati)
-- **Q-04** ⚠️ **F-001**: `Mojalozinka!1` u `.env.example` + docs — stvarna lozinka? (rotacija + čišćenje historije ako da)
-- **Q-05** koji compose je produkcijski izvor istine (Coolify vs Traefik)? (preporuka: Coolify)
+- **Q-04** ✔ ODGOVORENO (D-004): **nije stvarna lozinka** → bez rotacije/rewrite; čišćenje `.env.example` u **INF-02**
+- **Q-05** ✔ ODGOVORENO (D-005): **Coolify; Traefik ne postoji** → `docker-compose1.yaml` penzionisan (INF-01)
 - **Q-06** ✔ ODGOVORENO (KAPIJA 2): CI-01 prvi; raniji pushovi bez CI-a evidentirani.
 - **Q-07** saglasnost produkcione baze sa jedinom `init_postgres` migracijom?
 - **Q-08** tačan runtime host u `DATABASE_URL` za verify-full (interno ime vs javni)?
