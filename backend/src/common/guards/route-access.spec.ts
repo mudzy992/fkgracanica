@@ -122,12 +122,12 @@ describe('BE-02 route access (javno vs zaštićeno)', () => {
     publicRoutes = [...new Set(publicRoutes)].sort();
   });
 
-  it('javne rute = tačno odobrenih 71 (bez rupa i bez viška)', () => {
+  it('javne rute = tačno odobrenih 70 (bez rupa i bez viška)', () => {
     const approved = [...APPROVED_PUBLIC].sort();
     const missing = approved.filter((r) => !publicRoutes.includes(r));
     const extra = publicRoutes.filter((r) => !approved.includes(r));
     expect({ missing, extra }).toEqual({ missing: [], extra: [] });
-    expect(publicRoutes.length).toBe(71);
+    expect(publicRoutes.length).toBe(70);
   });
 
   it('nijedan kontroler nema više lokalni JwtAuthGuard (globalni je jedina istina)', () => {
