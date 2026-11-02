@@ -7,10 +7,10 @@
 | Polje | Vrijednost |
 |-------|------------|
 | **Aktivna grana** | `arena/290a6f13-fkgracanica` |
-| **Trenutna faza** | FAZA 2+3 završene → **KAPIJA 2** (čeka odobrenje za segmente) |
-| **Trenutni segment** | nijedan otvoren (prvi po redu: **CI-01**) |
+| **Trenutna faza** | KAPIJA 2 odobrena → **segment CI-01** (u toku: push + CI verifikacija) |
+| **Trenutni segment** | **CI-01** — kod skripti i fixova gotov lokalno; čeka push + zelen run |
 | **Zadnji commit** | (vidi `git log -1`) |
-| **Zadnji CI run** | **N/A — nema runova**: `gh run list` prazan, `.github/` ne postoji (F-002 → Q-06, segment CI-01). Pushovi do CI-01 su BEZ CI-a i to je eksplicitno evidentirano (Q-06). |
+| **Zadnji CI run** | **N/A — prvi run tek nakon pusha CI-01** (raniji pushovi bez CI-ja, Q-06) | **stariji zapis:** N/A — nema runova: `gh run list` prazan, `.github/` ne postoji (F-002 → Q-06, segment CI-01). Pushovi do CI-01 su BEZ CI-a i to je eksplicitno evidentirano (Q-06). |
 | **check:all** | ne postoji kao `npm` skripta (Q-09); audit gate = `node scripts/audit/check-coverage.mjs` (lokalno; u CI-ju kao `audit-gate` job tek nakon CI-01) |
 
 ## Šta je urađeno (hronološki)
@@ -59,12 +59,27 @@
   - workflow matrice + segmenata dodan u `docs/CONVENTIONS.md`.
 - Push bez CI-ja (Q-06); `gh run list` i dalje prazan (F-002).
 
+### Sesija SEGMENT CI-01 — 2026-11-02 (u toku)
+- KAPIJA 2 odobrena ("Odobravam") → Q-06 ✔, Q-09 ✔ (alati §4), Q-10 ✔ (u principu).
+- F-015: `npm ci` exit 0 (lock regenerisan + usklađen).
+- F-016/dual-core: `@tiptap/*@3.28.0` overrides + exact pin (frontend/mobile) — `npm ls` 0 invalid.
+- **F-017 (novi):** frontend build je bio pokvaren (`tsc -b` padao na ChainedCommands tipovima
+  zbog dual @tiptap/core) — riješeno istim fixom; `npm run build -w frontend` = 0.
+- **F-018 (novi):** oxlint 6 errors (uslovni hookovi u 3 admin stranice, EntitySelect,
+  use-live-admin `phaseMutation`) — fixano; 0 errors.
+- CI-01 artefakti: `.github/workflows/ci.yml` (audit-gate, standards, build-test;
+  push na arena granu + workflow_dispatch; BEZ pull_request okidača), `scripts/standards/`
+  (check:all 6/6), `.githooks/pre-push` + hooksPath, `docs/CI.md` ažuriran + badge.
+- Lokalno zeleno: npm ci, check:all 6/6, frontend build, frontend lint.
+- ⚠️ backend build/test/eslint + prisma generate **nije moguće lokalno** (binaries.prisma.sh
+  blokran) → verifikacija ide preko prvog CI runa.
+
 ## Šta je sljedeće (tačan sljedeći korak)
 
-1. **KAPIJA 2** — korisnik odobrava master plan + alate (Q-09) + protokol produkcije (Q-10).
-2. Nakon odobrenja → **CI-01** (prvi segment): `package-lock.json` sync (F-015) → `.github/workflows/ci.yml`
-   → `audit-gate` job → `npm ci` smoke → pre-push hook → dokumentacija.
-3. Pa **INF-01…03** (traži Q-04, Q-05), zatim BE → FE → MOB → CI-02…04 → E2E-01.
+1. **CI-01 dovršiti:** push (3 commita) → `gh run watch` → zelen run → `Status segmenta: ZATVOREN`
+   + izvještaj korisniku.
+2. Ako run bude crven — krpati dok ne bude zelen (pravilo 3), pa tek onda zatvoriti segment.
+3. Sljedeći segment nakon CI-01: **INF-01…03** (traži Q-04, Q-05) → BE → FE → MOB → CI-02…04 → E2E-01.
 
 ## Otvorena pitanja za korisnika (BLOKATORI)
 
@@ -73,9 +88,8 @@
 - **Q-03** mobile smoke checkliste: žive? (preporuka: da, zadržati)
 - **Q-04** ⚠️ **F-001**: `Mojalozinka!1` u `.env.example` + docs — stvarna lozinka? (rotacija + čišćenje historije ako da)
 - **Q-05** koji compose je produkcijski izvor istine (Coolify vs Traefik)? (preporuka: Coolify)
-- **Q-06** odobrenje da CI-01 bude prvi segment i da pushovi do tada budu bez CI-a?
+- **Q-06** ✔ ODGOVORENO (KAPIJA 2): CI-01 prvi; raniji pushovi bez CI-a evidentirani.
 - **Q-07** saglasnost produkcione baze sa jedinom `init_postgres` migracijom?
 - **Q-08** tačan runtime host u `DATABASE_URL` za verify-full (interno ime vs javni)?
-- **Q-09** odobrenje alata iz §4 master plana (vitest, @testing-library/react, Playwright,
-  @axe-core/playwright, jest-expo, Maestro, gitleaks) + zero-dep alternative gdje je navedeno?
-- **Q-10** protokol pristupa produkciji za audit (pristup serveru, DB backup, komunikacija)?
+- **Q-09** ✔ ODGOVORENO (KAPIJA 2): alati iz §4 odobreni (instalacija ide u FE/MOB segmente).
+- **Q-10** ✔ ODGOVORENO u principu (KAPIJA 2); detalji (pristup/backup) potvrđuju se kad segment zatreba (INF/BE).

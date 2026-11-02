@@ -1,36 +1,48 @@
 # CI/CD (GitHub Actions)
 
-> Status: **CI NE POSTOJI** — `.github/` nikada nije bio u historiji repozitorija (F-002).
-> Ovaj dokument je izvor istine; ažurira se u ISTOM commitu kad se promijeni aktivna grana.
+> Status: **POSTOJI** od segmenta **CI-01** (2026-11-02) — `.github/workflows/ci.yml`.
+> Historija: `.github/` nikada nije postojao prije (F-002). Ovaj dokument je izvor
+> istine; ažurira se u ISTOM commitu kad se promijeni pipeline.
 
 ## Aktivna grana
 
-**`arena/290a6f13-fkgracanica`** — na ovoj grani se radi; workflow filter mora glasiti
-tačno na ovu granu (`branches:` + `workflow_dispatch`). **Bez `pull_request` okidača. Nikad PR.**
+**`arena/290a6f13-fkgracanica`** — okidači: `push` na ovu granu + `workflow_dispatch`.
+**Nema `pull_request` okidača. Nikad PR prema main** (pravilo korisnika).
 
-## Trenutno stanje
+[![CI](https://github.com/mudzy992/fkgracanica/actions/workflows/ci.yml/badge.svg?branch=arena/290a6f13-fkgracanica)](https://github.com/mudzy992/fkgracanica/actions/workflows/ci.yml)
 
-| Stavka | Status |
-|--------|--------|
-| `.github/workflows/*` | ❌ ne postoji |
-| Okidači | — |
-| Runovi | — (nema čega provjeriti; `gh run list` prazan) |
-| Blokator prije prvog CI-a | **F-015** (root `npm ci` pada — lock neusklađen) |
+## Aktivni jobovi (CI-01)
 
-## Planirani pipeline (iz protokola FAZA B — puni detalji u AUDIT/02_MASTER_AUDIT_PLAN.md)
+| Job | Šta radi | Zašto |
+|-----|----------|-------|
+| `audit-gate` | `node scripts/audit/check-coverage.mjs` | matrica pokrivenosti — svaki izvorni fajl mora imati red (pravilo 4) |
+| `standards` | `node scripts/standards/check-all.mjs` | file-size, console-ban, secrets-ban, layer-deps, docs-links (+ coverage) |
+| `build-test` | `npm ci` → `prisma generate` → `prisma validate` → backend `nest build` → jest unit → backend eslint → frontend `tsc -b && vite build` → oxlint | build + testovi slojeva; e2e servisi dolaze u CI-02 |
 
-1. **Static** — lint, format, type-check, konvencije, secret scan, dependency audit,
-   license check, guardrail skripte (`scripts/standards/check:all`).
-2. **Backend** — unit + integration/API + coverage prag.
-3. **Frontend** — unit/component, Playwright E2E (artefakti na failure), axe a11y,
-   build + provjera bundle veličine.
-4. **Audit gate** — `check-coverage` skripta (matrica) + konzistentnost dokumentacije.
-5. **Mobile** — build + E2E na emulatoru kao **posljednji** korak (`needs: svi prethodni`),
-   JUnit izvještaji, snimke kao artefakti.
-6. **Izvještaji** — JUnit/coverage artefakti, `GITHUB_STEP_SUMMARY`, badge.
+Sve skripte su **zero-dep** (node built-ins) — ne zavise od `node_modules` osim gdje je navedeno.
 
-Pravila: paralelni jobovi gdje je moguće, `concurrency` (cancel-in-progress), minimalna
-`permissions`, pinovane akcije po SHA, caching, timeouti, determinizam.
+## Lokalno (isti pipeline kao CI)
+
+```bash
+npm ci                      # F-015 — lock je usklađen (CI-01)
+npm run check:all           # sve audit provjere (6/6)
+npm run db:generate         # prisma generate (traži DATABASE_URL env — dummy ok)
+npm run build -w backend && npm run test -w backend
+npm run build -w frontend && npm run lint -w frontend
+npx eslint "{src,apps,libs,test}/**/*.ts"   # u backend/
+```
+
+**Git hook:** `git config core.hooksPath .githooks` (po clone-u; aktivno u ovom clone-u) —
+`pre-push` pokreće `check:all` prije svakog pusha.
+
+## Budući koraci (ne blokiraju CI-01)
+
+- **CI-02** — backend e2e (postgres + redis servisi, seed, health-wait, coverage prag).
+- **CI-03** — frontend test jobovi (vitest — dolazi s FE-02).
+- **CI-04** — mobile build + Maestro E2E (`needs: svi prethodni`).
+- `gitleaks` (binarka u CI-ju) i `npm audit --audit-level=high` — dodaju se kad prođu
+  Q-09/INF-02 (trenutno secrets-ban pokriva F-001 klasu kao zero-dep provjera).
+- Pinovanje akcija po SHA + Dependabot — nakon prvih zelenih runova (R-2).
 
 ## Napomena
 

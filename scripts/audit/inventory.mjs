@@ -1,15 +1,12 @@
 #!/usr/bin/env node
 /**
  * INVENTAR — generiše/održava AUDIT/COVERAGE_MATRIX.csv
+ * (node scripts/audit/inventory.mjs)
  *
- * Spisak SVIH izvornih fajlova u repu (uz eksplicitne izuzetke — vidi EXCLUDES
- * dolje, svaki s razlogom). Pokreće se:
- *
- *   node scripts/audit/inventory.mjs
- *
- * Sačuvane statuse (status/findings/segment/date) za fajlove koji i dalje postoje;
- * novi fajlovi ulaze kao `nepregledano`; nestali fajlovi se uklanjaju uz log.
- * check-coverage.mjs koristi isti scan (R1: fajl mora biti u matrici).
+ * Spisak SVIH izvornih fajlova u repu; EXCLUDES ispod je eksplicitan — svaki
+ * izuzetak s razlogom. Sačuvane statuse za fajlove koji i dalje postoje; novi
+ * ulaze kao `nepregledano`; nestali se uklanjaju uz log. check-coverage.mjs
+ * koristi isti scan (R1: fajl mora biti u matrici).
  */
 import { readFileSync, writeFileSync, existsSync, readdirSync, statSync } from 'node:fs';
 import { join, resolve, dirname, relative, sep } from 'node:path';
@@ -24,14 +21,9 @@ const STATUSES = ['nepregledano', 'u toku', 'pregledano', 'popravljeno', 'pokriv
 const EXCLUDE_DIRS = [
   { re: /(^|\/)node_modules(\/|$)/, reason: 'vendor zavisnosti (npm)' },
   { re: /(^|\/)\.git(\/|$)/, reason: 'git interni podaci' },
-  { re: /(^|\/)dist(\/|$)/, reason: 'generisani build izlaz' },
-  { re: /(^|\/)build(\/|$)/, reason: 'generisani build izlaz' },
-  { re: /(^|\/)coverage(\/|$)/, reason: 'generisani coverage izlaz' },
+  { re: /(^|\/)(dist|build|coverage)(\/|$)/, reason: 'generisani izlazi (dist/build/coverage)' },
   { re: /^\.cursor(\/|$)/, reason: 'konfiguracija/plans alata (dokumentacija — prati se odvojeno)' },
-  { re: /^docs(\/|$)/, reason: 'dokumentacija (ne izvorni kod)' },
-  { re: /^AUDIT(\/|$)/, reason: 'audit dokumentacija' },
-  { re: /(^|\/)\.github(\/|$)/, reason: 'CI konfiguracija (ulazi u matricu segmentom CI-01 nakon kreiranja)' },
-  { re: /^\.githooks(\/|$)/, reason: 'git hookovi — dodaju se u segmentu CI-01 (tada ulaze u matricu)' },
+  { re: /^(docs|AUDIT)(\/|$)/, reason: 'dokumentacija (docs/ + AUDIT/ prate se odvojeno)' },
   { re: /^backend\/prisma-mysql-backup(\/|$)/, reason: 'arhivski MySQL backup (rollback materijal, nije aktivni kod)' },
   { re: /^mobile\/assets(\/|$)/, reason: 'binarni resursi (slike/fontovi)' },
   { re: /^frontend\/public(\/|$)/, reason: 'statički web resursi (PWA/ikone) — ne izvorni kod' },
@@ -42,13 +34,10 @@ const EXCLUDE_DIRS = [
 /** Eksplicitni izuzeci po fajlu (regex na relativnu putanju) + razlog. */
 const EXCLUDE_FILES = [
   { re: /^\.env(\..*)?$/, reason: 'env konfiguracija — tajne/primeri prate se u docs/INFRASTRUCTURE.md' },
-  { re: /(^|\/)package(-lock)?\.json$/, reason: 'konfiguracija paketa — prati se posebno (lockfile higijena: F-015/F-016)' },
-  { re: /(^|\/)tsconfig.*\.json$/, reason: 'konfiguracija TypeScript-a' },
-  { re: /\.json$/, reason: 'json konfiguracije/resursi (app.json, eas.json, .oxlintrc, manifest…)' },
+  { re: /\.json$/, reason: 'json konfiguracije (package-lock F-015/F-016, tsconfig, app.json, eas…)' },
   { re: /\.md$/, reason: 'dokumentacija (docs/ + AUDIT/ prate se odvojeno)' },
-  { re: /\.svg$|\.png$|\.jpg$|\.jpeg$|\.webp$|\.gif$|\.ico$|\.ttf$|\.woff2?$/, reason: 'binarni resursi' },
+  { re: /\.(svg|png|jpg|jpeg|webp|gif|ico|ttf|woff2?)$/, reason: 'binarni resursi' },
   { re: /(^|\/)migration_lock\.toml$/, reason: 'prisma lock konfiguracija (toml)' },
-  { re: /\.env\.example$/, reason: 'primjer env konfiguracije (F-001 prati se kroz INF-02)' },
 ];
 
 /** Ekstenzije koje tretiramo kao izvorni kod. */
@@ -58,7 +47,7 @@ const INCLUDE_EXT = new Set([
 ]);
 
 /** Fajlovi bez ekstenzije koje uključujemo. */
-const INCLUDE_NAMES = new Set(['Dockerfile', 'docker-compose.yml', 'docker-compose1.yaml']);
+const INCLUDE_NAMES = new Set(['Dockerfile', 'docker-compose.yml', 'docker-compose1.yaml', 'pre-push', 'pre-commit', 'commit-msg']);
 
 function layerOf(rel) {
   const top = rel.split(sep)[0];

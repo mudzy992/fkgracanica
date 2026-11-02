@@ -1,0 +1,70 @@
+name: CI
+
+# CI-01 (AUDIT) — static jobovi + audit gate.
+# Proširenja (CI-02/03/04) dodaju servise, FE test suite i mobile E2E — vidi docs/CI.md §5.
+
+on:
+  push:
+    branches: [arena/290a6f13-fkgracanica]
+  workflow_dispatch:
+
+# NAMJERNO nema pull_request okidača — repo radi isključivo na aktivnoj grani,
+# nikad PR prema main (pravilo korisnika; docs/CI.md §Aktivna grana).
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  audit-gate:
+    name: audit-gate (coverage matrix)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: check-coverage (matrica mora pokrivati sve izvorne fajlove)
+        run: node scripts/audit/check-coverage.mjs
+
+  standards:
+    name: standards (check:all)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: check:all (file-size, console-ban, secrets-ban, layer-deps, docs-links)
+        run: node scripts/standards/check-all.mjs
+
+  build-test:
+    name: build + test (backend, frontend)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: npm ci (root lock — F-015 popravljen u CI-01)
+        run: npm ci
+      - name: prisma generate (Docker build radi ovo na buildu)
+        run: npm run db:generate
+      - name: prisma validate
+        run: npx prisma validate
+        working-directory: backend
+      - name: backend build (nest/tsc)
+        run: npm run build -w backend
+      - name: backend unit testovi (jest; e2e dolazi u CI-02)
+        run: npm run test -w backend -- --ci
+      - name: backend lint (eslint, check-only)
+        run: npx eslint "{src,apps,libs,test}/**/*.ts"
+        working-directory: backend
+      - name: frontend build (tsc -b + vite)
+        run: npm run build -w frontend
+      - name: frontend lint (oxlint)
+        run: npm run lint -w frontend
