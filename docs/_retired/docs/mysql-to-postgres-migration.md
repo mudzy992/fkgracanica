@@ -1,3 +1,5 @@
+⚠️ PENZIONISANO (retired) – NIJE RELEVANTNO za implementaciju. Služi samo kao historijska referenca. Datum penzionisanja: 2026-11-02.
+
 # Migracija: MySQL → PostgreSQL
 
 Status: **kod je pripremljen i prebačen na Postgres kao primarnu bazu.**

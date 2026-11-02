@@ -1,3 +1,5 @@
+⚠️ PENZIONISANO (retired) – NIJE RELEVANTNO za implementaciju. Služi samo kao historijska referenca. Datum penzionisanja: 2026-11-02.
+
 # FK Gračanica — checklista za klub (lansiranje)
 
 Dokument za dogovor s klubom **prije produkcije**. Nije tehnički priručnik za developere.

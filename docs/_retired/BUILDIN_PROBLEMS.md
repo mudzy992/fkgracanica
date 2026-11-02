@@ -1,3 +1,5 @@
+⚠️ PENZIONISANO (retired) – NIJE RELEVANTNO za implementaciju. Služi samo kao historijska referenca. Datum penzionisanja: 2026-11-02.
+
 DOM Bundled 19ms node_modules\expo\dom\entry.js (1 module)
 
 Web  INFO  %cDownload the React DevTools for a better development experience: [https://react.dev/link/react-devtools](https://react.dev/link/react-devtools) font-weight:bold

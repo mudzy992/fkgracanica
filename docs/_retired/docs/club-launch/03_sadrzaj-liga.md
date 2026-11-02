@@ -1,3 +1,5 @@
+⚠️ PENZIONISANO (retired) – NIJE RELEVANTNO za implementaciju. Služi samo kao historijska referenca. Datum penzionisanja: 2026-11-02.
+
 # nSadržaj — liga, drugi klubovi, kola, utakmice
 
 Tabela i statistika se **računaju iz utakmica**. Klub ne unosi ručno poredak — unosi raspored i rezultate (komentator + odobrenje).

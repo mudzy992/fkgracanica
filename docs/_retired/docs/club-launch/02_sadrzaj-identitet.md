@@ -1,3 +1,5 @@
+⚠️ PENZIONISANO (retired) – NIJE RELEVANTNO za implementaciju. Služi samo kao historijska referenca. Datum penzionisanja: 2026-11-02.
+
 # Sadržaj — identitet, kadar, nasljeđe, sponzori
 
 Format: PNG/JPG za slike. U bazu ide samo putanja (upload kroz admin).

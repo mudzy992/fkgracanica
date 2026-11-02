@@ -1,3 +1,5 @@
+⚠️ PENZIONISANO (retired) – NIJE RELEVANTNO za implementaciju. Služi samo kao historijska referenca. Datum penzionisanja: 2026-11-02.
+
 # Uloge — koga klub imenuje
 
 Admin u aplikaciji dodaje korisnika (ime, email) i dodijeli **jednu ili više** uloga.  
