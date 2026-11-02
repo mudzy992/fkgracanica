@@ -7,10 +7,10 @@
 | Polje | Vrijednost |
 |-------|------------|
 | **Aktivna grana** | `arena/290a6f13-fkgracanica` |
-| **Trenutna faza** | CI-01 ✔ INF-01 ✔ INF-02 ✔ BE-01 ✔ BE-02 ✔ BE-03 ✔ **BE-04 ✔** → sljedeći: **BE-05** (takmičenja) |
-| **Trenutni segment** | **BE-04 zatvoren 2026-11-02** (P-B04-1+2 odobreni i implementirani); sljedeći segment **BE-05** |
-| **Zadnji commit** | `58a1c60` fix(backend): uklonjeni nepotrebni as ContentStatus castovi [BE-04] | |
-| **Zadnji CI run** | ✅ **`41533952042` success** (`58a1c60` — sva 3 joba: build + 157 testova + eslint) https://github.com/mudzy992/fkgracanica/actions/runs/41533952042 ; segment: `41533520525` ❌ → `41533146751` ❌ → `41532075104` ❌ → `41529405188` ✅ (detalji u segments/BE-04.md) |
+| **Trenutna faza** | CI-01 ✔ INF-01 ✔ INF-02 ✔ BE-01 ✔ BE-02 ✔ BE-03 ✔ BE-04 ✔ **BE-05 ✔** → sljedeći: **BE-06** (live + realtime + newsletter/kontakt + jobs/cache) |
+| **Trenutni segment** | **BE-05 zatvoren 2026-11-02**; sljedeći segment **BE-06** |
+| **Zadnji commit** | `d7de4c8` test(backend): specovi rate-limit + client-ip [BE-05] | |
+| **Zadnji CI run** | ✅ **`41535738687` success** (`6930be8`+`d7de4c8` — sva 3 joba, iz prve) https://github.com/mudzy992/fkgracanica/actions/runs/41535738687 ; BE-04: `41534479734` ✅, `41533952042` ✅ |
 | **Zadnji commit** | `d554c9d` test(backend): unit specevi settings/audit/notifikacije [BE-03] | |
 | **Zadnji CI run** | ✅ **`41526155487` success** (`80cc782` — zatvaranje BE-02); BE-02: `41525406239` ✅; BE-01: `41514035483` ✅, `41512922531` ✅, `41508476303` ✅; INF-02: `41505739758` ✅, `41504684855` ✅ |
 | **check:all** | `npm run check:all` → **6/6** (check-coverage, file-size, console-ban, secrets-ban, layer-deps, docs-links); u CI-ju jobovi `audit-gate` + `standards`; pre-push hook pokreće `check:all` |
@@ -199,10 +199,23 @@
   **`41533952042` ✅ (build + 157 testova + eslint)**.
 - `hooksPath` ponovo vraćen (izgubljen re-klonom #3); matrica: 15 redova → BE-04.
 
+### SEGMENT BE-05 — 2026-11-02 (ZATVOREN ✅)
+
+- Audit 75 fajlova (~4.900 LOC): **sloj zdrav** — write rute sve
+  perm-guardane (0 rupa), 0 admin-flag obrazaca, `season-stats-rebuild`
+  interni util, PII ok (sha256, bez raw IP), standings tie-breaker već
+  specovan (b7f1d3d), 11 postojećih speca.
+- **2 invisible fixa** (`6930be8`): B-05-01 sweep `visit-rate-limit` Mape
+  (memory leak), B-05-02 `getClientIp` → `req.ip` (anti-spoof geo, usklađen
+  s BE-01 trust proxy). **2 nova speca** (`d7de4c8`): 8 testova.
+- CI ✅ **`41535738687`** (iz prve); `check:all` 6/6; matrica 75 redova → BE-05.
+- Segment dokument: `AUDIT/segments/BE-05.md` (Status segmenta: ZATVOREN).
+
 ## Šta je sljedeće (tačan sljedeći korak)
 
-1. **BE-05** (takmičenja: clubs/players/competitions/rounds/matches/
-   statistics/analytics) — bez blokatora; backlog trivijalnih predloga:
+1. **BE-06** (live + realtime + newsletter/kontakt + jobs/cache — konkurentnost:
+   socket, queue; zavisi REDIS okruženje; audit uključuje `process.env`
+   migraciju tih modula po BE-01 konvenciji). Backlog trivijalnih predloga:
    P-B02-1/2/3, P-B03-1 (ne blokiraju).
 2. Zatim BE-02…08 → FE → MOB → CI-02/03/04 → E2E-01 (INF-03 paralelno kad zatreba).
 3. Svaki segment: `AUDIT/segments/<ID>.md` + matrica + zelen CI + izvještaj (standard iz CI-01/INF-01/INF-02).
