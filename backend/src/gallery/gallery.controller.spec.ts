@@ -48,13 +48,13 @@ describe('GalleryController — javno vs prijavljeno (BE-04)', () => {
   });
 
   it('anon + ?status=DRAFT → parametar ignorisan → PUBLISHED', async () => {
-    await controller.findAll(undefined, 'DRAFT' as ContentStatus);
+    await controller.findAll(undefined, 'DRAFT');
 
     expect(galleryMock.findAll).toHaveBeenCalledWith(ContentStatus.PUBLISHED);
   });
 
   it('prijavljen moderator: ?status=PENDING prolazi (moderacioni queue)', async () => {
-    await controller.findAll(moderator, 'PENDING' as ContentStatus);
+    await controller.findAll(moderator, 'PENDING');
 
     expect(galleryMock.findAll).toHaveBeenCalledWith('PENDING');
   });

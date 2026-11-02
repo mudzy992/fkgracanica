@@ -55,7 +55,7 @@ describe('NewsController — javno vs prijavljeno (BE-04)', () => {
   });
 
   it('anon LISTA + ?status=DRAFT → servis dobiva PUBLISHED (parametar ignorisan)', async () => {
-    await controller.findAll(undefined, 'DRAFT' as ContentStatus);
+    await controller.findAll(undefined, 'DRAFT');
 
     expect(newsMock.findAll).toHaveBeenCalledWith(
       ContentStatus.PUBLISHED,
@@ -73,7 +73,7 @@ describe('NewsController — javno vs prijavljeno (BE-04)', () => {
   });
 
   it('prijavljen admin: status parametar prolazi nepromijenjen', async () => {
-    await controller.findAll(admin, 'DRAFT' as ContentStatus, 'cat-2');
+    await controller.findAll(admin, 'DRAFT', 'cat-2');
 
     expect(newsMock.findAll).toHaveBeenCalledWith('DRAFT', 'cat-2');
   });
