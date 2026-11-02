@@ -32,8 +32,11 @@ npm run prisma:generate | prisma:migrate | prisma:seed | prisma:seed:rbac
 - Autentikacija: JWT access (kratki) + refresh token; login endpointi u `auth/`.
 - RBAC: 6 rola (seed: `prisma/seed/rbac.ts`) + permission tabele.
   **Globalni `JwtAuthGuard` (BE-02/D-006)** = default-deny za sav HTTP; javne
-  rute nose `@Public()` (**71 ruta** — invariant testa `route-access.spec.ts`,
-  popis u `guards/approved-public-routes.ts`); `PermissionsGuard` + `@RequirePermissions`
+  rute nose `@Public()` (**70 ruta** (BE-04: `gallery/:id` više nije javan) — invariant testa `route-access.spec.ts`,
+  popis u `guards/approved-public-routes.ts`) uz **tihu autorizaciju**
+  (BE-04/P-B04-1): Bearer na @Public ruti popunjava `req.user` — admin
+  parametri (`?admin=1`, `?status=`) rade SAMO za prijavljene, anon =
+  PUBLISHED/404; `PermissionsGuard` + `@RequirePermissions`
   ostaju lokalni po ruti (audit: 0 violacija). WS autentikacija = vlastiti
   handshake realtime gatewaya (token ili public klijent).
 - **Error ugovor** (globalni `common/filters/http-exception.filter.ts`, BE-01):
