@@ -185,7 +185,7 @@
 "backend/src/news/news-relations.util.ts","backend","src","62","nepregledano","","",""
 "backend/src/news/news.controller.ts","backend","src","162","nepregledano","","",""
 "backend/src/news/news.module.ts","backend","src","16","nepregledano","","",""
-"backend/src/news/news.service.spec.ts","backend","src","45","nepregledano","","",""
+"backend/src/news/news.service.spec.ts","backend","src","45","popravljeno","zastarijeli asert (newsInclude) — prvi CI run","CI-01","2026-11-02"
 "backend/src/news/news.service.ts","backend","src","166","nepregledano","","",""
 "backend/src/newsletter/dto/create-newsletter-campaign.dto.ts","backend","src","25","nepregledano","","",""
 "backend/src/newsletter/dto/newsletter-email.dto.ts","backend","src","9","nepregledano","","",""
