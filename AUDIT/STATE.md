@@ -7,8 +7,8 @@
 | Polje | Vrijednost |
 |-------|------------|
 | **Aktivna grana** | `arena/290a6f13-fkgracanica` |
-| **Trenutna faza** | CI-01 ✔ → INF-01 ✔ → **INF-02 ✔ ZATVOREN** → sljedeći: **BE-01** (backend fundamenti) |
-| **Trenutni segment** | **INF-02 zatvoren 2026-11-02**; sljedeći segment **BE-01** |
+| **Trenutna faza** | CI-01 ✔ INF-01 ✔ INF-02 ✔ → **BE-01 u toku** (audit gotov; P1–P8 + Q-11/Q-12/Q-13 čekaju odobrenje) |
+| **Trenutni segment** | **BE-01** (otvoren 2026-11-02; audit B-01-01…09, predlozi u segments/BE-01.md) |
 | **Zadnji commit** | `f5ec734` chore(ci): secrets-ban bez .env allowlist + pre-commit skaner [INF-02] | |
 | **Zadnji CI run** | ✅ **`41504684855` success** (`6cd18d9`+`f5ec734` — INF-02) https://github.com/mudzy992/fkgracanica/actions/runs/41504684855 ; F-019: `41501622108` ✅, `41502258102` ✅; INF-01: `41487834266` ✅, `41485825537` ✅, `41483596127` ✅, `41483038067` ❌ → allowlist. CI-01: 9 ❌ → `41463437281` ✅ → `41464319145` ✅ (tabela u segments/CI-01.md). |
 | **check:all** | `npm run check:all` → **6/6** (check-coverage, file-size, console-ban, secrets-ban, layer-deps, docs-links); u CI-ju jobovi `audit-gate` + `standards`; pre-push hook pokreće `check:all` |
@@ -134,10 +134,24 @@
 - CI ✅ `41504684855`; `check:all` 6/6; matrica 1285 fajlova (INF-02: 3 reda).
 - Segment dokument: `AUDIT/segments/INF-02.md` (Status segmenta: ZATVOREN).
 
+### SEGMENT BE-01 — 2026-11-02 (u toku: audit gotov, predlozi čekaju odobrenje)
+
+- Audit obavljen **bez izmjena koda** (pravilo 1): `main.ts` (helmet/CORS/
+  ValidationPipe ✓), `app.module.ts` (ConfigModule bez validacije), `common/`
+  (filter = API ugovor `{statusCode,message,timestamp}`; guardi method-level),
+  `prisma.service.ts` ✓, inventura 48 kontrolera (7 potpuno javnih, bez @Public).
+- Nalazi **B-01-01…09** + predlozi **P1–P8** u `AUDIT/segments/BE-01.md`.
+- NOVA PITANJA: **Q-11** throttler (F-004: mrtav dep + trust proxy rizik),
+  **Q-12** globalni APP_GUARD (F-014: (a) audit sada → BE-02, (b) odmah),
+  **Q-13** Prisma error mapping (P2002→409 vidljiva promjena).
+- P1 (env validacija), P2 (config modul), P5 (+path) = preporuke „DA" čekaju
+  zajedničko odobrenje.
+
 ## Šta je sljedeće (tačan sljedeći korak)
 
-1. **BE-01** (backend fundamenti: error model/config/logging temelj; odluke o
-   throttler F-004 i globalnom guardu F-014 — vidljive promjene traže odobrenje).
+1. **BE-01** — čeka odobrenje: P1/P2/P5 (preporuke DA) + Q-11 (throttler),
+   Q-12 (global guard), Q-13 (Prisma mapping). Nakon odobrenja: implementacija
+   → zelen CI → ZATVOREN → **BE-02** (auth + RBAC).
 2. Zatim BE-02…08 → FE → MOB → CI-02/03/04 → E2E-01 (INF-03 paralelno kad zatreba).
 3. Svaki segment: `AUDIT/segments/<ID>.md` + matrica + zelen CI + izvještaj (standard iz CI-01/INF-01/INF-02).
 
@@ -153,3 +167,6 @@
 - **Q-08** tačan runtime host u `DATABASE_URL` za verify-full (interno ime vs javni)?
 - **Q-09** ✔ ODGOVORENO (KAPIJA 2): alati iz §4 odobreni (instalacija ide u FE/MOB segmente).
 - **Q-10** ✔ ODGOVORENO u principu (KAPIJA 2); detalji (pristup/backup) potvrđuju se kad segment zatreba (INF/BE).
+- **Q-11** throttler (F-004): (a) globalno 100/60s + auth 10/60s + trust proxy, (b) ukloniti mrtvu zavisnost, (c) odgoditi? **(preporuka: (a))**
+- **Q-12** globalni APP_GUARD (F-014): (a) audit sada → implementacija u BE-02 s testovima **(preporuka)**, (b) odmah globalni guard + @Public na sve javne rute
+- **Q-13** Prisma error mapping (P2002→409, P2025→404, P2006→400) — odobravas li promjenu status kodova (500→4xx)? **(preporuka: DA)**
