@@ -9,7 +9,7 @@
 | **Aktivna grana** | `arena/290a6f13-fkgracanica` |
 | **Trenutna faza** | CI-01 ✔ → **INF-01 ✔ ZATVOREN** → sljedeći: **INF-02** (.env.example čišćenje po D-004) |
 | **Trenutni segment** | **INF-01 zatvoren 2026-11-02**; sljedeći segment **INF-02** |
-| **Zadnji commit** | `2a93534` fix(compose): log rotacija i no-new-privileges [INF-01] (zatvarajući docs commit slijedi) | |
+| **Zadnji commit** | `2280928` docs(audit): INF-01 ZATVOREN — segment, matrica, STATE [INF-01] | |
 | **Zadnji CI run** | ✅ **`41485825537` success** (`7c4fb5f`+`2a93534`, sva 3 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41485825537 ; prije toga `41483596127` ✅ (`9a7fbc2`) i `41483038067` ❌ → secrets-ban allowlist (D-004 dokaz). CI-01 historija: 9 ❌ → `41463437281` ✅ → `41464319145` ✅ (tabela u segments/CI-01.md). |
 | **check:all** | `npm run check:all` → **6/6** (check-coverage, file-size, console-ban, secrets-ban, layer-deps, docs-links); u CI-ju jobovi `audit-gate` + `standards`; pre-push hook pokreće `check:all` |
 
