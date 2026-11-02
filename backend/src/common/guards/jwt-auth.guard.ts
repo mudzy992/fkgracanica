@@ -28,15 +28,19 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
       context.getHandler(),
       context.getClass(),
     ]);
+    // @nestjs/passport mixin d.ts deklariše `boolean | Observable<boolean>`
+    // ali je runtime ASYNC (Promise) — dist/auth.guard.js: async canActivate.
+    const auth = super.canActivate(context) as boolean | Promise<boolean>;
+
     if (!isPublic) {
       // strogi režim: passport baca UnauthorizedException → 401
-      return super.canActivate(context);
+      return auth;
     }
 
     // Tiha autorizacija (P-B04-1): validan token → req.user popunjen;
     // bez tokena / nevažeći → i dalje javni pristup.
     try {
-      await super.canActivate(context);
+      await auth;
       return true;
     } catch {
       return true;
