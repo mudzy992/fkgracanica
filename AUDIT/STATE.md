@@ -7,10 +7,10 @@
 | Polje | Vrijednost |
 |-------|------------|
 | **Aktivna grana** | `arena/290a6f13-fkgracanica` |
-| **Trenutna faza** | CI-01 ✔ INF-01 ✔ INF-02 ✔ BE-01 ✔ BE-02 ✔ BE-03 ✔ BE-04 ✔ **BE-05 ✔** → sljedeći: **BE-06** (live + realtime + newsletter/kontakt + jobs/cache) |
-| **Trenutni segment** | **BE-05 zatvoren 2026-11-02**; sljedeći segment **BE-06** |
-| **Zadnji commit** | `d7de4c8` test(backend): specovi rate-limit + client-ip [BE-05] | |
-| **Zadnji CI run** | ✅ **`41535738687` success** (`6930be8`+`d7de4c8` — sva 3 joba, iz prve) https://github.com/mudzy992/fkgracanica/actions/runs/41535738687 ; BE-04: `41534479734` ✅, `41533952042` ✅ |
+| **Trenutna faza** | CI-01 ✔ INF-01 ✔ INF-02 ✔ BE-01…BE-05 ✔ **BE-06 ✔** → sljedeći: **BE-07** (članstvo + ulaznice + plaćanja — novac/QR, High) |
+| **Trenutni segment** | **BE-06 zatvoren 2026-11-02** (P-B06-1/2 otvoreni); sljedeći segment **BE-07** |
+| **Zadnji commit** | `991759c` test(backend): gateway spec [BE-06] | |
+| **Zadnji CI run** | ✅ **`41538504328` success** (`90b6021`+`991759c` — sva 3 joba, iz prve) https://github.com/mudzy992/fkgracanica/actions/runs/41538504328 ; BE-05: `41536083397` ✅, `41535738687` ✅ |
 | **Zadnji commit** | `d554c9d` test(backend): unit specevi settings/audit/notifikacije [BE-03] | |
 | **Zadnji CI run** | ✅ **`41526155487` success** (`80cc782` — zatvaranje BE-02); BE-02: `41525406239` ✅; BE-01: `41514035483` ✅, `41512922531` ✅, `41508476303` ✅; INF-02: `41505739758` ✅, `41504684855` ✅ |
 | **check:all** | `npm run check:all` → **6/6** (check-coverage, file-size, console-ban, secrets-ban, layer-deps, docs-links); u CI-ju jobovi `audit-gate` + `standards`; pre-push hook pokreće `check:all` |
@@ -211,12 +211,24 @@
 - CI ✅ **`41535738687`** (iz prve); `check:all` 6/6; matrica 75 redova → BE-05.
 - Segment dokument: `AUDIT/segments/BE-05.md` (Status segmenta: ZATVOREN).
 
+### SEGMENT BE-06 — 2026-11-02 (ZATVOREN ✅)
+
+- Audit 39 fajlova: **zdrav** — queue limiter 10/60s, newsletter:join
+  authentikovan, unsubscribe token, live-report class-guarded, utili specovani.
+- **Invisible** (`90b6021`): **6 `process.env` → ConfigService/configuration**
+  (BE-01 P2, **0 preostalo** u segmentu) + **`match:join` cap 32** (WS bez
+  throttlera → memory zaštita) + idempotentan rejoin.
+- **Spec** (`991759c`): gateway handleri —7 testova; lokalno **76/76** (16 suiteova).
+- **2 predloga otvorena**: P-B06-1 (contact DTO validacija → 400),
+  P-B06-2 (matchId postojanje → ok:false).
+- CI ✅ **`41538504328`** (iz prve); matrica 39 redova → BE-06.
+- Segment dokument: `AUDIT/segments/BE-06.md` (Status segmenta: ZATVOREN).
+
 ## Šta je sljedeće (tačan sljedeći korak)
 
-1. **BE-06** (live + realtime + newsletter/kontakt + jobs/cache — konkurentnost:
-   socket, queue; zavisi REDIS okruženje; audit uključuje `process.env`
-   migraciju tih modula po BE-01 konvenciji). Backlog trivijalnih predloga:
-   P-B02-1/2/3, P-B03-1 (ne blokiraju).
+1. **BE-07** (članstvo + ulaznice + plaćanja — **High: novac/QR**, zavisi
+   BE-02; audit: payment webhookovi već javni iz aneksa). Backlog predloga:
+   P-B06-1, P-B06-2, P-B02-1/2/3, P-B03-1 (ne blokiraju).
 2. Zatim BE-02…08 → FE → MOB → CI-02/03/04 → E2E-01 (INF-03 paralelno kad zatreba).
 3. Svaki segment: `AUDIT/segments/<ID>.md` + matrica + zelen CI + izvještaj (standard iz CI-01/INF-01/INF-02).
 
