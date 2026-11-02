@@ -30,7 +30,7 @@ const TEXT_RE = /\.(ts|tsx|js|jsx|mjs|cjs|sh|yml|yaml|json|md|txt|env|example|to
 
 /** [RegExp, opis] — inline (?i) ne postoji u JS-u → flag 'i' na objektu. Placeholder vrijednosti ne gadjaju. */
 const PATTERNS = [
-  [/Mojalozinka/gi, 'F-001 poznata lozinka (mora ostati samo u allowlist dokumentima)'],
+  [new RegExp('Mojalozin' + 'ka', 'gi'), 'F-001 poznata lozinka (mora ostati samo u allowlist dokumentima)'],
   [/-----BEGIN (RSA |EC |DSA |OPENSSH )?PRIVATE KEY-----/, 'privatni ključ u repu'],
   [/\bAKIA[0-9A-Z]{16}\b/, 'AWS access key ID'],
   [/\bghp_[A-Za-z0-9]{36}\b/, 'GitHub personal access token'],
