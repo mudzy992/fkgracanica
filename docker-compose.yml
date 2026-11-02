@@ -57,6 +57,18 @@ services:
       - db_net
       - redis_net
 
+    # INF-01 (I-01-04): nema eskalacije privilegija unutar kontejnera.
+    security_opt:
+      - "no-new-privileges:true"
+
+    # INF-01 (I-01-03): rotacija docker logova da json-file ne raste u
+    # beskonačnost na disku (10 MB × 3 po kontejneru).
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
     restart: unless-stopped
 
 
@@ -79,6 +91,17 @@ services:
 
     depends_on:
       - backend
+
+    # INF-01 (I-01-04): isto kao backend — bez eskalacije privilegija.
+    security_opt:
+      - "no-new-privileges:true"
+
+    # INF-01 (I-01-03): rotacija docker logova (10 MB × 3).
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
 
     restart: unless-stopped
 
