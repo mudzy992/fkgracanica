@@ -28,10 +28,14 @@ export function assertFinishedResult(data: {
   }
   const cutoff = Date.now() - PAST_TOLERANCE_MS;
   if (scheduled.getTime() >= cutoff) {
-    throw new BadRequestException('Retroaktivna utakmica mora imati datum u prošlosti.');
+    throw new BadRequestException(
+      'Retroaktivna utakmica mora imati datum u prošlosti.',
+    );
   }
   if (data.homeScore == null || data.awayScore == null) {
-    throw new BadRequestException('Za završenu utakmicu u prošlosti unesite rezultat.');
+    throw new BadRequestException(
+      'Za završenu utakmicu u prošlosti unesite rezultat.',
+    );
   }
   if (data.homeScore < 0 || data.awayScore < 0) {
     throw new BadRequestException('Rezultat ne može biti negativan.');

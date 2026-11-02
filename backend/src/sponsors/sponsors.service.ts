@@ -10,9 +10,13 @@ export class SponsorsService {
   }
 
   async create(data: Record<string, unknown>) {
-    const max = await this.prisma.sponsor.aggregate({ _max: { sortOrder: true } });
+    const max = await this.prisma.sponsor.aggregate({
+      _max: { sortOrder: true },
+    });
     const sortOrder = (max._max.sortOrder ?? -1) + 1;
-    return this.prisma.sponsor.create({ data: { ...data, sortOrder } as never });
+    return this.prisma.sponsor.create({
+      data: { ...data, sortOrder } as never,
+    });
   }
 
   update(id: string, data: Record<string, unknown>) {
@@ -21,7 +25,9 @@ export class SponsorsService {
 
   reorder(ids: string[]) {
     return this.prisma.$transaction(
-      ids.map((id, sortOrder) => this.prisma.sponsor.update({ where: { id }, data: { sortOrder } })),
+      ids.map((id, sortOrder) =>
+        this.prisma.sponsor.update({ where: { id }, data: { sortOrder } }),
+      ),
     );
   }
 

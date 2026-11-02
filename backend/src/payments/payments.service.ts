@@ -1,5 +1,13 @@
-import { BadRequestException, Injectable, NotFoundException, NotImplementedException } from '@nestjs/common';
-import { PaymentsReadinessService, type PaymentProviderId } from './payments-readiness.service';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+  NotImplementedException,
+} from '@nestjs/common';
+import {
+  PaymentsReadinessService,
+  type PaymentProviderId,
+} from './payments-readiness.service';
 import { MembershipService } from '../membership/membership.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { StripeProvider } from './providers/stripe.provider';
@@ -18,7 +26,11 @@ export class PaymentsService {
   ) {}
 
   private async resolveProvider(explicit?: PaymentProviderId) {
-    const map = { stripe: this.stripe, paypal: this.paypal, monri: this.monri } as const;
+    const map = {
+      stripe: this.stripe,
+      paypal: this.paypal,
+      monri: this.monri,
+    } as const;
     if (explicit) {
       const provider = map[explicit];
       if (!(await provider.isReady())) {
@@ -44,11 +56,16 @@ export class PaymentsService {
     providerId?: PaymentProviderId,
   ) {
     const sales = await this.readiness.getSalesModes();
-    if (!sales.online) throw new BadRequestException('Online kupovina ulaznica nije omogućena');
-    const order = await this.prisma.ticketOrder.findFirst({ where: { id: orderId, userId } });
+    if (!sales.online)
+      throw new BadRequestException('Online kupovina ulaznica nije omogućena');
+    const order = await this.prisma.ticketOrder.findFirst({
+      where: { id: orderId, userId },
+    });
     if (!order) throw new NotFoundException('Narudžba nije pronađena');
     if (order.status !== 'pending') {
-      throw new BadRequestException('Narudžba nije dostupna za online plaćanje');
+      throw new BadRequestException(
+        'Narudžba nije dostupna za online plaćanje',
+      );
     }
     const provider = await this.resolveProvider(providerId);
     return provider.createTicketCheckout(orderId, successUrl, cancelUrl);
@@ -63,10 +80,16 @@ export class PaymentsService {
     providerId?: PaymentProviderId,
   ) {
     const allowed = await this.readiness.isMembershipOnlineAllowed();
-    if (!allowed) throw new BadRequestException('Online članstvo nije omogućeno');
+    if (!allowed)
+      throw new BadRequestException('Online članstvo nije omogućeno');
     await this.membership.assertPayableMembership(membershipId, userId);
     const provider = await this.resolveProvider(providerId);
-    return provider.createMembershipCheckout(membershipId, amount, successUrl, cancelUrl);
+    return provider.createMembershipCheckout(
+      membershipId,
+      amount,
+      successUrl,
+      cancelUrl,
+    );
   }
 
   async checkoutSeasonPass(
@@ -77,25 +100,39 @@ export class PaymentsService {
     providerId?: PaymentProviderId,
   ) {
     const sales = await this.readiness.getSalesModes();
-    if (!sales.online) throw new BadRequestException('Online kupovina ulaznica nije omogućena');
-    const pass = await this.prisma.seasonPass.findFirst({ where: { id: passId, userId } });
+    if (!sales.online)
+      throw new BadRequestException('Online kupovina ulaznica nije omogućena');
+    const pass = await this.prisma.seasonPass.findFirst({
+      where: { id: passId, userId },
+    });
     if (!pass) throw new NotFoundException('Sezonska karta nije pronađena');
     if (pass.status !== 'PENDING') {
       throw new BadRequestException('Ova karta nije dostupna za online uplatu');
     }
     const provider = await this.resolveProvider(providerId);
-    return provider.createSeasonPassCheckout(passId, Number(pass.price), successUrl, cancelUrl);
+    return provider.createSeasonPassCheckout(
+      passId,
+      Number(pass.price),
+      successUrl,
+      cancelUrl,
+    );
   }
 
   handleStripeWebhook(rawBody: Buffer, signature: string) {
     return this.stripe.handleWebhook(rawBody, signature);
   }
 
-  handlePaypalWebhook(rawBody: Buffer, headers: Record<string, string | string[] | undefined>) {
+  handlePaypalWebhook(
+    rawBody: Buffer,
+    headers: Record<string, string | string[] | undefined>,
+  ) {
     return this.paypal.handleWebhook(rawBody, headers);
   }
 
-  handleMonriWebhook(rawBody: Buffer, headers: Record<string, string | string[] | undefined>) {
+  handleMonriWebhook(
+    rawBody: Buffer,
+    headers: Record<string, string | string[] | undefined>,
+  ) {
     return this.monri.handleWebhook(rawBody, headers);
   }
 
@@ -109,10 +146,14 @@ export class PaymentsService {
     provider?: PaymentProviderId,
     returnUrl?: string,
   ) {
-    const id = provider ?? (await this.providerFromExternalId(sessionId)) ?? 'stripe';
-    if (id === 'paypal') return this.paypal.confirmMembershipSession(sessionId, userId);
-    if (id === 'monri') return this.monri.confirmMembershipSession(sessionId, userId, returnUrl);
-    if (id === 'stripe') return this.stripe.confirmMembershipSession(sessionId, userId);
+    const id =
+      provider ?? (await this.providerFromExternalId(sessionId)) ?? 'stripe';
+    if (id === 'paypal')
+      return this.paypal.confirmMembershipSession(sessionId, userId);
+    if (id === 'monri')
+      return this.monri.confirmMembershipSession(sessionId, userId, returnUrl);
+    if (id === 'stripe')
+      return this.stripe.confirmMembershipSession(sessionId, userId);
     throw new NotImplementedException(`${id} confirm u pripremi`);
   }
 
@@ -122,10 +163,14 @@ export class PaymentsService {
     provider?: PaymentProviderId,
     returnUrl?: string,
   ) {
-    const id = provider ?? (await this.providerFromExternalId(sessionId)) ?? 'stripe';
-    if (id === 'paypal') return this.paypal.confirmTicketSession(sessionId, userId);
-    if (id === 'monri') return this.monri.confirmTicketSession(sessionId, userId, returnUrl);
-    if (id === 'stripe') return this.stripe.confirmTicketSession(sessionId, userId);
+    const id =
+      provider ?? (await this.providerFromExternalId(sessionId)) ?? 'stripe';
+    if (id === 'paypal')
+      return this.paypal.confirmTicketSession(sessionId, userId);
+    if (id === 'monri')
+      return this.monri.confirmTicketSession(sessionId, userId, returnUrl);
+    if (id === 'stripe')
+      return this.stripe.confirmTicketSession(sessionId, userId);
     throw new NotImplementedException(`${id} confirm u pripremi`);
   }
 
@@ -135,16 +180,28 @@ export class PaymentsService {
     provider?: PaymentProviderId,
     returnUrl?: string,
   ) {
-    const id = provider ?? (await this.providerFromExternalId(sessionId)) ?? 'stripe';
-    if (id === 'paypal') return this.paypal.confirmSeasonPassSession(sessionId, userId);
-    if (id === 'monri') return this.monri.confirmSeasonPassSession(sessionId, userId, returnUrl);
-    if (id === 'stripe') return this.stripe.confirmSeasonPassSession(sessionId, userId);
+    const id =
+      provider ?? (await this.providerFromExternalId(sessionId)) ?? 'stripe';
+    if (id === 'paypal')
+      return this.paypal.confirmSeasonPassSession(sessionId, userId);
+    if (id === 'monri')
+      return this.monri.confirmSeasonPassSession(sessionId, userId, returnUrl);
+    if (id === 'stripe')
+      return this.stripe.confirmSeasonPassSession(sessionId, userId);
     throw new NotImplementedException(`${id} confirm u pripremi`);
   }
 
-  private async providerFromExternalId(sessionId: string): Promise<PaymentProviderId | undefined> {
-    const payment = await this.prisma.payment.findFirst({ where: { externalId: sessionId } });
-    if (payment?.provider === 'paypal' || payment?.provider === 'monri' || payment?.provider === 'stripe') {
+  private async providerFromExternalId(
+    sessionId: string,
+  ): Promise<PaymentProviderId | undefined> {
+    const payment = await this.prisma.payment.findFirst({
+      where: { externalId: sessionId },
+    });
+    if (
+      payment?.provider === 'paypal' ||
+      payment?.provider === 'monri' ||
+      payment?.provider === 'stripe'
+    ) {
       return payment.provider;
     }
     return undefined;

@@ -13,7 +13,11 @@ import type { PackInput, SiteDefaults } from './share-defaults';
 export class ShareResolvers {
   constructor(private readonly prisma: PrismaService) {}
 
-  async fromCmsPage(slug: string, url: string, defaults: SiteDefaults): Promise<PackInput> {
+  async fromCmsPage(
+    slug: string,
+    url: string,
+    defaults: SiteDefaults,
+  ): Promise<PackInput> {
     const page = await this.prisma.cmsPage.findUnique({ where: { slug } });
     return {
       title: page?.seoTitle ?? page?.title ?? defaults.siteName,
@@ -27,7 +31,11 @@ export class ShareResolvers {
       where: { slug, status: ContentStatus.PUBLISHED },
     });
     if (!item) {
-      return { title: 'Vijest', description: defaults.description, url: `/vijesti/${slug}` };
+      return {
+        title: 'Vijest',
+        description: defaults.description,
+        url: `/vijesti/${slug}`,
+      };
     }
     return {
       title: item.seoTitle ?? item.title,
@@ -38,18 +46,38 @@ export class ShareResolvers {
     };
   }
 
-  async fromMatch(id: string, live: boolean, defaults: SiteDefaults): Promise<PackInput> {
+  async fromMatch(
+    id: string,
+    live: boolean,
+    defaults: SiteDefaults,
+  ): Promise<PackInput> {
     const match = await this.prisma.match.findUnique({
       where: { id },
-      include: { homeClub: true, awayClub: true, edition: { include: { competition: true, season: true } } },
+      include: {
+        homeClub: true,
+        awayClub: true,
+        edition: { include: { competition: true, season: true } },
+      },
     });
     const url = live ? `/live/${id}` : `/utakmice/${id}`;
-    if (!match) return { title: 'Utakmica', description: defaults.description, url };
+    if (!match)
+      return { title: 'Utakmica', description: defaults.description, url };
     const scheduled = live && match.status === 'SCHEDULED';
     const title = scheduled
       ? `${matchShareTitle(match.homeClub, match.awayClub, match.status, match.homeScore, match.awayScore)} — Uskoro`
-      : matchShareTitle(match.homeClub, match.awayClub, match.status, match.homeScore, match.awayScore, live);
-    const crest = matchShareImage(match.homeClub, match.awayClub, defaults.crestPath);
+      : matchShareTitle(
+          match.homeClub,
+          match.awayClub,
+          match.status,
+          match.homeScore,
+          match.awayScore,
+          live,
+        );
+    const crest = matchShareImage(
+      match.homeClub,
+      match.awayClub,
+      defaults.crestPath,
+    );
     return {
       title,
       description: matchShareDescription({
@@ -75,7 +103,8 @@ export class ShareResolvers {
       include: { photos: { orderBy: { sortOrder: 'asc' }, take: 1 } },
     });
     const url = `/galerija/${slug}`;
-    if (!item) return { title: 'Galerija', description: defaults.description, url };
+    if (!item)
+      return { title: 'Galerija', description: defaults.description, url };
     return {
       title: item.title,
       description: item.description ?? defaults.description,
@@ -91,7 +120,8 @@ export class ShareResolvers {
     });
     return {
       title: 'O klubu',
-      description: club?.description ?? 'Historija i vremenska linija FK Gračanica.',
+      description:
+        club?.description ?? 'Historija i vremenska linija FK Gračanica.',
       image: mediaPublicUrl(club?.crestPath, 'medium') ?? defaults.crestUrl,
       url: '/o-klubu',
     };
@@ -100,7 +130,8 @@ export class ShareResolvers {
   async fromPlayer(id: string, defaults: SiteDefaults): Promise<PackInput> {
     const player = await this.prisma.player.findUnique({ where: { id } });
     const url = `/igrac/${id}`;
-    if (!player) return { title: 'Igrač', description: defaults.description, url };
+    if (!player)
+      return { title: 'Igrač', description: defaults.description, url };
     const name = `${player.firstName} ${player.lastName}`.trim();
     return {
       title: name,

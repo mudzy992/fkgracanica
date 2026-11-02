@@ -39,7 +39,10 @@ export class ClubStatsService {
 
     const [matches, participants] = await Promise.all([
       this.prisma.match.findMany({
-        where: { seasonCompetitionId: edition.id, status: MatchStatus.FINISHED },
+        where: {
+          seasonCompetitionId: edition.id,
+          status: MatchStatus.FINISHED,
+        },
         include: {
           homeClub: { select: { id: true, name: true, slug: true } },
           awayClub: { select: { id: true, name: true, slug: true } },
@@ -48,7 +51,10 @@ export class ClubStatsService {
       }),
       getSeasonParticipantClubs(this.prisma, edition.id),
     ]);
-    const standing = computeStandings(matches, participants).find((r) => r.clubId === clubId) ?? null;
+    const standing =
+      computeStandings(matches, participants).find(
+        (r) => r.clubId === clubId,
+      ) ?? null;
 
     const players = await this.prisma.player.findMany({
       where: { clubId },

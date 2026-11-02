@@ -24,7 +24,10 @@ export class CmsPagesController {
 
   @Get('widgets')
   listWidgets() {
-    return Object.entries(widgetMeta).map(([type, meta]) => ({ type, ...meta }));
+    return Object.entries(widgetMeta).map(([type, meta]) => ({
+      type,
+      ...meta,
+    }));
   }
 
   @Get('pages')
@@ -41,7 +44,16 @@ export class CmsPagesController {
   @UseGuards(JwtAuthGuard, PermissionsGuard)
   @RequirePermissions('cms.manage')
   @ApiBearerAuth()
-  create(@Body() body: { slug: string; title: string; status?: ContentStatus; seoTitle?: string; seoDesc?: string }) {
+  create(
+    @Body()
+    body: {
+      slug: string;
+      title: string;
+      status?: ContentStatus;
+      seoTitle?: string;
+      seoDesc?: string;
+    },
+  ) {
     return this.pages.create(body);
   }
 
@@ -88,7 +100,10 @@ export class CmsPagesController {
   @UseGuards(JwtAuthGuard, PermissionsGuard)
   @RequirePermissions('cms.manage')
   @ApiBearerAuth()
-  removeSection(@Param('pageId') pageId: string, @Param('sectionId') sectionId: string) {
+  removeSection(
+    @Param('pageId') pageId: string,
+    @Param('sectionId') sectionId: string,
+  ) {
     return this.pages.removeSection(pageId, sectionId);
   }
 

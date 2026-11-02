@@ -21,10 +21,16 @@ export class FinanceController {
   }
 
   @Get('export.xlsx')
-  @Header('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+  @Header(
+    'Content-Type',
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+  )
   async exportXlsx(@Query() query: FinanceQuery, @Res() res: Response) {
     const buf = await this.service.exportXlsx(query);
-    res.setHeader('Content-Disposition', 'attachment; filename="finansije.xlsx"');
+    res.setHeader(
+      'Content-Disposition',
+      'attachment; filename="finansije.xlsx"',
+    );
     res.send(buf);
   }
 
@@ -32,7 +38,10 @@ export class FinanceController {
   @Header('Content-Type', 'application/pdf')
   async exportPdf(@Query() query: FinanceQuery, @Res() res: Response) {
     const buf = await this.service.exportPdf(query);
-    res.setHeader('Content-Disposition', 'attachment; filename="finansije.pdf"');
+    res.setHeader(
+      'Content-Disposition',
+      'attachment; filename="finansije.pdf"',
+    );
     res.send(buf);
   }
 }

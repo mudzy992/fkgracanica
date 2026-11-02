@@ -40,6 +40,8 @@ describe('NewsService', () => {
 
   it('findBySlug throws when not found', async () => {
     prisma.news.findFirst.mockResolvedValue(null);
-    await expect(service.findBySlug('missing')).rejects.toBeInstanceOf(NotFoundException);
+    await expect(service.findBySlug('missing')).rejects.toBeInstanceOf(
+      NotFoundException,
+    );
   });
 });

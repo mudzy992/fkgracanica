@@ -16,7 +16,10 @@ export class EmailLogController {
 
   @Get()
   findAll(@Query('page') page = '1', @Query('limit') limit = '20') {
-    const params = parsePagination({ page: Number(page), limit: Number(limit) });
+    const params = parsePagination({
+      page: Number(page),
+      limit: Number(limit),
+    });
     return paginate(
       params,
       (skip, take) =>

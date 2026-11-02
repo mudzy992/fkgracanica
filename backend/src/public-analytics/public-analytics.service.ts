@@ -8,7 +8,11 @@ import { isVisitRateLimited } from './visit-rate-limit.util';
 export class PublicAnalyticsService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async recordVisit(platform: 'web' | 'mobile', visitorId: string, ip?: string): Promise<void> {
+  async recordVisit(
+    platform: 'web' | 'mobile',
+    visitorId: string,
+    ip?: string,
+  ): Promise<void> {
     const hash = createHash('sha256').update(visitorId).digest('hex');
     if (isVisitRateLimited(platform, hash)) return;
 
@@ -17,7 +21,13 @@ export class PublicAnalyticsService {
     const geo = resolveVisitGeo(ip);
 
     await this.prisma.visitorVisit.upsert({
-      where: { date_platform_visitorKeyHash: { date: today, platform, visitorKeyHash: hash } },
+      where: {
+        date_platform_visitorKeyHash: {
+          date: today,
+          platform,
+          visitorKeyHash: hash,
+        },
+      },
       update: {},
       create: {
         date: today,
@@ -29,7 +39,9 @@ export class PublicAnalyticsService {
     });
   }
 
-  async getDailyTrend(days = 30): Promise<{ date: string; web: number; mobile: number; total: number }[]> {
+  async getDailyTrend(
+    days = 30,
+  ): Promise<{ date: string; web: number; mobile: number; total: number }[]> {
     const since = new Date();
     since.setUTCDate(since.getUTCDate() - days + 1);
     since.setUTCHours(0, 0, 0, 0);
@@ -58,19 +70,27 @@ export class PublicAnalyticsService {
     }));
   }
 
-  async getTotals(days = 30): Promise<{ web: number; mobile: number; total: number }> {
+  async getTotals(
+    days = 30,
+  ): Promise<{ web: number; mobile: number; total: number }> {
     const since = new Date();
     since.setUTCDate(since.getUTCDate() - days + 1);
     since.setUTCHours(0, 0, 0, 0);
 
     const [web, mobile] = await Promise.all([
-      this.prisma.visitorVisit.count({ where: { platform: 'web', date: { gte: since } } }),
-      this.prisma.visitorVisit.count({ where: { platform: 'mobile', date: { gte: since } } }),
+      this.prisma.visitorVisit.count({
+        where: { platform: 'web', date: { gte: since } },
+      }),
+      this.prisma.visitorVisit.count({
+        where: { platform: 'mobile', date: { gte: since } },
+      }),
     ]);
     return { web, mobile, total: web + mobile };
   }
 
-  async getGeoStats(days = 30): Promise<{ countryCode: string; count: number; percent: number }[]> {
+  async getGeoStats(
+    days = 30,
+  ): Promise<{ countryCode: string; count: number; percent: number }[]> {
     const since = new Date();
     since.setUTCDate(since.getUTCDate() - days + 1);
     since.setUTCHours(0, 0, 0, 0);
@@ -83,7 +103,9 @@ export class PublicAnalyticsService {
 
     const total = rows.reduce((sum, row) => sum + row._count.id, 0);
     return rows
-      .filter((row): row is typeof row & { countryCode: string } => Boolean(row.countryCode))
+      .filter((row): row is typeof row & { countryCode: string } =>
+        Boolean(row.countryCode),
+      )
       .map((row) => ({
         countryCode: row.countryCode,
         count: row._count.id,

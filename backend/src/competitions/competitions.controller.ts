@@ -1,4 +1,13 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { CompetitionsService } from './competitions.service';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
@@ -27,7 +36,10 @@ export class CompetitionsController {
   @UseGuards(JwtAuthGuard, PermissionsGuard)
   @RequirePermissions('competitions.manage')
   @ApiBearerAuth()
-  updateCompetition(@Param('id') id: string, @Body() body: { name?: string; isLeague?: boolean }) {
+  updateCompetition(
+    @Param('id') id: string,
+    @Body() body: { name?: string; isLeague?: boolean },
+  ) {
     return this.service.updateCompetition(id, body);
   }
 

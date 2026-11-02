@@ -1,4 +1,8 @@
-import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 
 export type MenuItemInput = {
@@ -35,20 +39,28 @@ export class CmsMenusService {
     const menu = await this.prisma.cmsMenu.findUnique({ where: { key } });
     if (!menu) throw new NotFoundException('Meni nije pronađen');
 
-    const existing = await this.prisma.cmsMenuItem.findMany({ where: { menuId: menu.id } });
+    const existing = await this.prisma.cmsMenuItem.findMany({
+      where: { menuId: menu.id },
+    });
     const systemItems = existing.filter((e) => e.isSystem);
     const payloadIds = new Set(items.map((i) => i.id).filter(Boolean));
 
     for (const sys of systemItems) {
       if (!payloadIds.has(sys.id)) {
-        throw new ForbiddenException(`Sistemska stavka "${sys.label}" ne može biti uklonjena`);
+        throw new ForbiddenException(
+          `Sistemska stavka "${sys.label}" ne može biti uklonjena`,
+        );
       }
     }
 
     const customExisting = existing.filter((e) => !e.isSystem);
-    const toDelete = customExisting.filter((e) => !payloadIds.has(e.id)).map((e) => e.id);
+    const toDelete = customExisting
+      .filter((e) => !payloadIds.has(e.id))
+      .map((e) => e.id);
     if (toDelete.length) {
-      await this.prisma.cmsMenuItem.deleteMany({ where: { id: { in: toDelete }, isSystem: false } });
+      await this.prisma.cmsMenuItem.deleteMany({
+        where: { id: { in: toDelete }, isSystem: false },
+      });
     }
 
     for (const item of items) {

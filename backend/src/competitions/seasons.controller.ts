@@ -1,4 +1,13 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { SeasonsService } from './seasons.service';
 import { SeasonCompetitionsService } from './season-competitions.service';
@@ -28,7 +37,15 @@ export class SeasonsController {
   @UseGuards(JwtAuthGuard, PermissionsGuard)
   @RequirePermissions('competitions.manage')
   @ApiBearerAuth()
-  create(@Body() body: { name: string; yearStart: number; yearEnd: number; isActive?: boolean }) {
+  create(
+    @Body()
+    body: {
+      name: string;
+      yearStart: number;
+      yearEnd: number;
+      isActive?: boolean;
+    },
+  ) {
     return this.seasons.create(body);
   }
 
@@ -38,7 +55,13 @@ export class SeasonsController {
   @ApiBearerAuth()
   update(
     @Param('id') id: string,
-    @Body() body: { name?: string; yearStart?: number; yearEnd?: number; isActive?: boolean },
+    @Body()
+    body: {
+      name?: string;
+      yearStart?: number;
+      yearEnd?: number;
+      isActive?: boolean;
+    },
   ) {
     return this.seasons.update(id, body);
   }
@@ -62,7 +85,13 @@ export class SeasonsController {
   @ApiBearerAuth()
   addEdition(
     @Param('id') id: string,
-    @Body() body: { competitionId?: string; name?: string; isLeague?: boolean; clubIds?: string[] },
+    @Body()
+    body: {
+      competitionId?: string;
+      name?: string;
+      isLeague?: boolean;
+      clubIds?: string[];
+    },
   ) {
     return this.editions.add(id, body);
   }
@@ -83,7 +112,10 @@ export class SeasonsController {
   @UseGuards(JwtAuthGuard, PermissionsGuard)
   @RequirePermissions('competitions.manage')
   @ApiBearerAuth()
-  removeEdition(@Param('id') id: string, @Param('editionId') editionId: string) {
+  removeEdition(
+    @Param('id') id: string,
+    @Param('editionId') editionId: string,
+  ) {
     return this.editions.remove(id, editionId);
   }
 }

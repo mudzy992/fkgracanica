@@ -52,14 +52,21 @@ export class GalleryService {
     return this.prisma.gallery.update({ where: { id }, data: { status } });
   }
 
-  async addPhoto(galleryId: string, data: { path: string; caption?: string; sortOrder?: number }) {
+  async addPhoto(
+    galleryId: string,
+    data: { path: string; caption?: string; sortOrder?: number },
+  ) {
     const sortOrder =
       data.sortOrder ??
-      ((await this.prisma.galleryPhoto.aggregate({
-        where: { galleryId },
-        _max: { sortOrder: true },
-      }))._max.sortOrder ?? -1) + 1;
-    return this.prisma.galleryPhoto.create({ data: { ...data, sortOrder, galleryId } });
+      ((
+        await this.prisma.galleryPhoto.aggregate({
+          where: { galleryId },
+          _max: { sortOrder: true },
+        })
+      )._max.sortOrder ?? -1) + 1;
+    return this.prisma.galleryPhoto.create({
+      data: { ...data, sortOrder, galleryId },
+    });
   }
 
   removePhoto(photoId: string) {
@@ -85,7 +92,9 @@ export class GalleryService {
     let slug = base;
     let n = 2;
     for (;;) {
-      const existing = await this.prisma.gallery.findUnique({ where: { slug } });
+      const existing = await this.prisma.gallery.findUnique({
+        where: { slug },
+      });
       if (!existing || existing.id === excludeId) return slug;
       slug = `${base}-${n++}`;
     }

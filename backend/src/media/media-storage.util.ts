@@ -8,6 +8,8 @@ export async function deleteStoredFiles(
   await Promise.all(
     paths
       .filter((p): p is string => !!p)
-      .map((relative) => unlink(join(uploadRoot, relative)).catch(() => undefined)),
+      .map((relative) =>
+        unlink(join(uploadRoot, relative)).catch(() => undefined),
+      ),
   );
 }

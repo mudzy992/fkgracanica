@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { PaymentsReadinessService } from '../payments/payments-readiness.service';
@@ -26,8 +30,12 @@ export class SeasonPassService {
   async offer() {
     const [season, priceRow, labelRow] = await Promise.all([
       this.prisma.season.findFirst({ where: { isActive: true } }),
-      this.prisma.setting.findUnique({ where: { key: 'ticketing.seasonPassPrice' } }),
-      this.prisma.setting.findUnique({ where: { key: 'ticketing.seasonPassLabel' } }),
+      this.prisma.setting.findUnique({
+        where: { key: 'ticketing.seasonPassPrice' },
+      }),
+      this.prisma.setting.findUnique({
+        where: { key: 'ticketing.seasonPassLabel' },
+      }),
     ]);
     const price = Number(priceRow?.value || '0');
     const label = labelRow?.value?.trim() || 'Sezonska karta';
@@ -73,12 +81,17 @@ export class SeasonPassService {
     if (existing) {
       return this.prisma.seasonPass.update({
         where: { id: existing.id },
-        data: { status: 'PENDING', price: new Prisma.Decimal(offer.price), label: offer.label },
+        data: {
+          status: 'PENDING',
+          price: new Prisma.Decimal(offer.price),
+          label: offer.label,
+        },
       });
     }
     const capacity = await getStadiumCapacity(this.prisma);
     const active = await countActivePasses(this.prisma, offer.season.id);
-    if (active >= capacity) throw new BadRequestException('Kapacitet stadiona je popunjen');
+    if (active >= capacity)
+      throw new BadRequestException('Kapacitet stadiona je popunjen');
     return this.prisma.seasonPass.create({
       data: {
         userId,
@@ -93,7 +106,8 @@ export class SeasonPassService {
 
   async issueBoxOffice(email: string) {
     const sales = await this.payments.getSalesModes();
-    if (!sales.boxOffice) throw new BadRequestException('Blagajna nije omogućena');
+    if (!sales.boxOffice)
+      throw new BadRequestException('Blagajna nije omogućena');
     const user = await this.prisma.user.findUnique({ where: { email } });
     if (!user) throw new NotFoundException('Korisnik nije pronađen');
     const pass = await this.openPending(user.id);
@@ -102,12 +116,19 @@ export class SeasonPassService {
       data: { status: 'ACTIVE', paymentProvider: 'box_office' },
       include: passInclude,
     });
-    await notifySeasonPassActive(this.prisma, this.jobs, pass.id, this.notifications);
+    await notifySeasonPassActive(
+      this.prisma,
+      this.jobs,
+      pass.id,
+      this.notifications,
+    );
     return active;
   }
 
   async assertPayable(passId: string, userId: string) {
-    const pass = await this.prisma.seasonPass.findFirst({ where: { id: passId, userId } });
+    const pass = await this.prisma.seasonPass.findFirst({
+      where: { id: passId, userId },
+    });
     if (!pass) throw new NotFoundException('Sezonska karta nije pronađena');
     if (pass.status !== 'PENDING') {
       throw new BadRequestException('Ova karta nije dostupna za online uplatu');

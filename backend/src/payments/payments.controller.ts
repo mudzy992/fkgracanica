@@ -1,4 +1,14 @@
-import { Body, Controller, Get, Headers, Post, Query, Redirect, Req, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Headers,
+  Post,
+  Query,
+  Redirect,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import type { RawBodyRequest } from '@nestjs/common';
 import type { Request } from 'express';
@@ -102,9 +112,19 @@ export class PaymentsController {
   @ApiBearerAuth()
   confirmMembershipSession(
     @CurrentUser() user: AuthUser,
-    @Body() body: { sessionId: string; provider?: 'stripe' | 'paypal' | 'monri'; returnUrl?: string },
+    @Body()
+    body: {
+      sessionId: string;
+      provider?: 'stripe' | 'paypal' | 'monri';
+      returnUrl?: string;
+    },
   ) {
-    return this.service.confirmMembershipSession(body.sessionId, user.id, body.provider, body.returnUrl);
+    return this.service.confirmMembershipSession(
+      body.sessionId,
+      user.id,
+      body.provider,
+      body.returnUrl,
+    );
   }
 
   @Post('tickets/confirm-session')
@@ -112,9 +132,19 @@ export class PaymentsController {
   @ApiBearerAuth()
   confirmTicketSession(
     @CurrentUser() user: AuthUser,
-    @Body() body: { sessionId: string; provider?: 'stripe' | 'paypal' | 'monri'; returnUrl?: string },
+    @Body()
+    body: {
+      sessionId: string;
+      provider?: 'stripe' | 'paypal' | 'monri';
+      returnUrl?: string;
+    },
   ) {
-    return this.service.confirmTicketSession(body.sessionId, user.id, body.provider, body.returnUrl);
+    return this.service.confirmTicketSession(
+      body.sessionId,
+      user.id,
+      body.provider,
+      body.returnUrl,
+    );
   }
 
   @Post('season-pass/confirm-session')
@@ -122,9 +152,19 @@ export class PaymentsController {
   @ApiBearerAuth()
   confirmSeasonPassSession(
     @CurrentUser() user: AuthUser,
-    @Body() body: { sessionId: string; provider?: 'stripe' | 'paypal' | 'monri'; returnUrl?: string },
+    @Body()
+    body: {
+      sessionId: string;
+      provider?: 'stripe' | 'paypal' | 'monri';
+      returnUrl?: string;
+    },
   ) {
-    return this.service.confirmSeasonPassSession(body.sessionId, user.id, body.provider, body.returnUrl);
+    return this.service.confirmSeasonPassSession(
+      body.sessionId,
+      user.id,
+      body.provider,
+      body.returnUrl,
+    );
   }
 
   @Post('webhooks/stripe')
@@ -139,7 +179,10 @@ export class PaymentsController {
   @Post('webhooks/paypal')
   paypalWebhook(@Req() req: RawBodyRequest<Request>) {
     const raw = req.rawBody ?? Buffer.from('');
-    return this.service.handlePaypalWebhook(raw, req.headers as Record<string, string | string[] | undefined>);
+    return this.service.handlePaypalWebhook(
+      raw,
+      req.headers as Record<string, string | string[] | undefined>,
+    );
   }
 
   @Get('monri/form')

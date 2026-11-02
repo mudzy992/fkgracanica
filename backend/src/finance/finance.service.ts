@@ -62,10 +62,21 @@ export class FinanceService {
     const range = parseFinanceRange(query);
     if ('error' in range) throw new BadRequestException(range.error);
     const status = parseFinanceStatus(query.status);
-    if (status && typeof status === 'object') throw new BadRequestException(status.error);
+    if (status && typeof status === 'object')
+      throw new BadRequestException(status.error);
     const provider = query.provider?.trim() || undefined;
-    const tickets = await this.loadTickets(range.from, range.to, provider, status);
-    const seasonPass = await this.loadSeasonPasses(range.from, range.to, provider, status);
+    const tickets = await this.loadTickets(
+      range.from,
+      range.to,
+      provider,
+      status,
+    );
+    const seasonPass = await this.loadSeasonPasses(
+      range.from,
+      range.to,
+      provider,
+      status,
+    );
     const membership = includeMembership(status, provider)
       ? await this.loadMembership(range.from, range.to)
       : [];
@@ -75,7 +86,13 @@ export class FinanceService {
       tickets,
       seasonPass,
       membership,
-      summary: buildFinanceSummary(range.from, range.to, tickets, membership, seasonPass),
+      summary: buildFinanceSummary(
+        range.from,
+        range.to,
+        tickets,
+        membership,
+        seasonPass,
+      ),
     };
   }
 
@@ -85,7 +102,9 @@ export class FinanceService {
     provider?: string,
     status?: string,
   ): Promise<TicketExportRow[]> {
-    const where: Prisma.PaymentWhereInput = { createdAt: { gte: from, lte: to } };
+    const where: Prisma.PaymentWhereInput = {
+      createdAt: { gte: from, lte: to },
+    };
     if (provider) where.provider = provider;
     if (status) where.status = status as PaymentStatus;
     const rows = await this.prisma.payment.findMany({
@@ -132,8 +151,13 @@ export class FinanceService {
     }));
   }
 
-  private async loadMembership(from: Date, to: Date): Promise<MembershipExportRow[]> {
-    const priceRow = await this.prisma.setting.findUnique({ where: { key: 'membership.annualPrice' } });
+  private async loadMembership(
+    from: Date,
+    to: Date,
+  ): Promise<MembershipExportRow[]> {
+    const priceRow = await this.prisma.setting.findUnique({
+      where: { key: 'membership.annualPrice' },
+    });
     const amount = Number(priceRow?.value || '50');
     const rows = await this.prisma.membership.findMany({
       where: { status: 'ACTIVE', updatedAt: { gte: from, lte: to } },

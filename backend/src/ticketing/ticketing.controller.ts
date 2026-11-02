@@ -1,10 +1,22 @@
-import { Body, Controller, Get, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { TicketingService } from './ticketing.service';
 import { TicketingConfigService } from './ticketing-config.service';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { PermissionsGuard } from '../common/guards/permissions.guard';
-import { RequireAnyPermission, RequirePermissions } from '../common/decorators/permissions.decorator';
+import {
+  RequireAnyPermission,
+  RequirePermissions,
+} from '../common/decorators/permissions.decorator';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
 import type { AuthUser } from '../common/types/auth-user.type';
 
@@ -28,7 +40,10 @@ export class TicketingController {
   @Patch('admin/config')
   @UseGuards(PermissionsGuard)
   @RequirePermissions('ticketing.manage')
-  updateAdminConfig(@Body() body: Record<string, string>, @CurrentUser() user: AuthUser) {
+  updateAdminConfig(
+    @Body() body: Record<string, string>,
+    @CurrentUser() user: AuthUser,
+  ) {
     return this.config.updateAdminConfig(body, user.id);
   }
 
@@ -49,7 +64,10 @@ export class TicketingController {
   }
 
   @Get('matches/:matchId/availability')
-  getAvailability(@Param('matchId') matchId: string, @CurrentUser() user: AuthUser) {
+  getAvailability(
+    @Param('matchId') matchId: string,
+    @CurrentUser() user: AuthUser,
+  ) {
     return this.service.getMatchAvailability(matchId, user.id);
   }
 
@@ -64,7 +82,10 @@ export class TicketingController {
   }
 
   @Post('orders/:orderId/cancel')
-  cancelOrder(@Param('orderId') orderId: string, @CurrentUser() user: AuthUser) {
+  cancelOrder(
+    @Param('orderId') orderId: string,
+    @CurrentUser() user: AuthUser,
+  ) {
     return this.service.cancelOrder(orderId, user.id);
   }
 
@@ -111,10 +132,7 @@ export class TicketingController {
   }
 
   @Post('orders/:orderId/refund')
-  refund(
-    @Param('orderId') orderId: string,
-    @CurrentUser() user: AuthUser,
-  ) {
+  refund(@Param('orderId') orderId: string, @CurrentUser() user: AuthUser) {
     return this.service.requestRefund(orderId, user.id);
   }
 }

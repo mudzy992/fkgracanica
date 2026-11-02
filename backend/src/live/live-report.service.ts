@@ -12,9 +12,13 @@ export class LiveReportService {
   ) {}
 
   private async getEditableMatch(matchId: string) {
-    const match = await this.prisma.match.findUniqueOrThrow({ where: { id: matchId } });
+    const match = await this.prisma.match.findUniqueOrThrow({
+      where: { id: matchId },
+    });
     if (match.status !== MatchStatus.FINISHED) {
-      throw new BadRequestException('Izvještaj se može uređivati samo za završenu utakmicu.');
+      throw new BadRequestException(
+        'Izvještaj se može uređivati samo za završenu utakmicu.',
+      );
     }
     if (
       match.reportStatus !== MatchReportStatus.DRAFT &&
@@ -47,7 +51,9 @@ export class LiveReportService {
       include: { player: true, relatedPlayer: true },
     });
 
-    const allEvents = await this.prisma.matchEvent.findMany({ where: { matchId } });
+    const allEvents = await this.prisma.matchEvent.findMany({
+      where: { matchId },
+    });
     const { homeScore, awayScore } = recalculateScoreFromEvents(allEvents);
     const match = await this.prisma.match.update({
       where: { id: matchId },
@@ -55,7 +61,11 @@ export class LiveReportService {
     });
 
     this.realtime.emitMatchEvent(matchId, event);
-    this.realtime.emitMatchScore(matchId, { homeScore, awayScore, minute: match.minute });
+    this.realtime.emitMatchScore(matchId, {
+      homeScore,
+      awayScore,
+      minute: match.minute,
+    });
     this.realtime.emitMatchStatus(matchId, match);
     return event;
   }
@@ -63,9 +73,13 @@ export class LiveReportService {
   async deleteEvent(matchId: string, eventId: string) {
     await this.getEditableMatch(matchId);
     await this.prisma.matchEvent.delete({ where: { id: eventId } });
-    const allEvents = await this.prisma.matchEvent.findMany({ where: { matchId } });
+    const allEvents = await this.prisma.matchEvent.findMany({
+      where: { matchId },
+    });
     const { homeScore, awayScore } = recalculateScoreFromEvents(allEvents);
-    const minute = allEvents.length ? Math.max(...allEvents.map((e) => e.minute)) : 0;
+    const minute = allEvents.length
+      ? Math.max(...allEvents.map((e) => e.minute))
+      : 0;
     const match = await this.prisma.match.update({
       where: { id: matchId },
       data: { homeScore, awayScore, minute },
@@ -75,7 +89,10 @@ export class LiveReportService {
     return { ok: true };
   }
 
-  async addComment(matchId: string, data: { message: string; userId?: string; minute: number }) {
+  async addComment(
+    matchId: string,
+    data: { message: string; userId?: string; minute: number },
+  ) {
     await this.getEditableMatch(matchId);
     const comment = await this.prisma.liveComment.create({
       data: { ...data, matchId },

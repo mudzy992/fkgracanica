@@ -29,7 +29,10 @@ export class NewsController {
   ) {}
 
   @Get()
-  findAll(@Query('status') status?: ContentStatus, @Query('categoryId') categoryId?: string) {
+  findAll(
+    @Query('status') status?: ContentStatus,
+    @Query('categoryId') categoryId?: string,
+  ) {
     return this.newsService.findAll(status, categoryId);
   }
 
@@ -62,7 +65,10 @@ export class NewsController {
   @Delete('comments/:commentId')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  removeComment(@Param('commentId') commentId: string, @CurrentUser() user: AuthUser) {
+  removeComment(
+    @Param('commentId') commentId: string,
+    @CurrentUser() user: AuthUser,
+  ) {
     return this.commentsService.remove(commentId, user);
   }
 
@@ -147,7 +153,10 @@ export class NewsCategoriesController {
   @UseGuards(JwtAuthGuard, PermissionsGuard)
   @RequirePermissions('news.manage')
   @ApiBearerAuth()
-  update(@Param('id') id: string, @Body() body: { name?: string; slug?: string }) {
+  update(
+    @Param('id') id: string,
+    @Body() body: { name?: string; slug?: string },
+  ) {
     return this.service.update(id, body);
   }
 

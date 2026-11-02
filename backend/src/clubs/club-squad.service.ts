@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import {
   buildFormationSlots,
@@ -6,7 +10,11 @@ import {
   validateFormation,
 } from './formation-layout.util';
 
-type SlotAssignment = { slotIndex: number; isBench: boolean; playerId?: string | null };
+type SlotAssignment = {
+  slotIndex: number;
+  isBench: boolean;
+  playerId?: string | null;
+};
 
 @Injectable()
 export class ClubSquadService {
@@ -22,7 +30,11 @@ export class ClubSquadService {
       orderBy: [{ isBench: 'asc' }, { slotIndex: 'asc' }],
     });
     return {
-      formation: { def: club.formationDef, mid: club.formationMid, fwd: club.formationFwd },
+      formation: {
+        def: club.formationDef,
+        mid: club.formationMid,
+        fwd: club.formationFwd,
+      },
       slots,
     };
   }
@@ -40,7 +52,9 @@ export class ClubSquadService {
     });
 
     await this.prisma.$transaction([
-      this.prisma.clubSquadSlot.deleteMany({ where: { clubId, isBench: false } }),
+      this.prisma.clubSquadSlot.deleteMany({
+        where: { clubId, isBench: false },
+      }),
       this.prisma.club.update({
         where: { id: clubId },
         data: { formationDef: def, formationMid: mid, formationFwd: fwd },
@@ -51,7 +65,10 @@ export class ClubSquadService {
     const usedPlayerIds = new Set<string>();
     for (const layout of layouts) {
       const match = existing.find(
-        (s) => s.lineRole === layout.lineRole && s.playerId && !usedPlayerIds.has(s.playerId),
+        (s) =>
+          s.lineRole === layout.lineRole &&
+          s.playerId &&
+          !usedPlayerIds.has(s.playerId),
       );
       const playerId = match?.playerId ?? null;
       if (playerId) usedPlayerIds.add(playerId);
@@ -95,7 +112,10 @@ export class ClubSquadService {
       layouts.map((layout, i) => {
         const slot = starters[i];
         if (!slot) return Promise.resolve();
-        if (slot.positionX === layout.positionX && slot.positionY === layout.positionY) {
+        if (
+          slot.positionX === layout.positionX &&
+          slot.positionY === layout.positionY
+        ) {
           return Promise.resolve();
         }
         return this.prisma.clubSquadSlot.update({
@@ -132,7 +152,9 @@ export class ClubSquadService {
   async assignSlots(clubId: string, assignments: SlotAssignment[]) {
     await this.findClubOrThrow(clubId);
     await this.ensureSquadInitialized(clubId);
-    const playerIds = assignments.map((a) => a.playerId).filter(Boolean) as string[];
+    const playerIds = assignments
+      .map((a) => a.playerId)
+      .filter(Boolean) as string[];
     if (new Set(playerIds).size !== playerIds.length) {
       throw new BadRequestException('Igrač ne može biti na više pozicija.');
     }
@@ -142,9 +164,14 @@ export class ClubSquadService {
         const player = await this.prisma.player.findFirst({
           where: { id: a.playerId, clubId },
         });
-        if (!player) throw new BadRequestException('Igrač ne pripada ovom klubu.');
+        if (!player)
+          throw new BadRequestException('Igrač ne pripada ovom klubu.');
         await this.prisma.clubSquadSlot.updateMany({
-          where: { clubId, playerId: a.playerId, NOT: { slotIndex: a.slotIndex, isBench: a.isBench } },
+          where: {
+            clubId,
+            playerId: a.playerId,
+            NOT: { slotIndex: a.slotIndex, isBench: a.isBench },
+          },
           data: { playerId: null },
         });
       }
@@ -157,9 +184,11 @@ export class ClubSquadService {
   }
 
   private findClubOrThrow(clubId: string) {
-    return this.prisma.club.findUnique({ where: { id: clubId } }).then((club) => {
-      if (!club) throw new NotFoundException('Klub nije pronađen.');
-      return club;
-    });
+    return this.prisma.club
+      .findUnique({ where: { id: clubId } })
+      .then((club) => {
+        if (!club) throw new NotFoundException('Klub nije pronađen.');
+        return club;
+      });
   }
 }

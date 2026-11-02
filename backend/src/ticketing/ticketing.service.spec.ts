@@ -31,7 +31,9 @@ describe('TicketingService.validateTicket', () => {
     prismaMock.ticket.findUnique.mockResolvedValue(null);
     prismaMock.seasonPass.findUnique.mockResolvedValue(null);
     prismaMock.membershipCard.findUnique.mockResolvedValue(null);
-    await expect(service.validateTicket('missing')).rejects.toThrow(NotFoundException);
+    await expect(service.validateTicket('missing')).rejects.toThrow(
+      NotFoundException,
+    );
   });
 
   it('returns membership card when QR is a member code', async () => {
@@ -39,21 +41,36 @@ describe('TicketingService.validateTicket', () => {
     prismaMock.seasonPass.findUnique.mockResolvedValue(null);
     prismaMock.membershipCard.findUnique.mockResolvedValue({
       id: 'c1',
-      membership: { status: 'ACTIVE', user: { firstName: 'Ana', lastName: 'H', email: 'a@t.com' } },
+      membership: {
+        status: 'ACTIVE',
+        user: { firstName: 'Ana', lastName: 'H', email: 'a@t.com' },
+      },
     });
     const result = await service.validateTicket('member-1_abc');
-    expect(result).toMatchObject({ kind: 'membership', status: 'ACTIVE', name: 'Ana H' });
+    expect(result).toMatchObject({
+      kind: 'membership',
+      status: 'ACTIVE',
+      name: 'Ana H',
+    });
   });
 
   it('rejects RESERVED (unpaid)', async () => {
-    prismaMock.ticket.findUnique.mockResolvedValue({ ...baseTicket, status: TicketStatus.RESERVED });
-    await expect(service.validateTicket('ticket_abc')).rejects.toThrow(BadRequestException);
+    prismaMock.ticket.findUnique.mockResolvedValue({
+      ...baseTicket,
+      status: TicketStatus.RESERVED,
+    });
+    await expect(service.validateTicket('ticket_abc')).rejects.toThrow(
+      BadRequestException,
+    );
     expect(prismaMock.ticket.update).not.toHaveBeenCalled();
   });
 
   it('marks PAID_AT_BOX_OFFICE as USED', async () => {
     prismaMock.ticket.findUnique.mockResolvedValue(baseTicket);
-    prismaMock.ticket.update.mockResolvedValue({ ...baseTicket, status: TicketStatus.USED });
+    prismaMock.ticket.update.mockResolvedValue({
+      ...baseTicket,
+      status: TicketStatus.USED,
+    });
 
     const result = await service.validateTicket('ticket_abc');
 
@@ -67,11 +84,19 @@ describe('TicketingService.validateTicket', () => {
     prismaMock.ticket.findUnique.mockResolvedValue(baseTicket);
     const result = await service.inspectTicket('ticket_abc');
     expect(prismaMock.ticket.update).not.toHaveBeenCalled();
-    expect(result).toMatchObject({ kind: 'ticket', status: TicketStatus.PAID_AT_BOX_OFFICE });
+    expect(result).toMatchObject({
+      kind: 'ticket',
+      status: TicketStatus.PAID_AT_BOX_OFFICE,
+    });
   });
 
   it('rejects already USED', async () => {
-    prismaMock.ticket.findUnique.mockResolvedValue({ ...baseTicket, status: TicketStatus.USED });
-    await expect(service.validateTicket('ticket_abc')).rejects.toThrow(BadRequestException);
+    prismaMock.ticket.findUnique.mockResolvedValue({
+      ...baseTicket,
+      status: TicketStatus.USED,
+    });
+    await expect(service.validateTicket('ticket_abc')).rejects.toThrow(
+      BadRequestException,
+    );
   });
 });

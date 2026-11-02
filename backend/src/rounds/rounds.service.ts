@@ -1,7 +1,14 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { roundDefaultName } from './round.util';
-import { cascadeDeleteRound, getRoundDeleteImpact } from './round-cascade-delete.util';
+import {
+  cascadeDeleteRound,
+  getRoundDeleteImpact,
+} from './round-cascade-delete.util';
 
 type RoundInput = {
   seasonId: string;
@@ -17,11 +24,15 @@ export class RoundsService {
 
   async findBySeason(seasonId: string) {
     await this.syncLegacyRounds(seasonId);
-    return this.prisma.round.findMany({
-      where: { seasonCompetitionId: seasonId },
-      include: { _count: { select: { matches: true } } },
-      orderBy: { number: 'asc' },
-    }).then((rows) => rows.map((r) => ({ ...r, seasonId: r.seasonCompetitionId })));
+    return this.prisma.round
+      .findMany({
+        where: { seasonCompetitionId: seasonId },
+        include: { _count: { select: { matches: true } } },
+        orderBy: { number: 'asc' },
+      })
+      .then((rows) =>
+        rows.map((r) => ({ ...r, seasonId: r.seasonCompetitionId })),
+      );
   }
 
   async create(data: RoundInput) {
@@ -47,9 +58,21 @@ export class RoundsService {
       where: { id },
       data: {
         number: data.number,
-        name: data.name?.trim() || (data.number != null ? roundDefaultName(number) : undefined),
-        startsAt: data.startsAt === undefined ? undefined : data.startsAt ? new Date(data.startsAt) : null,
-        endsAt: data.endsAt === undefined ? undefined : data.endsAt ? new Date(data.endsAt) : null,
+        name:
+          data.name?.trim() ||
+          (data.number != null ? roundDefaultName(number) : undefined),
+        startsAt:
+          data.startsAt === undefined
+            ? undefined
+            : data.startsAt
+              ? new Date(data.startsAt)
+              : null,
+        endsAt:
+          data.endsAt === undefined
+            ? undefined
+            : data.endsAt
+              ? new Date(data.endsAt)
+              : null,
       },
     });
     if (data.number != null) {
@@ -83,7 +106,11 @@ export class RoundsService {
   /** Links legacy `Match.round` integers to Round rows (idempotent). */
   async syncLegacyRounds(seasonId: string) {
     const legacy = await this.prisma.match.findMany({
-      where: { seasonCompetitionId: seasonId, round: { not: null }, roundId: null },
+      where: {
+        seasonCompetitionId: seasonId,
+        round: { not: null },
+        roundId: null,
+      },
       select: { id: true, round: true },
     });
     if (!legacy.length) return;
@@ -91,8 +118,14 @@ export class RoundsService {
     const numbers = [...new Set(legacy.map((m) => m.round!))];
     for (const number of numbers) {
       const round = await this.prisma.round.upsert({
-        where: { seasonCompetitionId_number: { seasonCompetitionId: seasonId, number } },
-        create: { seasonCompetitionId: seasonId, number, name: roundDefaultName(number) },
+        where: {
+          seasonCompetitionId_number: { seasonCompetitionId: seasonId, number },
+        },
+        create: {
+          seasonCompetitionId: seasonId,
+          number,
+          name: roundDefaultName(number),
+        },
         update: {},
       });
       await this.prisma.match.updateMany({
@@ -104,15 +137,19 @@ export class RoundsService {
 
   private validateNumber(number: number) {
     if (!Number.isInteger(number) || number < 1) {
-      throw new BadRequestException('Broj kola mora biti pozitivan cijeli broj.');
+      throw new BadRequestException(
+        'Broj kola mora biti pozitivan cijeli broj.',
+      );
     }
   }
 
   private ensureEdition(seasonId: string) {
-    return this.prisma.seasonCompetition.findUnique({ where: { id: seasonId } }).then((s) => {
-      if (!s) throw new NotFoundException('Sezona nije pronađena.');
-      return s;
-    });
+    return this.prisma.seasonCompetition
+      .findUnique({ where: { id: seasonId } })
+      .then((s) => {
+        if (!s) throw new NotFoundException('Sezona nije pronađena.');
+        return s;
+      });
   }
 
   private findOrThrow(id: string) {

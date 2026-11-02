@@ -1,4 +1,7 @@
-import type { PaginatedResponse, PaginationMeta } from '../types/paginated-response.type';
+import type {
+  PaginatedResponse,
+  PaginationMeta,
+} from '../types/paginated-response.type';
 import type { PaginatedQueryDto } from '../dto/paginated-query.dto';
 
 const DEFAULT_LIMIT = 20;
@@ -26,7 +29,11 @@ export function parsePagination(query: PaginatedQueryDto): PaginationParams {
   };
 }
 
-export function buildMeta(total: number, page: number, limit: number): PaginationMeta {
+export function buildMeta(
+  total: number,
+  page: number,
+  limit: number,
+): PaginationMeta {
   return {
     total,
     page,

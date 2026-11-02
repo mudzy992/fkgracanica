@@ -33,7 +33,10 @@ describe('buildLivePushMessage', () => {
   });
 
   it('builds kickoff', () => {
-    const msg = buildLivePushMessage(match, { type: MatchEventType.KICKOFF, minute: 0 });
+    const msg = buildLivePushMessage(match, {
+      type: MatchEventType.KICKOFF,
+      minute: 0,
+    });
     expect(msg?.title).toContain('Utakmica počela');
     expect(msg?.body).toBe('FK Gračanica vs Rival');
   });

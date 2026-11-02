@@ -65,14 +65,20 @@ export class NewsService {
   }
 
   async findOne(id: string) {
-    const item = await this.prisma.news.findUnique({ where: { id }, include: newsInclude });
+    const item = await this.prisma.news.findUnique({
+      where: { id },
+      include: newsInclude,
+    });
     if (!item) throw new NotFoundException('Vijest nije pronađena');
     return item;
   }
 
   async create(data: NewsWriteInput) {
-    const slug = await this.uniqueSlug(data.slug?.trim() || slugify(data.title));
-    const { tags, relatedMatchIds, relatedPlayerIds, scheduledAt, ...rest } = data;
+    const slug = await this.uniqueSlug(
+      data.slug?.trim() || slugify(data.title),
+    );
+    const { tags, relatedMatchIds, relatedPlayerIds, scheduledAt, ...rest } =
+      data;
     const item = await this.prisma.news.create({
       data: {
         ...rest,
@@ -82,7 +88,12 @@ export class NewsService {
       },
     });
     await syncNewsTags(this.prisma, item.id, tags);
-    await syncNewsRelations(this.prisma, item.id, relatedMatchIds, relatedPlayerIds);
+    await syncNewsRelations(
+      this.prisma,
+      item.id,
+      relatedMatchIds,
+      relatedPlayerIds,
+    );
     return this.findOne(item.id);
   }
 
@@ -95,7 +106,8 @@ export class NewsService {
     if (typeof update.slug === 'string' && update.slug) {
       update.slug = await this.uniqueSlug(update.slug as string, id);
     }
-    if (update.scheduledAt) update.scheduledAt = new Date(update.scheduledAt as string);
+    if (update.scheduledAt)
+      update.scheduledAt = new Date(update.scheduledAt as string);
     await this.prisma.news.update({ where: { id }, data: update });
     await syncNewsTags(this.prisma, id, tags);
     await syncNewsRelations(this.prisma, id, relatedMatchIds, relatedPlayerIds);
@@ -108,7 +120,8 @@ export class NewsService {
       where: { id },
       data: {
         status,
-        publishedAt: status === ContentStatus.PUBLISHED ? new Date() : undefined,
+        publishedAt:
+          status === ContentStatus.PUBLISHED ? new Date() : undefined,
       },
       include: newsInclude,
     });

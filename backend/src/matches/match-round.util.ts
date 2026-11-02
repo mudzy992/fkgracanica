@@ -15,7 +15,9 @@ export async function resolveMatchRoundFields(
   return { roundId: round.id, round: round.number };
 }
 
-export function isResolvedRound(v: ResolvedRound | Record<string, never>): v is ResolvedRound {
+export function isResolvedRound(
+  v: ResolvedRound | Record<string, never>,
+): v is ResolvedRound {
   return 'roundId' in v;
 }
 

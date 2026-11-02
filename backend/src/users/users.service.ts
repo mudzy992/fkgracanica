@@ -68,7 +68,9 @@ export class UsersService {
   }
 
   async create(actorId: string, dto: CreateUserDto) {
-    const exists = await this.prisma.user.findUnique({ where: { email: dto.email } });
+    const exists = await this.prisma.user.findUnique({
+      where: { email: dto.email },
+    });
     if (exists) throw new ConflictException('Email već postoji');
     const passwordHash = await bcrypt.hash(dto.password, 10);
     const user = await this.prisma.user.create({
@@ -99,9 +101,14 @@ export class UsersService {
     if (dto.isActive === false || (dto.roleIds && !dto.roleIds.length)) {
       await ensureNotLastAdmin(this.prisma, id);
     }
-    const adminRole = await this.prisma.role.findUnique({ where: { name: 'Administrator' } });
-    const hadAdmin = existing.roles?.some((r) => r.role.name === 'Administrator') ?? false;
-    const willHaveAdmin = adminRole ? (dto.roleIds?.includes(adminRole.id) ?? hadAdmin) : hadAdmin;
+    const adminRole = await this.prisma.role.findUnique({
+      where: { name: 'Administrator' },
+    });
+    const hadAdmin =
+      existing.roles?.some((r) => r.role.name === 'Administrator') ?? false;
+    const willHaveAdmin = adminRole
+      ? (dto.roleIds?.includes(adminRole.id) ?? hadAdmin)
+      : hadAdmin;
     if (dto.roleIds) {
       ensureNotSelfAdminRemoval(actorId, id, hadAdmin, willHaveAdmin);
       if (hadAdmin && !willHaveAdmin) await ensureNotLastAdmin(this.prisma, id);
@@ -131,7 +138,11 @@ export class UsersService {
       action: 'users.update',
       entity: 'User',
       entityId: id,
-      metadata: { email: user.email, isActive: user.isActive, roleIds: dto.roleIds },
+      metadata: {
+        email: user.email,
+        isActive: user.isActive,
+        roleIds: dto.roleIds,
+      },
     });
     return user;
   }

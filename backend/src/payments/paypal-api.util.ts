@@ -1,12 +1,17 @@
 export function paypalBaseUrl(mode: string) {
-  return mode === 'live' ? 'https://api-m.paypal.com' : 'https://api-m.sandbox.paypal.com';
+  return mode === 'live'
+    ? 'https://api-m.paypal.com'
+    : 'https://api-m.sandbox.paypal.com';
 }
 
 export function formatPaypalAmount(n: number) {
   return n.toFixed(2);
 }
 
-export function paypalCustomId(kind: 'tickets' | 'membership' | 'season', id: string) {
+export function paypalCustomId(
+  kind: 'tickets' | 'membership' | 'season',
+  id: string,
+) {
   const prefix = kind === 'tickets' ? 't' : kind === 'membership' ? 'm' : 's';
   return `${prefix}:${id}`;
 }
@@ -25,7 +30,9 @@ export function parsePaypalCustomId(raw?: string | null) {
 }
 
 export function paypalApproveUrl(links?: { rel?: string; href?: string }[]) {
-  const hit = links?.find((l) => l.rel === 'approve' || l.rel === 'payer-action');
+  const hit = links?.find(
+    (l) => l.rel === 'approve' || l.rel === 'payer-action',
+  );
   return hit?.href?.trim() || null;
 }
 

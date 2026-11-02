@@ -17,13 +17,19 @@ export async function notifyTicketPaid(
     where: { id: orderId },
     include: {
       user: { select: { id: true, email: true, firstName: true } },
-      tickets: { include: { match: { include: { homeClub: true, awayClub: true } } } },
+      tickets: {
+        include: { match: { include: { homeClub: true, awayClub: true } } },
+      },
     },
   });
   if (!order?.user?.email) return;
   const match = order.tickets[0]?.match;
-  const label = match ? `${match.homeClub.name} – ${match.awayClub.name}` : 'Utakmica';
-  const mail = ticketConfirmEmail(`${label}, ${order.tickets.length} ulaznica.`);
+  const label = match
+    ? `${match.homeClub.name} – ${match.awayClub.name}`
+    : 'Utakmica';
+  const mail = ticketConfirmEmail(
+    `${label}, ${order.tickets.length} ulaznica.`,
+  );
   await jobs.enqueueEmail({
     to: order.user.email,
     subject: mail.subject,
@@ -49,11 +55,17 @@ export async function notifyMembershipActive(
 ) {
   const membership = await prisma.membership.findUnique({
     where: { id: membershipId },
-    include: { user: { select: { id: true, email: true, firstName: true, lastName: true } } },
+    include: {
+      user: {
+        select: { id: true, email: true, firstName: true, lastName: true },
+      },
+    },
   });
   if (!membership?.user?.email) return;
   const name =
-    [membership.user.firstName, membership.user.lastName].filter(Boolean).join(' ') || 'člane';
+    [membership.user.firstName, membership.user.lastName]
+      .filter(Boolean)
+      .join(' ') || 'člane';
   const mail = membershipConfirmEmail(name);
   await jobs.enqueueEmail({
     to: membership.user.email,

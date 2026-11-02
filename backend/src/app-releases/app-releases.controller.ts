@@ -34,7 +34,12 @@ export class AppReleasesController {
 
   @Post('upload')
   @ApiConsumes('multipart/form-data')
-  @UseInterceptors(FileInterceptor('file', { storage: memoryStorage(), limits: { fileSize: MAX_APK_SIZE } }))
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: memoryStorage(),
+      limits: { fileSize: MAX_APK_SIZE },
+    }),
+  )
   upload(@UploadedFile() file: Express.Multer.File) {
     if (!file) throw new BadRequestException('Nijedna datoteka nije poslata.');
     return this.appReleases.saveApk(file);

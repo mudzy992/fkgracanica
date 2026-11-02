@@ -72,7 +72,15 @@ function matchTime(m: MatchInput) {
 function resultForClub(
   m: MatchInput,
   clubId: string,
-): Pick<FormMatchEntry, 'result' | 'isHome' | 'goalsFor' | 'goalsAgainst' | 'opponentName' | 'opponentSlug'> {
+): Pick<
+  FormMatchEntry,
+  | 'result'
+  | 'isHome'
+  | 'goalsFor'
+  | 'goalsAgainst'
+  | 'opponentName'
+  | 'opponentSlug'
+> {
   const isHome = m.homeClubId === clubId;
   const goalsFor = isHome ? m.homeScore : m.awayScore;
   const goalsAgainst = isHome ? m.awayScore : m.homeScore;
@@ -155,7 +163,10 @@ export function computeStandings(
     row.goalDifference = row.goalsFor - row.goalsAgainst;
     const clubMatches = finished
       .filter((m) => m.homeClubId === row.clubId || m.awayClubId === row.clubId)
-      .sort((a, b) => matchTime(a) - matchTime(b) || (a.id ?? '').localeCompare(b.id ?? ''))
+      .sort(
+        (a, b) =>
+          matchTime(a) - matchTime(b) || (a.id ?? '').localeCompare(b.id ?? ''),
+      )
       .slice(-5);
 
     row.formMatches = clubMatches.map((m, i) => ({

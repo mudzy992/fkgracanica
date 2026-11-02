@@ -4,7 +4,9 @@ import type { PrismaService } from '../prisma/prisma.service';
 
 const DEFAULT_MAX = 4;
 
-export async function getMaxBoxOfficeTicketsPerUser(prisma: PrismaService): Promise<number> {
+export async function getMaxBoxOfficeTicketsPerUser(
+  prisma: PrismaService,
+): Promise<number> {
   const row = await prisma.setting.findUnique({
     where: { key: 'ticketing.maxBoxOfficeTicketsPerUser' },
   });

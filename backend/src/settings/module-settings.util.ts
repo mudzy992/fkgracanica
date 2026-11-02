@@ -1,7 +1,10 @@
 import { BadRequestException } from '@nestjs/common';
 import { APP_MODULE_DEFINITIONS, APP_MODULE_KEYS } from './module-definitions';
 
-export function isModuleEnabled(values: Record<string, string>, key: string): boolean {
+export function isModuleEnabled(
+  values: Record<string, string>,
+  key: string,
+): boolean {
   return values[key] !== 'false';
 }
 
@@ -16,7 +19,9 @@ export function validateModuleSettingUpdates(
 
     const enabling = value !== 'false';
     if (!enabling) {
-      const dependents = APP_MODULE_DEFINITIONS.filter((m) => m.requires.includes(key));
+      const dependents = APP_MODULE_DEFINITIONS.filter((m) =>
+        m.requires.includes(key),
+      );
       for (const dep of dependents) {
         if (isModuleEnabled(merged, dep.key)) {
           throw new BadRequestException(

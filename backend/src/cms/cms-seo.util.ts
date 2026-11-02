@@ -7,7 +7,9 @@ function isObject(v: unknown): v is Record<string, unknown> {
 }
 
 /** Prvi rich-text blok stranice, skraćen za meta opis. */
-export function cmsSeoDescFromSections(sections: CmsSection[]): string | undefined {
+export function cmsSeoDescFromSections(
+  sections: CmsSection[],
+): string | undefined {
   const rich = sections.find((s) => s.widgetType === 'rich-text');
   if (!rich || !isObject(rich.config)) return undefined;
   const html = typeof rich.config.html === 'string' ? rich.config.html : '';

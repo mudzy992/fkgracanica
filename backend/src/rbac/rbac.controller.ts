@@ -1,4 +1,13 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { RbacService } from './rbac.service';
 import { UpdateRolePermissionsDto } from './dto/update-role-permissions.dto';
@@ -49,6 +58,10 @@ export class RbacController {
     @Param('id') id: string,
     @Body() dto: UpdateRolePermissionsDto,
   ) {
-    return this.rbacService.updateRolePermissions(actor.id, id, dto.permissionKeys);
+    return this.rbacService.updateRolePermissions(
+      actor.id,
+      id,
+      dto.permissionKeys,
+    );
   }
 }

@@ -13,8 +13,13 @@ export function toPublicUrl(relativePath: string): string {
   return `/api/v1/uploads/files/${relativePath.replace(/\\/g, '/')}`;
 }
 
-export function variantPath(originalPath: string, variant: RenditionVariant): string {
+export function variantPath(
+  originalPath: string,
+  variant: RenditionVariant,
+): string {
   const folder = variant === 'thumb' ? 'thumbs' : 'medium';
-  const basename = originalPath.replace(/^originals\//, '').replace(/\.[^.]+$/, '.webp');
+  const basename = originalPath
+    .replace(/^originals\//, '')
+    .replace(/\.[^.]+$/, '.webp');
   return `${folder}/${basename}`;
 }

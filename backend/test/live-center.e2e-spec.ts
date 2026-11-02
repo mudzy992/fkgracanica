@@ -22,7 +22,11 @@ describe('Live center (e2e)', () => {
     app = moduleFixture.createNestApplication();
     app.setGlobalPrefix('api/v1');
     app.useGlobalPipes(
-      new ValidationPipe({ whitelist: true, transform: true, forbidNonWhitelisted: true }),
+      new ValidationPipe({
+        whitelist: true,
+        transform: true,
+        forbidNonWhitelisted: true,
+      }),
     );
     await app.init();
 
@@ -41,9 +45,13 @@ describe('Live center (e2e)', () => {
     if (!scheduled) {
       const seasons = await request(app.getHttpServer()).get('/api/v1/seasons');
       const clubs = await request(app.getHttpServer()).get('/api/v1/clubs');
-      const calendar = (seasons.body as { competitions?: { id: string }[] }[])[0];
+      const calendar = (
+        seasons.body as { competitions?: { id: string }[] }[]
+      )[0];
       const seasonId = calendar?.competitions?.[0]?.id;
-      const clubIds = (clubs.body as { id: string }[]).slice(0, 2).map((c) => c.id);
+      const clubIds = (clubs.body as { id: string }[])
+        .slice(0, 2)
+        .map((c) => c.id);
       if (!seasonId || clubIds.length < 2) {
         throw new Error('Missing season/clubs for live e2e');
       }
@@ -79,10 +87,17 @@ describe('Live center (e2e)', () => {
     await request(app.getHttpServer())
       .post(`/api/v1/live/matches/${matchId}/events`)
       .set('Authorization', `Bearer ${accessToken}`)
-      .send({ type: 'GOAL', minute: 23, teamSide: 'home', description: 'E2E gol' })
+      .send({
+        type: 'GOAL',
+        minute: 23,
+        teamSide: 'home',
+        description: 'E2E gol',
+      })
       .expect(201);
 
-    const match = await request(app.getHttpServer()).get(`/api/v1/matches/${matchId}`);
+    const match = await request(app.getHttpServer()).get(
+      `/api/v1/matches/${matchId}`,
+    );
     expect(match.body.homeScore).toBeGreaterThanOrEqual(1);
     expect(match.body.status).toBe('LIVE');
     expect((match.body.events as unknown[]).length).toBeGreaterThanOrEqual(1);

@@ -18,7 +18,10 @@ import { MediaService } from './media.service';
 import { MediaAssetQueryDto } from './dto/media-asset-query.dto';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { PermissionsGuard } from '../common/guards/permissions.guard';
-import { RequireAnyPermission, RequirePermissions } from '../common/decorators/permissions.decorator';
+import {
+  RequireAnyPermission,
+  RequirePermissions,
+} from '../common/decorators/permissions.decorator';
 
 @ApiTags('media')
 @Controller('media')
@@ -67,14 +70,19 @@ export class MediaController {
   @RequireAnyPermission('media.upload', 'media.manage')
   @ApiConsumes('multipart/form-data')
   @UseInterceptors(FileInterceptor('file', { storage: memoryStorage() }))
-  upload(@UploadedFile() file: Express.Multer.File, @Body('folderId') folderId?: string) {
+  upload(
+    @UploadedFile() file: Express.Multer.File,
+    @Body('folderId') folderId?: string,
+  ) {
     return this.mediaService.uploadAsset(file, folderId || undefined);
   }
 
   @Post('assets')
   @RequireAnyPermission('media.upload', 'media.manage')
   createAsset(@Body() body: Record<string, unknown>) {
-    return this.mediaService.createAsset(body as Parameters<MediaService['createAsset']>[0]);
+    return this.mediaService.createAsset(
+      body as Parameters<MediaService['createAsset']>[0],
+    );
   }
 
   @Patch('assets/:id')
@@ -93,7 +101,10 @@ export class MediaController {
   @RequirePermissions('media.manage')
   @ApiConsumes('multipart/form-data')
   @UseInterceptors(FileInterceptor('file', { storage: memoryStorage() }))
-  replaceAsset(@Param('id') id: string, @UploadedFile() file: Express.Multer.File) {
+  replaceAsset(
+    @Param('id') id: string,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
     return this.mediaService.replaceAsset(id, file);
   }
 }

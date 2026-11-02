@@ -61,12 +61,18 @@ export class JobsService implements OnModuleDestroy {
   }
 
   private async sendEmail(payload: EmailPayload) {
-    const smtp = await this.prisma.setting.findMany({ where: { key: { startsWith: 'smtp.' } } });
+    const smtp = await this.prisma.setting.findMany({
+      where: { key: { startsWith: 'smtp.' } },
+    });
     const settings = smtp.reduce<Record<string, string>>((acc, item) => {
       acc[item.key] = item.value;
       return acc;
     }, {});
-    if (!settings['smtp.host'] || !settings['smtp.user'] || !settings['smtp.pass']) {
+    if (
+      !settings['smtp.host'] ||
+      !settings['smtp.user'] ||
+      !settings['smtp.pass']
+    ) {
       this.logger.warn(`SMTP unavailable for ${payload.to}`);
       await this.tally(payload.campaignId, false);
       return;

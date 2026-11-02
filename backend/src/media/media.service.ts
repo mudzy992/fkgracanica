@@ -107,14 +107,22 @@ export class MediaService {
   async removeAsset(id: string) {
     const asset = await this.ensureAsset(id);
     const uploadRoot = this.config.get<string>('UPLOAD_PATH', './uploads');
-    await deleteStoredFiles(uploadRoot, [asset.originalPath, asset.thumbPath, asset.mediumPath]);
+    await deleteStoredFiles(uploadRoot, [
+      asset.originalPath,
+      asset.thumbPath,
+      asset.mediumPath,
+    ]);
     return this.prisma.mediaAsset.delete({ where: { id } });
   }
 
   async replaceAsset(id: string, file: Express.Multer.File) {
     const asset = await this.ensureAsset(id);
     const uploadRoot = this.config.get<string>('UPLOAD_PATH', './uploads');
-    await deleteStoredFiles(uploadRoot, [asset.originalPath, asset.thumbPath, asset.mediumPath]);
+    await deleteStoredFiles(uploadRoot, [
+      asset.originalPath,
+      asset.thumbPath,
+      asset.mediumPath,
+    ]);
     const saved = await this.uploadService.saveFile(file);
     return this.prisma.mediaAsset.update({
       where: { id },

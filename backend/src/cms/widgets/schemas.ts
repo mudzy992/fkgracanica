@@ -20,7 +20,10 @@ export const WIDGET_TYPES = [
 
 export type WidgetType = (typeof WIDGET_TYPES)[number];
 
-export const widgetMeta: Record<WidgetType, { label: string; category: string }> = {
+export const widgetMeta: Record<
+  WidgetType,
+  { label: string; category: string }
+> = {
   hero: { label: 'Hero baner', category: 'layout' },
   'rich-text': { label: 'Tekst blok', category: 'layout' },
   'custom-html': { label: 'Custom HTML', category: 'layout' },
@@ -52,7 +55,11 @@ export function validateWidgetConfig(type: string, config: unknown) {
   if (type === 'hero' && typeof data.title === 'string' && !data.title.trim()) {
     return { ok: false as const, error: 'Naslov je obavezan' };
   }
-  if (type === 'footer-about' && typeof data.text === 'string' && !data.text.trim()) {
+  if (
+    type === 'footer-about' &&
+    typeof data.text === 'string' &&
+    !data.text.trim()
+  ) {
     return { ok: false as const, error: 'Tekst je obavezan' };
   }
   return { ok: true as const, data };

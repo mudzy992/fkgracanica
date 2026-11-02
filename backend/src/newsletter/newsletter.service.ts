@@ -17,12 +17,14 @@ export class NewsletterService {
   }
 
   unsubscribe(email: string) {
-    return this.prisma.newsletterSubscriber.update({
-      where: { email },
-      data: { isActive: false },
-    }).catch(() => {
-      throw new NotFoundException('Pretplatnik nije pronađen');
-    });
+    return this.prisma.newsletterSubscriber
+      .update({
+        where: { email },
+        data: { isActive: false },
+      })
+      .catch(() => {
+        throw new NotFoundException('Pretplatnik nije pronađen');
+      });
   }
 
   async unsubscribeByToken(token: string) {

@@ -91,7 +91,13 @@ export const SHOWCASE_SECTIONS: ShowcaseSection[] = [
       'Staff: writer, komentator, moderacija, admin ops, QR — radi, polish slijedi',
       'Namjerno web-only: page builder, formacija drag-drop, media tree',
     ],
-    moduleIds: ['mobile-staff', 'mobile-polish', 'cms-builder', 'formation-dnd', 'media-tree'],
+    moduleIds: [
+      'mobile-staff',
+      'mobile-polish',
+      'cms-builder',
+      'formation-dnd',
+      'media-tree',
+    ],
   },
   {
     id: 'roadmap',

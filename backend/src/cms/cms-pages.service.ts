@@ -1,4 +1,8 @@
-import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { ContentStatus, Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { validateWidgetConfig } from './widgets/schemas';
@@ -19,7 +23,10 @@ export class CmsPagesService {
   }
 
   async findBySlug(slug: string, admin = false) {
-    const page = await this.prisma.cmsPage.findUnique({ where: { slug }, include: pageInclude });
+    const page = await this.prisma.cmsPage.findUnique({
+      where: { slug },
+      include: pageInclude,
+    });
     if (!page) throw new NotFoundException('Stranica nije pronađena');
     if (!admin && page.status !== ContentStatus.PUBLISHED) {
       throw new NotFoundException('Stranica nije objavljena');
@@ -31,28 +38,46 @@ export class CmsPagesService {
   }
 
   async create(data: Prisma.CmsPageCreateInput) {
-    const page = await this.prisma.cmsPage.create({ data, include: pageInclude });
+    const page = await this.prisma.cmsPage.create({
+      data,
+      include: pageInclude,
+    });
     return this.maybeFillSeoDesc(page.id, page.seoDesc, page.sections);
   }
 
   async update(id: string, data: Prisma.CmsPageUpdateInput) {
     await this.ensurePage(id);
-    const page = await this.prisma.cmsPage.update({ where: { id }, data, include: pageInclude });
+    const page = await this.prisma.cmsPage.update({
+      where: { id },
+      data,
+      include: pageInclude,
+    });
     const seoDescProvided = data.seoDesc !== undefined;
-    if (seoDescProvided && typeof data.seoDesc === 'string' && data.seoDesc.trim()) return page;
+    if (
+      seoDescProvided &&
+      typeof data.seoDesc === 'string' &&
+      data.seoDesc.trim()
+    )
+      return page;
     return this.maybeFillSeoDesc(page.id, page.seoDesc, page.sections);
   }
 
   async remove(id: string) {
     const page = await this.ensurePage(id);
-    if (page.isSystem) throw new ForbiddenException('Sistemska stranica se ne može obrisati');
+    if (page.isSystem)
+      throw new ForbiddenException('Sistemska stranica se ne može obrisati');
     if (page.status !== ContentStatus.DRAFT) {
-      throw new ForbiddenException('Samo stranice u statusu Nacrt mogu biti obrisane');
+      throw new ForbiddenException(
+        'Samo stranice u statusu Nacrt mogu biti obrisane',
+      );
     }
     return this.prisma.cmsPage.delete({ where: { id } });
   }
 
-  async addSection(pageId: string, body: { widgetType: string; config?: object; enabled?: boolean }) {
+  async addSection(
+    pageId: string,
+    body: { widgetType: string; config?: object; enabled?: boolean },
+  ) {
     await this.ensurePage(pageId);
     const validated = validateWidgetConfig(body.widgetType, body.config ?? {});
     if (!validated.ok) throw new ForbiddenException(validated.error);
@@ -73,7 +98,11 @@ export class CmsPagesService {
     return section;
   }
 
-  async updateSection(pageId: string, sectionId: string, body: Record<string, unknown>) {
+  async updateSection(
+    pageId: string,
+    sectionId: string,
+    body: Record<string, unknown>,
+  ) {
     const section = await this.ensureSection(pageId, sectionId);
     const widgetType = (body.widgetType as string) ?? section.widgetType;
     const config = body.config !== undefined ? body.config : section.config;
@@ -84,7 +113,9 @@ export class CmsPagesService {
       data: {
         widgetType,
         config: validated.data as Prisma.InputJsonValue,
-        ...(body.enabled !== undefined ? { enabled: Boolean(body.enabled) } : {}),
+        ...(body.enabled !== undefined
+          ? { enabled: Boolean(body.enabled) }
+          : {}),
       },
     });
     await this.refreshAutoSeoDesc(pageId);
@@ -100,14 +131,23 @@ export class CmsPagesService {
     await this.ensurePage(pageId);
     await this.prisma.$transaction(
       ids.map((id, index) =>
-        this.prisma.cmsPageSection.update({ where: { id }, data: { sortOrder: index } }),
+        this.prisma.cmsPageSection.update({
+          where: { id },
+          data: { sortOrder: index },
+        }),
       ),
     );
-    return this.prisma.cmsPageSection.findMany({ where: { pageId }, orderBy: { sortOrder: 'asc' } });
+    return this.prisma.cmsPageSection.findMany({
+      where: { pageId },
+      orderBy: { sortOrder: 'asc' },
+    });
   }
 
   private async refreshAutoSeoDesc(pageId: string) {
-    const page = await this.prisma.cmsPage.findUnique({ where: { id: pageId }, include: pageInclude });
+    const page = await this.prisma.cmsPage.findUnique({
+      where: { id: pageId },
+      include: pageInclude,
+    });
     if (!page || page.seoDesc?.trim()) return;
     await this.maybeFillSeoDesc(pageId, page.seoDesc, page.sections);
   }
@@ -118,11 +158,17 @@ export class CmsPagesService {
     sections: { widgetType: string; config: unknown }[],
   ) {
     if (seoDesc?.trim()) {
-      return this.prisma.cmsPage.findUnique({ where: { id: pageId }, include: pageInclude });
+      return this.prisma.cmsPage.findUnique({
+        where: { id: pageId },
+        include: pageInclude,
+      });
     }
     const generated = cmsSeoDescFromSections(sections);
     if (!generated) {
-      return this.prisma.cmsPage.findUnique({ where: { id: pageId }, include: pageInclude });
+      return this.prisma.cmsPage.findUnique({
+        where: { id: pageId },
+        include: pageInclude,
+      });
     }
     return this.prisma.cmsPage.update({
       where: { id: pageId },
@@ -138,7 +184,9 @@ export class CmsPagesService {
   }
 
   private async ensureSection(pageId: string, sectionId: string) {
-    const section = await this.prisma.cmsPageSection.findFirst({ where: { id: sectionId, pageId } });
+    const section = await this.prisma.cmsPageSection.findFirst({
+      where: { id: sectionId, pageId },
+    });
     if (!section) throw new NotFoundException('Sekcija nije pronađena');
     return section;
   }

@@ -1,5 +1,11 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { LiveBreak, MatchEventType, MatchPeriod, MatchReportStatus, MatchStatus } from '@prisma/client';
+import {
+  LiveBreak,
+  MatchEventType,
+  MatchPeriod,
+  MatchReportStatus,
+  MatchStatus,
+} from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { RealtimeGateway } from '../realtime/realtime.gateway';
 import { LiveFanoutService } from '../notifications/live-fanout.service';
@@ -43,14 +49,19 @@ export class LiveClockOpsService {
   }
 
   async setStoppage(matchId: string, half: 1 | 2 | 3 | 4, minutes: number) {
-    const current = await this.prisma.match.findUniqueOrThrow({ where: { id: matchId } });
+    const current = await this.prisma.match.findUniqueOrThrow({
+      where: { id: matchId },
+    });
     const displayMinute = resolveEventMinute(current, current.minute);
     const patch: Record<string, number> = { minute: displayMinute };
     if (half === 1) patch.stoppageFirstHalf = minutes;
     else if (half === 2) patch.stoppageSecondHalf = minutes;
     else if (half === 3) patch.stoppageExtraFirst = minutes;
     else patch.stoppageExtraSecond = minutes;
-    const match = await this.prisma.match.update({ where: { id: matchId }, data: patch });
+    const match = await this.prisma.match.update({
+      where: { id: matchId },
+      data: patch,
+    });
     const event = await this.prisma.matchEvent.create({
       data: {
         matchId,
@@ -68,7 +79,9 @@ export class LiveClockOpsService {
   }
 
   async endMatch(matchId: string) {
-    const current = await this.prisma.match.findUniqueOrThrow({ where: { id: matchId } });
+    const current = await this.prisma.match.findUniqueOrThrow({
+      where: { id: matchId },
+    });
     const minute = resolveEventMinute(current, current.minute);
     const match = await this.prisma.match.update({
       where: { id: matchId },
@@ -82,14 +95,21 @@ export class LiveClockOpsService {
       },
     });
     this.realtime.emitMatchStatus(matchId, match);
-    void this.liveFanout.fanout(matchId, { type: MatchEventType.FULL_TIME, minute });
+    void this.liveFanout.fanout(matchId, {
+      type: MatchEventType.FULL_TIME,
+      minute,
+    });
     return match;
   }
 
   async setHalftime(matchId: string) {
-    const current = await this.prisma.match.findUniqueOrThrow({ where: { id: matchId } });
+    const current = await this.prisma.match.findUniqueOrThrow({
+      where: { id: matchId },
+    });
     if (current.matchPeriod !== MatchPeriod.FIRST_HALF) {
-      throw new BadRequestException('Poluvrijeme je moguće samo u 1. poluvremenu regularnog dijela.');
+      throw new BadRequestException(
+        'Poluvrijeme je moguće samo u 1. poluvremenu regularnog dijela.',
+      );
     }
     const minute = resolveEventMinute(current, current.minute);
     await this.prisma.matchEvent.create({
@@ -105,14 +125,21 @@ export class LiveClockOpsService {
       },
     });
     this.realtime.emitMatchStatus(matchId, match);
-    void this.liveFanout.fanout(matchId, { type: MatchEventType.HALFTIME, minute });
+    void this.liveFanout.fanout(matchId, {
+      type: MatchEventType.HALFTIME,
+      minute,
+    });
     return match;
   }
 
   async resumeSecondHalf(matchId: string) {
-    const current = await this.prisma.match.findUniqueOrThrow({ where: { id: matchId } });
+    const current = await this.prisma.match.findUniqueOrThrow({
+      where: { id: matchId },
+    });
     if (current.liveBreak !== LiveBreak.REGULAR_HT) {
-      throw new BadRequestException('Nastavak 2. poluvremena nije dostupan u ovoj fazi.');
+      throw new BadRequestException(
+        'Nastavak 2. poluvremena nije dostupan u ovoj fazi.',
+      );
     }
     const minute = 46;
     await this.prisma.matchEvent.create({
@@ -130,7 +157,10 @@ export class LiveClockOpsService {
     });
     this.realtime.emitMatchStatus(matchId, match);
     await emitLiveClock(this.prisma, this.realtime, matchId);
-    void this.liveFanout.fanout(matchId, { type: MatchEventType.SECOND_HALF, minute });
+    void this.liveFanout.fanout(matchId, {
+      type: MatchEventType.SECOND_HALF,
+      minute,
+    });
     return match;
   }
 }

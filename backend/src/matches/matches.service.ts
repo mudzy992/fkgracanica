@@ -1,15 +1,33 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { MatchReportStatus, MatchStatus, Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { StatisticsService } from '../statistics/statistics.service';
-import { assertDistinctClubs, isResolvedRound, resolveMatchRoundFields, roundToMatchCreateInput, roundToMatchUpdateInput } from './match-round.util';
+import {
+  assertDistinctClubs,
+  isResolvedRound,
+  resolveMatchRoundFields,
+  roundToMatchCreateInput,
+  roundToMatchUpdateInput,
+} from './match-round.util';
 import { assertSingleScheduledHomeMatch } from './match-scheduling.util';
 import { validateMatchLineup, type LineupSlotInput } from './match-lineup.util';
 import { resolveEffectiveMatchLineup } from './match-squad-lineup.util';
-import { assertManualFinish, assertRetrospectiveCreate, isRetrospectiveMatch } from './match-retrospective.util';
+import {
+  assertManualFinish,
+  assertRetrospectiveCreate,
+  isRetrospectiveMatch,
+} from './match-retrospective.util';
 import { resolveMatchVenue } from './match-venue.util';
 import { assertManualMatchStatus } from './update-match.dto';
-import { matchDetailInclude, matchEditionInclude, withSeasonAlias } from './match-edition.util';
+import {
+  matchDetailInclude,
+  matchEditionInclude,
+  withSeasonAlias,
+} from './match-edition.util';
 
 const matchInclude = {
   homeClub: true,
@@ -38,14 +56,16 @@ export class MatchesService {
   ) {}
 
   findAll(seasonId?: string, roundId?: string) {
-    return this.prisma.match.findMany({
-      where: {
-        ...(seasonId ? { seasonCompetitionId: seasonId } : {}),
-        ...(roundId ? { roundId } : {}),
-      },
-      include: matchInclude,
-      orderBy: [{ scheduledAt: 'desc' }],
-    }).then((rows) => rows.map(withSeasonAlias));
+    return this.prisma.match
+      .findMany({
+        where: {
+          ...(seasonId ? { seasonCompetitionId: seasonId } : {}),
+          ...(roundId ? { roundId } : {}),
+        },
+        include: matchInclude,
+        orderBy: [{ scheduledAt: 'desc' }],
+      })
+      .then((rows) => rows.map(withSeasonAlias));
   }
 
   async findOne(id: string) {
@@ -70,7 +90,9 @@ export class MatchesService {
     assertRetrospectiveCreate(data);
     const round = await resolveMatchRoundFields(this.prisma, data.roundId);
     if (isResolvedRound(round) && round.roundId) {
-      const r = await this.prisma.round.findUnique({ where: { id: round.roundId } });
+      const r = await this.prisma.round.findUnique({
+        where: { id: round.roundId },
+      });
       if (r && r.seasonCompetitionId !== data.seasonId) {
         throw new BadRequestException('Kolo ne pripada odabranoj sezoni.');
       }
@@ -80,22 +102,28 @@ export class MatchesService {
       await assertSingleScheduledHomeMatch(this.prisma, data.homeClubId);
     }
     const isRetro = status === MatchStatus.FINISHED;
-    const venue = await resolveMatchVenue(this.prisma, data.homeClubId, data.venue);
-    return this.prisma.match.create({
-      data: {
-        seasonCompetitionId: data.seasonId,
-        homeClubId: data.homeClubId,
-        awayClubId: data.awayClubId,
-        scheduledAt: new Date(data.scheduledAt),
-        venue,
-        status,
-        homeScore: data.homeScore ?? 0,
-        awayScore: data.awayScore ?? 0,
-        minute: isRetro ? 90 : 0,
-        ...roundToMatchCreateInput(round),
-      },
-      include: matchInclude,
-    }).then(withSeasonAlias);
+    const venue = await resolveMatchVenue(
+      this.prisma,
+      data.homeClubId,
+      data.venue,
+    );
+    return this.prisma.match
+      .create({
+        data: {
+          seasonCompetitionId: data.seasonId,
+          homeClubId: data.homeClubId,
+          awayClubId: data.awayClubId,
+          scheduledAt: new Date(data.scheduledAt),
+          venue,
+          status,
+          homeScore: data.homeScore ?? 0,
+          awayScore: data.awayScore ?? 0,
+          minute: isRetro ? 90 : 0,
+          ...roundToMatchCreateInput(round),
+        },
+        include: matchInclude,
+      })
+      .then(withSeasonAlias);
   }
 
   async update(id: string, data: Partial<MatchInput>) {
@@ -106,7 +134,8 @@ export class MatchesService {
       throw new BadRequestException('Završena utakmica se ne može uređivati.');
     }
     if (
-      (existing.status === MatchStatus.LIVE || existing.status === MatchStatus.HALFTIME) &&
+      (existing.status === MatchStatus.LIVE ||
+        existing.status === MatchStatus.HALFTIME) &&
       data.status !== undefined &&
       data.status !== existing.status
     ) {
@@ -131,7 +160,9 @@ export class MatchesService {
         ? await resolveMatchRoundFields(this.prisma, data.roundId)
         : {};
     if (isResolvedRound(round) && round.roundId) {
-      const r = await this.prisma.round.findUnique({ where: { id: round.roundId } });
+      const r = await this.prisma.round.findUnique({
+        where: { id: round.roundId },
+      });
       const seasonId = data.seasonId ?? existing.seasonCompetitionId;
       if (r && r.seasonCompetitionId !== seasonId) {
         throw new BadRequestException('Kolo ne pripada sezoni utakmice.');
@@ -140,12 +171,18 @@ export class MatchesService {
 
     const patch: Prisma.MatchUpdateInput = {
       ...(data.seasonId ? { edition: { connect: { id: data.seasonId } } } : {}),
-      ...(data.homeClubId ? { homeClub: { connect: { id: data.homeClubId } } } : {}),
-      ...(data.awayClubId ? { awayClub: { connect: { id: data.awayClubId } } } : {}),
+      ...(data.homeClubId
+        ? { homeClub: { connect: { id: data.homeClubId } } }
+        : {}),
+      ...(data.awayClubId
+        ? { awayClub: { connect: { id: data.awayClubId } } }
+        : {}),
       ...(data.venue !== undefined ? { venue: data.venue } : {}),
       ...(data.scheduledAt ? { scheduledAt: new Date(data.scheduledAt) } : {}),
       ...(data.status ? { status: data.status } : {}),
-      ...(data.status === MatchStatus.FINISHED && existing.minute === 0 ? { minute: 90 } : {}),
+      ...(data.status === MatchStatus.FINISHED && existing.minute === 0
+        ? { minute: 90 }
+        : {}),
       ...(data.homeScore !== undefined ? { homeScore: data.homeScore } : {}),
       ...(data.awayScore !== undefined ? { awayScore: data.awayScore } : {}),
       ...roundToMatchUpdateInput(round),
@@ -156,7 +193,9 @@ export class MatchesService {
       await assertSingleScheduledHomeMatch(this.prisma, homeClubId, id);
     }
 
-    return this.prisma.match.update({ where: { id }, data: patch, include: matchInclude }).then(withSeasonAlias);
+    return this.prisma.match
+      .update({ where: { id }, data: patch, include: matchInclude })
+      .then(withSeasonAlias);
   }
 
   async remove(id: string) {
@@ -172,10 +211,14 @@ export class MatchesService {
   }
 
   async setLineup(matchId: string, slots: LineupSlotInput[]) {
-    const match = await this.prisma.match.findUnique({ where: { id: matchId } });
+    const match = await this.prisma.match.findUnique({
+      where: { id: matchId },
+    });
     if (!match) throw new NotFoundException('Utakmica nije pronađena');
     if (match.status === MatchStatus.FINISHED && !isRetrospectiveMatch(match)) {
-      throw new BadRequestException('Postava završene utakmice se ne može mijenjati.');
+      throw new BadRequestException(
+        'Postava završene utakmice se ne može mijenjati.',
+      );
     }
     await validateMatchLineup(this.prisma, matchId, slots);
     return this.prisma.$transaction(async (tx) => {

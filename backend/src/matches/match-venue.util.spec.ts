@@ -11,6 +11,8 @@ describe('match-venue.util', () => {
   });
 
   it('falls back to legacy stadium field', () => {
-    expect(resolveClubVenue({ stadium: 'Legacy stadion' })).toBe('Legacy stadion');
+    expect(resolveClubVenue({ stadium: 'Legacy stadion' })).toBe(
+      'Legacy stadion',
+    );
   });
 });

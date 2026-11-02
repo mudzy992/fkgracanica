@@ -10,7 +10,8 @@ const TABLE = (() => {
 
 function crc32(buf: Buffer) {
   let c = 0xffffffff;
-  for (let i = 0; i < buf.length; i++) c = TABLE[(c ^ buf[i]) & 0xff] ^ (c >>> 8);
+  for (let i = 0; i < buf.length; i++)
+    c = TABLE[(c ^ buf[i]) & 0xff] ^ (c >>> 8);
   return (c ^ 0xffffffff) >>> 0;
 }
 
@@ -25,7 +26,12 @@ function localHeader(name: Buffer, data: Buffer, crc: number) {
   return Buffer.concat([h, name, data]);
 }
 
-function centralHeader(name: Buffer, data: Buffer, crc: number, offset: number) {
+function centralHeader(
+  name: Buffer,
+  data: Buffer,
+  crc: number,
+  offset: number,
+) {
   const h = Buffer.alloc(46);
   h.writeUInt32LE(0x02014b50, 0);
   h.writeUInt16LE(20, 4);

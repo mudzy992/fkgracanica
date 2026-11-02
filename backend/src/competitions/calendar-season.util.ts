@@ -14,7 +14,9 @@ export type CalendarSeasonGroup = {
 };
 
 /** Same yearStart/yearEnd collapse to one calendar Season (migration rule). */
-export function groupCalendarSeasons(rows: LegacySeasonRow[]): CalendarSeasonGroup[] {
+export function groupCalendarSeasons(
+  rows: LegacySeasonRow[],
+): CalendarSeasonGroup[] {
   const map = new Map<string, CalendarSeasonGroup>();
   for (const row of rows) {
     const key = `${row.yearStart}/${row.yearEnd}`;

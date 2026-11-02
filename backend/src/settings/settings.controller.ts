@@ -34,7 +34,10 @@ export class SettingsController {
   @UseGuards(JwtAuthGuard, PermissionsGuard)
   @RequirePermissions('settings.update')
   @ApiBearerAuth()
-  updatePublic(@Body() body: Record<string, string>, @CurrentUser() user: AuthUser) {
+  updatePublic(
+    @Body() body: Record<string, string>,
+    @CurrentUser() user: AuthUser,
+  ) {
     return this.settingsService.updatePublic(body, user.id);
   }
 
@@ -42,7 +45,10 @@ export class SettingsController {
   @UseGuards(JwtAuthGuard, PermissionsGuard)
   @RequirePermissions('settings.update')
   @ApiBearerAuth()
-  updatePrivate(@Body() body: Record<string, string>, @CurrentUser() user: AuthUser) {
+  updatePrivate(
+    @Body() body: Record<string, string>,
+    @CurrentUser() user: AuthUser,
+  ) {
     return this.settingsService.updatePrivate(body, user.id);
   }
 }

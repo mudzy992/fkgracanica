@@ -1,8 +1,13 @@
 import { BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 
-export async function ensureNotLastAdmin(prisma: PrismaService, userId: string) {
-  const adminRole = await prisma.role.findUnique({ where: { name: 'Administrator' } });
+export async function ensureNotLastAdmin(
+  prisma: PrismaService,
+  userId: string,
+) {
+  const adminRole = await prisma.role.findUnique({
+    where: { name: 'Administrator' },
+  });
   if (!adminRole) return;
   const isAdmin = await prisma.userRole.findFirst({
     where: { userId, roleId: adminRole.id },
@@ -15,11 +20,17 @@ export async function ensureNotLastAdmin(prisma: PrismaService, userId: string) 
     },
   });
   if (adminCount <= 1) {
-    throw new BadRequestException('Ne možete ukloniti posljednjeg administratora');
+    throw new BadRequestException(
+      'Ne možete ukloniti posljednjeg administratora',
+    );
   }
 }
 
-export function ensureNotSelf(actorId: string, targetId: string, message: string) {
+export function ensureNotSelf(
+  actorId: string,
+  targetId: string,
+  message: string,
+) {
   if (actorId === targetId) throw new BadRequestException(message);
 }
 
@@ -40,6 +51,8 @@ export function ensureNotSelfAdminRemoval(
   willHaveAdmin: boolean,
 ) {
   if (actorId === targetId && hadAdmin && !willHaveAdmin) {
-    throw new BadRequestException('Ne možete sami sebi ukloniti administratorsku ulogu');
+    throw new BadRequestException(
+      'Ne možete sami sebi ukloniti administratorsku ulogu',
+    );
   }
 }

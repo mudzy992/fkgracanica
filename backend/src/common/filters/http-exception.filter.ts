@@ -35,7 +35,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
       message:
         typeof message === 'string'
           ? message
-          : (message as { message?: string | string[] }).message ?? message,
+          : ((message as { message?: string | string[] }).message ?? message),
       timestamp: new Date().toISOString(),
     });
   }

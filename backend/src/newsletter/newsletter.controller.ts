@@ -1,4 +1,13 @@
-import { Body, Controller, Get, Header, Post, Query, Res, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Header,
+  Post,
+  Query,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
 import type { Response } from 'express';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { NewsletterService } from './newsletter.service';
@@ -43,7 +52,10 @@ export class NewsletterController {
   @Header('Content-Type', 'text/csv; charset=utf-8')
   async exportCsv(@Res() res: Response) {
     const csv = await this.service.exportCsv();
-    res.setHeader('Content-Disposition', 'attachment; filename="newsletter.csv"');
+    res.setHeader(
+      'Content-Disposition',
+      'attachment; filename="newsletter.csv"',
+    );
     res.send(csv);
   }
 }

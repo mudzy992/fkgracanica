@@ -23,7 +23,10 @@ export class NewsletterCampaignsController {
 
   @Post()
   @RequirePermissions('newsletter.manage')
-  create(@CurrentUser() user: AuthUser, @Body() dto: CreateNewsletterCampaignDto) {
+  create(
+    @CurrentUser() user: AuthUser,
+    @Body() dto: CreateNewsletterCampaignDto,
+  ) {
     return this.service.create(dto, user.id);
   }
 

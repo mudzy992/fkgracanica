@@ -6,13 +6,19 @@ export class ClubTimelineService {
   constructor(private readonly prisma: PrismaService) {}
 
   findAll() {
-    return this.prisma.clubTimelineEvent.findMany({ orderBy: [{ year: 'desc' }, { sortOrder: 'asc' }] });
+    return this.prisma.clubTimelineEvent.findMany({
+      orderBy: [{ year: 'desc' }, { sortOrder: 'asc' }],
+    });
   }
 
   async create(data: Record<string, unknown>) {
-    const max = await this.prisma.clubTimelineEvent.aggregate({ _max: { sortOrder: true } });
+    const max = await this.prisma.clubTimelineEvent.aggregate({
+      _max: { sortOrder: true },
+    });
     const sortOrder = (max._max.sortOrder ?? -1) + 1;
-    return this.prisma.clubTimelineEvent.create({ data: { ...data, sortOrder } as never });
+    return this.prisma.clubTimelineEvent.create({
+      data: { ...data, sortOrder } as never,
+    });
   }
 
   update(id: string, data: Record<string, unknown>) {
@@ -22,7 +28,10 @@ export class ClubTimelineService {
   reorder(ids: string[]) {
     return this.prisma.$transaction(
       ids.map((id, sortOrder) =>
-        this.prisma.clubTimelineEvent.update({ where: { id }, data: { sortOrder } }),
+        this.prisma.clubTimelineEvent.update({
+          where: { id },
+          data: { sortOrder },
+        }),
       ),
     );
   }

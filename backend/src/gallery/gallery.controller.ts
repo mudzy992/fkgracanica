@@ -64,7 +64,10 @@ export class GalleryController {
   @UseGuards(JwtAuthGuard, PermissionsGuard)
   @RequirePermissions('gallery.manage')
   @ApiBearerAuth()
-  addPhoto(@Param('id') id: string, @Body() body: { path: string; caption?: string; sortOrder?: number }) {
+  addPhoto(
+    @Param('id') id: string,
+    @Body() body: { path: string; caption?: string; sortOrder?: number },
+  ) {
     return this.galleryService.addPhoto(id, body);
   }
 

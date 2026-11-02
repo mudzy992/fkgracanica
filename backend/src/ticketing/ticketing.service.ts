@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { PaymentsReadinessService } from '../payments/payments-readiness.service';
 import { TicketingOrdersService } from './ticketing-orders.service';
@@ -48,7 +52,13 @@ export class TicketingService {
 
   async confirmBoxOfficePayment(orderId: string) {
     const order = await this.orders.confirmBoxOfficePayment(orderId);
-    if (order) await notifyTicketPaid(this.prisma, this.jobs, orderId, this.notifications);
+    if (order)
+      await notifyTicketPaid(
+        this.prisma,
+        this.jobs,
+        orderId,
+        this.notifications,
+      );
     return order;
   }
 
@@ -83,13 +93,19 @@ export class TicketingService {
     }
     const capacity = await getStadiumCapacity(this.prisma);
     const occupied = await occupiedForMatch(this.prisma, matchId);
-    const memberDiscountPercent = userId ? await getMemberDiscountPercent(this.prisma, userId) : 0;
+    const memberDiscountPercent = userId
+      ? await getMemberDiscountPercent(this.prisma, userId)
+      : 0;
     const sales = await this.payments.getSalesModes();
     let userTickets = 0;
     let maxPerUser: number | null = null;
     let userRemainingQuota: number | null = null;
     if (userId) {
-      userTickets = await countUserActiveTicketsForMatch(this.prisma, userId, matchId);
+      userTickets = await countUserActiveTicketsForMatch(
+        this.prisma,
+        userId,
+        matchId,
+      );
       if (sales.boxOffice) {
         maxPerUser = await getMaxBoxOfficeTicketsPerUser(this.prisma);
         userRemainingQuota = Math.max(0, maxPerUser - userTickets);

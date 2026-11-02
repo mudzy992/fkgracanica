@@ -3,7 +3,10 @@ const LIMITS: Record<'web' | 'mobile', number> = { web: 5, mobile: 15 };
 
 const hits = new Map<string, number[]>();
 
-export function isVisitRateLimited(platform: 'web' | 'mobile', visitorKeyHash: string): boolean {
+export function isVisitRateLimited(
+  platform: 'web' | 'mobile',
+  visitorKeyHash: string,
+): boolean {
   const key = `${platform}:${visitorKeyHash}`;
   const now = Date.now();
   const windowStart = now - WINDOW_MS;

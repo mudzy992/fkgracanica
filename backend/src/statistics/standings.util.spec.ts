@@ -23,7 +23,12 @@ describe('standings.util', () => {
   });
 
   it('uses last 5 league matches chronologically', () => {
-    const mk = (id: string, day: number, homeScore: number, awayScore: number) => ({
+    const mk = (
+      id: string,
+      day: number,
+      homeScore: number,
+      awayScore: number,
+    ) => ({
       id,
       homeClubId: 'a',
       awayClubId: 'b',

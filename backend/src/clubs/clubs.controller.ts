@@ -1,4 +1,15 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Put, Query, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Put,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { ClubsService } from './clubs.service';
 import { ClubSquadService } from './club-squad.service';
@@ -94,7 +105,14 @@ export class ClubsController {
   @ApiBearerAuth()
   assignSquad(
     @Param('id') id: string,
-    @Body() body: { assignments: { slotIndex: number; isBench: boolean; playerId?: string | null }[] },
+    @Body()
+    body: {
+      assignments: {
+        slotIndex: number;
+        isBench: boolean;
+        playerId?: string | null;
+      }[];
+    },
   ) {
     return this.squad.assignSlots(id, body.assignments);
   }

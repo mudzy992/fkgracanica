@@ -25,9 +25,15 @@ export const ticketOrderInclude = {
   payment: true,
 } as const;
 
-export async function getStadiumCapacity(prisma: PrismaService): Promise<number> {
-  const setting = await prisma.setting.findUnique({ where: { key: 'ticketing.stadiumCapacity' } });
-  return setting ? Number(setting.value) || DEFAULT_STADIUM_CAPACITY : DEFAULT_STADIUM_CAPACITY;
+export async function getStadiumCapacity(
+  prisma: PrismaService,
+): Promise<number> {
+  const setting = await prisma.setting.findUnique({
+    where: { key: 'ticketing.stadiumCapacity' },
+  });
+  return setting
+    ? Number(setting.value) || DEFAULT_STADIUM_CAPACITY
+    : DEFAULT_STADIUM_CAPACITY;
 }
 
 export function countSoldForMatch(prisma: PrismaService, matchId: string) {
@@ -36,11 +42,16 @@ export function countSoldForMatch(prisma: PrismaService, matchId: string) {
   });
 }
 
-export async function getMemberDiscountPercent(prisma: PrismaService, userId: string): Promise<number> {
+export async function getMemberDiscountPercent(
+  prisma: PrismaService,
+  userId: string,
+): Promise<number> {
   const active = await prisma.membership.findFirst({
     where: { userId, status: 'ACTIVE' },
   });
   if (!active) return 0;
-  const setting = await prisma.setting.findUnique({ where: { key: 'ticketing.memberDiscountPercent' } });
+  const setting = await prisma.setting.findUnique({
+    where: { key: 'ticketing.memberDiscountPercent' },
+  });
   return setting ? Number(setting.value) || 0 : 10;
 }

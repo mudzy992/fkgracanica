@@ -26,7 +26,11 @@ export function computeLiveClock(
   match: LiveClockMatch,
   now = Date.now(),
 ): LiveClockState | null {
-  if (match.status !== MatchStatus.LIVE || !match.clockStartedAt || !match.matchPeriod) {
+  if (
+    match.status !== MatchStatus.LIVE ||
+    !match.clockStartedAt ||
+    !match.matchPeriod
+  ) {
     return null;
   }
   const config = PERIOD_CLOCK[match.matchPeriod];
@@ -38,7 +42,10 @@ export function computeLiveClock(
   );
   const minuteInPeriod = Math.floor(elapsedSec / 60);
   const displaySecond = elapsedSec % 60;
-  const displayMinute = displayMinuteForPeriod(match.matchPeriod, minuteInPeriod);
+  const displayMinute = displayMinuteForPeriod(
+    match.matchPeriod,
+    minuteInPeriod,
+  );
   const stoppage = stoppageForPeriod(match, match.matchPeriod);
   const duration = periodDuration(match.matchPeriod);
 
@@ -56,13 +63,19 @@ function pad2(n: number): string {
   return n.toString().padStart(2, '0');
 }
 
-export function formatLiveMinute(state: LiveClockState | null, fallback = 0): string {
+export function formatLiveMinute(
+  state: LiveClockState | null,
+  fallback = 0,
+): string {
   if (!state) return `${fallback}:00`;
   const time = `${state.displayMinute}:${pad2(state.displaySecond)}`;
   if (state.showStoppage) return `${time} (+${state.stoppage})`;
   return time;
 }
 
-export function resolveEventMinute(match: LiveClockMatch, fallbackMinute?: number): number {
+export function resolveEventMinute(
+  match: LiveClockMatch,
+  fallbackMinute?: number,
+): number {
   return computeLiveClock(match)?.displayMinute ?? fallbackMinute ?? 0;
 }

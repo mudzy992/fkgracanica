@@ -38,17 +38,26 @@ export function aggregatePlayerStatsFromMatch(
     const row = emptyAgg(playerId);
     const primary = events.filter((e) => e.playerId === playerId);
     row.goals = primary.filter((e) =>
-      (['GOAL', 'PENALTY_SCORED'] as const).includes(e.type as 'GOAL' | 'PENALTY_SCORED'),
+      (['GOAL', 'PENALTY_SCORED'] as const).includes(
+        e.type as 'GOAL' | 'PENALTY_SCORED',
+      ),
     ).length;
-    row.ownGoals = primary.filter((e) => e.type === MatchEventType.OWN_GOAL).length;
+    row.ownGoals = primary.filter(
+      (e) => e.type === MatchEventType.OWN_GOAL,
+    ).length;
     row.assists = events.filter(
       (e) =>
         e.relatedPlayerId === playerId &&
-        (e.type === MatchEventType.GOAL || e.type === MatchEventType.PENALTY_SCORED),
+        (e.type === MatchEventType.GOAL ||
+          e.type === MatchEventType.PENALTY_SCORED),
     ).length;
-    row.yellowCards = primary.filter((e) => e.type === MatchEventType.YELLOW_CARD).length;
+    row.yellowCards = primary.filter(
+      (e) => e.type === MatchEventType.YELLOW_CARD,
+    ).length;
     row.redCards = primary.filter((e) =>
-      (['RED_CARD', 'SECOND_YELLOW'] as const).includes(e.type as 'RED_CARD' | 'SECOND_YELLOW'),
+      (['RED_CARD', 'SECOND_YELLOW'] as const).includes(
+        e.type as 'RED_CARD' | 'SECOND_YELLOW',
+      ),
     ).length;
     if (primary.length > 0 || row.assists > 0) {
       row.appearances = 1;

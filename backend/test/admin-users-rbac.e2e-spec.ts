@@ -25,7 +25,11 @@ describe('Admin users RBAC (e2e)', () => {
     app = moduleFixture.createNestApplication();
     app.setGlobalPrefix('api/v1');
     app.useGlobalPipes(
-      new ValidationPipe({ whitelist: true, transform: true, forbidNonWhitelisted: true }),
+      new ValidationPipe({
+        whitelist: true,
+        transform: true,
+        forbidNonWhitelisted: true,
+      }),
     );
     await app.init();
 
@@ -173,9 +177,11 @@ describe('Admin users RBAC (e2e)', () => {
       .expect(200);
 
     const logs = audit.body.data as { entityId?: string; action: string }[];
-    expect(logs.some((l) => l.action === 'users.create' && l.entityId === created.body.id)).toBe(
-      true,
-    );
+    expect(
+      logs.some(
+        (l) => l.action === 'users.create' && l.entityId === created.body.id,
+      ),
+    ).toBe(true);
 
     await request(app.getHttpServer())
       .delete(`/api/v1/users/${created.body.id}`)

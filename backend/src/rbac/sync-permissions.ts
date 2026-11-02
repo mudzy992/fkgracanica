@@ -10,10 +10,14 @@ export async function syncPermissions(prisma: PrismaService) {
       update: { description: perm.description },
     });
   }
-  const admin = await prisma.role.findUnique({ where: { name: 'Administrator' } });
+  const admin = await prisma.role.findUnique({
+    where: { name: 'Administrator' },
+  });
   if (admin) {
     const all = await prisma.permission.findMany();
-    const existing = await prisma.rolePermission.findMany({ where: { roleId: admin.id } });
+    const existing = await prisma.rolePermission.findMany({
+      where: { roleId: admin.id },
+    });
     const have = new Set(existing.map((row) => row.permissionId));
     const missing = all.filter((p) => !have.has(p.id));
     if (missing.length) {
@@ -28,10 +32,15 @@ export async function syncPermissions(prisma: PrismaService) {
 async function ensureRedarRole(prisma: PrismaService) {
   const redar = await prisma.role.upsert({
     where: { name: 'Redar' },
-    create: { name: 'Redar', description: 'Ulaz — skeniranje ulaznica i članskih kartica' },
+    create: {
+      name: 'Redar',
+      description: 'Ulaz — skeniranje ulaznica i članskih kartica',
+    },
     update: { description: 'Ulaz — skeniranje ulaznica i članskih kartica' },
   });
-  const scan = await prisma.permission.findUnique({ where: { key: 'admissions.scan' } });
+  const scan = await prisma.permission.findUnique({
+    where: { key: 'admissions.scan' },
+  });
   if (!scan) return;
   await prisma.rolePermission.upsert({
     where: { roleId_permissionId: { roleId: redar.id, permissionId: scan.id } },

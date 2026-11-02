@@ -8,7 +8,9 @@ describe('upload.util', () => {
   });
 
   it('builds public url', () => {
-    expect(toPublicUrl('originals/abc.jpg')).toBe('/api/v1/uploads/files/originals/abc.jpg');
+    expect(toPublicUrl('originals/abc.jpg')).toBe(
+      '/api/v1/uploads/files/originals/abc.jpg',
+    );
   });
 
   it('maps variant paths', () => {

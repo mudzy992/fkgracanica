@@ -76,9 +76,15 @@ export function buildLivePushMessage(
     case MatchEventType.YELLOW_CARD:
       return { title: '🟨 Žuti karton', body: `${name ?? 'Igrač'} — ${min}` };
     case MatchEventType.RED_CARD:
-      return { title: '🟥 Crveni karton!', body: `${name ?? 'Igrač'} isključen — ${min}` };
+      return {
+        title: '🟥 Crveni karton!',
+        body: `${name ?? 'Igrač'} isključen — ${min}`,
+      };
     case MatchEventType.SECOND_YELLOW:
-      return { title: '🟨🟥 Drugi žuti!', body: `${name ?? 'Igrač'} isključen — ${min}` };
+      return {
+        title: '🟨🟥 Drugi žuti!',
+        body: `${name ?? 'Igrač'} isključen — ${min}`,
+      };
     case MatchEventType.PENALTY_SCORED:
       return {
         title: `⚽ Penal! ${score}`,

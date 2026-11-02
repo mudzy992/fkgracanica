@@ -1,4 +1,13 @@
-import { Body, Controller, Get, HttpCode, Post, Query, Req, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  Post,
+  Query,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { ApiBearerAuth } from '@nestjs/swagger';
 import type { Request } from 'express';
@@ -17,7 +26,11 @@ export class PublicAnalyticsController {
   @Post('visit')
   @HttpCode(204)
   recordVisit(@Body() dto: RecordVisitDto, @Req() req: Request): Promise<void> {
-    return this.service.recordVisit(dto.platform, dto.visitorId, getClientIp(req));
+    return this.service.recordVisit(
+      dto.platform,
+      dto.visitorId,
+      getClientIp(req),
+    );
   }
 
   @Get('trend')

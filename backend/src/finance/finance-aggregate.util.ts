@@ -4,7 +4,12 @@ import type {
   SeasonPassExportRow,
   TicketExportRow,
 } from './finance.types';
-import { bucketize, iso, round2, seasonPassFinanceStatus } from './finance-query.util';
+import {
+  bucketize,
+  iso,
+  round2,
+  seasonPassFinanceStatus,
+} from './finance-query.util';
 
 export function buildFinanceSummary(
   from: Date,

@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Patch,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { LiveService } from './live.service';
 import { LiveClockOpsService } from './live-clock-ops.service';
@@ -36,7 +44,11 @@ export class LiveController {
   @UseGuards(JwtAuthGuard, PermissionsGuard)
   @RequirePermissions('live.manage')
   @ApiBearerAuth()
-  addEvent(@Param('matchId') matchId: string, @Body() body: AddEventDto, @CurrentUser() user: AuthUser) {
+  addEvent(
+    @Param('matchId') matchId: string,
+    @Body() body: AddEventDto,
+    @CurrentUser() user: AuthUser,
+  ) {
     return this.service.addEvent(matchId, { ...body, createdById: user.id });
   }
 
@@ -72,7 +84,10 @@ export class LiveController {
   @UseGuards(JwtAuthGuard, PermissionsGuard)
   @RequirePermissions('live.manage')
   @ApiBearerAuth()
-  setLiveStream(@Param('matchId') matchId: string, @Body() body: SetLiveStreamDto) {
+  setLiveStream(
+    @Param('matchId') matchId: string,
+    @Body() body: SetLiveStreamDto,
+  ) {
     return this.service.setLiveStream(matchId, body.url ?? null);
   }
 

@@ -37,7 +37,9 @@ export class CommentsService {
   }
 
   async remove(commentId: string, user: AuthUser) {
-    const comment = await this.prisma.comment.findUnique({ where: { id: commentId } });
+    const comment = await this.prisma.comment.findUnique({
+      where: { id: commentId },
+    });
     if (!comment) throw new NotFoundException('Komentar nije pronađen');
     const isModerator = user.permissions.includes('news.manage');
     if (comment.userId !== user.id && !isModerator) {

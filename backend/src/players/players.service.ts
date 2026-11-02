@@ -35,7 +35,15 @@ export class PlayersService {
     const player = await this.prisma.player.findUnique({
       where: { id },
       include: {
-        club: { select: { id: true, name: true, slug: true, crestPath: true, isOwnClub: true } },
+        club: {
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+            crestPath: true,
+            isOwnClub: true,
+          },
+        },
       },
     });
     if (!player) return null;
@@ -43,7 +51,12 @@ export class PlayersService {
     const seasonStats =
       edition &&
       (await this.prisma.playerStatistics.findUnique({
-        where: { playerId_seasonCompetitionId: { playerId: id, seasonCompetitionId: edition.id } },
+        where: {
+          playerId_seasonCompetitionId: {
+            playerId: id,
+            seasonCompetitionId: edition.id,
+          },
+        },
       }));
 
     const career = await this.prisma.playerStatistics.aggregate({
@@ -102,7 +115,9 @@ export class PlayersService {
   async create(data: Record<string, unknown>) {
     const payload = { ...data };
     if (!payload.clubId) {
-      const ownClub = await this.prisma.club.findFirst({ where: { isOwnClub: true } });
+      const ownClub = await this.prisma.club.findFirst({
+        where: { isOwnClub: true },
+      });
       if (ownClub) payload.clubId = ownClub.id;
     }
     return this.prisma.player.create({ data: payload as never });

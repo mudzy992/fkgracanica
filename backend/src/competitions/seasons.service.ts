@@ -20,7 +20,12 @@ export class SeasonsService {
     });
   }
 
-  create(data: { name: string; yearStart: number; yearEnd: number; isActive?: boolean }) {
+  create(data: {
+    name: string;
+    yearStart: number;
+    yearEnd: number;
+    isActive?: boolean;
+  }) {
     return this.prisma.season.create({
       data: {
         name: data.name,
@@ -32,7 +37,15 @@ export class SeasonsService {
     });
   }
 
-  update(id: string, data: { name?: string; yearStart?: number; yearEnd?: number; isActive?: boolean }) {
+  update(
+    id: string,
+    data: {
+      name?: string;
+      yearStart?: number;
+      yearEnd?: number;
+      isActive?: boolean;
+    },
+  ) {
     return this.prisma.season.update({
       where: { id },
       data,

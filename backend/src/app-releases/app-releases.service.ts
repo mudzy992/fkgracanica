@@ -1,7 +1,11 @@
 import { createHash } from 'crypto';
 import * as fs from 'fs/promises';
 import * as path from 'path';
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { AppReleasePlatform, AppReleaseStatus } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
@@ -26,9 +30,15 @@ export class AppReleasesService {
     this.assertApkFile(file);
     const uploadRoot = this.config.get<string>('UPLOAD_PATH', './uploads');
     const now = new Date();
-    const relDir = path.join('app-releases', String(now.getFullYear()), String(now.getMonth() + 1).padStart(2, '0'));
+    const relDir = path.join(
+      'app-releases',
+      String(now.getFullYear()),
+      String(now.getMonth() + 1).padStart(2, '0'),
+    );
     await fs.mkdir(path.join(uploadRoot, relDir), { recursive: true });
-    const relPath = path.join(relDir, `app-${Date.now()}.apk`).replace(/\\/g, '/');
+    const relPath = path
+      .join(relDir, `app-${Date.now()}.apk`)
+      .replace(/\\/g, '/');
     await fs.writeFile(path.join(uploadRoot, relPath), file.buffer);
     return {
       apkPath: relPath,
@@ -71,7 +81,10 @@ export class AppReleasesService {
     return this.prisma.appRelease.update({
       where: { id },
       data: {
-        releaseNotes: dto.releaseNotes !== undefined ? dto.releaseNotes.trim() || null : undefined,
+        releaseNotes:
+          dto.releaseNotes !== undefined
+            ? dto.releaseNotes.trim() || null
+            : undefined,
         forceUpdate: dto.forceUpdate,
         minSupportedVersionCode: dto.minSupportedVersionCode,
         status: dto.status as AppReleaseStatus | undefined,
@@ -84,7 +97,11 @@ export class AppReleasesService {
       const existing = await tx.appRelease.findUnique({ where: { id } });
       if (!existing) throw new NotFoundException('Release nije pronađen.');
       await tx.appRelease.updateMany({
-        where: { platform: existing.platform, status: AppReleaseStatus.PUBLISHED, id: { not: id } },
+        where: {
+          platform: existing.platform,
+          status: AppReleaseStatus.PUBLISHED,
+          id: { not: id },
+        },
         data: { status: AppReleaseStatus.RETIRED },
       });
       return tx.appRelease.update({
@@ -92,7 +109,10 @@ export class AppReleasesService {
         data: {
           status: AppReleaseStatus.PUBLISHED,
           publishedAt: existing.publishedAt ?? new Date(),
-          releaseNotes: patch?.releaseNotes !== undefined ? patch.releaseNotes.trim() || null : undefined,
+          releaseNotes:
+            patch?.releaseNotes !== undefined
+              ? patch.releaseNotes.trim() || null
+              : undefined,
           forceUpdate: patch?.forceUpdate,
           minSupportedVersionCode: patch?.minSupportedVersionCode,
         },
@@ -102,7 +122,10 @@ export class AppReleasesService {
 
   async findLatestAndroidPublic() {
     const latest = await this.prisma.appRelease.findFirst({
-      where: { platform: AppReleasePlatform.ANDROID, status: AppReleaseStatus.PUBLISHED },
+      where: {
+        platform: AppReleasePlatform.ANDROID,
+        status: AppReleaseStatus.PUBLISHED,
+      },
       orderBy: { versionCode: 'desc' },
     });
     if (!latest) return null;
@@ -121,7 +144,10 @@ export class AppReleasesService {
 
   async resolveLatestAndroidDownload() {
     const latest = await this.prisma.appRelease.findFirst({
-      where: { platform: AppReleasePlatform.ANDROID, status: AppReleaseStatus.PUBLISHED },
+      where: {
+        platform: AppReleasePlatform.ANDROID,
+        status: AppReleaseStatus.PUBLISHED,
+      },
       orderBy: { versionCode: 'desc' },
     });
     if (!latest) return null;
@@ -144,7 +170,8 @@ export class AppReleasesService {
   }
 
   private assertApkFile(file: Express.Multer.File): void {
-    if (!file?.buffer?.length) throw new BadRequestException('Nijedna datoteka nije poslata.');
+    if (!file?.buffer?.length)
+      throw new BadRequestException('Nijedna datoteka nije poslata.');
     const name = (file.originalname || '').toLowerCase();
     if (!name.endsWith('.apk') || !APK_MIMES.has(file.mimetype)) {
       throw new BadRequestException('Dozvoljen je samo APK fajl.');

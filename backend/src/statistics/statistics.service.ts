@@ -1,5 +1,10 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { MatchEventType, MatchReportStatus, MatchStatus, type TeamStatistics } from '@prisma/client';
+import {
+  MatchEventType,
+  MatchReportStatus,
+  MatchStatus,
+  type TeamStatistics,
+} from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { matchWithinRoundLimit } from '../rounds/round.util';
 import {
@@ -32,29 +37,43 @@ export class StatisticsService {
     const playerIds = [
       ...new Set([
         ...match.events.filter((e) => e.playerId).map((e) => e.playerId!),
-        ...match.events.filter((e) => e.relatedPlayerId).map((e) => e.relatedPlayerId!),
+        ...match.events
+          .filter((e) => e.relatedPlayerId)
+          .map((e) => e.relatedPlayerId!),
       ]),
     ];
 
     for (const playerId of playerIds) {
       const events = match.events.filter((e) => e.playerId === playerId);
       const goals = events.filter((e) =>
-        (['GOAL', 'PENALTY_SCORED'] as const).includes(e.type as 'GOAL' | 'PENALTY_SCORED'),
+        (['GOAL', 'PENALTY_SCORED'] as const).includes(
+          e.type as 'GOAL' | 'PENALTY_SCORED',
+        ),
       ).length;
-      const ownGoals = events.filter((e) => e.type === MatchEventType.OWN_GOAL).length;
+      const ownGoals = events.filter(
+        (e) => e.type === MatchEventType.OWN_GOAL,
+      ).length;
       const assists = match.events.filter(
         (e) =>
           e.relatedPlayerId === playerId &&
-          (e.type === MatchEventType.GOAL || e.type === MatchEventType.PENALTY_SCORED),
+          (e.type === MatchEventType.GOAL ||
+            e.type === MatchEventType.PENALTY_SCORED),
       ).length;
-      const yellowCards = events.filter((e) => e.type === MatchEventType.YELLOW_CARD).length;
+      const yellowCards = events.filter(
+        (e) => e.type === MatchEventType.YELLOW_CARD,
+      ).length;
       const redCards = events.filter((e) =>
-        (['RED_CARD', 'SECOND_YELLOW'] as const).includes(e.type as 'RED_CARD' | 'SECOND_YELLOW'),
+        (['RED_CARD', 'SECOND_YELLOW'] as const).includes(
+          e.type as 'RED_CARD' | 'SECOND_YELLOW',
+        ),
       ).length;
 
       await this.prisma.playerStatistics.upsert({
         where: {
-          playerId_seasonCompetitionId: { playerId, seasonCompetitionId: match.seasonCompetitionId },
+          playerId_seasonCompetitionId: {
+            playerId,
+            seasonCompetitionId: match.seasonCompetitionId,
+          },
         },
         create: {
           playerId,
@@ -91,7 +110,12 @@ export class StatisticsService {
       awayClubId: string;
       homeScore: number;
       awayScore: number;
-      events: { type: MatchEventType; teamSide: string | null; playerId: string | null; relatedPlayerId: string | null }[];
+      events: {
+        type: MatchEventType;
+        teamSide: string | null;
+        playerId: string | null;
+        relatedPlayerId: string | null;
+      }[];
       lineup?: { playerId: string; clubId: string }[];
       teamStats?: TeamStatistics[];
     },
@@ -114,7 +138,10 @@ export class StatisticsService {
         where: { matchId, clubId: stats.clubId },
       });
       if (existing) {
-        await this.prisma.teamStatistics.update({ where: { id: existing.id }, data });
+        await this.prisma.teamStatistics.update({
+          where: { id: existing.id },
+          data,
+        });
       } else {
         await this.prisma.teamStatistics.create({
           data: { matchId, clubId: stats.clubId, ...data },
@@ -128,14 +155,26 @@ export class StatisticsService {
       where: { id: matchId },
       include: {
         events: { include: { player: { select: { id: true, clubId: true } } } },
-        lineup: { include: { player: { select: { id: true, firstName: true, lastName: true, clubId: true } } } },
+        lineup: {
+          include: {
+            player: {
+              select: {
+                id: true,
+                firstName: true,
+                lastName: true,
+                clubId: true,
+              },
+            },
+          },
+        },
         teamStats: true,
       },
     });
     if (!match) throw new NotFoundException('Utakmica nije pronađena');
 
     const playerClubById = new Map<string, string>();
-    for (const row of match.lineup) playerClubById.set(row.playerId, row.clubId);
+    for (const row of match.lineup)
+      playerClubById.set(row.playerId, row.clubId);
     for (const event of match.events) {
       if (event.playerId && event.player?.clubId) {
         playerClubById.set(event.playerId, event.player.clubId);
@@ -162,7 +201,10 @@ export class StatisticsService {
 
   getPlayerStats(playerId: string, seasonId?: string) {
     return this.prisma.playerStatistics.findMany({
-      where: { playerId, ...(seasonId ? { seasonCompetitionId: seasonId } : {}) },
+      where: {
+        playerId,
+        ...(seasonId ? { seasonCompetitionId: seasonId } : {}),
+      },
     });
   }
 

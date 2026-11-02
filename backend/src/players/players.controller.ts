@@ -1,4 +1,14 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { PlayersService } from './players.service';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
@@ -11,7 +21,10 @@ export class PlayersController {
   constructor(private readonly service: PlayersService) {}
 
   @Get()
-  findAll(@Query('clubId') clubId?: string, @Query('activeOnly') activeOnly?: string) {
+  findAll(
+    @Query('clubId') clubId?: string,
+    @Query('activeOnly') activeOnly?: string,
+  ) {
     return this.service.findAll(clubId, activeOnly === 'true');
   }
 
@@ -21,7 +34,10 @@ export class PlayersController {
   }
 
   @Get(':id/public')
-  getPublicProfile(@Param('id') id: string, @Query('seasonId') seasonId?: string) {
+  getPublicProfile(
+    @Param('id') id: string,
+    @Query('seasonId') seasonId?: string,
+  ) {
     return this.service.getPublicProfile(id, seasonId);
   }
 

@@ -19,7 +19,10 @@ export class StatisticsController {
   }
 
   @Get('players/:playerId')
-  getPlayerStats(@Param('playerId') playerId: string, @Query('seasonId') seasonId?: string) {
+  getPlayerStats(
+    @Param('playerId') playerId: string,
+    @Query('seasonId') seasonId?: string,
+  ) {
     return this.service.getPlayerStats(playerId, seasonId);
   }
 
@@ -34,9 +37,15 @@ export class StatisticsController {
   }
 
   @Get('standings')
-  getStandings(@Query('seasonId') seasonId: string, @Query('upToRound') upToRound?: string) {
+  getStandings(
+    @Query('seasonId') seasonId: string,
+    @Query('upToRound') upToRound?: string,
+  ) {
     const round = upToRound ? Number(upToRound) : undefined;
-    return this.service.getStandings(seasonId, Number.isFinite(round) ? round : undefined);
+    return this.service.getStandings(
+      seasonId,
+      Number.isFinite(round) ? round : undefined,
+    );
   }
 
   @Get('top-scorers')

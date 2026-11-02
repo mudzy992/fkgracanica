@@ -1,4 +1,8 @@
-import { renderNewsletterHtml, escapeHtml, textToParagraphs } from './newsletter-email.template';
+import {
+  renderNewsletterHtml,
+  escapeHtml,
+  textToParagraphs,
+} from './newsletter-email.template';
 
 describe('newsletter-email.template', () => {
   it('escapes html in body and subject', () => {

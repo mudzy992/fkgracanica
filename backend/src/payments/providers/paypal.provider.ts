@@ -2,7 +2,10 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { PaymentsReadinessService } from '../payments-readiness.service';
 import { PaypalOps } from '../paypal-ops';
-import type { CheckoutSessionResult, PaymentProvider } from './payment-provider.interface';
+import type {
+  CheckoutSessionResult,
+  PaymentProvider,
+} from './payment-provider.interface';
 import {
   formatPaypalAmount,
   paypalApproveUrl,
@@ -25,15 +28,22 @@ export class PaypalProvider implements PaymentProvider {
     return this.readiness.isProviderReady('paypal');
   }
 
-  async createTicketCheckout(orderId: string, successUrl: string, cancelUrl: string) {
+  async createTicketCheckout(
+    orderId: string,
+    successUrl: string,
+    cancelUrl: string,
+  ) {
     const order = await this.prisma.ticketOrder.findUnique({
       where: { id: orderId },
       include: {
         payment: true,
-        tickets: { include: { match: { include: { homeClub: true, awayClub: true } } } },
+        tickets: {
+          include: { match: { include: { homeClub: true, awayClub: true } } },
+        },
       },
     });
-    if (!order?.payment) throw new BadRequestException('Narudžba nije pronađena');
+    if (!order?.payment)
+      throw new BadRequestException('Narudžba nije pronađena');
     const match = order.tickets[0]?.match;
     const label = match
       ? `${match.homeClub?.name} vs ${match.awayClub?.name}`
@@ -102,7 +112,10 @@ export class PaypalProvider implements PaymentProvider {
     return this.ops.confirmSeasonPass(sessionId, userId);
   }
 
-  handleWebhook(rawBody: Buffer, headers: Record<string, string | string[] | undefined>) {
+  handleWebhook(
+    rawBody: Buffer,
+    headers: Record<string, string | string[] | undefined>,
+  ) {
     return this.ops.handleWebhook(rawBody, headers);
   }
 
@@ -123,7 +136,10 @@ export class PaypalProvider implements PaymentProvider {
           custom_id: customId,
           invoice_id: `${customId}-${Date.now()}`.slice(0, 127),
           description: input.label.slice(0, 127),
-          amount: { currency_code: ctx.currency, value: formatPaypalAmount(input.amount) },
+          amount: {
+            currency_code: ctx.currency,
+            value: formatPaypalAmount(input.amount),
+          },
         },
       ],
       application_context: {

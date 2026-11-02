@@ -1,4 +1,9 @@
-import { MatchEventType, type MatchEvent, type MatchLineup, type TeamStatistics } from '@prisma/client';
+import {
+  MatchEventType,
+  type MatchEvent,
+  type MatchLineup,
+  type TeamStatistics,
+} from '@prisma/client';
 
 export type TeamSide = 'home' | 'away';
 
@@ -32,9 +37,17 @@ export interface PlayerMatchStat {
   shotsOn: number;
 }
 
-type EventRow = Pick<MatchEvent, 'type' | 'teamSide' | 'playerId' | 'relatedPlayerId'>;
+type EventRow = Pick<
+  MatchEvent,
+  'type' | 'teamSide' | 'playerId' | 'relatedPlayerId'
+>;
 type LineupRow = MatchLineup & {
-  player?: { id: string; firstName: string; lastName: string; clubId: string | null } | null;
+  player?: {
+    id: string;
+    firstName: string;
+    lastName: string;
+    clubId: string | null;
+  } | null;
 };
 
 function emptyTeamStats(clubId: string): TeamMatchStats {
@@ -61,7 +74,8 @@ export function resolveEventSide(
   awayClubId: string,
   playerClubById: Map<string, string>,
 ): TeamSide | null {
-  if (event.teamSide === 'home' || event.teamSide === 'away') return event.teamSide;
+  if (event.teamSide === 'home' || event.teamSide === 'away')
+    return event.teamSide;
   if (!event.playerId) return null;
   const clubId = playerClubById.get(event.playerId);
   if (clubId === homeClubId) return 'home';
@@ -130,14 +144,23 @@ export function computeTeamStatsFromEvents(
   away.goals = goals.away;
 
   for (const event of events) {
-    const side = resolveEventSide(event, homeClubId, awayClubId, playerClubById);
+    const side = resolveEventSide(
+      event,
+      homeClubId,
+      awayClubId,
+      playerClubById,
+    );
     if (!side) continue;
     bumpTeamStat(side === 'home' ? home : away, event.type);
   }
 
   for (const row of stored ?? []) {
     const target =
-      row.clubId === homeClubId ? home : row.clubId === awayClubId ? away : null;
+      row.clubId === homeClubId
+        ? home
+        : row.clubId === awayClubId
+          ? away
+          : null;
     if (target) mergeStoredTeamStats(target, row);
   }
 
@@ -173,7 +196,9 @@ function bumpPlayerStat(stat: PlayerMatchStat, type: MatchEventType) {
 }
 
 function lineupForClub(lineup: LineupRow[], clubId: string) {
-  return lineup.filter((l) => l.clubId === clubId || l.player?.clubId === clubId);
+  return lineup.filter(
+    (l) => l.clubId === clubId || l.player?.clubId === clubId,
+  );
 }
 
 function buildPlayerStatsForClub(
@@ -208,7 +233,11 @@ function buildPlayerStatsForClub(
 
   for (const event of events) {
     if (!event.relatedPlayerId) continue;
-    if (event.type !== MatchEventType.GOAL && event.type !== MatchEventType.PENALTY_SCORED) continue;
+    if (
+      event.type !== MatchEventType.GOAL &&
+      event.type !== MatchEventType.PENALTY_SCORED
+    )
+      continue;
     const stat = map.get(event.relatedPlayerId);
     if (stat) stat.assists++;
   }

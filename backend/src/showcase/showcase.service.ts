@@ -26,7 +26,9 @@ export class ShowcaseService {
       'contact.address',
       'showcase.launchNote',
     ];
-    const rows = await this.prisma.setting.findMany({ where: { key: { in: keys } } });
+    const rows = await this.prisma.setting.findMany({
+      where: { key: { in: keys } },
+    });
     const map = Object.fromEntries(rows.map((r) => [r.key, r.value]));
 
     return {
@@ -50,7 +52,8 @@ export class ShowcaseService {
   getStatus(): PlatformStatusPayload {
     const modules = SHOWCASE_MODULES;
     const counted = modules.filter((m) => m.badge !== 'after_launch');
-    const count = (badge: ShowcaseBadge) => modules.filter((m) => m.badge === badge).length;
+    const count = (badge: ShowcaseBadge) =>
+      modules.filter((m) => m.badge === badge).length;
     return {
       overallPercent: overallPercentFrom(modules),
       counted: counted.length,

@@ -23,7 +23,11 @@ export class ClubsService {
   findOne(id: string) {
     return this.prisma.club.findUnique({
       where: { id },
-      include: { players: true, stadiumRel: true, squadSlots: { include: { player: true } } },
+      include: {
+        players: true,
+        stadiumRel: true,
+        squadSlots: { include: { player: true } },
+      },
     });
   }
 
@@ -36,9 +40,14 @@ export class ClubsService {
     isOwnClub?: boolean;
   }) {
     if (data.isOwnClub) {
-      await this.prisma.club.updateMany({ where: { isOwnClub: true }, data: { isOwnClub: false } });
+      await this.prisma.club.updateMany({
+        where: { isOwnClub: true },
+        data: { isOwnClub: false },
+      });
     }
-    return this.prisma.club.create({ data: { ...data, slug: slugify(data.name) } });
+    return this.prisma.club.create({
+      data: { ...data, slug: slugify(data.name) },
+    });
   }
 
   async update(id: string, data: Record<string, unknown>) {

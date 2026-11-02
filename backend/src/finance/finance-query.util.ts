@@ -6,7 +6,13 @@ import type {
   TicketExportRow,
 } from './finance.types';
 
-const STATUSES = ['PENDING_BOX_OFFICE', 'PENDING_ONLINE', 'CONFIRMED', 'REFUNDED', 'CANCELLED'] as const;
+const STATUSES = [
+  'PENDING_BOX_OFFICE',
+  'PENDING_ONLINE',
+  'CONFIRMED',
+  'REFUNDED',
+  'CANCELLED',
+] as const;
 
 function startOfDay(d: Date) {
   const x = new Date(d);
@@ -20,17 +26,23 @@ function endOfDay(d: Date) {
   return x;
 }
 
-export function parseFinanceRange(query: FinanceQuery): { from: Date; to: Date } | { error: string } {
+export function parseFinanceRange(
+  query: FinanceQuery,
+): { from: Date; to: Date } | { error: string } {
   const to = query.to ? endOfDay(new Date(query.to)) : endOfDay(new Date());
-  const from = query.from ? startOfDay(new Date(query.from)) : startOfDay(new Date(to.getFullYear(), 0, 1));
-  if (Number.isNaN(from.getTime()) || Number.isNaN(to.getTime())) return { error: 'Neispravan datum' };
+  const from = query.from
+    ? startOfDay(new Date(query.from))
+    : startOfDay(new Date(to.getFullYear(), 0, 1));
+  if (Number.isNaN(from.getTime()) || Number.isNaN(to.getTime()))
+    return { error: 'Neispravan datum' };
   if (from > to) return { error: 'Datum od mora biti prije datuma do' };
   return { from, to };
 }
 
 export function parseFinanceStatus(raw?: string) {
   if (!raw) return undefined;
-  if (!STATUSES.includes(raw as (typeof STATUSES)[number])) return { error: 'Neispravan status' as const };
+  if (!STATUSES.includes(raw as (typeof STATUSES)[number]))
+    return { error: 'Neispravan status' as const };
   return raw;
 }
 
@@ -59,7 +71,10 @@ export function seasonPassStatusFilter(paymentStatus?: string) {
   if (paymentStatus === 'CONFIRMED') return 'ACTIVE' as const;
   if (paymentStatus === 'REFUNDED') return 'REFUNDED' as const;
   if (paymentStatus === 'CANCELLED') return 'CANCELLED' as const;
-  if (paymentStatus === 'PENDING_ONLINE' || paymentStatus === 'PENDING_BOX_OFFICE') {
+  if (
+    paymentStatus === 'PENDING_ONLINE' ||
+    paymentStatus === 'PENDING_BOX_OFFICE'
+  ) {
     return 'PENDING' as const;
   }
   return undefined;
@@ -78,7 +93,16 @@ export function iso(d: Date) {
 }
 
 export function ticketSheet(rows: TicketExportRow[]): string[][] {
-  const header = ['Datum', 'ID', 'Iznos', 'Status', 'Provider', 'Metod', 'Order', 'Email'];
+  const header = [
+    'Datum',
+    'ID',
+    'Iznos',
+    'Status',
+    'Provider',
+    'Metod',
+    'Order',
+    'Email',
+  ];
   return [
     header,
     ...rows.map((r) => [
@@ -95,7 +119,14 @@ export function ticketSheet(rows: TicketExportRow[]): string[][] {
 }
 
 export function membershipSheet(rows: MembershipExportRow[]): string[][] {
-  const header = ['Datum', 'ID', 'Iznos (procjena)', 'Status', 'Email', 'Napomena'];
+  const header = [
+    'Datum',
+    'ID',
+    'Iznos (procjena)',
+    'Status',
+    'Email',
+    'Napomena',
+  ];
   return [
     header,
     ...rows.map((r) => [
@@ -110,7 +141,15 @@ export function membershipSheet(rows: MembershipExportRow[]): string[][] {
 }
 
 export function seasonPassSheet(rows: SeasonPassExportRow[]): string[][] {
-  const header = ['Datum', 'ID', 'Iznos', 'Status', 'Provider', 'Naziv', 'Email'];
+  const header = [
+    'Datum',
+    'ID',
+    'Iznos',
+    'Status',
+    'Provider',
+    'Naziv',
+    'Email',
+  ];
   return [
     header,
     ...rows.map((r) => [

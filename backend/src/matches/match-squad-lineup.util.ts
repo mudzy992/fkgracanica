@@ -23,7 +23,9 @@ type SquadRow = {
 };
 
 function adminSlotIndex(x: number, y: number) {
-  return MATCH_FORMATION_SLOTS.findIndex((s) => s.positionX === x && s.positionY === y);
+  return MATCH_FORMATION_SLOTS.findIndex(
+    (s) => s.positionX === x && s.positionY === y,
+  );
 }
 
 function squadStarters(squadSlots: SquadRow[]) {
@@ -51,7 +53,8 @@ export function mergeClubLineupWithSquad(
   const merged: LineupRow[] = [];
 
   starters.forEach((squadSlot, i) => {
-    const saved = savedByIndex.get(i) ?? savedByPlayer.get(squadSlot.playerId ?? '');
+    const saved =
+      savedByIndex.get(i) ?? savedByPlayer.get(squadSlot.playerId ?? '');
     const playerId = saved?.playerId ?? squadSlot.playerId;
     if (!playerId || usedPlayers.has(playerId)) return;
     usedPlayers.add(playerId);
@@ -72,7 +75,9 @@ export function mergeClubLineupWithSquad(
 }
 
 export async function resolveEffectiveMatchLineup(
-  prisma: { clubSquadSlot: { findMany: (args: object) => Promise<SquadRow[]> } },
+  prisma: {
+    clubSquadSlot: { findMany: (args: object) => Promise<SquadRow[]> };
+  },
   matchId: string,
   homeClubId: string,
   awayClubId: string,

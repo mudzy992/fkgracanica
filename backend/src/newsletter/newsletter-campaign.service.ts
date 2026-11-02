@@ -6,7 +6,10 @@ import {
 import { PrismaService } from '../prisma/prisma.service';
 import { JobsService } from '../jobs/jobs.module';
 import type { CreateNewsletterCampaignDto } from './dto/create-newsletter-campaign.dto';
-import { newsletterPublicOrigin, unsubscribeUrl } from './newsletter-campaign.util';
+import {
+  newsletterPublicOrigin,
+  unsubscribeUrl,
+} from './newsletter-campaign.util';
 import { renderNewsletterHtml } from './newsletter-email.template';
 import { mediaPublicUrl } from '../seo/seo-url.util';
 
@@ -27,13 +30,23 @@ export class NewsletterCampaignService {
 
   async preview(dto: CreateNewsletterCampaignDto) {
     const brand = await this.brand();
-    return { html: this.render(dto, brand, unsubscribeUrl(newsletterPublicOrigin(), 'preview')) };
+    return {
+      html: this.render(
+        dto,
+        brand,
+        unsubscribeUrl(newsletterPublicOrigin(), 'preview'),
+      ),
+    };
   }
 
   async create(dto: CreateNewsletterCampaignDto, userId: string) {
     const textBody = dto.textBody.trim();
     const brand = await this.brand();
-    const htmlBody = this.render(dto, brand, unsubscribeUrl(newsletterPublicOrigin(), 'preview'));
+    const htmlBody = this.render(
+      dto,
+      brand,
+      unsubscribeUrl(newsletterPublicOrigin(), 'preview'),
+    );
     return this.prisma.newsletterCampaign.create({
       data: {
         subject: dto.subject.trim(),
@@ -48,7 +61,9 @@ export class NewsletterCampaignService {
 
   async send(id: string) {
     await this.assertBlastEnabled();
-    const campaign = await this.prisma.newsletterCampaign.findUnique({ where: { id } });
+    const campaign = await this.prisma.newsletterCampaign.findUnique({
+      where: { id },
+    });
     if (!campaign) throw new NotFoundException('Kampanja nije pronađena');
     if (campaign.status !== 'DRAFT') {
       throw new BadRequestException('Samo nacrt se može poslati');
@@ -57,11 +72,17 @@ export class NewsletterCampaignService {
       where: { isActive: true },
       select: { email: true, unsubscribeToken: true },
     });
-    if (!subs.length) throw new BadRequestException('Nema aktivnih pretplatnika');
+    if (!subs.length)
+      throw new BadRequestException('Nema aktivnih pretplatnika');
 
     await this.prisma.newsletterCampaign.update({
       where: { id },
-      data: { status: 'SENDING', targetCount: subs.length, sentCount: 0, failCount: 0 },
+      data: {
+        status: 'SENDING',
+        targetCount: subs.length,
+        sentCount: 0,
+        failCount: 0,
+      },
     });
 
     const origin = newsletterPublicOrigin();
@@ -77,7 +98,11 @@ export class NewsletterCampaignService {
         to: sub.email,
         subject: campaign.subject,
         body: campaign.textBody,
-        html: this.render(dto, brand, unsubscribeUrl(origin, sub.unsubscribeToken)),
+        html: this.render(
+          dto,
+          brand,
+          unsubscribeUrl(origin, sub.unsubscribeToken),
+        ),
         campaignId: id,
       });
     }
@@ -116,7 +141,9 @@ export class NewsletterCampaignService {
       where: { key: 'newsletter.blastEnabled' },
     });
     if (row?.value !== 'true' && row?.value !== '1') {
-      throw new BadRequestException('Slanje kampanja je isključeno (newsletter.blastEnabled)');
+      throw new BadRequestException(
+        'Slanje kampanja je isključeno (newsletter.blastEnabled)',
+      );
     }
   }
 }

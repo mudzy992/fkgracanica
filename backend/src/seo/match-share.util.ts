@@ -9,7 +9,10 @@ function formatDateTime(d: Date) {
   return `${dd}.${mm}.${yyyy} ${hh}:${min}`;
 }
 
-type ClubLike = { name: string; crestPath?: string | null; logoPath?: string | null } | null | undefined;
+type ClubLike =
+  | { name: string; crestPath?: string | null; logoPath?: string | null }
+  | null
+  | undefined;
 
 function crestPath(club: ClubLike) {
   return club?.crestPath ?? club?.logoPath ?? null;
@@ -25,9 +28,12 @@ export function matchShareTitle(
 ) {
   const h = home?.name ?? 'Domaći';
   const a = away?.name ?? 'Gosti';
-  const liveTag = live || status === 'LIVE' || status === 'HALFTIME' ? ' — LIVE' : '';
+  const liveTag =
+    live || status === 'LIVE' || status === 'HALFTIME' ? ' — LIVE' : '';
   const scored =
-    status === 'FINISHED' || status === 'LIVE' || status === 'HALFTIME' ? ` ${homeScore}:${awayScore}` : '';
+    status === 'FINISHED' || status === 'LIVE' || status === 'HALFTIME'
+      ? ` ${homeScore}:${awayScore}`
+      : '';
   return `${h} vs ${a}${scored}${liveTag}`;
 }
 
@@ -58,6 +64,10 @@ export function matchShareDescription(input: {
   return truncateMeta(parts.join(' · '));
 }
 
-export function matchShareImage(home: ClubLike, away: ClubLike, fallbackCrest?: string | null) {
+export function matchShareImage(
+  home: ClubLike,
+  away: ClubLike,
+  fallbackCrest?: string | null,
+) {
   return crestPath(home) ?? crestPath(away) ?? fallbackCrest ?? null;
 }

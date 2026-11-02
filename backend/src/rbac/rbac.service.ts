@@ -8,7 +8,14 @@ import { PrismaService } from '../prisma/prisma.service';
 import { AuditService } from '../audit/audit.service';
 import { syncPermissions } from './sync-permissions';
 
-export const SYSTEM_ROLES = ['Administrator', 'Moderator', 'Writer', 'Komentator', 'Redar', 'Član'];
+export const SYSTEM_ROLES = [
+  'Administrator',
+  'Moderator',
+  'Writer',
+  'Komentator',
+  'Redar',
+  'Član',
+];
 
 @Injectable()
 export class RbacService implements OnModuleInit {
@@ -35,11 +42,17 @@ export class RbacService implements OnModuleInit {
     return this.prisma.permission.findMany({ orderBy: { key: 'asc' } });
   }
 
-  async updateRolePermissions(actorId: string, roleId: string, permissionKeys: string[]) {
+  async updateRolePermissions(
+    actorId: string,
+    roleId: string,
+    permissionKeys: string[],
+  ) {
     const role = await this.prisma.role.findUnique({ where: { id: roleId } });
     if (!role) throw new NotFoundException('Uloga nije pronađena');
     if (role.name === 'Administrator') {
-      throw new BadRequestException('Dozvole administratora se ne mogu mijenjati');
+      throw new BadRequestException(
+        'Dozvole administratora se ne mogu mijenjati',
+      );
     }
 
     const permissions = await this.prisma.permission.findMany({
@@ -69,7 +82,10 @@ export class RbacService implements OnModuleInit {
     return updated;
   }
 
-  async createRole(actorId: string, data: { name: string; description?: string }) {
+  async createRole(
+    actorId: string,
+    data: { name: string; description?: string },
+  ) {
     const role = await this.prisma.role.create({ data });
     await this.audit.log({
       actorId,

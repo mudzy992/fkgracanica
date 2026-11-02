@@ -39,7 +39,11 @@ export class UploadService {
     let thumbPath: string | null = null;
     let mediumPath: string | null = null;
     if (isImageMime(file.mimetype)) {
-      const generated = await this.renditions.generate(file.buffer, relativePath, uploadRoot);
+      const generated = await this.renditions.generate(
+        file.buffer,
+        relativePath,
+        uploadRoot,
+      );
       thumbPath = generated.thumbPath;
       mediumPath = generated.mediumPath;
     }

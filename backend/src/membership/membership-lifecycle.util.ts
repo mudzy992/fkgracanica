@@ -36,7 +36,11 @@ export function isConfirmable(status: MembershipStatus): boolean {
   return CONFIRMABLE_STATUSES.includes(status);
 }
 
-function assertIn(status: MembershipStatus, allowed: MembershipStatus[], message: string) {
+function assertIn(
+  status: MembershipStatus,
+  allowed: MembershipStatus[],
+  message: string,
+) {
   if (!allowed.includes(status)) throw new BadRequestException(message);
 }
 
@@ -45,11 +49,19 @@ export function assertCanActivate(status: MembershipStatus) {
 }
 
 export function assertCanRenew(status: MembershipStatus) {
-  assertIn(status, RENEWABLE_STATUSES, 'Samo aktivno ili isteklo članstvo se može obnoviti');
+  assertIn(
+    status,
+    RENEWABLE_STATUSES,
+    'Samo aktivno ili isteklo članstvo se može obnoviti',
+  );
 }
 
 export function assertCanSuspend(status: MembershipStatus) {
-  assertIn(status, [MembershipStatus.ACTIVE], 'Samo aktivno članstvo se može suspendovati');
+  assertIn(
+    status,
+    [MembershipStatus.ACTIVE],
+    'Samo aktivno članstvo se može suspendovati',
+  );
 }
 
 export function assertCanCancel(status: MembershipStatus) {
@@ -70,7 +82,10 @@ export async function assertNoPendingOrActive(
   message = 'Korisnik već ima aktivno ili čekajuće članstvo',
 ) {
   const existing = await prisma.membership.findFirst({
-    where: { userId, status: { in: [MembershipStatus.PENDING, MembershipStatus.ACTIVE] } },
+    where: {
+      userId,
+      status: { in: [MembershipStatus.PENDING, MembershipStatus.ACTIVE] },
+    },
   });
   if (existing) throw new BadRequestException(message);
 }

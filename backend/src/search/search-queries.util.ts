@@ -22,7 +22,9 @@ export function buildWhere(
         OR: [{ title: { contains: q } }, { excerpt: { contains: q } }],
       };
     case 'players':
-      return { OR: [{ firstName: { contains: q } }, { lastName: { contains: q } }] };
+      return {
+        OR: [{ firstName: { contains: q } }, { lastName: { contains: q } }],
+      };
     case 'clubs':
       return { name: { contains: q } };
     case 'matches':
@@ -36,9 +38,13 @@ export function buildWhere(
     case 'galleries':
       return { status: ContentStatus.PUBLISHED, title: { contains: q } };
     case 'trophies':
-      return { OR: [{ name: { contains: q } }, { competition: { contains: q } }] };
+      return {
+        OR: [{ name: { contains: q } }, { competition: { contains: q } }],
+      };
     case 'timeline':
-      return { OR: [{ title: { contains: q } }, { description: { contains: q } }] };
+      return {
+        OR: [{ title: { contains: q } }, { description: { contains: q } }],
+      };
     case 'hallOfFame':
       return {
         OR: [
@@ -52,13 +58,34 @@ export function buildWhere(
 }
 
 export async function countSearchFacets(prisma: PrismaClient, q: string) {
-  const [news, players, clubs, matches, galleries, trophies, timeline, hallOfFame] = await Promise.all([
-    prisma.news.count({ where: buildWhere('news', q) as Prisma.NewsWhereInput }),
-    prisma.player.count({ where: buildWhere('players', q) as Prisma.PlayerWhereInput }),
-    prisma.club.count({ where: buildWhere('clubs', q) as Prisma.ClubWhereInput }),
-    prisma.match.count({ where: buildWhere('matches', q) as Prisma.MatchWhereInput }),
-    prisma.gallery.count({ where: buildWhere('galleries', q) as Prisma.GalleryWhereInput }),
-    prisma.trophy.count({ where: buildWhere('trophies', q) as Prisma.TrophyWhereInput }),
+  const [
+    news,
+    players,
+    clubs,
+    matches,
+    galleries,
+    trophies,
+    timeline,
+    hallOfFame,
+  ] = await Promise.all([
+    prisma.news.count({
+      where: buildWhere('news', q) as Prisma.NewsWhereInput,
+    }),
+    prisma.player.count({
+      where: buildWhere('players', q) as Prisma.PlayerWhereInput,
+    }),
+    prisma.club.count({
+      where: buildWhere('clubs', q) as Prisma.ClubWhereInput,
+    }),
+    prisma.match.count({
+      where: buildWhere('matches', q) as Prisma.MatchWhereInput,
+    }),
+    prisma.gallery.count({
+      where: buildWhere('galleries', q) as Prisma.GalleryWhereInput,
+    }),
+    prisma.trophy.count({
+      where: buildWhere('trophies', q) as Prisma.TrophyWhereInput,
+    }),
     prisma.clubTimelineEvent.count({
       where: buildWhere('timeline', q) as Prisma.ClubTimelineEventWhereInput,
     }),
@@ -66,7 +93,16 @@ export async function countSearchFacets(prisma: PrismaClient, q: string) {
       where: buildWhere('hallOfFame', q) as Prisma.HallOfFameEntryWhereInput,
     }),
   ]);
-  return { news, players, clubs, matches, galleries, trophies, timeline, hallOfFame };
+  return {
+    news,
+    players,
+    clubs,
+    matches,
+    galleries,
+    trophies,
+    timeline,
+    hallOfFame,
+  };
 }
 
 export async function findSearchFacet(
@@ -150,10 +186,28 @@ export async function previewAllFacets(prisma: PrismaClient, q: string) {
     'timeline',
     'hallOfFame',
   ];
-  const [news, players, clubs, matches, galleries, trophies, timeline, hallOfFame] = await Promise.all(
+  const [
+    news,
+    players,
+    clubs,
+    matches,
+    galleries,
+    trophies,
+    timeline,
+    hallOfFame,
+  ] = await Promise.all(
     types.map((type) => findSearchFacet(prisma, type, q, 0, PREVIEW_LIMIT)),
   );
-  return { news, players, clubs, matches, galleries, trophies, timeline, hallOfFame };
+  return {
+    news,
+    players,
+    clubs,
+    matches,
+    galleries,
+    trophies,
+    timeline,
+    hallOfFame,
+  };
 }
 
 export function emptySearchResponse() {

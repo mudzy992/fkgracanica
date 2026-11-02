@@ -277,7 +277,8 @@ export const SETTINGS_REGISTRY: SettingDefinition[] = [
     value: '4',
     type: SettingType.NUMBER,
     scope: SettingScope.PUBLIC,
-    description: 'Maks. ulaznica po korisniku po utakmici (blagajna); online bez limita',
+    description:
+      'Maks. ulaznica po korisniku po utakmici (blagajna); online bez limita',
     managedIn: 'ticketing',
   },
   {

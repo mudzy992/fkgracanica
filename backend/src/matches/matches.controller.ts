@@ -1,4 +1,15 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Put, Query, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Put,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { MatchesService } from './matches.service';
 import { CreateMatchDto } from './create-match.dto';
@@ -13,7 +24,10 @@ export class MatchesController {
   constructor(private readonly service: MatchesService) {}
 
   @Get()
-  findAll(@Query('seasonId') seasonId?: string, @Query('roundId') roundId?: string) {
+  findAll(
+    @Query('seasonId') seasonId?: string,
+    @Query('roundId') roundId?: string,
+  ) {
     return this.service.findAll(seasonId, roundId);
   }
 
@@ -52,7 +66,16 @@ export class MatchesController {
   @ApiBearerAuth()
   setLineup(
     @Param('id') id: string,
-    @Body() body: { slots: { playerId: string; clubId: string; isStarter?: boolean; positionX?: number; positionY?: number }[] },
+    @Body()
+    body: {
+      slots: {
+        playerId: string;
+        clubId: string;
+        isStarter?: boolean;
+        positionX?: number;
+        positionY?: number;
+      }[];
+    },
   ) {
     return this.service.setLineup(id, body.slots);
   }

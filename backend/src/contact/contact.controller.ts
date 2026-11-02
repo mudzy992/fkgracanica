@@ -1,4 +1,14 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { ContactService } from './contact.service';
 import { ContactListQueryDto } from './dto/contact-list-query.dto';
@@ -12,7 +22,15 @@ export class ContactController {
   constructor(private readonly service: ContactService) {}
 
   @Post()
-  create(@Body() body: { name: string; email: string; subject?: string; message: string }) {
+  create(
+    @Body()
+    body: {
+      name: string;
+      email: string;
+      subject?: string;
+      message: string;
+    },
+  ) {
     return this.service.create(body);
   }
 

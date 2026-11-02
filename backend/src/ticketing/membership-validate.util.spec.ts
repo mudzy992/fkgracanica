@@ -11,7 +11,9 @@ describe('validateMembershipCard', () => {
 
   it('throws when QR is unknown', async () => {
     prisma.membershipCard.findUnique.mockResolvedValue(null);
-    await expect(validateMembershipCard(prisma as never, 'missing')).rejects.toThrow(NotFoundException);
+    await expect(
+      validateMembershipCard(prisma as never, 'missing'),
+    ).rejects.toThrow(NotFoundException);
   });
 
   it('returns ACTIVE membership', async () => {
@@ -22,7 +24,15 @@ describe('validateMembershipCard', () => {
         user: { firstName: 'Ana', lastName: 'Hodzic', email: 'ana@test.com' },
       },
     });
-    const result = await validateMembershipCard(prisma as never, 'member-1_abc');
-    expect(result).toEqual({ kind: 'membership', id: 'c1', status: 'ACTIVE', name: 'Ana Hodzic' });
+    const result = await validateMembershipCard(
+      prisma as never,
+      'member-1_abc',
+    );
+    expect(result).toEqual({
+      kind: 'membership',
+      id: 'c1',
+      status: 'ACTIVE',
+      name: 'Ana Hodzic',
+    });
   });
 });

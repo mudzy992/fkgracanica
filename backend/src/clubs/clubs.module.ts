@@ -8,7 +8,19 @@ import { ClubPublicService } from './club-public.service';
 
 @Module({
   controllers: [ClubsController],
-  providers: [ClubsService, ClubSquadService, ClubStadiumService, ClubStatsService, ClubPublicService],
-  exports: [ClubsService, ClubSquadService, ClubStadiumService, ClubStatsService, ClubPublicService],
+  providers: [
+    ClubsService,
+    ClubSquadService,
+    ClubStadiumService,
+    ClubStatsService,
+    ClubPublicService,
+  ],
+  exports: [
+    ClubsService,
+    ClubSquadService,
+    ClubStadiumService,
+    ClubStatsService,
+    ClubPublicService,
+  ],
 })
 export class ClubsModule {}

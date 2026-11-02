@@ -10,8 +10,17 @@ import { LiveReportController } from './live-report.controller';
 import { NotificationsModule } from '../notifications/notifications.module';
 
 @Module({
-  imports: [forwardRef(() => RealtimeModule), StatisticsModule, NotificationsModule],
+  imports: [
+    forwardRef(() => RealtimeModule),
+    StatisticsModule,
+    NotificationsModule,
+  ],
   controllers: [LiveController, LiveReportController],
-  providers: [LiveService, LiveClockOpsService, LivePhaseService, LiveReportService],
+  providers: [
+    LiveService,
+    LiveClockOpsService,
+    LivePhaseService,
+    LiveReportService,
+  ],
 })
 export class LiveModule {}

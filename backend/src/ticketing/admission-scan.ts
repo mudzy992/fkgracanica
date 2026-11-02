@@ -37,7 +37,10 @@ export async function scanAdmission(
     try {
       return await validateSeasonPass(prisma, qrCode, matchId, { commit });
     } catch (err) {
-      if (err instanceof NotFoundException && err.message === 'Ulaznica nije pronađena') {
+      if (
+        err instanceof NotFoundException &&
+        err.message === 'Ulaznica nije pronađena'
+      ) {
         return validateMembershipCard(prisma, qrCode);
       }
       throw err;

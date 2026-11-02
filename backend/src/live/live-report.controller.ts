@@ -1,4 +1,11 @@
-import { Body, Controller, Delete, Param, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Param,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { LiveReportService } from './live-report.service';
 import { ReportEventDto } from './live.dto';
@@ -26,7 +33,10 @@ export class LiveReportController {
   }
 
   @Delete('matches/:matchId/report/events/:eventId')
-  deleteReportEvent(@Param('matchId') matchId: string, @Param('eventId') eventId: string) {
+  deleteReportEvent(
+    @Param('matchId') matchId: string,
+    @Param('eventId') eventId: string,
+  ) {
     return this.reports.deleteEvent(matchId, eventId);
   }
 

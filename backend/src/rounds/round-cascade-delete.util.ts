@@ -20,12 +20,21 @@ export async function getRoundDeleteImpact(
     select: {
       id: true,
       reportStatus: true,
-      _count: { select: { events: true, lineup: true, liveComments: true, tickets: true } },
+      _count: {
+        select: {
+          events: true,
+          lineup: true,
+          liveComments: true,
+          tickets: true,
+        },
+      },
     },
   });
   return {
     matchCount: matches.length,
-    approvedReportCount: matches.filter((m) => m.reportStatus === MatchReportStatus.APPROVED).length,
+    approvedReportCount: matches.filter(
+      (m) => m.reportStatus === MatchReportStatus.APPROVED,
+    ).length,
     ticketCount: matches.reduce((s, m) => s + m._count.tickets, 0),
     eventCount: matches.reduce((s, m) => s + m._count.events, 0),
     lineupCount: matches.reduce((s, m) => s + m._count.lineup, 0),
@@ -33,12 +42,18 @@ export async function getRoundDeleteImpact(
   };
 }
 
-export async function cascadeDeleteRound(prisma: PrismaService, roundId: string, seasonId: string) {
+export async function cascadeDeleteRound(
+  prisma: PrismaService,
+  roundId: string,
+  seasonId: string,
+) {
   const matches = await prisma.match.findMany({
     where: { roundId },
     select: { reportStatus: true },
   });
-  const needsRebuild = matches.some((m) => m.reportStatus === MatchReportStatus.APPROVED);
+  const needsRebuild = matches.some(
+    (m) => m.reportStatus === MatchReportStatus.APPROVED,
+  );
 
   await prisma.$transaction(async (tx) => {
     await tx.match.deleteMany({ where: { roundId } });
