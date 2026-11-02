@@ -44,6 +44,10 @@ jobs:
   build-test:
     name: build + test (backend, frontend)
     runs-on: ubuntu-latest
+    env:
+      # prisma.config.ts traži DATABASE_URL pri učitavanju (kao Docker build-arg).
+      # generate/validate se NE spajaju na bazu — dummy vrijednost je sigurna.
+      DATABASE_URL: postgresql://ci_placeholder:ci_placeholder@localhost:5432/ci_placeholder
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
