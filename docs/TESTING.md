@@ -6,7 +6,7 @@
 
 | Sloj | Alat | Pokrenuto | Pokrivenost |
 |------|------|-----------|-------------|
-| Backend unit | jest + ts-jest (`src/**/*.spec.ts`) | `npm test` / `test:cov` | 32 spec fajla; **bez coverage praga** |
+| Backend unit | jest + ts-jest (`src/**/*.spec.ts`) | `npm test` / `test:cov` | 38 spec fajla; **bez coverage praga** |
 | Backend e2e | jest (`test/jest-e2e.json`, 8 spec-a) | `npm run test:e2e` | auth/rbac, live-center, membership, notifications, ticketing-qr, upload, admin smoke, app; **traži bazu + redis** (`test/setup-e2e-env.ts` fallback `redis://127.0.0.1:6379`) |
 | Frontend | **nema runner-a** | — | 1 ručni spec (`npx tsx --test src/pages/admin/homes/commentator-desk.spec.ts`) |
 | Mobile | **nema alata** | — | 0 |

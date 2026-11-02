@@ -7,10 +7,10 @@
 | Polje | Vrijednost |
 |-------|------------|
 | **Aktivna grana** | `arena/290a6f13-fkgracanica` |
-| **Trenutna faza** | CI-01 ✔ INF-01 ✔ INF-02 ✔ BE-01 ✔ **BE-02 ✔** → sljedeći: **BE-03** (settings/audit/notifikacije) |
-| **Trenutni segment** | **BE-02 zatvoren 2026-11-02**; sljedeći segment **BE-03** |
-| **Zadnji commit** | `f357813` test(backend): route-access invariant + jwt-auth guard spec [BE-02] | |
-| **Zadnji CI run** | ✅ **`41525406239` success** (`245f066`+`a087b66`+`f357813` — BE-02, sva 3 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41525406239 ; BE-01: `41514035483` ✅, `41512922531` ✅, `41508476303` ✅; INF-02: `41505739758` ✅, `41504684855` ✅; F-019: `41501622108` ✅; INF-01: `41487834266` ✅… |
+| **Trenutna faza** | CI-01 ✔ INF-01 ✔ INF-02 ✔ BE-01 ✔ BE-02 ✔ **BE-03 ✔** → sljedeći: **BE-04** (CMS/vijesti/galerija/media) |
+| **Trenutni segment** | **BE-03 zatvoren 2026-11-02**; sljedeći segment **BE-04** |
+| **Zadnji commit** | `d554c9d` test(backend): unit specevi settings/audit/notifikacije [BE-03] | |
+| **Zadnji CI run** | ✅ **`41526155487` success** (`80cc782` — zatvaranje BE-02); BE-02: `41525406239` ✅; BE-01: `41514035483` ✅, `41512922531` ✅, `41508476303` ✅; INF-02: `41505739758` ✅, `41504684855` ✅ |
 | **check:all** | `npm run check:all` → **6/6** (check-coverage, file-size, console-ban, secrets-ban, layer-deps, docs-links); u CI-ju jobovi `audit-gate` + `standards`; pre-push hook pokreće `check:all` |
 
 ## Šta je urađeno (hronološki)
@@ -169,10 +169,23 @@
 - CI ✅ **`41525406239`**; `check:all` 6/6; matrica: 54 reda → BE-02 (ukupno1291).
 - Segment dokument: `AUDIT/segments/BE-02.md` (Status segmenta: ZATVOREN).
 
+### SEGMENT BE-03 — 2026-11-02 (ZATVOREN ✅)
+
+- Audit settings/audit/notifikacije/email-log (25 fajlova): **sloj zdrav** —
+  registry = jedini izvor settings redova (cross-scope = tihi no-op), audit
+  **bez tajni** (password nikad u metadata), notifikacije **user-scoped**,
+  zavisnosti modula rade. Nalazi: B-03-06 (datum validacija → predlog
+  P-B03-1 otvoren), B-03-07 info.
+- Izmjene: **3 nova unit speca** (scope enforcement, audit filteri, ownership)
+  — 32→**38** specova; testovi lokalno **14/14**; matrica 25 redova → BE-03.
+- `docs/TESTING.md` + `docs/BACKEND.md` brojevi ažurirani.
+- Segment dokument: `AUDIT/segments/BE-03.md` (Status segmenta: ZATVOREN).
+
 ## Šta je sljedeće (tačan sljedeći korak)
 
-1. **BE-03** (settings + audit + notifikacije + email-log) — bez blokatora;
-   opciono prije: 3 trivijalna predloga iz BE-02 (P-B02-1/2/3) ako korisnik odobri.
+1. **BE-04** (CMS + vijesti + galerija + media/upload — veliki segment):
+   audit stranica/bez blokatora; backlog predloga: P-B02-1/2/3 + P-B03-1
+   (trivijalni hardening, čekaju odobrenje — ne blokiraju).
 2. Zatim BE-02…08 → FE → MOB → CI-02/03/04 → E2E-01 (INF-03 paralelno kad zatreba).
 3. Svaki segment: `AUDIT/segments/<ID>.md` + matrica + zelen CI + izvještaj (standard iz CI-01/INF-01/INF-02).
 

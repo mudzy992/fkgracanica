@@ -13,7 +13,7 @@ BullMQ 5 + ioredis 5 (opciono) · passport-jwt · helmet · @nestjs/swagger · c
   DTO/ (`dto/`), helperi (`*.util.ts`), specovi (`*.spec.ts`).
 - Zajedničko: `common/` (utils, decorators, filters, guards, types), `prisma/` (PrismaService),
   `realtime/` (Socket.IO gateway), `jobs/` (BullMQ), `cache/` (ioredis), `health/`.
-- **Veličina**: 48 controllera, 59 servisa, ~17.7k LOC, 32 unit spec-a, 8 e2e spec-a.
+- **Veličina**: 48 controllera, 59 servisa, ~17.7k LOC, 38 unit spec-a, 8 e2e spec-a.
 
 ## Pokretanje i skripte
 
@@ -60,6 +60,6 @@ npm run prisma:generate | prisma:migrate | prisma:seed | prisma:seed:rbac
 |------|--------|
 | Rate limiting | ✅ globalno 100/60s + auth 10/60s + `trust proxy` (BE-01/Q-11); custom limit za public-analytics ostaje |
 | Migracije | 1 fajl (`init_postgres`) — provjeriti saglasnost sa produkcijom (Q-07) |
-| Testovi | 32 unit + 8 e2e; **bez coverage praga**; e2e zahtijeva bazu/redis |
+| Testovi | 38 unit + 8 e2e; **bez coverage praga**; e2e zahtijeva bazu/redis |
 | Error model / validacija / logging | ✅ error filter + env validacija + config modul (BE-01, ugovor gore); ⏳ logging konvencija = **INF-03** |
 | Tajne | ✅ `.env` nije trackan; `.env.example` očišćen (F-001 → D-004 → **INF-02**) |
