@@ -9,8 +9,8 @@
 | **Aktivna grana** | `arena/290a6f13-fkgracanica` |
 | **Trenutna faza** | **CI-01 ZATVOREN** (2026-11-02) → sljedeći: **INF-01** (blokira Q-04/Q-05) |
 | **Trenutni segment** | nijedan otvoren (CI-01 zatvoren, vidi AUDIT/segments/CI-01.md) |
-| **Zadnji commit** | `9eb887c` fix(backend+ci): Socket generički… [CI-01] | |
-| **Zadnji CI run** | ✅ **`41463437281` success** (2026-11-02, grana arena/290a6f13-fkgracanica, 2m32s; sva 3 joba: audit-gate, standards, build-test) — https://github.com/mudzy992/fkgracanica/actions/runs/41463437281 ; 9 prethodnih runova ❌ → popravljeno (tabela u segments/CI-01.md): `gh run list` prazan, `.github/` ne postoji (F-002 → Q-06, segment CI-01). Pushovi do CI-01 su BEZ CI-a i to je eksplicitno evidentirano (Q-06). |
+| **Zadnji commit** | `aa30604` docs(audit): CI-01 ZATVOREN… [CI-01] | |
+| **Zadnji CI run** | ✅ **`41464319145` success** (zatvaranje CI-01, sva 3 joba) + prvi zelen `41463437281`; obje: https://github.com/mudzy992/fkgracanica/actions/runs/41464319145 ; 9 prethodnih ❌ → popravljeno (tabela u segments/CI-01.md): `gh run list` prazan, `.github/` ne postoji (F-002 → Q-06, segment CI-01). Pushovi do CI-01 su BEZ CI-a i to je eksplicitno evidentirano (Q-06). |
 | **check:all** | ne postoji kao `npm` skripta (Q-09); audit gate = `node scripts/audit/check-coverage.mjs` (lokalno; u CI-ju kao `audit-gate` job tek nakon CI-01) |
 
 ## Šta je urađeno (hronološki)
