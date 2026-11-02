@@ -16,7 +16,6 @@ import { memoryStorage } from 'multer';
 import { ApiBearerAuth, ApiConsumes, ApiTags } from '@nestjs/swagger';
 import { MediaService } from './media.service';
 import { MediaAssetQueryDto } from './dto/media-asset-query.dto';
-import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { PermissionsGuard } from '../common/guards/permissions.guard';
 import {
   RequireAnyPermission,
@@ -25,7 +24,7 @@ import {
 
 @ApiTags('media')
 @Controller('media')
-@UseGuards(JwtAuthGuard, PermissionsGuard)
+@UseGuards(PermissionsGuard)
 @ApiBearerAuth()
 export class MediaController {
   constructor(private readonly mediaService: MediaService) {}

@@ -11,16 +11,17 @@ import {
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { PlayersService } from './players.service';
-import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { PermissionsGuard } from '../common/guards/permissions.guard';
 import { RequirePermissions } from '../common/decorators/permissions.decorator';
 
+import { Public } from '../common/decorators/public.decorator';
 @ApiTags('players')
 @Controller('players')
 export class PlayersController {
   constructor(private readonly service: PlayersService) {}
 
   @Get()
+  @Public()
   findAll(
     @Query('clubId') clubId?: string,
     @Query('activeOnly') activeOnly?: string,
@@ -29,11 +30,13 @@ export class PlayersController {
   }
 
   @Get(':id/matches')
+  @Public()
   getPublicMatches(@Param('id') id: string) {
     return this.service.getPublicMatches(id);
   }
 
   @Get(':id/public')
+  @Public()
   getPublicProfile(
     @Param('id') id: string,
     @Query('seasonId') seasonId?: string,
@@ -42,12 +45,13 @@ export class PlayersController {
   }
 
   @Get(':id')
+  @Public()
   findOne(@Param('id') id: string) {
     return this.service.findOne(id);
   }
 
   @Post()
-  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @UseGuards(PermissionsGuard)
   @RequirePermissions('players.manage')
   @ApiBearerAuth()
   create(@Body() body: Record<string, unknown>) {
@@ -55,7 +59,7 @@ export class PlayersController {
   }
 
   @Patch(':id')
-  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @UseGuards(PermissionsGuard)
   @RequirePermissions('players.manage')
   @ApiBearerAuth()
   update(@Param('id') id: string, @Body() body: Record<string, unknown>) {
@@ -63,7 +67,7 @@ export class PlayersController {
   }
 
   @Delete(':id')
-  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @UseGuards(PermissionsGuard)
   @RequirePermissions('players.manage')
   @ApiBearerAuth()
   remove(@Param('id') id: string) {

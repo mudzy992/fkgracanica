@@ -12,12 +12,12 @@ import { LiveService } from './live.service';
 import { LiveClockOpsService } from './live-clock-ops.service';
 import { LivePhaseService } from './live-phase.service';
 import { AddEventDto, SetLiveStreamDto, SetStoppageDto } from './live.dto';
-import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { PermissionsGuard } from '../common/guards/permissions.guard';
 import { RequirePermissions } from '../common/decorators/permissions.decorator';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
 import type { AuthUser } from '../common/types/auth-user.type';
 
+import { Public } from '../common/decorators/public.decorator';
 @ApiTags('live')
 @Controller('live')
 export class LiveController {
@@ -28,7 +28,7 @@ export class LiveController {
   ) {}
 
   @Get('pending')
-  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @UseGuards(PermissionsGuard)
   @RequirePermissions('live.approve')
   @ApiBearerAuth()
   listPending() {
@@ -36,12 +36,13 @@ export class LiveController {
   }
 
   @Get('matches/:matchId/feed')
+  @Public()
   getFeed(@Param('matchId') matchId: string) {
     return this.service.getFeed(matchId);
   }
 
   @Post('matches/:matchId/events')
-  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @UseGuards(PermissionsGuard)
   @RequirePermissions('live.manage')
   @ApiBearerAuth()
   addEvent(
@@ -53,7 +54,7 @@ export class LiveController {
   }
 
   @Post('matches/:matchId/comments')
-  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @UseGuards(PermissionsGuard)
   @RequirePermissions('live.manage')
   @ApiBearerAuth()
   addComment(
@@ -65,7 +66,7 @@ export class LiveController {
   }
 
   @Post('matches/:matchId/start')
-  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @UseGuards(PermissionsGuard)
   @RequirePermissions('live.manage')
   @ApiBearerAuth()
   startMatch(@Param('matchId') matchId: string) {
@@ -73,7 +74,7 @@ export class LiveController {
   }
 
   @Post('matches/:matchId/stoppage')
-  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @UseGuards(PermissionsGuard)
   @RequirePermissions('live.manage')
   @ApiBearerAuth()
   setStoppage(@Param('matchId') matchId: string, @Body() body: SetStoppageDto) {
@@ -81,7 +82,7 @@ export class LiveController {
   }
 
   @Patch('matches/:matchId/stream')
-  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @UseGuards(PermissionsGuard)
   @RequirePermissions('live.manage')
   @ApiBearerAuth()
   setLiveStream(
@@ -92,7 +93,7 @@ export class LiveController {
   }
 
   @Post('matches/:matchId/end')
-  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @UseGuards(PermissionsGuard)
   @RequirePermissions('live.manage')
   @ApiBearerAuth()
   endMatch(@Param('matchId') matchId: string) {
@@ -100,7 +101,7 @@ export class LiveController {
   }
 
   @Post('matches/:matchId/halftime')
-  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @UseGuards(PermissionsGuard)
   @RequirePermissions('live.manage')
   @ApiBearerAuth()
   setHalftime(@Param('matchId') matchId: string) {
@@ -108,7 +109,7 @@ export class LiveController {
   }
 
   @Post('matches/:matchId/resume')
-  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @UseGuards(PermissionsGuard)
   @RequirePermissions('live.manage')
   @ApiBearerAuth()
   resumeSecondHalf(@Param('matchId') matchId: string) {
@@ -116,7 +117,7 @@ export class LiveController {
   }
 
   @Post('matches/:matchId/regular-time/end')
-  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @UseGuards(PermissionsGuard)
   @RequirePermissions('live.manage')
   @ApiBearerAuth()
   finishRegularTime(@Param('matchId') matchId: string) {
@@ -124,7 +125,7 @@ export class LiveController {
   }
 
   @Post('matches/:matchId/extra-time/start')
-  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @UseGuards(PermissionsGuard)
   @RequirePermissions('live.manage')
   @ApiBearerAuth()
   startExtraTime(@Param('matchId') matchId: string) {
@@ -132,7 +133,7 @@ export class LiveController {
   }
 
   @Post('matches/:matchId/extra-time/halftime')
-  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @UseGuards(PermissionsGuard)
   @RequirePermissions('live.manage')
   @ApiBearerAuth()
   extraTimeHalftime(@Param('matchId') matchId: string) {
@@ -140,7 +141,7 @@ export class LiveController {
   }
 
   @Post('matches/:matchId/extra-time/resume')
-  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @UseGuards(PermissionsGuard)
   @RequirePermissions('live.manage')
   @ApiBearerAuth()
   resumeExtraSecond(@Param('matchId') matchId: string) {
@@ -148,7 +149,7 @@ export class LiveController {
   }
 
   @Post('matches/:matchId/extra-time/end')
-  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @UseGuards(PermissionsGuard)
   @RequirePermissions('live.manage')
   @ApiBearerAuth()
   finishExtraTime(@Param('matchId') matchId: string) {
@@ -156,7 +157,7 @@ export class LiveController {
   }
 
   @Post('matches/:matchId/penalties/start')
-  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @UseGuards(PermissionsGuard)
   @RequirePermissions('live.manage')
   @ApiBearerAuth()
   startPenalties(@Param('matchId') matchId: string) {
@@ -164,7 +165,7 @@ export class LiveController {
   }
 
   @Post('matches/:matchId/penalties/end')
-  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @UseGuards(PermissionsGuard)
   @RequirePermissions('live.manage')
   @ApiBearerAuth()
   endAfterPenalties(@Param('matchId') matchId: string) {
@@ -172,7 +173,7 @@ export class LiveController {
   }
 
   @Post('matches/:matchId/approve')
-  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @UseGuards(PermissionsGuard)
   @RequirePermissions('live.approve')
   @ApiBearerAuth()
   approveReport(@Param('matchId') matchId: string) {

@@ -12,32 +12,35 @@ import {
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { ContentStatus } from '@prisma/client';
 import { GalleryService } from './gallery.service';
-import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { PermissionsGuard } from '../common/guards/permissions.guard';
 import { RequirePermissions } from '../common/decorators/permissions.decorator';
 
+import { Public } from '../common/decorators/public.decorator';
 @ApiTags('gallery')
 @Controller('gallery')
 export class GalleryController {
   constructor(private readonly galleryService: GalleryService) {}
 
   @Get()
+  @Public()
   findAll(@Query('status') status?: ContentStatus) {
     return this.galleryService.findAll(status);
   }
 
   @Get('slug/:slug')
+  @Public()
   findBySlug(@Param('slug') slug: string) {
     return this.galleryService.findBySlug(slug);
   }
 
   @Get(':id')
+  @Public()
   findOne(@Param('id') id: string) {
     return this.galleryService.findOne(id);
   }
 
   @Post()
-  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @UseGuards(PermissionsGuard)
   @RequirePermissions('gallery.manage')
   @ApiBearerAuth()
   create(@Body() body: { title: string; description?: string }) {
@@ -45,7 +48,7 @@ export class GalleryController {
   }
 
   @Patch(':id')
-  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @UseGuards(PermissionsGuard)
   @RequirePermissions('gallery.manage')
   @ApiBearerAuth()
   update(@Param('id') id: string, @Body() body: Record<string, unknown>) {
@@ -53,7 +56,7 @@ export class GalleryController {
   }
 
   @Patch(':id/status')
-  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @UseGuards(PermissionsGuard)
   @RequirePermissions('gallery.approve')
   @ApiBearerAuth()
   updateStatus(@Param('id') id: string, @Body('status') status: ContentStatus) {
@@ -61,7 +64,7 @@ export class GalleryController {
   }
 
   @Post(':id/photos')
-  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @UseGuards(PermissionsGuard)
   @RequirePermissions('gallery.manage')
   @ApiBearerAuth()
   addPhoto(
@@ -72,7 +75,7 @@ export class GalleryController {
   }
 
   @Post(':id/photos/reorder')
-  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @UseGuards(PermissionsGuard)
   @RequirePermissions('gallery.manage')
   @ApiBearerAuth()
   reorderPhotos(@Param('id') id: string, @Body('photoIds') photoIds: string[]) {
@@ -80,7 +83,7 @@ export class GalleryController {
   }
 
   @Delete(':id/photos/:photoId')
-  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @UseGuards(PermissionsGuard)
   @RequirePermissions('gallery.manage')
   @ApiBearerAuth()
   removePhoto(@Param('photoId') photoId: string) {
@@ -88,7 +91,7 @@ export class GalleryController {
   }
 
   @Delete(':id')
-  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @UseGuards(PermissionsGuard)
   @RequirePermissions('gallery.manage')
   @ApiBearerAuth()
   remove(@Param('id') id: string) {

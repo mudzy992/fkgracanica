@@ -8,7 +8,6 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { PermissionsGuard } from '../common/guards/permissions.guard';
 import { RequirePermissions } from '../common/decorators/permissions.decorator';
 import { MatchHighlightsService } from './match-highlights.service';
@@ -19,7 +18,7 @@ import {
 
 @ApiTags('matches')
 @Controller('matches/:matchId/highlights')
-@UseGuards(JwtAuthGuard, PermissionsGuard)
+@UseGuards(PermissionsGuard)
 @RequirePermissions('matches.manage')
 @ApiBearerAuth()
 export class MatchHighlightsController {

@@ -10,22 +10,23 @@ import {
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { ClubTimelineService } from './club-timeline.service';
-import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { PermissionsGuard } from '../common/guards/permissions.guard';
 import { RequirePermissions } from '../common/decorators/permissions.decorator';
 
+import { Public } from '../common/decorators/public.decorator';
 @ApiTags('club-timeline')
 @Controller('club-timeline')
 export class ClubTimelineController {
   constructor(private readonly service: ClubTimelineService) {}
 
   @Get()
+  @Public()
   findAll() {
     return this.service.findAll();
   }
 
   @Post()
-  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @UseGuards(PermissionsGuard)
   @RequirePermissions('club-timeline.manage')
   @ApiBearerAuth()
   create(@Body() body: Record<string, unknown>) {
@@ -33,7 +34,7 @@ export class ClubTimelineController {
   }
 
   @Post('reorder')
-  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @UseGuards(PermissionsGuard)
   @RequirePermissions('club-timeline.manage')
   @ApiBearerAuth()
   reorder(@Body('ids') ids: string[]) {
@@ -41,7 +42,7 @@ export class ClubTimelineController {
   }
 
   @Patch(':id')
-  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @UseGuards(PermissionsGuard)
   @RequirePermissions('club-timeline.manage')
   @ApiBearerAuth()
   update(@Param('id') id: string, @Body() body: Record<string, unknown>) {
@@ -49,7 +50,7 @@ export class ClubTimelineController {
   }
 
   @Delete(':id')
-  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @UseGuards(PermissionsGuard)
   @RequirePermissions('club-timeline.manage')
   @ApiBearerAuth()
   remove(@Param('id') id: string) {

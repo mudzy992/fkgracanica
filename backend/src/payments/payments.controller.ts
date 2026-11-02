@@ -7,23 +7,23 @@ import {
   Query,
   Redirect,
   Req,
-  UseGuards,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import type { RawBodyRequest } from '@nestjs/common';
 import type { Request } from 'express';
 import { PaymentsService } from './payments.service';
-import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
 import type { AuthUser } from '../common/types/auth-user.type';
 import { buildMobileReturnUrl } from './mobile-return.util';
 
+import { Public } from '../common/decorators/public.decorator';
 @ApiTags('payments')
 @Controller('payments')
 export class PaymentsController {
   constructor(private readonly service: PaymentsService) {}
 
   @Get('mobile-return')
+  @Public()
   @Redirect()
   mobileReturn(
     @Query()
@@ -40,7 +40,6 @@ export class PaymentsController {
   }
 
   @Post('checkout/tickets')
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   checkoutTickets(
     @CurrentUser() user: AuthUser,
@@ -62,7 +61,6 @@ export class PaymentsController {
   }
 
   @Post('checkout/membership')
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   checkoutMembership(
     @CurrentUser() user: AuthUser,
@@ -86,7 +84,6 @@ export class PaymentsController {
   }
 
   @Post('checkout/season-pass')
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   checkoutSeasonPass(
     @CurrentUser() user: AuthUser,
@@ -108,7 +105,6 @@ export class PaymentsController {
   }
 
   @Post('membership/confirm-session')
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   confirmMembershipSession(
     @CurrentUser() user: AuthUser,
@@ -128,7 +124,6 @@ export class PaymentsController {
   }
 
   @Post('tickets/confirm-session')
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   confirmTicketSession(
     @CurrentUser() user: AuthUser,
@@ -148,7 +143,6 @@ export class PaymentsController {
   }
 
   @Post('season-pass/confirm-session')
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   confirmSeasonPassSession(
     @CurrentUser() user: AuthUser,
@@ -168,6 +162,7 @@ export class PaymentsController {
   }
 
   @Post('webhooks/stripe')
+  @Public()
   stripeWebhook(
     @Req() req: RawBodyRequest<Request>,
     @Headers('stripe-signature') signature: string,
@@ -177,13 +172,13 @@ export class PaymentsController {
   }
 
   @Post('webhooks/paypal')
+  @Public()
   paypalWebhook(@Req() req: RawBodyRequest<Request>) {
     const raw = req.rawBody ?? Buffer.from('');
     return this.service.handlePaypalWebhook(raw, req.headers);
   }
 
   @Get('monri/form')
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   getMonriForm(
     @CurrentUser() user: AuthUser,
@@ -194,6 +189,7 @@ export class PaymentsController {
   }
 
   @Post('webhooks/monri')
+  @Public()
   monriWebhook(@Req() req: RawBodyRequest<Request>) {
     const raw = req.rawBody ?? Buffer.from('');
     return this.service.handleMonriWebhook(raw, req.headers);

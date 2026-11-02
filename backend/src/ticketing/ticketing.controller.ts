@@ -11,7 +11,6 @@ import {
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { TicketingService } from './ticketing.service';
 import { TicketingConfigService } from './ticketing-config.service';
-import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { PermissionsGuard } from '../common/guards/permissions.guard';
 import {
   RequireAnyPermission,
@@ -22,7 +21,6 @@ import type { AuthUser } from '../common/types/auth-user.type';
 
 @ApiTags('ticketing')
 @Controller('ticketing')
-@UseGuards(JwtAuthGuard)
 @ApiBearerAuth()
 export class TicketingController {
   constructor(

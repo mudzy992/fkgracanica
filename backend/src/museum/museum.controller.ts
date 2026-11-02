@@ -11,22 +11,23 @@ import {
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { MuseumService } from './museum.service';
-import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { PermissionsGuard } from '../common/guards/permissions.guard';
 import { RequirePermissions } from '../common/decorators/permissions.decorator';
 
+import { Public } from '../common/decorators/public.decorator';
 @ApiTags('museum')
 @Controller('museum')
 export class MuseumController {
   constructor(private readonly service: MuseumService) {}
 
   @Get()
+  @Public()
   findAll(@Query('category') category?: string) {
     return this.service.findAll(category);
   }
 
   @Post()
-  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @UseGuards(PermissionsGuard)
   @RequirePermissions('museum.manage')
   @ApiBearerAuth()
   create(@Body() body: Record<string, unknown>) {
@@ -34,7 +35,7 @@ export class MuseumController {
   }
 
   @Patch(':id')
-  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @UseGuards(PermissionsGuard)
   @RequirePermissions('museum.manage')
   @ApiBearerAuth()
   update(@Param('id') id: string, @Body() body: Record<string, unknown>) {
@@ -42,7 +43,7 @@ export class MuseumController {
   }
 
   @Delete(':id')
-  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @UseGuards(PermissionsGuard)
   @RequirePermissions('museum.manage')
   @ApiBearerAuth()
   remove(@Param('id') id: string) {

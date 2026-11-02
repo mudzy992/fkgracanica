@@ -4,8 +4,10 @@ import type { Response } from 'express';
 import { AppReleasesService } from './app-releases.service';
 import { apkDownloadFilename, streamApkFile } from './apk-download.util';
 
+import { Public } from '../common/decorators/public.decorator';
 @ApiTags('public')
 @Controller('public/app-releases')
+@Public()
 export class AppReleasesPublicController {
   constructor(private readonly appReleases: AppReleasesService) {}
 

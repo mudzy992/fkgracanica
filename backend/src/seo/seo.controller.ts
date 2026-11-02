@@ -2,8 +2,10 @@ import { Controller, Get, Header, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { SeoService } from './seo.service';
 
+import { Public } from '../common/decorators/public.decorator';
 @ApiTags('seo')
 @Controller()
+@Public()
 export class SeoController {
   constructor(private readonly seo: SeoService) {}
 

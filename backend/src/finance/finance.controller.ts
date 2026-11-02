@@ -1,7 +1,6 @@
 import { Controller, Get, Header, Query, Res, UseGuards } from '@nestjs/common';
 import type { Response } from 'express';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { PermissionsGuard } from '../common/guards/permissions.guard';
 import { RequirePermissions } from '../common/decorators/permissions.decorator';
 import { FinanceService } from './finance.service';
@@ -9,7 +8,7 @@ import type { FinanceQuery } from './finance.types';
 
 @ApiTags('finance')
 @Controller('finance')
-@UseGuards(JwtAuthGuard, PermissionsGuard)
+@UseGuards(PermissionsGuard)
 @RequirePermissions('finance.read')
 @ApiBearerAuth()
 export class FinanceController {

@@ -10,22 +10,23 @@ import {
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { CompetitionsService } from './competitions.service';
-import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { PermissionsGuard } from '../common/guards/permissions.guard';
 import { RequirePermissions } from '../common/decorators/permissions.decorator';
 
+import { Public } from '../common/decorators/public.decorator';
 @ApiTags('competitions')
 @Controller('competitions')
 export class CompetitionsController {
   constructor(private readonly service: CompetitionsService) {}
 
   @Get()
+  @Public()
   findCompetitions() {
     return this.service.findCompetitions();
   }
 
   @Post()
-  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @UseGuards(PermissionsGuard)
   @RequirePermissions('competitions.manage')
   @ApiBearerAuth()
   createCompetition(@Body() body: { name: string; isLeague?: boolean }) {
@@ -33,7 +34,7 @@ export class CompetitionsController {
   }
 
   @Patch(':id')
-  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @UseGuards(PermissionsGuard)
   @RequirePermissions('competitions.manage')
   @ApiBearerAuth()
   updateCompetition(
@@ -44,7 +45,7 @@ export class CompetitionsController {
   }
 
   @Delete(':id')
-  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @UseGuards(PermissionsGuard)
   @RequirePermissions('competitions.manage')
   @ApiBearerAuth()
   removeCompetition(@Param('id') id: string) {

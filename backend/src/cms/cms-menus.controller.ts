@@ -1,22 +1,23 @@
 import { Body, Controller, Get, Param, Put, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { CmsMenusService } from './cms-menus.service';
-import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { PermissionsGuard } from '../common/guards/permissions.guard';
 import { RequirePermissions } from '../common/decorators/permissions.decorator';
 
+import { Public } from '../common/decorators/public.decorator';
 @ApiTags('cms')
 @Controller('cms/menus')
 export class CmsMenusController {
   constructor(private readonly menus: CmsMenusService) {}
 
   @Get(':key')
+  @Public()
   findByKey(@Param('key') key: string) {
     return this.menus.findByKey(key);
   }
 
   @Put(':key')
-  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @UseGuards(PermissionsGuard)
   @RequirePermissions('cms.manage')
   @ApiBearerAuth()
   replace(

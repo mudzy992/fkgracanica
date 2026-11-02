@@ -14,12 +14,12 @@ import { ContentStatus } from '@prisma/client';
 import { NewsService } from './news.service';
 import { NewsCategoriesService } from './news-categories.service';
 import { CommentsService } from './comments.service';
-import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { PermissionsGuard } from '../common/guards/permissions.guard';
 import { RequirePermissions } from '../common/decorators/permissions.decorator';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
 import type { AuthUser } from '../common/types/auth-user.type';
 
+import { Public } from '../common/decorators/public.decorator';
 @ApiTags('news')
 @Controller('news')
 export class NewsController {
@@ -29,6 +29,7 @@ export class NewsController {
   ) {}
 
   @Get()
+  @Public()
   findAll(
     @Query('status') status?: ContentStatus,
     @Query('categoryId') categoryId?: string,
@@ -37,22 +38,24 @@ export class NewsController {
   }
 
   @Get('published')
+  @Public()
   findPublished(@Query('categoryId') categoryId?: string) {
     return this.newsService.findPublished(categoryId);
   }
 
   @Get('slug/:slug')
+  @Public()
   findBySlug(@Param('slug') slug: string) {
     return this.newsService.findBySlug(slug);
   }
 
   @Get(':newsId/comments')
+  @Public()
   findComments(@Param('newsId') newsId: string) {
     return this.commentsService.findByNews(newsId);
   }
 
   @Post(':newsId/comments')
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   createComment(
     @Param('newsId') newsId: string,
@@ -63,7 +66,6 @@ export class NewsController {
   }
 
   @Delete('comments/:commentId')
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   removeComment(
     @Param('commentId') commentId: string,
@@ -73,12 +75,13 @@ export class NewsController {
   }
 
   @Get(':id')
+  @Public()
   findOne(@Param('id') id: string) {
     return this.newsService.findOne(id);
   }
 
   @Post()
-  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @UseGuards(PermissionsGuard)
   @RequirePermissions('news.manage')
   @ApiBearerAuth()
   create(@Body() body: Record<string, unknown>, @CurrentUser() user: AuthUser) {
@@ -86,7 +89,7 @@ export class NewsController {
   }
 
   @Patch(':id')
-  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @UseGuards(PermissionsGuard)
   @RequirePermissions('news.manage')
   @ApiBearerAuth()
   update(@Param('id') id: string, @Body() body: Record<string, unknown>) {
@@ -94,7 +97,7 @@ export class NewsController {
   }
 
   @Patch(':id/status')
-  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @UseGuards(PermissionsGuard)
   @RequirePermissions('news.approve')
   @ApiBearerAuth()
   updateStatus(@Param('id') id: string, @Body('status') status: ContentStatus) {
@@ -102,7 +105,7 @@ export class NewsController {
   }
 
   @Patch(':id/submit')
-  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @UseGuards(PermissionsGuard)
   @RequirePermissions('news.submit')
   @ApiBearerAuth()
   submitForReview(@Param('id') id: string, @CurrentUser() user: AuthUser) {
@@ -110,7 +113,7 @@ export class NewsController {
   }
 
   @Patch(':id/archive')
-  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @UseGuards(PermissionsGuard)
   @RequirePermissions('news.submit')
   @ApiBearerAuth()
   archiveOwn(@Param('id') id: string, @CurrentUser() user: AuthUser) {
@@ -118,7 +121,7 @@ export class NewsController {
   }
 
   @Delete(':id')
-  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @UseGuards(PermissionsGuard)
   @RequirePermissions('news.manage')
   @ApiBearerAuth()
   remove(@Param('id') id: string) {
@@ -132,17 +135,19 @@ export class NewsCategoriesController {
   constructor(private readonly service: NewsCategoriesService) {}
 
   @Get()
+  @Public()
   findAll() {
     return this.service.findAll();
   }
 
   @Get(':id')
+  @Public()
   findOne(@Param('id') id: string) {
     return this.service.findOne(id);
   }
 
   @Post()
-  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @UseGuards(PermissionsGuard)
   @RequirePermissions('news.manage')
   @ApiBearerAuth()
   create(@Body() body: { name: string; slug?: string }) {
@@ -150,7 +155,7 @@ export class NewsCategoriesController {
   }
 
   @Patch(':id')
-  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @UseGuards(PermissionsGuard)
   @RequirePermissions('news.manage')
   @ApiBearerAuth()
   update(
@@ -161,7 +166,7 @@ export class NewsCategoriesController {
   }
 
   @Delete(':id')
-  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @UseGuards(PermissionsGuard)
   @RequirePermissions('news.manage')
   @ApiBearerAuth()
   remove(@Param('id') id: string) {

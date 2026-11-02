@@ -11,10 +11,10 @@ import {
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { SeasonsService } from './seasons.service';
 import { SeasonCompetitionsService } from './season-competitions.service';
-import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { PermissionsGuard } from '../common/guards/permissions.guard';
 import { RequirePermissions } from '../common/decorators/permissions.decorator';
 
+import { Public } from '../common/decorators/public.decorator';
 @ApiTags('seasons')
 @Controller('seasons')
 export class SeasonsController {
@@ -24,17 +24,19 @@ export class SeasonsController {
   ) {}
 
   @Get()
+  @Public()
   findAll() {
     return this.seasons.findAll();
   }
 
   @Get(':id')
+  @Public()
   findOne(@Param('id') id: string) {
     return this.seasons.findOne(id);
   }
 
   @Post()
-  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @UseGuards(PermissionsGuard)
   @RequirePermissions('competitions.manage')
   @ApiBearerAuth()
   create(
@@ -50,7 +52,7 @@ export class SeasonsController {
   }
 
   @Patch(':id')
-  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @UseGuards(PermissionsGuard)
   @RequirePermissions('competitions.manage')
   @ApiBearerAuth()
   update(
@@ -67,7 +69,7 @@ export class SeasonsController {
   }
 
   @Delete(':id')
-  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @UseGuards(PermissionsGuard)
   @RequirePermissions('competitions.manage')
   @ApiBearerAuth()
   remove(@Param('id') id: string) {
@@ -75,12 +77,13 @@ export class SeasonsController {
   }
 
   @Get(':id/competitions')
+  @Public()
   listEditions(@Param('id') id: string) {
     return this.editions.list(id);
   }
 
   @Post(':id/competitions')
-  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @UseGuards(PermissionsGuard)
   @RequirePermissions('competitions.manage')
   @ApiBearerAuth()
   addEdition(
@@ -97,7 +100,7 @@ export class SeasonsController {
   }
 
   @Patch(':id/competitions/:editionId')
-  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @UseGuards(PermissionsGuard)
   @RequirePermissions('competitions.manage')
   @ApiBearerAuth()
   updateEdition(
@@ -109,7 +112,7 @@ export class SeasonsController {
   }
 
   @Delete(':id/competitions/:editionId')
-  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @UseGuards(PermissionsGuard)
   @RequirePermissions('competitions.manage')
   @ApiBearerAuth()
   removeEdition(

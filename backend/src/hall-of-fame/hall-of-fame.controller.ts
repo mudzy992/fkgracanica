@@ -10,22 +10,23 @@ import {
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { HallOfFameService } from './hall-of-fame.service';
-import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { PermissionsGuard } from '../common/guards/permissions.guard';
 import { RequirePermissions } from '../common/decorators/permissions.decorator';
 
+import { Public } from '../common/decorators/public.decorator';
 @ApiTags('hall-of-fame')
 @Controller('hall-of-fame')
 export class HallOfFameController {
   constructor(private readonly service: HallOfFameService) {}
 
   @Get()
+  @Public()
   findAll() {
     return this.service.findAll();
   }
 
   @Post()
-  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @UseGuards(PermissionsGuard)
   @RequirePermissions('hall-of-fame.manage')
   @ApiBearerAuth()
   create(@Body() body: Record<string, unknown>) {
@@ -33,7 +34,7 @@ export class HallOfFameController {
   }
 
   @Patch(':id')
-  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @UseGuards(PermissionsGuard)
   @RequirePermissions('hall-of-fame.manage')
   @ApiBearerAuth()
   update(@Param('id') id: string, @Body() body: Record<string, unknown>) {
@@ -41,7 +42,7 @@ export class HallOfFameController {
   }
 
   @Delete(':id')
-  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @UseGuards(PermissionsGuard)
   @RequirePermissions('hall-of-fame.manage')
   @ApiBearerAuth()
   remove(@Param('id') id: string) {
