@@ -1,4 +1,3 @@
-import { Type } from 'class-transformer';
 import { IsIn, IsOptional, IsString } from 'class-validator';
 import { PaginatedQueryDto } from '../../common/dto/paginated-query.dto';
 

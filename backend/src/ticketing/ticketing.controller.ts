@@ -77,7 +77,7 @@ export class TicketingController {
   }
 
   @Get('orders/:orderId')
-  findOrder(@Param('orderId') orderId: string, @CurrentUser() user: AuthUser) {
+  findOrder(@Param('orderId') orderId: string, @CurrentUser() _user: AuthUser) {
     return this.service.findOrderById(orderId);
   }
 

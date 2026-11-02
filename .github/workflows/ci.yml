@@ -1,7 +1,7 @@
 name: CI
 
 # CI-01 (AUDIT) — static jobovi + audit gate.
-# Proširenja (CI-02/03/04) dodaju servise, FE test suite i mobile E2E — vidi docs/CI.md §5.
+# Proširenja (CI-02/03/04) dodaju servise, FE test suite i mobile E2E — vidi docs/CI.md.
 
 on:
   push:
@@ -63,15 +63,30 @@ jobs:
         working-directory: backend
       - name: backend build (nest/tsc)
         run: npm run build -w backend
-      # Napomena: logovi runa nisu čitljivi iz dev sanduća (blob EOF) → na FAILURE
-      # cijeli izlaz stavljamo u ::error annotaciju (vidi se u annotations API-ju/run stranici).
+      # Logovi runa nisu čitljivi iz dev sanduća (blob EOF) → na FAILURE emitujemo
+      # izlaz kao chunked ::error annotacije (svaki chunk <3600 znakova zbog limita).
       - name: backend unit testovi (jest; e2e dolazi u CI-02)
         run: |
           set +e
           npm run test -w backend -- --ci > /tmp/jest.out 2>&1
           code=$?
           if [ $code -ne 0 ]; then
-            { printf '::error title=jest full::'; awk 'NR>1{printf "%%0A"} {printf "%s", $0}' /tmp/jest.out | head -c 60000; printf '\n'; }
+            python3 - <<'PYEOF' > /tmp/jest.ann
+          lines = open('/tmp/jest.out', errors='replace').read().splitlines()
+          summary = [l for l in lines if l.startswith(('Tests:', 'Test Suites:', 'FAIL '))]
+          print(f"::error title=jest ::{' | '.join(summary)[:3400]}")
+          chunks, buf = [], ''
+          for l in lines:
+            if len(buf) + len(l) + 1 > 3400:
+                chunks.append(buf)
+                buf = ''
+            buf += l + '\n'
+          if buf:
+            chunks.append(buf)
+          for i, c in enumerate(chunks[:6], 1):
+            print(f"::error title=jest {i}/{min(len(chunks), 6)}::" + c.replace('%', '%25').replace('\n', '%0A'))
+          PYEOF
+            cat /tmp/jest.ann
           fi
           tail -8 /tmp/jest.out
           exit $code
@@ -82,20 +97,33 @@ jobs:
           npx eslint "{src,apps,libs,test}/**/*.ts" -f json -o /tmp/eslint.json 2>/tmp/eslint.err
           code=$?
           if [ $code -ne 0 ]; then
-            python3 - <<'PYEOF' > /tmp/lines.txt
+            python3 - <<'PYEOF'
           import json
-          try:
-              data = json.load(open('/tmp/eslint.json'))
-          except Exception as e:
-              print(f'eslint json parse: {e}'); raise SystemExit
+          data = json.load(open('/tmp/eslint.json'))
+          lines, nerr, nwarn = [], 0, 0
           for f in data:
-              for m in f.get('messages', []):
-                  sev = 'error' if m.get('severity') == 2 else 'warn'
-                  print(f"{f['filePath'].replace('/home/user/fkgracanica/','')}:{m.get('line')}:{m.get('column')} [{sev}] {m.get('ruleId')}: {m.get('message')}")
+            for m in f.get('messages', []):
+                sev = 'error' if m.get('severity') == 2 else 'warn'
+                if sev == 'error':
+                    nerr += 1
+                else:
+                    nwarn += 1
+                p = f['filePath'].split('/fkgracanica/')[-1]
+                lines.append(f"{p}:{m.get('line')}:{m.get('column')} [{sev}] {m.get('ruleId')}: {m.get('message')}")
+          print(f"::error title=eslint total::{nerr} errors, {nwarn} warns")
+          chunks, buf = [], ''
+          for l in lines:
+            if len(buf) + len(l) + 1 > 3400:
+                chunks.append(buf)
+                buf = ''
+            buf += l + '\n'
+          if buf:
+            chunks.append(buf)
+          for i, c in enumerate(chunks[:8], 1):
+            print(f"::error title=eslint {i}/{min(len(chunks), 8)}::" + c.replace('%', '%25').replace('\n', '%0A'))
           PYEOF
-            { printf '::error title=eslint full::'; awk 'NR>1{printf "%%0A"} {printf "%s", $0}' /tmp/lines.txt | head -c 60000; printf '\n'; }
           fi
-          wc -l /tmp/lines.txt 2>/dev/null; tail -3 /tmp/eslint.err 2>/dev/null
+          tail -3 /tmp/eslint.err 2>/dev/null
           exit $code
       - name: frontend build (tsc -b + vite)
         run: npm run build -w frontend

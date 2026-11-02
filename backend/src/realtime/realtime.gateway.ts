@@ -10,10 +10,16 @@ import {
 import { Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
-import { Server, Socket } from 'socket.io';
+import { Server, Socket, DefaultEventsMap } from 'socket.io';
+import { PrismaService } from '../prisma/prisma.service';
 
 type SocketData = { public?: boolean; userId?: string };
-import { PrismaService } from '../prisma/prisma.service';
+type ClientSocket = Socket<
+  DefaultEventsMap,
+  DefaultEventsMap,
+  DefaultEventsMap,
+  SocketData
+>;
 
 @WebSocketGateway({
   cors: { origin: true, credentials: true },
@@ -34,7 +40,7 @@ export class RealtimeGateway
     private readonly prisma: PrismaService,
   ) {}
 
-  async handleConnection(client: Socket<SocketData>) {
+  async handleConnection(client: ClientSocket) {
     const token =
       (client.handshake.auth?.token as string) ||
       (client.handshake.headers.authorization?.replace('Bearer ', '') ?? '');
@@ -64,13 +70,14 @@ export class RealtimeGateway
     }
   }
 
-  handleDisconnect(client: Socket<SocketData>) {
+  handleDisconnect(client: ClientSocket) {
     this.logger.debug(`Client disconnected: ${client.data.userId ?? 'public'}`);
   }
 
   @SubscribeMessage('match:join')
   handleMatchJoin(
-    @ConnectedSocket() client: Socket<SocketData>,
+    @ConnectedSocket()
+    client: ClientSocket,
     @MessageBody() body: { matchId?: string },
   ) {
     if (!body?.matchId) return { ok: false };
@@ -80,7 +87,8 @@ export class RealtimeGateway
 
   @SubscribeMessage('match:leave')
   handleMatchLeave(
-    @ConnectedSocket() client: Socket<SocketData>,
+    @ConnectedSocket()
+    client: ClientSocket,
     @MessageBody() body: { matchId?: string },
   ) {
     if (body?.matchId) client.leave(`match:${body.matchId}`);
@@ -88,14 +96,20 @@ export class RealtimeGateway
   }
 
   @SubscribeMessage('newsletter:join')
-  handleNewsletterJoin(@ConnectedSocket() client: Socket<SocketData>) {
+  handleNewsletterJoin(
+    @ConnectedSocket()
+    client: ClientSocket,
+  ) {
     if (!client.data.userId) return { ok: false };
     client.join('newsletter');
     return { ok: true };
   }
 
   @SubscribeMessage('newsletter:leave')
-  handleNewsletterLeave(@ConnectedSocket() client: Socket<SocketData>) {
+  handleNewsletterLeave(
+    @ConnectedSocket()
+    client: ClientSocket,
+  ) {
     client.leave('newsletter');
     return { ok: true };
   }
