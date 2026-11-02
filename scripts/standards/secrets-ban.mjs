@@ -20,6 +20,7 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 const ALLOW = [
   { re: /^\.env(\..*)?$/, reason: 'F-001 — poznati nalaz, čeka Q-04/INF-02 (rotacija + čišćenje)' },
   { re: /^AUDIT\//, reason: 'audit nalazi dokumentuju F-001 kao dokaz' },
+  { re: /^docs\/DECISIONS\.md$/, reason: 'D-004 citira F-001 string kao dokaz da NIJE stvarna lozinka (dokument odluke)' },
   { re: /^docs\/_retired\//, reason: 'penzionisani dokumenti — F-001 dokaz pod banerom' },
   { re: /^backend\/test\//, reason: 'e2e fixture kredencijali — bacaju se s test bazom, nisu produkcioni' },
   { re: /^package-lock\.json$/, reason: 'integrity hashovi npm paketa (nisu tajne)' },
