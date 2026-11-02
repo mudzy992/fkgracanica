@@ -13,17 +13,17 @@ const logger = new Logger('RedisTls');
  * za privatni Coolify CA završava sa:
  *   "self-signed certificate in certificate chain"
  *
- * Putanja CA-a dolazi iz okruženja `REDIS_TLS_CA`
- * (npr. /run/secrets/redis-ca.crt — montirano u docker-compose.yml-u).
+ * Putanja CA-a dolazi iz pozivaoca (BE-01/P2: common/ više ne čita
+ * `process.env` direktno — pozivatelj proslijeđuje REDIS_TLS_CA vrijednost).
  * Ako fajl nije čitljiv, loguje se upozorenje i veza pada na Node root
  * store (gdje eventualno pomaže NODE_EXTRA_CERTS).
  */
 export function buildRedisTlsOptions(
   url: string | undefined,
+  caPath: string | undefined,
 ): RedisTlsOptions | undefined {
   if (!url || !url.startsWith('rediss://')) return undefined;
 
-  const caPath = process.env.REDIS_TLS_CA;
   if (!caPath) return undefined;
 
   try {

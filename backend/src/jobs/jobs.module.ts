@@ -36,7 +36,10 @@ export class JobsService implements OnModuleDestroy {
     // BullMQ proslijeđuje { url, ...rest } ioredis-u: rediss:// pali TLS,
     // a tls.ca (iz REDIS_TLS_CA) rješava "self-signed certificate in
     // certificate chain" prema privatnom Coolify CA-u.
-    this.connection = { url, ...buildRedisTlsOptions(url) };
+    this.connection = {
+      url,
+      ...buildRedisTlsOptions(url, process.env.REDIS_TLS_CA),
+    };
     this.emailQueue = new Queue('email', { connection: this.connection });
     this.worker = new Worker(
       'email',

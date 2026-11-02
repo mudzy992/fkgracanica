@@ -19,7 +19,7 @@ export class CacheService implements OnModuleDestroy {
       ? new Redis(url, {
           maxRetriesPerRequest: 1,
           lazyConnect: true,
-          ...buildRedisTlsOptions(url),
+          ...buildRedisTlsOptions(url, process.env.REDIS_TLS_CA),
         })
       : null;
     if (this.redis) {

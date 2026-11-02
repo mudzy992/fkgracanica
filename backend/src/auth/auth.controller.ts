@@ -9,6 +9,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { Throttle } from '@nestjs/throttler';
 import type { Request } from 'express';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
@@ -56,11 +57,16 @@ export class AuthController {
   }
 
   @Post('login')
+  // BE-01/Q-11(a) (odobreno): stroži limit na credential rutama (10 pokušaja/60s)
+  // — globalnih 100/60s vrijedi i ovdje kao gornja granica.
+  @Throttle({ default: { limit: 10, ttl: 60_000 } })
   login(@Body() dto: LoginDto, @Req() req: Request) {
     return this.authService.login(dto.email, dto.password, req.ip);
   }
 
   @Post('refresh')
+  // BE-01/Q-11(a): isti razlog kao login — brute-force zaštita tokena.
+  @Throttle({ default: { limit: 10, ttl: 60_000 } })
   refresh(@Body() dto: RefreshDto) {
     return this.authService.refresh(dto.refreshToken);
   }

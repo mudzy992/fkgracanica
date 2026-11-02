@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { APP_FILTER } from '@nestjs/core';
+import { APP_FILTER, APP_GUARD } from '@nestjs/core';
+import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { join } from 'path';
 import { PrismaModule } from './prisma/prisma.module';
 import { AuthModule } from './auth/auth.module';
@@ -45,6 +46,8 @@ import { AppReleasesModule } from './app-releases/app-releases.module';
 import { PublicAnalyticsModule } from './public-analytics/public-analytics.module';
 import { EmailLogModule } from './email-log/email-log.module';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
+import configuration from './config/configuration';
+import { validateEnv } from './config/env.validate';
 
 @Module({
   imports: [
@@ -54,6 +57,16 @@ import { HttpExceptionFilter } from './common/filters/http-exception.filter';
         join(__dirname, '..', '..', '.env'),
         join(__dirname, '..', '.env'),
       ],
+      // BE-01/P1+P2 (odobreno): tipizirana konfiguracija + fail-fast
+      // validacija obaveznih env varijabla (bez novih npm zavisnosti).
+      load: [configuration],
+      validate: validateEnv,
+    }),
+    // BE-01/Q-11(a) (odobreno): globalni rate limit 100 zahtjeva/60s po IP-u.
+    // Auth rute imaju stroži @Throttle (10/60s); `trust proxy` u main.ts je
+    // OBAVEZAN dio ove odluke (Coolify proxy = 1 hop).
+    ThrottlerModule.forRoot({
+      throttlers: [{ name: 'default', ttl: 60_000, limit: 100 }],
     }),
     PrismaModule,
     AuditModule,
@@ -98,6 +111,10 @@ import { HttpExceptionFilter } from './common/filters/http-exception.filter';
     PublicAnalyticsModule,
     EmailLogModule,
   ],
-  providers: [{ provide: APP_FILTER, useClass: HttpExceptionFilter }],
+  providers: [
+    { provide: APP_FILTER, useClass: HttpExceptionFilter },
+    // BE-01/Q-11(a): ThrottlerGuard kao globalni guard (APP_GUARD).
+    { provide: APP_GUARD, useClass: ThrottlerGuard },
+  ],
 })
 export class AppModule {}
