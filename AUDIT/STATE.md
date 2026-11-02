@@ -7,10 +7,10 @@
 | Polje | Vrijednost |
 |-------|------------|
 | **Aktivna grana** | `arena/290a6f13-fkgracanica` |
-| **Trenutna faza** | KAPIJA 2 odobrena → **segment CI-01** (u toku: push + CI verifikacija) |
-| **Trenutni segment** | **CI-01** — kod skripti i fixova gotov lokalno; čeka push + zelen run |
-| **Zadnji commit** | (vidi `git log -1`) |
-| **Zadnji CI run** | **N/A — prvi run tek nakon pusha CI-01** (raniji pushovi bez CI-ja, Q-06) | **stariji zapis:** N/A — nema runova: `gh run list` prazan, `.github/` ne postoji (F-002 → Q-06, segment CI-01). Pushovi do CI-01 su BEZ CI-a i to je eksplicitno evidentirano (Q-06). |
+| **Trenutna faza** | **CI-01 ZATVOREN** (2026-11-02) → sljedeći: **INF-01** (blokira Q-04/Q-05) |
+| **Trenutni segment** | nijedan otvoren (CI-01 zatvoren, vidi AUDIT/segments/CI-01.md) |
+| **Zadnji commit** | `9eb887c` fix(backend+ci): Socket generički… [CI-01] | |
+| **Zadnji CI run** | ✅ **`41463437281` success** (2026-11-02, grana arena/290a6f13-fkgracanica, 2m32s; sva 3 joba: audit-gate, standards, build-test) — https://github.com/mudzy992/fkgracanica/actions/runs/41463437281 ; 9 prethodnih runova ❌ → popravljeno (tabela u segments/CI-01.md): `gh run list` prazan, `.github/` ne postoji (F-002 → Q-06, segment CI-01). Pushovi do CI-01 su BEZ CI-a i to je eksplicitno evidentirano (Q-06). |
 | **check:all** | ne postoji kao `npm` skripta (Q-09); audit gate = `node scripts/audit/check-coverage.mjs` (lokalno; u CI-ju kao `audit-gate` job tek nakon CI-01) |
 
 ## Šta je urađeno (hronološki)
@@ -59,7 +59,7 @@
   - workflow matrice + segmenata dodan u `docs/CONVENTIONS.md`.
 - Push bez CI-ja (Q-06); `gh run list` i dalje prazan (F-002).
 
-### Sesija SEGMENT CI-01 — 2026-11-02 (u toku)
+### SEGMENT CI-01 — 2026-11-02 (ZATVOREN ✅)
 - KAPIJA 2 odobrena ("Odobravam") → Q-06 ✔, Q-09 ✔ (alati §4), Q-10 ✔ (u principu).
 - F-015: `npm ci` exit 0 (lock regenerisan + usklađen).
 - F-016/dual-core: `@tiptap/*@3.28.0` overrides + exact pin (frontend/mobile) — `npm ls` 0 invalid.
@@ -72,14 +72,19 @@
   (check:all 6/6), `.githooks/pre-push` + hooksPath, `docs/CI.md` ažuriran + badge.
 - Lokalno zeleno: npm ci, check:all 6/6, frontend build, frontend lint.
 - ⚠️ backend build/test/eslint + prisma generate **nije moguće lokalno** (binaries.prisma.sh
-  blokran) → verifikacija ide preko prvog CI runa.
+  blokran) → verifikacija preko CI-a.
+- **KRAJ: 9 runova ❌ → popravljeno → run `41463437281` ✅ ZELEN** (sva 3 joba).
+  Nalazi riješeni: F-015 ✓, F-016 dual-core ✓, **F-017** (FE build pokvaren — dual tiptap
+  tipovi) ✓, **F-018** (6 oxlint rules-of-hooks) ✓, + eslint debt (prettier 212 fajlova,
+  17 type-aware grešaka, zastarijeli newsInclude asert, unused importi).
+  Segment dokument: `AUDIT/segments/CI-01.md` (Status segmenta: ZATVOREN).
 
 ## Šta je sljedeće (tačan sljedeći korak)
 
-1. **CI-01 dovršiti:** push (3 commita) → `gh run watch` → zelen run → `Status segmenta: ZATVOREN`
-   + izvještaj korisniku.
-2. Ako run bude crven — krpati dok ne bude zelen (pravilo 3), pa tek onda zatvoriti segment.
-3. Sljedeći segment nakon CI-01: **INF-01…03** (traži Q-04, Q-05) → BE → FE → MOB → CI-02…04 → E2E-01.
+1. **INF-01** (compose/env audit) — ali INF-02 (tajne) čeka **Q-04**, INF-01/03 čekaju **Q-05**
+   → zamoliti korisnika za Q-04/Q-05 prije nego krene INF.
+2. Bez blokatora dalje: **BE-01** (error model/config/logging temelj) → BE-02…08 → FE → MOB.
+3. Svaki segment: `AUDIT/segments/<ID>.md` + matrica + zelen CI (sada postoji!) + izvještaj.
 
 ## Otvorena pitanja za korisnika (BLOKATORI)
 
