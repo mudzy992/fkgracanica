@@ -5,6 +5,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { tallyCampaignEmail } from '../newsletter/newsletter-campaign-tally';
 import { RealtimeGateway } from '../realtime/realtime.gateway';
 import { RealtimeModule } from '../realtime/realtime.module';
+import { ConfigService } from '@nestjs/config';
 import { buildRedisTlsOptions } from '../common/utils/redis-tls.util';
 
 export type EmailPayload = {
@@ -25,8 +26,10 @@ export class JobsService implements OnModuleDestroy {
   constructor(
     private readonly prisma: PrismaService,
     private readonly realtime: RealtimeGateway,
+    // BE-06: migracija s process.env na ConfigService (BE-01 P2 konvencija)
+    private readonly config: ConfigService,
   ) {
-    const url = process.env.REDIS_URL;
+    const url = this.config.get<string>('redisUrl');
     if (!url) {
       this.connection = null;
       this.emailQueue = null;
@@ -38,7 +41,7 @@ export class JobsService implements OnModuleDestroy {
     // certificate chain" prema privatnom Coolify CA-u.
     this.connection = {
       url,
-      ...buildRedisTlsOptions(url, process.env.REDIS_TLS_CA),
+      ...buildRedisTlsOptions(url, this.config.get<string>('redisTlsCa')),
     };
     this.emailQueue = new Queue('email', { connection: this.connection });
     this.worker = new Worker(

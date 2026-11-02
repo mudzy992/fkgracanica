@@ -12,8 +12,12 @@ import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { Server, Socket, DefaultEventsMap } from 'socket.io';
 import { PrismaService } from '../prisma/prisma.service';
+import configuration from '../config/configuration';
 
 type SocketData = { public?: boolean; userId?: string };
+
+/** BE-06/B-06-02: gornja granica `match:` soba po jednom socketu. */
+const MAX_MATCH_ROOMS = 32;
 type ClientSocket = Socket<
   DefaultEventsMap,
   DefaultEventsMap,
@@ -24,7 +28,9 @@ type ClientSocket = Socket<
 @WebSocketGateway({
   cors: { origin: true, credentials: true },
   namespace: '/realtime',
-  path: process.env.SOCKET_IO_PATH || '/socket.io',
+  // BE-06: čita se iz jedinog izvora (config/configuration.ts) — ista
+  // vrijednost kao prije (SOCKET_IO_PATH / '/socket.io').
+  path: configuration().socketIoPath,
 })
 export class RealtimeGateway
   implements OnGatewayConnection, OnGatewayDisconnect
@@ -81,7 +87,15 @@ export class RealtimeGateway
     @MessageBody() body: { matchId?: string },
   ) {
     if (!body?.matchId) return { ok: false };
-    client.join(`match:${body.matchId}`);
+    const room = `match:${body.matchId}`;
+    if (client.rooms.has(room)) return { ok: true, matchId: body.matchId };
+    // BE-06/B-06-02: WS nema HTTP throttler (BE-01 skipIf) → cap soba po
+    // socketu sprječava memory flood (anonimac može slati nasumične id-ove).
+    const matchRooms = [...client.rooms].filter((r) =>
+      r.startsWith('match:'),
+    ).length;
+    if (matchRooms >= MAX_MATCH_ROOMS) return { ok: false };
+    client.join(room);
     return { ok: true, matchId: body.matchId };
   }
 

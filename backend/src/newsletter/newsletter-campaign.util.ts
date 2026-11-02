@@ -1,5 +1,11 @@
+import configuration from '../config/configuration';
+
 export function newsletterPublicOrigin() {
-  const cors = process.env.CORS_ORIGINS?.split(',')
+  // BE-06: jedini izvor konfiguracije (config/configuration.ts) — u produkciji
+  // je CORS_ORIGINS uvijek postavljen → identično ponašanje; bez env-a
+  // configuration daje dev default (ranije: prod domen fallback).
+  const cors = configuration()
+    .corsOrigins?.split(',')
     .map((s) => s.trim())
     .filter(Boolean)[0];
   if (cors) return cors.replace(/\/$/, '');

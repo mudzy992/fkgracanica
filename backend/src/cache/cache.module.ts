@@ -6,6 +6,7 @@ import {
   OnModuleDestroy,
 } from '@nestjs/common';
 import Redis from 'ioredis';
+import { ConfigService } from '@nestjs/config';
 import { buildRedisTlsOptions } from '../common/utils/redis-tls.util';
 
 @Injectable()
@@ -13,13 +14,14 @@ export class CacheService implements OnModuleDestroy {
   private readonly logger = new Logger(CacheService.name);
   private readonly redis: Redis | null;
 
-  constructor() {
-    const url = process.env.REDIS_URL;
+  // BE-06: migracija s process.env na ConfigService (BE-01 P2 konvencija)
+  constructor(private readonly config: ConfigService) {
+    const url = this.config.get<string>('redisUrl');
     this.redis = url
       ? new Redis(url, {
           maxRetriesPerRequest: 1,
           lazyConnect: true,
-          ...buildRedisTlsOptions(url, process.env.REDIS_TLS_CA),
+          ...buildRedisTlsOptions(url, this.config.get<string>('redisTlsCa')),
         })
       : null;
     if (this.redis) {
