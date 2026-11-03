@@ -17,7 +17,7 @@
 |-----|----------|-------|
 | `audit-gate` | `node scripts/audit/check-coverage.mjs` | matrica pokrivenosti — svaki izvorni fajl mora imati red (pravilo 4) |
 | `standards` | `node scripts/standards/check-all.mjs` | file-size, console-ban, secrets-ban, layer-deps, docs-links (+ coverage) |
-| `build-test` | `npm ci` → `prisma generate` → `prisma validate` → backend `nest build` → jest unit → backend eslint → frontend `tsc -b && vite build` → oxlint | build + testovi slojeva |
+| `build-test` | `npm ci` → `prisma generate` → `prisma validate` → backend `nest build` → jest unit → backend eslint → frontend `tsc -b && vite build` → **vitest** → oxlint | build + testovi slojeva (frontend testovi od FE-02) |
 | `e2e` | `postgres:16` + `redis:7` servisi → `prisma migrate deploy` → `prisma:seed` (RBAC + settings + admin + demo) → `npm run test:e2e` | **BE-09c/P-B09c-4**: e2e suite (8 specova) se prije nije izvršavao nigdje; sada je pokriven u CI-ju |
 
 Sve skripte su **zero-dep** (node built-ins) — ne zavise od `node_modules` osim gdje je navedeno.
@@ -29,7 +29,7 @@ npm ci                      # F-015 — lock je usklađen (CI-01)
 npm run check:all           # sve audit provjere (6/6)
 npm run db:generate         # prisma generate (traži DATABASE_URL env — dummy ok)
 npm run build -w backend && npm run test -w backend
-npm run build -w frontend && npm run lint -w frontend
+npm run build -w frontend && npm run test -w frontend && npm run lint -w frontend
 npx eslint "{src,apps,libs,test}/**/*.ts"   # u backend/
 ```
 
@@ -39,7 +39,7 @@ npx eslint "{src,apps,libs,test}/**/*.ts"   # u backend/
 ## Budući koraci (ne blokiraju CI-01)
 
 - **CI-02** — coverage prag + health-wait u `e2e` jobu (servisi i seed su uvedeni u BE-09c).
-- **CI-03** — frontend test jobovi (vitest — dolazi s FE-02).
+- **CI-03** — bundle budget + odvojeni frontend job (vitest korak već postoji u `build-test`).
 - **CI-04** — mobile build + Maestro E2E (`needs: svi prethodni`).
 - `gitleaks` (binarka u CI-ju) i `npm audit --audit-level=high` — dodaju se kad prođu
   Q-09/INF-02 (trenutno secrets-ban pokriva F-001 klasu kao zero-dep provjera).

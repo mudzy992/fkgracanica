@@ -127,6 +127,8 @@ jobs:
           exit $code
       - name: frontend build (tsc -b + vite)
         run: npm run build -w frontend
+      - name: frontend test (vitest)
+        run: npm run test -w frontend
       - name: frontend lint (oxlint)
         run: npm run lint -w frontend
 

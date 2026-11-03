@@ -1,6 +1,6 @@
 # Frontend (web + admin)
 
-> Status: FE-01 zatvoren (design tokeni) · Ažurirano: 2026-11-03
+> Status: FE-01 (tokeni) + FE-02 (test infra) zatvoreni · Ažurirano: 2026-11-03
 
 ## Stack
 
@@ -23,23 +23,25 @@ frontend/src/
 ## Skripte (kompletne — nema drugih)
 
 ```bash
-npm run dev      # vite
-npm run build    # tsc -b && vite build
-npm run lint     # oxlint
+npm run dev         # vite
+npm run build       # tsc -b && vite build
+npm run lint        # oxlint
 npm run preview
+npm run test        # vitest run (FE-02; 9 fajla / 34 testa)
+npm run test:watch  # vitest watch
 ```
 
 ## Poznato stanje (iz brzog audita)
 
 | Tema | Stanje |
 |------|--------|
-| Testovi | ❌ **Nema test runner-a** (bez vitest/playwright/testing-library u package.json); postoji 1 spec fajl (`pages/admin/homes/commentator-desk.spec.ts`) pokretan ručno preko `npx tsx --test` (F-003, F-011) |
+| Testovi | ✅ **FE-02**: vitest + jsdom + @testing-library/react; 9 fajla / 34 testa; CI korak `frontend test (vitest)`; stari `node:test` spec migriran (F-003/F-011 zatvoreni) |
 | PWA | ✅ `public/manifest.json`, `sw.js`, `offline.html` |
 | Dark mode | ✅ `lib/theme.tsx` + CSS varijable |
 | i18n | ✅ bs default + en (`src/i18n`, `locales/`) |
 | A11y / vizuelni regression / bundle check | ❌ nema automatizacije |
 | Tokeni dizajna | ✅ **FE-01**: semantički tokeni u `src/index.css` (`@theme` = jedini izvor boja); provjera `scripts/standards/token-check.mjs` u `check:all` (7/7) |
-| `dark:` varijanta | ⚠️ aplikacija je dark-only (`<html class="dark">`, `ThemeProvider`), ali `dark:` klase još prate **OS** postavku (nema `@custom-variant dark`) — P-FE01-7 čeka odobrenje |
+| `dark:` varijanta | ✅ **P-FE01-7**: `@custom-variant dark (&:where(.dark, .dark *))` — `dark:` prati app temu (`<html class="dark">`), ne OS postavku; `token-check` to sada **traži** |
 | Sirova Tailwind paleta | ⚠️ 417 pojava (`bg-slate-900`, `text-amber-200`…) u 121 fajlu; ratchet baseline u `scripts/standards/baselines/token-palette.txt` (smije samo padati) — migracija ide uz FE-03/FE-04 |
 
 ## Design tokeni (FE-01)
