@@ -1,9 +1,15 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, Optional } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { mkdir, unlink, writeFile } from 'fs/promises';
 import { join, extname } from 'path';
 import { randomUUID } from 'crypto';
+import { CacheService } from '../cache/cache.module';
 import { ImageRenditionService } from './image-rendition.service';
+import {
+  UPLOAD_QUOTA_TTL_SECONDS,
+  assertUploadQuota,
+  uploadQuotaKey,
+} from './upload-quota.util';
 import { isImageMime, toPublicUrl } from './upload.util';
 
 /**
@@ -38,9 +44,28 @@ export class UploadService {
   constructor(
     private readonly config: ConfigService,
     private readonly renditions: ImageRenditionService,
+    // BE-09/P-B09-3: `@Optional()` — bez Redisa (testovi, lokalno) kvota se
+    // preskače; u produkciji CacheModule je `@Global` pa je uvijek prisutan.
+    @Optional() private readonly cache?: CacheService,
   ) {}
 
-  async saveFile(file: Express.Multer.File): Promise<SavedFile> {
+  /**
+   * BE-09/P-B09-3 (odobreno): dnevna kvota po korisniku (20/dan) uz throttling
+   * na ruti (10/min). Kvota se troši samo na USPJEŠAN upload.
+   */
+  private async consumeQuota(userId?: string) {
+    if (!userId || !this.cache) return;
+    const count = await this.cache.incr(
+      uploadQuotaKey(userId),
+      UPLOAD_QUOTA_TTL_SECONDS,
+    );
+    assertUploadQuota(count);
+  }
+
+  async saveFile(
+    file: Express.Multer.File,
+    userId?: string,
+  ): Promise<SavedFile> {
     // BE-04/P-B04-2: validacija PRIJE bilo kakvog upisa na disk.
     if (!file) {
       throw new BadRequestException('Nedostaje fajl');
@@ -71,6 +96,8 @@ export class UploadService {
       });
     const thumbPath = generated.thumbPath;
     const mediumPath = generated.mediumPath;
+
+    await this.consumeQuota(userId);
 
     return {
       filename,

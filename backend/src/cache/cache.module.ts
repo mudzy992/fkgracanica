@@ -46,6 +46,18 @@ export class CacheService implements OnModuleDestroy {
     await this.redis.set(`fk:${key}`, JSON.stringify(value), 'EX', ttlSeconds);
   }
 
+  /**
+   * BE-09/P-B09-3 (odobreno): atomski INCR sa TTL-om na prvom ključu (dnevne
+   * kvote). Vraća `null` kad Redis nije konfigurisan — pozivalac odlučuje.
+   */
+  async incr(key: string, ttlSeconds: number): Promise<number | null> {
+    if (!this.redis) return null;
+    const fullKey = `fk:${key}`;
+    const value = await this.redis.incr(fullKey);
+    if (value === 1) await this.redis.expire(fullKey, ttlSeconds);
+    return value;
+  }
+
   async del(key: string): Promise<void> {
     if (!this.redis) return;
     await this.redis.del(`fk:${key}`);
