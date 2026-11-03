@@ -10,6 +10,8 @@
  * `.env` (lokalni) i Coolify env (produkcija) ih već sadrže.
  */
 
+import { parseExpiresToMs } from '../common/utils/parse-expires.util';
+
 const REQUIRED = [
   'DATABASE_URL',
   'JWT_ACCESS_SECRET',
@@ -40,6 +42,19 @@ export function validateEnv(
     !/^\d+$/.test(port.trim())
   ) {
     throw new Error(`PORT mora biti cijeli broj (dobijeno: "${port.trim()}")`);
+  }
+
+  // BE-09/P-B09-5: trajanje refresh tokena se validira na bootu (fail-fast) —
+  // prije je neispravna vrijednost tiho padala na 15 min u runtime-u.
+  const refreshExpires = env.JWT_REFRESH_EXPIRES;
+  if (typeof refreshExpires === 'string' && refreshExpires.trim() !== '') {
+    try {
+      parseExpiresToMs(refreshExpires);
+    } catch (error) {
+      throw new Error(
+        `JWT_REFRESH_EXPIRES je neispravan: ${(error as Error).message}`,
+      );
+    }
   }
 
   return env;
