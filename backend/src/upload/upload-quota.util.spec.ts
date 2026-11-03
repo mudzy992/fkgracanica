@@ -1,7 +1,6 @@
 import { HttpException } from '@nestjs/common';
 import { UploadService } from './upload.service';
 import { ConfigService } from '@nestjs/config';
-import { ImageRenditionService } from './image-rendition.service';
 import {
   DAILY_UPLOAD_LIMIT,
   assertUploadQuota,
@@ -29,7 +28,7 @@ describe('upload kvota (BE-09 / P-B09-3)', () => {
     const config = { get: () => '/tmp/uploads' };
     return new UploadService(
       config as unknown as ConfigService,
-      renditions as unknown as ImageRenditionService,
+      renditions,
       cache as never,
     );
   };

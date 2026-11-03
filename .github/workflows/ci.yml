@@ -191,12 +191,20 @@ jobs:
       - name: e2e suite
         run: |
           set +e
-          npm run test:e2e -w backend -- --ci > /tmp/e2e.out 2>&1
+          npm run test:e2e -w backend -- --ci --json --outputFile=/tmp/e2e.json > /tmp/e2e.out 2>&1
           code=$?
           if [ $code -ne 0 ]; then
-            echo "::error title=e2e failed::$(grep -E '✕|●|Tests:|Suites:' /tmp/e2e.out | tail -40 | tr '\n' '|' | cut -c1-3400)"
-            tail -60 /tmp/e2e.out
-          else
             grep -E 'Tests:|Suites:' /tmp/e2e.out
+            node -e "
+              const r = require('/tmp/e2e.json');
+              const failed = r.testResults.flatMap((s) =>
+                s.assertionResults
+                  .filter((a) => a.status === 'failed')
+                  .map((a) => a.fullName + ' :: ' + (a.failureMessages[0] || '').split('\n').slice(0, 12).join(' ')),
+              );
+              const msg = (failed.join(' || ') || 'nema detalja').slice(0, 6000).replace(/[\r\n]+/g, ' ');
+              console.log('::error title=e2e failed::' + msg);
+            "
+            exit $code
           fi
-          exit $code
+          grep -E 'Tests:|Suites:' /tmp/e2e.out
