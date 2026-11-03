@@ -1,4 +1,12 @@
 @import "tailwindcss";
+
+/*
+ * FE-01/P-FE01-7 (odobreno): `dark:` se veže na `.dark` klasu, a NE na
+ * `prefers-color-scheme`. Aplikacija je dark-only (`<html class="dark">` +
+ * `lib/theme.tsx`), pa su `dark:` varijante dosad izgledale svjetlije
+ * korisnicima sa svijetlim OS-om.
+ */
+@custom-variant dark (&:where(.dark, .dark *));
 @import "./styles/premium-landing.css";
 
 /*

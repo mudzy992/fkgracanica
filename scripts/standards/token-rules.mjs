@@ -1,12 +1,10 @@
-/**
- * token-rules — pravila za `token-check` (segment FE-01); CLI je u `token-check.mjs`.
- *
+/** token-rules — pravila za `token-check` (FE-01); CLI je u `token-check.mjs`.
  * 1. undefined-var   — svaki `var(--x)` u `frontend/src/**` definisan u `index.css`
  * 2. hex-utility     — nema `bg-[#123456]` i sl. van allowliste
  * 3. hex-literal     — nema golog `#hex` u kodu/CSS-u (osim fallbacka `var(--t, #hex)` i maski)
  * 4. theme-source    — `:root` ne redefiniše `--color-*` (osim `--color-*-rgb`); boje samo u `@theme`
  * 5. palette-ratchet — broj sirovih palette klasa (`bg-slate-900`…) ≤ baseline
- * 6. dark-variant    — `dark:` klase traže `@custom-variant dark` (upozorenje, čeka odobrenje)
+ * 6. dark-variant    — `dark:` klase traže `@custom-variant dark` (app je dark-only)
  *
  * Detaljno obrazloženje: `AUDIT/segments/FE-01.md`.
  */
@@ -184,12 +182,14 @@ function run() {
     );
   }
 
-  // 6. dark varijanta (upozorenje — vidljiva promjena traži odobrenje)
+  // 6. dark varijanta — aplikacija je dark-only, `dark:` mora pratiti `.dark` klasu
   if (darkUsages > 0 && !hasCustomDark) {
-    warnings.push(
-      `dark-variant: ${darkUsages} \`dark:\` klasa, a \`index.css\` nema \`@custom-variant dark\` — ` +
-        '`dark:` trenutno prati OS postavku, ne `<html class="dark">` (FE-01 nalaz, čeka odobrenje)',
-    );
+    errors.push({
+      rule: 'token-check/dark-variant',
+      where: `${darkUsages} \`dark:\` klasa u frontend/src`,
+      why: 'bez `@custom-variant dark` Tailwind veže `dark:` na `prefers-color-scheme`, a app je dark-only',
+      how: 'dodaj `@custom-variant dark (&:where(.dark, .dark *));` u frontend/src/index.css',
+    });
   }
 
   return { errors, warnings, paletteTotal, baseline };
