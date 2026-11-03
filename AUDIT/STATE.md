@@ -8,12 +8,33 @@
 |-------|------------|
 | **Aktivna grana** | `arena/290a6f13-fkgracanica` |
 | **Trenutna faza** | CI-01 ✔ INF-01 ✔ INF-02 ✔ BE-01…**BE-09 ✔** → FE-01 ✔ FE-02 ✔ FE-03 ✔ **FE-03b ✔** → sljedeće: **FE-04** (admin audit) |
-| **Trenutni segment** | **FE-03b ✅ ZATVOREN** (i18n: 25 javnih stranica + home sekcije kroz `t()`, ~140 ključeva bs/en, guard test) ; prije: **FE-03 ✅**, **FE-02 ✅**, **FE-01 ✅**, **BE-09c ✅** |
+| **Trenutni segment** | **CI-04 (parcijalno)** — B-CI04-01 Coolify `npm ci` blokator riješen (jedan root lock); prije: **FE-03b ✅**, **FE-03 ✅**, **FE-02 ✅**, **FE-01 ✅**, **BE-09c ✅** |
 | **Zadnji commit** | `937d136` docs(audit): FE-03b i18n migracija + guard test [FE-03b] |
 | **Zadnji CI run** | ✅ **`41696508780` success** (`937d136` — FE-03b i18n migracija, sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41696508780 ; ✅ **`41694786018`** / **`41694299634`** / **`41693656143`** success (FE-03: XSS sanitizacija `dompurify`, `noindex`, prettier config) ; ✅ **`41671042459`** success (FE-03 implementacija) ; ✅ **`41668846835`** / **`41668139741`** (FE-02 vitest infra, korak `frontend test (vitest)` zelen) ; ✅ **`41666815620`** / **`41666291342`** / **`41665768088`** (FE-01 tokeni + `token-check` + `@custom-variant dark`) ; ✅ **`41663810393`** / **`41663339512`** / **`41662863623`** (BE-09 zatvaranje, novi `e2e` job 18/18) ; ranije BE serija: `41662277103`, `41661451237`❌→fix, `41660810750`❌→fix, `41658424979`, `41657925166`, `41655986522`, `41655487255`, `41654943345`, `41654422296`❌→fix, `41652033940`, `41651332872`, `41647575733`, `41646963311`, `41646330945`, `41644096377`❌/`41644777234`❌/`41645566467`❌→fix, `41640408790`, `41639946345`, `41638624709`, `41634063555`, `41630034505`, `41629707127`❌→fix, `41627914148`, `41583848187` |
 | **check:all** | `npm run check:all` → **7/7** (check-coverage, file-size, console-ban, **token-check**, secrets-ban, layer-deps, docs-links); u CI-ju jobovi `audit-gate` + `standards`; pre-push hook pokreće `check:all` |
 
 ## Šta je urađeno (hronološki)
+
+### HITNO — 2026-11-03 (Coolify build pao: `npm ci` EUSAGE)
+
+Javljeno: Coolify deploy `frontend` image pada na `RUN npm ci` — „lock file and
+package.json are not in sync", `Missing: vitest@5.1.0`, `dompurify@3.4.17` …
+
+- **B-CI04-01 (High, deploy blokiran) RIJEŠEN:** `frontend/Dockerfile` je gradio iz
+  `./frontend` sa **zasebnim** `frontend/package-lock.json`, koji `npm install -w`
+  nikad ne ažurira (npm workspace piše samo u root lock) → lock zarašao još od
+  FE-02/FE-03. Rješenje: **jedan lock** — `frontend.build.context: .` (root),
+  Dockerfile radi `npm ci` iz root locka pa `npm run build -w frontend`;
+  `frontend/package-lock.json` **obrisan**, dodan root `.dockerignore`,
+  `sync-docker-locks.sh` sada samo `backend`.
+- **Novi guard:** `scripts/standards/docker-context.mjs` (8. `check:all` provjera) —
+  pada ako `COPY` putanja ne postoji u kontekstu ili ako workspace koji se gradi iz
+  roota ima svoj lock. Dokazano pozitivnim testom.
+- Verifikacija: simuliran builder stage (`npm ci` + `npm run build -w frontend` u
+  root workspace tree-u) ✅; `npm ci --workspace frontend` dokazano **neispravan**
+  (tsc pada) → Dockerfile koristi pun `npm ci`. Detalji: `AUDIT/segments/CI-04.md`.
+- **PAŽNJA:** Coolify gradi sa grane **`main`** — dok fix ne dođe na `main`, deploy
+  će i dalje padati. `main` nije dobio ni FE-03/FE-03b izmjene.
 
 ### Sesija FE-03b — 2026-11-03 (i18n migracija javnog portala)
 

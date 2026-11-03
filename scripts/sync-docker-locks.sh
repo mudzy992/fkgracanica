@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
-# Regenerates workspace package-lock.json files used by Docker npm ci (standalone per package).
+# Regenerates standalone package-lock.json files used by Docker npm ci, for the
+# services that still build from their own directory context.
+#
+# CI-04 (2026-11-03): `frontend` više NIJE ovdje — frontend se gradi iz root
+# konteksta sa root `package-lock.json` (npm workspace), pa standalone lock ne
+# postoji i ne smije se vraćati (čuva ga `scripts/standards/docker-context.mjs`).
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 
@@ -15,4 +20,3 @@ sync_lock() {
 }
 
 sync_lock backend
-sync_lock frontend

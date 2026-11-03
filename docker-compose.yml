@@ -78,8 +78,10 @@ services:
     image: fkgracanica-frontend:prod
 
     build:
-      context: ./frontend
-      dockerfile: Dockerfile
+      # CI-04: kontekst je root repoa — build koristi root package-lock.json
+      # (npm workspace), isti lock koji koristi CI. Vidi frontend/Dockerfile.
+      context: .
+      dockerfile: frontend/Dockerfile
       args:
         VITE_API_URL: ${VITE_API_URL}
         VITE_REALTIME_URL: ${VITE_REALTIME_URL}

@@ -49,3 +49,15 @@ npx eslint "{src,apps,libs,test}/**/*.ts"   # u backend/
 
 `scripts/menu.sh` opcija "Popravka CI" **nije CI** — to je `sync-docker-locks.sh`
 (regeneracija lockova) — nalaz F-010.
+
+## Docker build kontekst (CI-04)
+
+`check:all` uključuje `docker-context` (8. provjera):
+- sve `COPY` putanje iz Dockerfile-ova moraju postojati u build kontekstu iz
+  `docker-compose.yml`,
+- workspace koji se gradi iz **root** konteksta (frontend) ne smije imati svoj
+  `package-lock.json` (drift vodi u `npm ci` EUSAGE na deployu — vidi
+  `AUDIT/segments/CI-04.md`).
+
+Napomena: CI **ne** gradi Docker image; build se prvi put izvršava na Coolify
+deployu (predlog **P-CI04-2**).

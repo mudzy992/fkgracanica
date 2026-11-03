@@ -2,6 +2,19 @@
 
 > Status: inicijalna verzija (FAZA 0/1) — dubinski INFRA segment tek slijedi · Ažurirano: 2026-11-02
 
+## Docker build konteksti (CI-04)
+
+| Servis | Kontekst | Lock |
+|--------|----------|------|
+| `backend` | `./backend` | `backend/package-lock.json` (standalone) |
+| `frontend` | `.` (root) | **root** `package-lock.json` (npm workspace); `frontend/package-lock.json` je obrisan i ne smije se vraćati |
+
+Zašto: `npm install -w frontend` piše samo u root lock, pa je standalone
+`frontend/package-lock.json` zarašao i srušio Coolify deploy (`npm ci` EUSAGE,
+B-CI04-01). Guard: `npm run check:all` pokreće `docker-context`, koji provjerava
+da sva `COPY` putanja postoje i da nema „stranog” locka za workspace koji se
+gradi iz root konteksta.
+
 ## Šta je implementirano
 
 ### Datoteke
@@ -15,7 +28,7 @@
 | `scripts/docker-prod-build.sh` | `docker compose build --pull` + prune dangling | AKTIVAN |
 | `scripts/setup-upload-dir.sh` | Priprema upload direktorija na hostu (chown) | AKTIVAN |
 | `scripts/rotate-secrets.sh` | Rotacija JWT sekreta + ADMIN_PASSWORD u `.env` | AKTIVAN |
-| `scripts/sync-docker-locks.sh` | Regeneracija standalone `package-lock.json` (za Docker `npm ci`) | AKTIVAN |
+| `scripts/sync-docker-locks.sh` | Regeneracija standalone `package-lock.json` — **samo `backend`**; frontend se gradi iz root konteksta (CI-04) | AKTIVAN |
 
 ### Coolify produkcija (`docker-compose.yml`)
 

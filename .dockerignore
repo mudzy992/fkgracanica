@@ -1,0 +1,14 @@
+# CI-04: frontend se gradi iz root konteksta (npm workspace) — ne šalji ono što
+# build ne koristi i što bi samo povećalo kontekst.
+.git
+**/node_modules
+**/dist
+**/.expo
+**/coverage
+**/*.log
+uploads
+AUDIT
+docs
+scripts
+.env
+.env.*

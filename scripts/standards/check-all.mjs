@@ -12,6 +12,7 @@
  *   4. secrets-ban               — nema novih tajni u trackanim fajlovima
  *   5. layer-deps                — nema cross-layer importa
  *   6. docs-links                — nema mrtvih relativnih linkova u docs/ i README
+ *   7. docker-context            — Docker build kontekst: COPY putanje postoje, nema stranog locka
  *
  * Izlaz: KOJE / GDJE / ZAŠTO / KAKO po odstupanju; exit 1 ako bilo koji check padne.
  */
@@ -30,6 +31,7 @@ const CHECKS = [
   { name: 'secrets-ban', script: join(HERE, 'secrets-ban.mjs') },
   { name: 'layer-deps', script: join(HERE, 'layer-deps.mjs') },
   { name: 'docs-links', script: join(HERE, 'docs-links.mjs') },
+  { name: 'docker-context', script: join(HERE, 'docker-context.mjs') },
 ];
 
 function main() {

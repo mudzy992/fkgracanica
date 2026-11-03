@@ -1,22 +1,36 @@
 # syntax=docker/dockerfile:1
-# INF-01 (I-01-08): bez `npm install --package-lock-only` — gradnja više ne
-# regenerise package-lock.json unutar slike (lock u repoju je izvor istine,
-# `npm ci` ionako poštuje postojeći lock).
+# INF-01 (I-01-08): bez `npm install --package-lock-only` — gradnja ne
+# regeneriše lock unutar slike.
+#
+# CI-04 (2026-11-03): build koristi **root** `package-lock.json` (monorepo je npm
+# workspace: `backend`, `frontend`, `mobile`). Do sada je kontekst bio
+# `./frontend` sa zasebnim `frontend/package-lock.json` koji `npm install -w`
+# nikad ne ažurira → lock je zarašao (nema vitest/jsdom/dompurify) i `npm ci`
+# je padao na Coolify deployu. Sada je lock jedan (root) i identičan onome koji
+# CI koristi, pa se build i testovi nikad ne razilaze.
 
 FROM node:22-alpine AS builder
 
 WORKDIR /app
 
+# Manifesti svih workspace-a: `npm ci` validira cijeli tree iz root locka.
 COPY package.json package-lock.json ./
+COPY backend/package.json ./backend/
+COPY frontend/package.json ./frontend/
+COPY mobile/package.json ./mobile/
 
-RUN npm ci
+RUN npm ci --no-audit --no-fund
 
-COPY . .
+COPY frontend ./frontend
 
 ARG VITE_API_URL
 ENV VITE_API_URL=$VITE_API_URL
+ARG VITE_REALTIME_URL
+ENV VITE_REALTIME_URL=$VITE_REALTIME_URL
+ARG VITE_SOCKET_IO_PATH
+ENV VITE_SOCKET_IO_PATH=$VITE_SOCKET_IO_PATH
 
-RUN npm run build
+RUN npm run build -w frontend
 
 
 FROM node:22-alpine AS runner
@@ -25,8 +39,8 @@ WORKDIR /app
 
 RUN npm install express@4.21.2
 
-COPY --from=builder /app/dist ./dist
-COPY server ./server
+COPY --from=builder /app/frontend/dist ./dist
+COPY frontend/server ./server
 
 # INF-01 (I-01-02): runner NE smije biti root — non-root `node` korisnik.
 # Server je read-only (samo čita dist/index.html), sluša port 3000 (>1024),
