@@ -7,10 +7,10 @@
 | Polje | Vrijednost |
 |-------|------------|
 | **Aktivna grana** | `arena/290a6f13-fkgracanica` |
-| **Trenutna faza** | CI-01 ✔ INF-01 ✔ INF-02 ✔ BE-01…**BE-08 ✔** → **BE-09 u toku (backend zaostaci — audit)** |
-| **Trenutni segment** | **BE-09** (backend zaostaci — fajlovi koji nisu ušli u BE-01…BE-08) — audit u toku; posljednji zatvoren **BE-08** |
+| **Trenutna faza** | CI-01 ✔ INF-01 ✔ INF-02 ✔ BE-01…**BE-08 ✔** → **BE-09 u toku (BE-09a audit ✔, čekaju se odluke P-B09-1…8)** |
+| **Trenutni segment** | **BE-09a** (backend zaostaci: common/rbac/users/auth/prisma — 29 fajlova) — audit ✔, 8 predloga čeka odluku; posljednji zatvoren **BE-08** |
 | **Zadnji commit** | `86b3179` docs(audit): BE-08 implementirani odobreni predlozi + matrica [BE-08] |
-| **Zadnji CI run** | ✅ **`41638624709` success** (`86b3179` — BE-08 implementacija P-B08-1/2/3/4/5/7, sva 3 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41638624709 ; ranije ✅ **`41634063555` success** (`ed4df65` — BE-08 audit docs, sva 3 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41634063555 ; ranije ✅ **`41630034505` success** (`7b00aa9` — idempotencija + Q-15 + P-B07-6, sva 3 joba, 203 testa) https://github.com/mudzy992/fkgracanica/actions/runs/41630034505 ; ❌ `41629707127` (`19bf9ed` — 1 test tvrdio staro `includeMembership` ponašanje → popravljeno); ✅ `41627914148` (`c16385f`); ❌ `41627571734` (TS2724 import `PaymentProviderId`); ✅ BE-07 audit `41583848187`/`41584048206`/`41584323691` |
+| **Zadnji CI run** | ✅ **`41639946345` success** (`719423d` — zatvaranje BE-08, sva 3 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41639946345 ; ✅ **`41638624709` success** (`86b3179` — BE-08 implementacija P-B08-1/2/3/4/5/7, sva 3 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41638624709 ; ranije ✅ **`41634063555` success** (`ed4df65` — BE-08 audit docs, sva 3 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41634063555 ; ranije ✅ **`41630034505` success** (`7b00aa9` — idempotencija + Q-15 + P-B07-6, sva 3 joba, 203 testa) https://github.com/mudzy992/fkgracanica/actions/runs/41630034505 ; ❌ `41629707127` (`19bf9ed` — 1 test tvrdio staro `includeMembership` ponašanje → popravljeno); ✅ `41627914148` (`c16385f`); ❌ `41627571734` (TS2724 import `PaymentProviderId`); ✅ BE-07 audit `41583848187`/`41584048206`/`41584323691` |
 | **check:all** | `npm run check:all` → **6/6** (check-coverage, file-size, console-ban, secrets-ban, layer-deps, docs-links); u CI-ju jobovi `audit-gate` + `standards`; pre-push hook pokreće `check:all` |
 
 ## Šta je urađeno (hronološki)
@@ -335,12 +335,44 @@
 - Backlog nakon zatvaranja: **P-B08-6** (pretraga, vidljivo — nije odobreno),
   Info nalazi B-08-08…B-08-11 (prihvaćeni kao stanje).
 
+### SEGMENT BE-09 — 2026-11-03 (U TOKU — BE-09a audit završen ✅)
+
+- **Zašto**: nakon BE-08 matrica je pokazivala **59 backend fajlova bez segmenta**
+  (48 u `backend/src`, 1.948 LOC) — moduli BE-02/BE-04 pregledani su tada samo
+  djelimično. BE-09 ih zatvara u dva podsegmenta.
+- **BE-09a opseg (29 fajlova)**: `common/` (12), `rbac/` (4), `users/` (4),
+  `auth/` (8), `prisma/prisma.module.ts`.
+- **BE-09b (sljedeća sesija, 20 fajlova)**: `cms/` (5), `news/` (5),
+  `gallery/` (2), `media/` (3), `upload/` (4), `prisma` util.
+- **Nalazi BE-09a: 2 Medium + 5 Low + 4 Info + 1 ✅ blok**:
+  - **B-09-01 (Medium)** RBAC `updateRolePermissions`/`deleteRole` bez
+    transakcije → uloga može ostati **bez ijedne dozvole**;
+  - **B-09-02 (Medium)** `UsersService.update` nije atomska, duplikat emaila →
+    **500** (treba 409), `roleIds` bez validacije → 500;
+  - Low: `POST /upload` (avatar) bez dozvole/kvote (16 MB × 100/min),
+    `slugify` mrvi `đ/Đ`, `parseExpiresToMs` tihi default bez gornje granice,
+    `sort` u `PaginatedQueryDto` je mrtav API, `PermissionsGuard` fail-open na
+    praznu listu + nema audita 403;
+  - Info: nema refresh-token reuse detection/cleanup, brisanje avatar fajlova
+    prije DB update-a, `syncPermissions` bez batch transakcije, dupli upit za
+    dozvole (`getUserPermissions` vs `JwtStrategy`);
+  - ✅ zdravo: **0 drifta dozvola** (kod ↔ `PERMISSIONS`), `@Throttle(10/60s)`
+    na login/refresh, DB provjera `isActive/deletedAt` na svakom zahtjevu,
+    login ne odaje email, Administrator/sistemske role zaštićene, traversal
+    guard za avatar, `limit` clamp 100.
+- **Predlozi P-B09-1…8** čekaju izričitu riječ korisnika (P-B09-3/4/6 su
+  vidljivi → bez odobrenja se ne diraju).
+- Matrica: **29 redova → BE-09** (status `pregledano`); ostalo bez segmenta:
+  **20 fajlova** (BE-09b).
+- Segment dokument: `AUDIT/segments/BE-09.md`.
+
 ## Šta je sljedeće (tačan sljedeći korak)
 
-1. **BE-08** — implementacija odobrenih predloga ✔ lokalno; sljedeće:
-   push + `gh run watch` + run ID ovdje → izvještaj → **BE-09**
-   (ili zatvaranje BE-08 ako korisnik potvrdi). Backlog (ne blokira):
-   **P-B08-6**, P-B06-1/2, P-B02-1/2/3, P-B03-1, B-07-10…13.
+1. **BE-09a** — audit ✔; sljedeće: **odluka o P-B09-1…8** → implementacija
+   (P-B09-1/2/5/7/8 su invisible; P-B09-3/4/6 vidljivi → samo uz odobrenje),
+   zatim **BE-09b** (20 fajlova: cms/news/gallery/media/upload).
+   Backlog (ne blokira): **P-B08-6**, P-B06-1/2, P-B02-1/2/3, P-B03-1,
+   B-07-10…13.
    ⚠️ Deploy: potreban `prisma migrate deploy` za `20261103120000_…`
    (PaymentEvent + Payment.membershipId).
 2. Zatim BE-02…08 → FE → MOB → CI-02/03/04 → E2E-01 (INF-03 paralelno kad zatreba).
