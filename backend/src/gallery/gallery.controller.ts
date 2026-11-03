@@ -60,7 +60,10 @@ export class GalleryController {
   @UseGuards(PermissionsGuard)
   @RequirePermissions('gallery.manage')
   @ApiBearerAuth()
-  update(@Param('id') id: string, @Body() body: Record<string, unknown>) {
+  update(
+    @Param('id') id: string,
+    @Body() body: { title?: string; description?: string | null },
+  ) {
     return this.galleryService.update(id, body);
   }
 
@@ -95,8 +98,8 @@ export class GalleryController {
   @UseGuards(PermissionsGuard)
   @RequirePermissions('gallery.manage')
   @ApiBearerAuth()
-  removePhoto(@Param('photoId') photoId: string) {
-    return this.galleryService.removePhoto(photoId);
+  removePhoto(@Param('id') id: string, @Param('photoId') photoId: string) {
+    return this.galleryService.removePhoto(id, photoId);
   }
 
   @Delete(':id')

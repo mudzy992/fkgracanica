@@ -1,6 +1,6 @@
 import { Test } from '@nestjs/testing';
 import { BadRequestException } from '@nestjs/common';
-import { mkdtemp, rm } from 'node:fs/promises';
+import { mkdtemp, readdir, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { ConfigService } from '@nestjs/config';
@@ -82,6 +82,33 @@ describe('UploadService — validacija (BE-04/P-B04-2)', () => {
     await expect(
       service.saveFile(file('datoteka', 'image/png')),
     ).rejects.toBeInstanceOf(BadRequestException);
+  });
+
+  it('BE-09b/P-B09b-11: odbija tip koji nije na allowlisti (npr. image/tiff)', async () => {
+    await expect(
+      service.saveFile(file('slika.tiff', 'image/tiff')),
+    ).rejects.toBeInstanceOf(BadRequestException);
+  });
+
+  it('BE-09b/P-B09b-10: pad rendicija briše original (prije: siroče na disku)', async () => {
+    renditionsMock.generate.mockRejectedValueOnce(new Error('sharp pukao'));
+    const config = {
+      get: (key: string) => (key === 'uploadPath' ? uploadRoot : undefined),
+    };
+    const module = await Test.createTestingModule({
+      providers: [
+        UploadService,
+        { provide: ConfigService, useValue: config },
+        { provide: ImageRenditionService, useValue: renditionsMock },
+      ],
+    }).compile();
+    const local = module.get(UploadService);
+
+    await expect(
+      local.saveFile(file('foto.jpg', 'image/jpeg')),
+    ).rejects.toThrow('sharp pukao');
+
+    expect(await readdir(join(uploadRoot, 'originals'))).toEqual([]);
   });
 
   it('prihvata validnu sliku → upis + rendicije + url', async () => {

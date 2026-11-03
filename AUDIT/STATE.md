@@ -7,8 +7,8 @@
 | Polje | Vrijednost |
 |-------|------------|
 | **Aktivna grana** | `arena/290a6f13-fkgracanica` |
-| **Trenutna faza** | CI-01 ✔ INF-01 ✔ INF-02 ✔ BE-01…**BE-08 ✔** → **BE-09 u toku (BE-09a ✔ ZATVOREN; BE-09b audit ✔ — čeka odobrenje predloga)** |
-| **Trenutni segment** | **BE-09b** (cms/news/gallery/media/upload — 20 fajlova) — **audit ZAVRŠEN**, 12 nalaza + 13 predloga; **čeka odobrenje korisnika** za implementaciju; **BE-09a ✅ ZATVOREN** (2026-11-03) |
+| **Trenutna faza** | CI-01 ✔ INF-01 ✔ INF-02 ✔ BE-01…**BE-08 ✔** → **BE-09 u toku (BE-09a ✔ ZATVOREN; BE-09b implementiran ✔ — čeka zelen CI)** |
+| **Trenutni segment** | **BE-09b** (cms/news/gallery/media/upload — 20 fajlova) — **implementirano 13/13 odobrenih predloga** (odobrenje 2026-11-03: „po preporuci… nastaviti dalje"), **78 novih testova**; čeka zelen CI i zatvaranje; **BE-09a ✅ ZATVOREN** (2026-11-03) |
 | **Zadnji commit** | `86b3179` docs(audit): BE-08 implementirani odobreni predlozi + matrica [BE-08] |
 | **Zadnji CI run** | ✅ **`41652033940` success** (`96f1833` — BE-09b nalazi/predlozi + matrica, sva 3 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41652033940 ; ✅ **`41651332872` success** (`2ab4675` — zatvaranje BE-09a u dokumentaciji, sva 3 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41651332872 ; ✅ **`41647575733` success** (`2591b39` — run-ID, sva 3 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41647575733 ; ✅ **`41646963311` success** (`28fb5f2` — BE-09a docs/run-ID, sva 3 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41646963311 ; ✅ **`41646330945` success** (`d1d261d` — BE-09a implementacija, sva 3 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41646330945 ; ❌ `41644096377` (`3a78c94` — DI: PermissionsGuard tražio AuditService u controller specovima), ❌ `41644777234` (`b9d3bdf` — eslint unsafe-* u novim specovima), ❌ `41645566467` (`fd41c42` — matcher u users-account specu) — sve tri popravljeno; ranije ✅ **`41640408790` success** (`ff833ce` — BE-09a audit, sva 3 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41640408790 ; ✅ **`41639946345` success** (`719423d` — zatvaranje BE-08, sva 3 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41639946345 ; ✅ **`41638624709` success** (`86b3179` — BE-08 implementacija P-B08-1/2/3/4/5/7, sva 3 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41638624709 ; ranije ✅ **`41634063555` success** (`ed4df65` — BE-08 audit docs, sva 3 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41634063555 ; ranije ✅ **`41630034505` success** (`7b00aa9` — idempotencija + Q-15 + P-B07-6, sva 3 joba, 203 testa) https://github.com/mudzy992/fkgracanica/actions/runs/41630034505 ; ❌ `41629707127` (`19bf9ed` — 1 test tvrdio staro `includeMembership` ponašanje → popravljeno); ✅ `41627914148` (`c16385f`); ❌ `41627571734` (TS2724 import `PaymentProviderId`); ✅ BE-07 audit `41583848187`/`41584048206`/`41584323691` |
 | **check:all** | `npm run check:all` → **6/6** (check-coverage, file-size, console-ban, secrets-ban, layer-deps, docs-links); u CI-ju jobovi `audit-gate` + `standards`; pre-push hook pokreće `check:all` |
@@ -403,13 +403,31 @@
   u `backend/src`; bez segmenta ostaje **49 fajlova** (`prisma/seed`,
   migracije, `backend/test/**` e2e, `Dockerfile`, `prisma.config.ts`) —
   predlog **BE-09c**.
+### BE-09b — implementacija (2026-11-03)
+
+- **Korisnik odobrio SVE P-B09b-1…13** („Po preporuci možeš postupiti i po
+  pitanju ovih blokatora, i nastaviti dalje").
+- Implementirano: gallery allowlist + 404/400 (P-B09b-1/9), menus
+  `$transaction` + validacija `parentId` (2), reorder scoping (3), scheduler
+  overlap/try-catch/uslovni update (4), news transakcija sa tagovima i
+  relacijama (5), widget 400 + pravila po tipu (6), kategorije 409 (7),
+  `CommentCreateDto` (8), rendition čišćenje + 400 (10), MIME allowlist (11),
+  `deleteStoredFiles` traversal + log (12), **78 novih testova** (13).
+- Refaktor: `cms-pages.service.ts` 211 → **188 linija** (auto-SEO u
+  `cms/cms-auto-seo.util.ts`).
+- Matrica: **30 redova ažurirano** (`popravljeno`/`pokriveno testom`),
+  **14 novih fajlova** dodano.
+- **Vidljive promjene (odobrene):** 403→400 za neispravnu widget konfiguraciju,
+  500→409 za duplikat sluga kategorije, 500→400/404 za galeriju i komentare,
+  `PATCH /gallery/:id` ignoriše `status`/`slug`.
 - Segment dokument: `AUDIT/segments/BE-09.md`.
 
 ## Šta je sljedeće (tačan sljedeći korak)
 
-1. **BE-09b — čeka odobrenje korisnika** za P-B09b-1…13 (audit ✔, matrica ✔).
-   Nakon odobrenja: implementacija → testovi → zelen CI → zatvaranje BE-09b
-   i segmenta BE-09 (ili odluka o BE-09c: `prisma/`, e2e, Dockerfile).
+1. **BE-09b** — implementacija ✔ + testovi ✔; čeka **zelen CI** i upis run-ID-a
+   → zatvaranje BE-09b. Zatim odluka o **BE-09c** (49 fajlova: `prisma/seed`,
+   migracije, `backend/test/**` e2e, `Dockerfile`, `prisma.config.ts`) ili prelaz
+   na **FE-01**.
    Backlog (ne blokira): **P-B08-6**, P-B06-1/2, P-B02-1/2/3, P-B03-1,
    B-07-10…13.
    ⚠️ Deploy: potreban `prisma migrate deploy` za `20261103120000_…`

@@ -88,21 +88,26 @@ export class NewsService {
     );
     const { tags, relatedMatchIds, relatedPlayerIds, scheduledAt, ...rest } =
       data;
-    const item = await this.prisma.news.create({
-      data: {
-        ...rest,
-        slug,
-        status: ContentStatus.DRAFT,
-        scheduledAt: scheduledAt ? new Date(scheduledAt) : undefined,
-      },
+    // BE-09b/P-B09b-5: vijest + tagovi + relacije u JEDNOJ transakciji —
+    // prije je pad `createMany`-a ostavljao vijest bez tagova.
+    const item = await this.prisma.$transaction(async (tx) => {
+      const created = await tx.news.create({
+        data: {
+          ...rest,
+          slug,
+          status: ContentStatus.DRAFT,
+          scheduledAt: scheduledAt ? new Date(scheduledAt) : undefined,
+        },
+      });
+      await syncNewsTags(tx, created.id, tags);
+      await syncNewsRelations(
+        tx,
+        created.id,
+        relatedMatchIds,
+        relatedPlayerIds,
+      );
+      return created;
     });
-    await syncNewsTags(this.prisma, item.id, tags);
-    await syncNewsRelations(
-      this.prisma,
-      item.id,
-      relatedMatchIds,
-      relatedPlayerIds,
-    );
     return this.findOne(item.id);
   }
 
@@ -117,9 +122,12 @@ export class NewsService {
     }
     if (update.scheduledAt)
       update.scheduledAt = new Date(update.scheduledAt as string);
-    await this.prisma.news.update({ where: { id }, data: update });
-    await syncNewsTags(this.prisma, id, tags);
-    await syncNewsRelations(this.prisma, id, relatedMatchIds, relatedPlayerIds);
+    // BE-09b/P-B09b-5: update + tagovi + relacije atomarno.
+    await this.prisma.$transaction(async (tx) => {
+      await tx.news.update({ where: { id }, data: update });
+      await syncNewsTags(tx, id, tags);
+      await syncNewsRelations(tx, id, relatedMatchIds, relatedPlayerIds);
+    });
     return this.findOne(id);
   }
 

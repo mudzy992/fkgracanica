@@ -33,6 +33,13 @@ export class GalleryService {
     return item;
   }
 
+  /** BE-09b/P-B09b-9: 404 umjesto Prisma P2025 (500) na nepostojeći ID. */
+  private async ensure(id: string) {
+    const item = await this.prisma.gallery.findUnique({ where: { id } });
+    if (!item) throw new NotFoundException('Galerija nije pronađena');
+    return item;
+  }
+
   async create(data: { title: string; description?: string }) {
     const slug = await this.uniqueSlug(slugify(data.title));
     return this.prisma.gallery.create({
@@ -40,15 +47,32 @@ export class GalleryService {
     });
   }
 
-  async update(id: string, data: Record<string, unknown>) {
-    const update: Record<string, unknown> = { ...data };
-    if (typeof data.title === 'string') {
+  /**
+   * BE-09b/P-B09b-1: allowlist — `status`, `slug`, `createdAt` i `id` se ne
+   * mogu mijenjati kroz `PATCH /gallery/:id` (status ide kroz `/:id/status`
+   * uz dozvolu `gallery.approve`). Prije je `{ ...data }` išao pravo u Prisma.
+   */
+  async update(
+    id: string,
+    data: { title?: string; description?: string | null },
+  ) {
+    await this.ensure(id);
+    const update: {
+      title?: string;
+      description?: string | null;
+      slug?: string;
+    } = {};
+    if (data.title !== undefined) {
+      update.title = data.title;
       update.slug = await this.uniqueSlug(slugify(data.title), id);
     }
+    if (data.description !== undefined) update.description = data.description;
+    if (!Object.keys(update).length) return this.ensure(id);
     return this.prisma.gallery.update({ where: { id }, data: update });
   }
 
-  updateStatus(id: string, status: ContentStatus) {
+  async updateStatus(id: string, status: ContentStatus) {
+    await this.ensure(id);
     return this.prisma.gallery.update({ where: { id }, data: { status } });
   }
 
@@ -56,6 +80,7 @@ export class GalleryService {
     galleryId: string,
     data: { path: string; caption?: string; sortOrder?: number },
   ) {
+    await this.ensure(galleryId);
     const sortOrder =
       data.sortOrder ??
       ((
@@ -69,7 +94,14 @@ export class GalleryService {
     });
   }
 
-  removePhoto(photoId: string) {
+  /** BE-09b/P-B09b-9: fotografija mora pripadati galeriji iz putanje. */
+  async removePhoto(galleryId: string, photoId: string) {
+    const photo = await this.prisma.galleryPhoto.findUnique({
+      where: { id: photoId },
+    });
+    if (!photo || photo.galleryId !== galleryId) {
+      throw new NotFoundException('Fotografija nije pronađena');
+    }
     return this.prisma.galleryPhoto.delete({ where: { id: photoId } });
   }
 
@@ -84,7 +116,8 @@ export class GalleryService {
     );
   }
 
-  remove(id: string) {
+  async remove(id: string) {
+    await this.ensure(id);
     return this.prisma.gallery.delete({ where: { id } });
   }
 

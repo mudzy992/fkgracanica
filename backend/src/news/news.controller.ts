@@ -15,6 +15,7 @@ import { ContentStatus } from '@prisma/client';
 import { NewsService } from './news.service';
 import { NewsCategoriesService } from './news-categories.service';
 import { CommentsService } from './comments.service';
+import { CommentCreateDto } from './dto/comment-create.dto';
 import { PermissionsGuard } from '../common/guards/permissions.guard';
 import { RequirePermissions } from '../common/decorators/permissions.decorator';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
@@ -73,10 +74,10 @@ export class NewsController {
   @ApiBearerAuth()
   createComment(
     @Param('newsId') newsId: string,
-    @Body('content') content: string,
+    @Body() body: CommentCreateDto,
     @CurrentUser() user: AuthUser,
   ) {
-    return this.commentsService.create(newsId, user, content);
+    return this.commentsService.create(newsId, user, body.content);
   }
 
   @Delete('comments/:commentId')

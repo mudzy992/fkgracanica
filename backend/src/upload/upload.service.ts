@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { mkdir, writeFile } from 'fs/promises';
+import { mkdir, unlink, writeFile } from 'fs/promises';
 import { join, extname } from 'path';
 import { randomUUID } from 'crypto';
 import { ImageRenditionService } from './image-rendition.service';
@@ -60,17 +60,17 @@ export class UploadService {
     await mkdir(join(uploadRoot, 'originals'), { recursive: true });
     await writeFile(join(uploadRoot, relativePath), file.buffer);
 
-    let thumbPath: string | null = null;
-    let mediumPath: string | null = null;
-    if (isImageMime(file.mimetype)) {
-      const generated = await this.renditions.generate(
-        file.buffer,
-        relativePath,
-        uploadRoot,
-      );
-      thumbPath = generated.thumbPath;
-      mediumPath = generated.mediumPath;
-    }
+    // BE-09b/P-B09b-10: rendicije se generišu uvijek (validacija iznad je već
+    // garantirala sliku) i bez „mrtve” grane. Ako generisanje padne, original
+    // se briše — prije je ostajao kao siroče na disku.
+    const generated = await this.renditions
+      .generate(file.buffer, relativePath, uploadRoot)
+      .catch(async (error: unknown) => {
+        await unlink(join(uploadRoot, relativePath)).catch(() => undefined);
+        throw error;
+      });
+    const thumbPath = generated.thumbPath;
+    const mediumPath = generated.mediumPath;
 
     return {
       filename,

@@ -1,5 +1,10 @@
 import type { Prisma } from '@prisma/client';
-import type { PrismaService } from '../prisma/prisma.service';
+
+/** Podskup Prisma klijenta koji dijele `PrismaService` i `tx` u transakciji. */
+export type NewsRelationsClient = Pick<
+  Prisma.TransactionClient,
+  'newsTag' | 'newsMatch' | 'newsPlayer'
+>;
 
 export const newsInclude = {
   category: true,
@@ -14,8 +19,13 @@ export const newsInclude = {
   },
 } satisfies Prisma.NewsInclude;
 
+/**
+ * BE-09b/P-B09b-5: prima i `PrismaService` i transakcijski klijent — poziva se
+ * unutar `$transaction`-a zajedno sa `news.create/update`, pa pad
+ * `createMany`-a vraća i same tagove (prije: vijest bez ijednog taga).
+ */
 export async function syncNewsTags(
-  prisma: PrismaService,
+  prisma: NewsRelationsClient,
   newsId: string,
   tags?: string[],
 ) {
@@ -30,7 +40,7 @@ export async function syncNewsTags(
 }
 
 export async function syncNewsRelations(
-  prisma: PrismaService,
+  prisma: NewsRelationsClient,
   newsId: string,
   matchIds?: string[],
   playerIds?: string[],
