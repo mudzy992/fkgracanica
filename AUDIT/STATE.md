@@ -7,10 +7,10 @@
 | Polje | Vrijednost |
 |-------|------------|
 | **Aktivna grana** | `arena/290a6f13-fkgracanica` |
-| **Trenutna faza** | CI-01 ✔ INF-01 ✔ INF-02 ✔ BE-01…BE-06 ✔ → **BE-07: svi predlozi implementirani (P-B07-1…7 + Q-15), čeka zelen CI za zatvaranje** |
-| **Trenutni segment** | **BE-07** (članstvo + ulaznice + plaćanja) — implementirano **P-B07-1…7** + **Q-15** (PaymentEvent, Payment.membershipId, pravila povrata); čeka se zelen CI → ZATVOREN |
-| **Zadnji commit** | `c16385f` fix(payments): PaymentProviderId iz provider-gate.util [BE-07] |
-| **Zadnji CI run** | ✅ **`41627914148` success** (`c16385f` — 5 fixeva + tip, sva 3 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41627914148 ; ❌ `41627571734` (`657dda0` — build pao: `PaymentProviderId` importovan iz pogrešnog fajla, TS2724 → popravljeno `c16385f`); ranije: BE-07 audit `41583848187` ✅ / `41584048206` ✅ / `41584323691` ✅, BE-06 `41539179038` ✅, `41538504328` ✅ |
+| **Trenutna faza** | CI-01 ✔ INF-01 ✔ INF-02 ✔ BE-01…BE-07 ✔ → sljedeći: **BE-08** (showcase, SEO, pretraga, dashboard, app-releases, health, muzej, hall-of-fame, timeline, trofeji, sponzori) |
+| **Trenutni segment** | **BE-07 ZATVOREN 2026-11-03** (P-B07-1…7 + Q-15); sljedeći segment **BE-08** |
+| **Zadnji commit** | `7b00aa9` test(finance): includeMembership + izvoz clanstva (Q-15) [BE-07] |
+| **Zadnji CI run** | ✅ **`41630034505` success** (`7b00aa9` — idempotencija + Q-15 + P-B07-6, sva 3 joba, 203 testa) https://github.com/mudzy992/fkgracanica/actions/runs/41630034505 ; ❌ `41629707127` (`19bf9ed` — 1 test tvrdio staro `includeMembership` ponašanje → popravljeno); ✅ `41627914148` (`c16385f`); ❌ `41627571734` (TS2724 import `PaymentProviderId`); ✅ BE-07 audit `41583848187`/`41584048206`/`41584323691` |
 | **check:all** | `npm run check:all` → **6/6** (check-coverage, file-size, console-ban, secrets-ban, layer-deps, docs-links); u CI-ju jobovi `audit-gate` + `standards`; pre-push hook pokreće `check:all` |
 
 ## Šta je urađeno (hronološki)
@@ -290,9 +290,11 @@
 
 ## Šta je sljedeće (tačan sljedeći korak)
 
-1. **BE-07** — audit ✔ + P-B07-1/3/4/5/7 ✔; sljedeće: **odluka o P-B07-2**
-   (A/B) i **P-B07-6** → zatvaranje segmenta. Backlog (ne blokira):
-   P-B06-1/2, P-B02-1/2/3, P-B03-1.
+1. **BE-08** (showcase, SEO, pretraga, dashboard, app-releases, health,
+   muzej, hall-of-fame, club-timeline, trofeji, sponzori) — audit-first.
+   Backlog (ne blokira): P-B06-1/2, P-B02-1/2/3, P-B03-1, B-07-10…13.
+   ⚠️ Deploy: potreban `prisma migrate deploy` za `20261103120000_…`
+   (PaymentEvent + Payment.membershipId).
 2. Zatim BE-02…08 → FE → MOB → CI-02/03/04 → E2E-01 (INF-03 paralelno kad zatreba).
 3. Svaki segment: `AUDIT/segments/<ID>.md` + matrica + zelen CI + izvještaj (standard iz CI-01/INF-01/INF-02).
 
