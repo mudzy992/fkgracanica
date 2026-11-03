@@ -7,8 +7,8 @@
 | Polje | Vrijednost |
 |-------|------------|
 | **Aktivna grana** | `arena/290a6f13-fkgracanica` |
-| **Trenutna faza** | CI-01 ✔ INF-01 ✔ INF-02 ✔ BE-01…**BE-08 ✔** → **BE-09 u toku (BE-09a ✔ ZATVOREN; BE-09b ✔ ZATVOREN)** |
-| **Trenutni segment** | **BE-09c** (predlog: `prisma/**`, `backend/test/**` e2e, `Dockerfile`, `prisma.config.ts` — 49 fajlova) — audit sljedeći; **BE-09a ✅ i BE-09b ✅ ZATVORENI** (2026-11-03) |
+| **Trenutna faza** | CI-01 ✔ INF-01 ✔ INF-02 ✔ BE-01…**BE-08 ✔** → **BE-09 u toku (BE-09a ✔, BE-09b ✔ ZATVORENI; BE-09c audit ✔ — čeka odobrenje)** |
+| **Trenutni segment** | **BE-09c** (`prisma/**`, e2e, `Dockerfile`, `prisma.config.ts`, `scripts/**` — **37 fajlova / 3.338 LOC**) — **audit ZAVRŠEN**, 12 nalaza + 11 predloga, **čeka odobrenje**; **BE-09a ✅ i BE-09b ✅ ZATVORENI** |
 | **Zadnji commit** | `86b3179` docs(audit): BE-08 implementirani odobreni predlozi + matrica [BE-08] |
 | **Zadnji CI run** | ✅ **`41655986522` success** (`7b8371e` — run-ID dokumentacija, sva 3 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41655986522 ; ✅ **`41655487255` success** (`07f1085` — zatvaranje BE-09b u dokumentaciji, sva 3 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41655487255 ; ✅ **`41654943345` success** (`212ec80` — BE-09b implementacija, sva 3 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41654943345 ; ❌ `41654422296` (`3449470` — 3 eslint greške u novim specovima/DTO-u, popravljeno) ; ✅ **`41652033940` success** (`96f1833` — BE-09b nalazi/predlozi + matrica, sva 3 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41652033940 ; ✅ **`41651332872` success** (`2ab4675` — zatvaranje BE-09a u dokumentaciji, sva 3 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41651332872 ; ✅ **`41647575733` success** (`2591b39` — run-ID, sva 3 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41647575733 ; ✅ **`41646963311` success** (`28fb5f2` — BE-09a docs/run-ID, sva 3 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41646963311 ; ✅ **`41646330945` success** (`d1d261d` — BE-09a implementacija, sva 3 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41646330945 ; ❌ `41644096377` (`3a78c94` — DI: PermissionsGuard tražio AuditService u controller specovima), ❌ `41644777234` (`b9d3bdf` — eslint unsafe-* u novim specovima), ❌ `41645566467` (`fd41c42` — matcher u users-account specu) — sve tri popravljeno; ranije ✅ **`41640408790` success** (`ff833ce` — BE-09a audit, sva 3 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41640408790 ; ✅ **`41639946345` success** (`719423d` — zatvaranje BE-08, sva 3 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41639946345 ; ✅ **`41638624709` success** (`86b3179` — BE-08 implementacija P-B08-1/2/3/4/5/7, sva 3 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41638624709 ; ranije ✅ **`41634063555` success** (`ed4df65` — BE-08 audit docs, sva 3 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41634063555 ; ranije ✅ **`41630034505` success** (`7b00aa9` — idempotencija + Q-15 + P-B07-6, sva 3 joba, 203 testa) https://github.com/mudzy992/fkgracanica/actions/runs/41630034505 ; ❌ `41629707127` (`19bf9ed` — 1 test tvrdio staro `includeMembership` ponašanje → popravljeno); ✅ `41627914148` (`c16385f`); ❌ `41627571734` (TS2724 import `PaymentProviderId`); ✅ BE-07 audit `41583848187`/`41584048206`/`41584323691` |
 | **check:all** | `npm run check:all` → **6/6** (check-coverage, file-size, console-ban, secrets-ban, layer-deps, docs-links); u CI-ju jobovi `audit-gate` + `standards`; pre-push hook pokreće `check:all` |
@@ -403,6 +403,30 @@
   u `backend/src`; bez segmenta ostaje **49 fajlova** (`prisma/seed`,
   migracije, `backend/test/**` e2e, `Dockerfile`, `prisma.config.ts`) —
   predlog **BE-09c**.
+### BE-09c — audit (2026-11-03)
+
+- **Opseg:** 37 fajlova / 3.338 LOC — `prisma/` (schema je u BE-07, init migracija
+  1.370 linija, `seed.ts` + `seed/rbac.ts` + `seed/settings-admin.ts` + 11
+  `seed/demo/**`), `backend/Dockerfile`, `prisma.config.ts`, 8 e2e specova +
+  `setup-e2e-env.ts`, 8 infra skripti (`scripts/`).
+- **12 nalaza (6 Medium + 6 Low) + 2 Info bloka:**
+  - Medium: seed postavlja admin lozinku na `change-me` i **resetuje je na svakom
+    pokretanju** (B-09c-01); `DATABASE_URL` ide kao **build arg** i ostaje u
+    slojevima Docker slike (B-09c-02); runner slika nosi **devDependencies**
+    (B-09c-03); **e2e testovi se ne izvršavaju u CI** + neusklađene default
+    lozinke (B-09c-04); `seed/rbac.ts` bez transakcije i tiho odbacuje nepoznate
+    dozvole (B-09c-05); QA skripte defaultno gađaju **produkciju** i mijenjaju
+    live utakmicu (B-09c-06);
+  - Low: **14 FK kolona bez indeksa** (B-09c-07, traži schema izmjenu), seed
+    uvijek puni demo sadržaj (B-09c-08), demo seed sitnice (B-09c-09),
+    `git.sh` = `git add .` + push (B-09c-10), `Match.round` vs `roundId` (B-09c-11),
+    tihi `|| true` u `setup-upload-dir.sh` (B-09c-12);
+  - ✅ zdravo: seedovi idempotentni, CMS seed konfiguracije prolaze novu
+    validaciju, schema ↔ migracija **bez drifta**, sve e2e rute postoje,
+    `.dockerignore` korektan, kontejner non-root + `HEALTHCHECK`.
+- **Matrica:** 37 redova → `BE-09`, status `pregledano`; **0 fajlova bez
+  segmenta izvan `frontend/` i `mobile/`**.
+
 ### BE-09b — implementacija i zatvaranje (2026-11-03)
 
 - **Korisnik odobrio SVE P-B09b-1…13** („Po preporuci možeš postupiti i po
@@ -427,10 +451,9 @@
 
 ## Šta je sljedeće (tačan sljedeći korak)
 
-1. **BE-09c — audit** (49 fajlova / ~4.038 LOC: `prisma/schema` + `prisma/seed`,
-   migracije, `backend/test/**` e2e, `Dockerfile`, `prisma.config.ts`) → nalazi →
-   predlozi → odobrenje → zatvaranje **BE-09**. Preporuka: uraditi BE-09c prije
-   FE-01 da matrica zatvori sve backend fajlove.
+1. **BE-09c — čeka odobrenje korisnika** za P-B09c-1…10/12 (audit ✔, matrica ✔).
+   Nakon odobrenja: implementacija → testovi → zelen CI → zatvaranje **BE-09**
+   (matrica tada pokriva **sve** fajlove izvan `frontend/` i `mobile/`).
    Backlog (ne blokira): **P-B08-6**, P-B06-1/2, P-B02-1/2/3, P-B03-1,
    B-07-10…13.
    ⚠️ Deploy: potreban `prisma migrate deploy` za `20261103120000_…`
