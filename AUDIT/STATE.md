@@ -7,13 +7,42 @@
 | Polje | Vrijednost |
 |-------|------------|
 | **Aktivna grana** | `arena/290a6f13-fkgracanica` |
-| **Trenutna faza** | CI-01 ✔ INF-01 ✔ INF-02 ✔ BE-01…**BE-08 ✔** → **BE-09 u toku (BE-09a ✔, BE-09b ✔ ZATVORENI; BE-09c audit ✔ — čeka odobrenje)** |
-| **Trenutni segment** | **BE-09c** (`prisma/**`, e2e, `Dockerfile`, `prisma.config.ts`, `scripts/**` — **37 fajlova / 3.338 LOC**) — **audit ZAVRŠEN**, 12 nalaza + 11 predloga, **čeka odobrenje**; **BE-09a ✅ i BE-09b ✅ ZATVORENI** |
+| **Trenutna faza** | CI-01 ✔ INF-01 ✔ INF-02 ✔ BE-01…**BE-08 ✔** → **BE-09 u toku (BE-09a ✔, BE-09b ✔ ZATVORENI; BE-09c ✅ implementiran — čeka CI zelen)** |
+| **Trenutni segment** | **BE-09c** (`prisma/**`, e2e, `Dockerfile`, `prisma.config.ts`, `scripts/**` — **37 fajlova / 3.338 LOC**) — 12 nalaza; **11 odobrenih predloga implementirano** (P-B09c-1…10,12) + P-B08-6/P-B09-3/4/6; **P-B09c-11 ostaje otvorena odluka**; **BE-09a ✅ i BE-09b ✅ ZATVORENI** |
 | **Zadnji commit** | `86b3179` docs(audit): BE-08 implementirani odobreni predlozi + matrica [BE-08] |
 | **Zadnji CI run** | ✅ **`41657925166` success** (`ef53cc2` — BE-09c audit + matrica, sva 3 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41657925166 ; ✅ **`41655986522` success** (`7b8371e` — run-ID dokumentacija, sva 3 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41655986522 ; ✅ **`41655487255` success** (`07f1085` — zatvaranje BE-09b u dokumentaciji, sva 3 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41655487255 ; ✅ **`41654943345` success** (`212ec80` — BE-09b implementacija, sva 3 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41654943345 ; ❌ `41654422296` (`3449470` — 3 eslint greške u novim specovima/DTO-u, popravljeno) ; ✅ **`41652033940` success** (`96f1833` — BE-09b nalazi/predlozi + matrica, sva 3 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41652033940 ; ✅ **`41651332872` success** (`2ab4675` — zatvaranje BE-09a u dokumentaciji, sva 3 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41651332872 ; ✅ **`41647575733` success** (`2591b39` — run-ID, sva 3 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41647575733 ; ✅ **`41646963311` success** (`28fb5f2` — BE-09a docs/run-ID, sva 3 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41646963311 ; ✅ **`41646330945` success** (`d1d261d` — BE-09a implementacija, sva 3 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41646330945 ; ❌ `41644096377` (`3a78c94` — DI: PermissionsGuard tražio AuditService u controller specovima), ❌ `41644777234` (`b9d3bdf` — eslint unsafe-* u novim specovima), ❌ `41645566467` (`fd41c42` — matcher u users-account specu) — sve tri popravljeno; ranije ✅ **`41640408790` success** (`ff833ce` — BE-09a audit, sva 3 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41640408790 ; ✅ **`41639946345` success** (`719423d` — zatvaranje BE-08, sva 3 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41639946345 ; ✅ **`41638624709` success** (`86b3179` — BE-08 implementacija P-B08-1/2/3/4/5/7, sva 3 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41638624709 ; ranije ✅ **`41634063555` success** (`ed4df65` — BE-08 audit docs, sva 3 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41634063555 ; ranije ✅ **`41630034505` success** (`7b00aa9` — idempotencija + Q-15 + P-B07-6, sva 3 joba, 203 testa) https://github.com/mudzy992/fkgracanica/actions/runs/41630034505 ; ❌ `41629707127` (`19bf9ed` — 1 test tvrdio staro `includeMembership` ponašanje → popravljeno); ✅ `41627914148` (`c16385f`); ❌ `41627571734` (TS2724 import `PaymentProviderId`); ✅ BE-07 audit `41583848187`/`41584048206`/`41584323691` |
 | **check:all** | `npm run check:all` → **6/6** (check-coverage, file-size, console-ban, secrets-ban, layer-deps, docs-links); u CI-ju jobovi `audit-gate` + `standards`; pre-push hook pokreće `check:all` |
 
 ## Šta je urađeno (hronološki)
+
+### Sesija BE-09c implementacija — 2026-11-03 (odobreni predlozi)
+
+Korisnik: „Možeš nastaviti sljedeći korak! … P-B08-6, P-B09-3/4/6 takođe po tvojoj
+preporuci slažem se" → odobreni **P-B09c-1…10 + P-B09c-12**, uz P-B08-6, P-B09-3, P-B09-4, P-B09-6.
+
+- **Seed sigurnost (P-B09c-1, 8):** `ADMIN_PASSWORD` obavezan (min 8; `change-me`
+  odbijen u produkciji), hash samo pri kreiranju admina, reset samo uz
+  `ADMIN_RESET_PASSWORD=1`; demo sadržaj samo uz `SEED_DEMO=1`.
+- **Docker (P-B09c-2, 3):** `DATABASE_URL` više ne ostaje u slojevima slike
+  (`RUN DATABASE_URL=… prisma generate`), compose šalje dummy build arg,
+  `npm prune --omit=dev` u runner stage-u.
+- **CI (P-B09c-4):** novi job `e2e` — `postgres:16` + `redis:7`, health-wait,
+  `prisma migrate deploy`, seed, `test:e2e`; na pad `::error` anotacija.
+  `DATABASE_URL` bez lozinke (`POSTGRES_HOST_AUTH_METHOD: trust`) — secrets-ban čist.
+- **RBAC seed (P-B09c-5):** definicija rola/dozvola preseljena u
+  `src/rbac/rbac-seed.constants.ts`, seed u `$transaction`, fail-fast na nepoznat ključ.
+- **Skripte (P-B09c-6, 10, 12):** QA skripte bez produkcijskog defaulta, traže
+  `--yes`; `git.sh` bez „commit-all" (`':!.env*' ':!uploads'`), potvrda za push;
+  `setup-upload-dir.sh` pada ako `chown` ne uspije.
+- **Indeksi (P-B09c-7, odobrena schema izmjena):** 14 `@@index` na FK kolone +
+  migracija `20261103140000_be09c_fk_indexes`.
+- **Uz to:** P-B08-6 (insensitive pretraga + `q` ≤ 100), P-B09-3 (upload throttle
+  10/60 s + kvota 20/dan → 429), P-B09-4 (transliteracija `đ/ß/æ/ø/ł`),
+  P-B09-6 (users `sort` allowlist, nepoznato → 400).
+- **Testovi:** 25 novih testova u 5 novih specova; `npx jest src/upload` 16/16.
+- **Verifikacija:** `check:all` 6/6; matrica +30 redova. Lokalno **nije** bilo
+  moguće: `prisma validate` (sandbox nema mrežu do Prisma binarija) i 19 jest
+  suite koje traže generisan `@prisma/client` → gate je CI.
 
 ### Sesija TLS (prethodno, commiti `09a292e`, `b0376a5` — pushani)
 - F-SSL-1: audit korištenja Redis-a (BullMQ email red + keš; opciono preko `REDIS_URL`).
