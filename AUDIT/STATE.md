@@ -9,8 +9,8 @@
 | **Aktivna grana** | `arena/290a6f13-fkgracanica` |
 | **Trenutna faza** | CI-01 ✔ INF-01 ✔ INF-02 ✔ BE-01…BE-06 ✔ → **BE-07 u toku (5/7 predloga implementirano, 2 čekaju odluku)** |
 | **Trenutni segment** | **BE-07** (članstvo + ulaznice + plaćanja — High: novac/QR); implementirani P-B07-1/3/4/5/7; čekaju **P-B07-2** (idempotencija) i **P-B07-6** (cancel/refund) |
-| **Zadnji commit** | `eeb5532` docs(audit): BE-07 audit — 3 High nalaza + predlozi [BE-07] |
-| **Zadnji CI run** | ✅ **`41583848187` success** (`eeb5532` — BE-07 audit, sva 3 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41583848187 ; docs-push istog sadržaja **`41584048206` ✅** (`1b180da`, sva 3 joba); ranije: BE-06 `41539179038` ✅, `41538504328` ✅, BE-05 `41536083397`/`41535738687` ✅ |
+| **Zadnji commit** | `c16385f` fix(payments): PaymentProviderId iz provider-gate.util [BE-07] |
+| **Zadnji CI run** | ✅ **`41627914148` success** (`c16385f` — 5 fixeva + tip, sva 3 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41627914148 ; ❌ `41627571734` (`657dda0` — build pao: `PaymentProviderId` importovan iz pogrešnog fajla, TS2724 → popravljeno `c16385f`); ranije: BE-07 audit `41583848187` ✅ / `41584048206` ✅ / `41584323691` ✅, BE-06 `41539179038` ✅, `41538504328` ✅ |
 | **check:all** | `npm run check:all` → **6/6** (check-coverage, file-size, console-ban, secrets-ban, layer-deps, docs-links); u CI-ju jobovi `audit-gate` + `standards`; pre-push hook pokreće `check:all` |
 
 ## Šta je urađeno (hronološki)
