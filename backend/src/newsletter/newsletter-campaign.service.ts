@@ -3,6 +3,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { PrismaService } from '../prisma/prisma.service';
 import { JobsService } from '../jobs/jobs.module';
 import type { CreateNewsletterCampaignDto } from './dto/create-newsletter-campaign.dto';
@@ -18,6 +19,7 @@ export class NewsletterCampaignService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly jobs: JobsService,
+    private readonly config: ConfigService,
   ) {}
 
   list() {
@@ -132,7 +134,11 @@ export class NewsletterCampaignService {
     const map = Object.fromEntries(rows.map((r) => [r.key, r.value]));
     return {
       clubName: map['club.name']?.trim() || 'FK Gračanica',
-      crestUrl: mediaPublicUrl(map['club.crestUrl'] || null, 'medium'),
+      crestUrl: mediaPublicUrl(
+        map['club.crestUrl'] || null,
+        'medium',
+        this.config.get<string>('apiPublicUrl'),
+      ),
     };
   }
 

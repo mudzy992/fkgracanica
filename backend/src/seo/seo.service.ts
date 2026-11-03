@@ -1,14 +1,18 @@
 import { Injectable } from '@nestjs/common';
-import { ContentStatus } from '@prisma/client';
+import { ConfigService } from '@nestjs/config';
 import { PrismaService } from '../prisma/prisma.service';
 import type { ShareMeta } from './share-meta.types';
 import type { PackInput, SiteDefaults } from './share-defaults';
 import { SITEMAP_STATIC_PATHS, STATIC_SHARE_PAGES } from './share-pages';
 import { ShareResolvers } from './share-resolvers';
+import { buildSitemapEntries, renderSitemap } from './seo-sitemap.util';
+import { loadSitemapData } from './seo-sitemap-sources';
 import {
   absolutePageUrl,
+  apiPublicBase,
   buildDocumentTitle,
   mediaPublicUrl,
+  normalizeSharePath,
   sitePublicUrl,
   stripHtml,
   truncateMeta,
@@ -19,79 +23,29 @@ export class SeoService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly resolvers: ShareResolvers,
+    private readonly config: ConfigService,
   ) {}
 
+  /** BE-08/P-B08-1: jedini izvor API URL-a (bez `process.env`). */
+  private apiBase(): string | undefined {
+    return this.config.get<string>('apiPublicUrl');
+  }
+
   async buildSitemap() {
-    const base = sitePublicUrl();
-    const [news, galleries, players, timeline, hallOfFame, museum] =
-      await Promise.all([
-        this.prisma.news.findMany({
-          where: { status: ContentStatus.PUBLISHED },
-          select: { slug: true, updatedAt: true },
-        }),
-        this.prisma.gallery.findMany({
-          where: { status: ContentStatus.PUBLISHED },
-          select: { slug: true, updatedAt: true },
-        }),
-        this.prisma.player.findMany({
-          where: { isActive: true },
-          select: { id: true, updatedAt: true },
-        }),
-        this.prisma.clubTimelineEvent.findMany({
-          select: { id: true, updatedAt: true },
-        }),
-        this.prisma.hallOfFameEntry.findMany({
-          select: { id: true, updatedAt: true },
-        }),
-        this.prisma.museumItem.findMany({
-          select: { id: true, updatedAt: true },
-        }),
-      ]);
-    const now = new Date().toISOString();
-    const urls = [
-      ...SITEMAP_STATIC_PATHS.map((p) => ({
-        loc: `${base}${p}`,
-        lastmod: now,
-      })),
-      ...news.map((n) => ({
-        loc: `${base}/vijesti/${n.slug}`,
-        lastmod: n.updatedAt.toISOString(),
-      })),
-      ...galleries.map((g) => ({
-        loc: `${base}/galerija/${g.slug}`,
-        lastmod: g.updatedAt.toISOString(),
-      })),
-      ...players.map((p) => ({
-        loc: `${base}/igrac/${p.id}`,
-        lastmod: p.updatedAt.toISOString(),
-      })),
-      ...timeline.map((e) => ({
-        loc: `${base}/o-klubu#${e.id}`,
-        lastmod: e.updatedAt.toISOString(),
-      })),
-      ...hallOfFame.map((e) => ({
-        loc: `${base}/o-klubu/kuca-slavnih#${e.id}`,
-        lastmod: e.updatedAt.toISOString(),
-      })),
-      ...museum.map((i) => ({
-        loc: `${base}/muzej#${i.id}`,
-        lastmod: i.updatedAt.toISOString(),
-      })),
-    ];
-    const body = urls
-      .map(
-        (u) =>
-          `  <url><loc>${u.loc}</loc><lastmod>${u.lastmod}</lastmod><changefreq>weekly</changefreq></url>`,
-      )
-      .join('\n');
-    return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${body}\n</urlset>`;
+    const base = sitePublicUrl(this.apiBase());
+    const data = await loadSitemapData(this.prisma);
+    // P-B08-5: gradnja + XML escape izdvojeni u `seo-sitemap.util.ts`.
+    return renderSitemap(
+      buildSitemapEntries(base, {
+        ...data,
+        staticPaths: SITEMAP_STATIC_PATHS,
+        now: new Date().toISOString(),
+      }),
+    );
   }
 
   async buildRobots() {
-    const api = (process.env.API_PUBLIC_URL ?? sitePublicUrl()).replace(
-      /\/$/,
-      '',
-    );
+    const api = apiPublicBase(this.apiBase());
     const setting = await this.prisma.setting.findUnique({
       where: { key: 'seo.robotsIndex' },
     });
@@ -102,7 +56,8 @@ export class SeoService {
 
   async resolveShareMeta(path: string): Promise<ShareMeta> {
     const defaults = await this.loadSiteDefaults();
-    const normalized = path.split('?')[0] || '/';
+    // P-B08-4: samo site-relativna putanja; apsolutni URL → '/'.
+    const normalized = normalizeSharePath(path);
 
     if (normalized === '/' || normalized === '') {
       return this.pack(
@@ -202,7 +157,7 @@ export class SeoService {
       siteName,
       description,
       crestPath,
-      crestUrl: mediaPublicUrl(crestPath, 'medium'),
+      crestUrl: mediaPublicUrl(crestPath, 'medium', this.apiBase()),
     };
   }
 
@@ -216,7 +171,7 @@ export class SeoService {
       title,
       description,
       image: input.image || defaults.crestUrl,
-      url: absolutePageUrl(input.url),
+      url: absolutePageUrl(input.url, this.apiBase()),
       type: input.type ?? 'website',
       siteName,
       documentTitle: buildDocumentTitle(title, siteName),

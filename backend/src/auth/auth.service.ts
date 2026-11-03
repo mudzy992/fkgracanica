@@ -68,7 +68,7 @@ export class AuthService {
   }
 
   async updateProfile(userId: string, avatarPath: string) {
-    const uploadRoot = this.config.get<string>('UPLOAD_PATH', './uploads');
+    const uploadRoot = this.config.get<string>('uploadPath') ?? './uploads';
     await assertStoredAvatarPath(uploadRoot, avatarPath);
     const user = await this.requireActiveUser(userId);
     if (user.avatarPath && user.avatarPath !== avatarPath) {
@@ -82,7 +82,7 @@ export class AuthService {
   }
 
   async deleteProfileAvatar(userId: string) {
-    const uploadRoot = this.config.get<string>('UPLOAD_PATH', './uploads');
+    const uploadRoot = this.config.get<string>('uploadPath') ?? './uploads';
     const user = await this.requireActiveUser(userId);
     if (user.avatarPath) {
       await removeAvatarFiles(uploadRoot, user.avatarPath);

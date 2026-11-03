@@ -15,6 +15,5 @@ backend/src/payments/paypal-ops.ts
 backend/src/payments/providers/monri.provider.ts
 backend/src/payments/providers/stripe.provider.ts
 backend/src/search/search-queries.util.ts
-backend/src/seo/seo.service.ts
 backend/src/showcase/catalog-modules.ts
 backend/src/ticketing/ticketing-orders.service.ts

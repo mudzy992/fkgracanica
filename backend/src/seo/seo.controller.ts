@@ -23,7 +23,7 @@ export class SeoController {
 
   /** Meta za OG / WhatsApp / Viber — koristi frontend OG server i crawleri */
   @Get('seo/share')
-  shareMeta(@Query('path') path = '/') {
+  shareMeta(@Query('path') path: string = '/') {
     return this.seo.resolveShareMeta(path);
   }
 }

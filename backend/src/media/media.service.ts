@@ -106,7 +106,7 @@ export class MediaService {
 
   async removeAsset(id: string) {
     const asset = await this.ensureAsset(id);
-    const uploadRoot = this.config.get<string>('UPLOAD_PATH', './uploads');
+    const uploadRoot = this.config.get<string>('uploadPath') ?? './uploads';
     await deleteStoredFiles(uploadRoot, [
       asset.originalPath,
       asset.thumbPath,
@@ -117,7 +117,7 @@ export class MediaService {
 
   async replaceAsset(id: string, file: Express.Multer.File) {
     const asset = await this.ensureAsset(id);
-    const uploadRoot = this.config.get<string>('UPLOAD_PATH', './uploads');
+    const uploadRoot = this.config.get<string>('uploadPath') ?? './uploads';
     await deleteStoredFiles(uploadRoot, [
       asset.originalPath,
       asset.thumbPath,

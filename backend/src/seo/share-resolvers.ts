@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { ContentStatus } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import {
@@ -11,7 +12,19 @@ import type { PackInput, SiteDefaults } from './share-defaults';
 
 @Injectable()
 export class ShareResolvers {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly config: ConfigService,
+  ) {}
+
+  /** Javni API base za media URL-ove (BE-08/P-B08-1 — bez `process.env`). */
+  private media(path: string | null | undefined) {
+    return mediaPublicUrl(
+      path,
+      'medium',
+      this.config.get<string>('apiPublicUrl'),
+    );
+  }
 
   async fromCmsPage(
     slug: string,
@@ -40,7 +53,7 @@ export class ShareResolvers {
     return {
       title: item.seoTitle ?? item.title,
       description: item.seoDesc ?? item.excerpt ?? defaults.description,
-      image: mediaPublicUrl(item.coverPath, 'medium'),
+      image: this.media(item.coverPath),
       url: `/vijesti/${slug}`,
       type: 'article',
     };
@@ -91,7 +104,7 @@ export class ShareResolvers {
         awayScore: match.awayScore,
         live: live || match.status === 'LIVE' || match.status === 'HALFTIME',
       }),
-      image: mediaPublicUrl(crest, 'medium') ?? defaults.crestUrl,
+      image: this.media(crest) ?? defaults.crestUrl,
       url,
       type: 'article',
     };
@@ -108,7 +121,7 @@ export class ShareResolvers {
     return {
       title: item.title,
       description: item.description ?? defaults.description,
-      image: mediaPublicUrl(item.photos[0]?.path, 'medium'),
+      image: this.media(item.photos[0]?.path),
       url,
     };
   }
@@ -122,7 +135,7 @@ export class ShareResolvers {
       title: 'O klubu',
       description:
         club?.description ?? 'Historija i vremenska linija FK Gračanica.',
-      image: mediaPublicUrl(club?.crestPath, 'medium') ?? defaults.crestUrl,
+      image: this.media(club?.crestPath) ?? defaults.crestUrl,
       url: '/o-klubu',
     };
   }
@@ -136,7 +149,7 @@ export class ShareResolvers {
     return {
       title: name,
       description: player.bio ?? defaults.description,
-      image: mediaPublicUrl(player.photoPath, 'medium'),
+      image: this.media(player.photoPath),
       url,
     };
   }

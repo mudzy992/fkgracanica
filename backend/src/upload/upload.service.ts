@@ -52,7 +52,7 @@ export class UploadService {
       );
     }
 
-    const uploadRoot = this.config.get<string>('UPLOAD_PATH', './uploads');
+    const uploadRoot = this.config.get<string>('uploadPath') ?? './uploads';
     const id = randomUUID();
     const filename = `${id}${ext}`;
     const relativePath = join('originals', filename).replace(/\\/g, '/');
