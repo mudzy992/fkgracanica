@@ -9,8 +9,8 @@
 | **Aktivna grana** | `arena/290a6f13-fkgracanica` |
 | **Trenutna faza** | CI-01 ✔ INF-01 ✔ INF-02 ✔ BE-01…BE-06 ✔ → **BE-07 u toku (audit završen, čekaju se odluke)** |
 | **Trenutni segment** | **BE-07** (članstvo + ulaznice + plaćanja — High: novac/QR); posljednji zatvoren **BE-06** (2026-11-02) |
-| **Zadnji commit** | _vidi `git log -1`_ (BE-07 audit commit) |
-| **Zadnji CI run** | ✅ **`41539179038` success** (BE-06 zatvaranje, sva 3 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41539179038 ; ranije: BE-06 `41538504328` ✅, BE-05 `41536083397`/`41535738687` ✅, BE-04 `41533952042` ✅ |
+| **Zadnji commit** | `eeb5532` docs(audit): BE-07 audit — 3 High nalaza + predlozi [BE-07] |
+| **Zadnji CI run** | ✅ **`41583848187` success** (`eeb5532` — BE-07 audit, sva 3 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41583848187 ; ranije: BE-06 `41539179038` ✅, `41538504328` ✅, BE-05 `41536083397`/`41535738687` ✅ |
 | **check:all** | `npm run check:all` → **6/6** (check-coverage, file-size, console-ban, secrets-ban, layer-deps, docs-links); u CI-ju jobovi `audit-gate` + `standards`; pre-push hook pokreće `check:all` |
 
 ## Šta je urađeno (hronološki)
