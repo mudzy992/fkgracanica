@@ -10,8 +10,10 @@ import { NewsArticleHero } from '../../components/news/NewsArticleHero';
 import { NewsGalleryPhotos } from '../../components/news/NewsGalleryPhotos';
 import { NewsRelatedMatches, NewsRelatedPlayers } from '../../components/news/NewsDetailSections';
 import { Skeleton } from '../../components/ui/skeleton';
+import { useTranslation } from 'react-i18next';
 
 export function NewsDetailPage() {
+  const { t } = useTranslation();
   const { slug } = useParams<{ slug: string }>();
   const { data, isLoading, isError } = useNewsItem(slug ?? '');
 
@@ -25,7 +27,7 @@ export function NewsDetailPage() {
   }
 
   if (isError || !data) {
-    return <p className="p-12 text-center text-text-muted">Vijest nije pronađena.</p>;
+    return <p className="p-12 text-center text-text-muted">{t('pages.news.notFound')}</p>;
   }
 
   return (

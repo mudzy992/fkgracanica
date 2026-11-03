@@ -23,8 +23,8 @@ export function LastResult() {
             <Card>
               <CardHeader>
                 <CardTitle className="text-center text-3xl font-bold">
-                  {last.homeClub?.shortName ?? last.homeClub?.name} {last.homeScore} : {last.awayScore}{' '}
-                  {last.awayClub?.shortName ?? last.awayClub?.name}
+                  {last.homeClub?.shortName ?? last.homeClub?.name} {last.homeScore} :{' '}
+                  {last.awayScore} {last.awayClub?.shortName ?? last.awayClub?.name}
                 </CardTitle>
               </CardHeader>
               <CardContent className="text-center text-text-muted">

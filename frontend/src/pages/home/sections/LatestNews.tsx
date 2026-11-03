@@ -28,7 +28,9 @@ export function LatestNews() {
               <Link key={item.id} to={`/vijesti/${item.slug}`}>
                 <Card className="h-full overflow-hidden transition-shadow hover:shadow-md">
                   {item.coverPath && (
-                    <img loading="lazy" decoding="async"
+                    <img
+                      loading="lazy"
+                      decoding="async"
                       src={mediaUrl(item.coverPath, 'medium')}
                       alt=""
                       className="h-40 w-full object-cover"
@@ -38,7 +40,9 @@ export function LatestNews() {
                     <CardTitle className="line-clamp-2 text-base">{item.title}</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <p className="line-clamp-2 text-sm text-text-muted">{stripHtml(item.excerpt ?? '')}</p>
+                    <p className="line-clamp-2 text-sm text-text-muted">
+                      {stripHtml(item.excerpt ?? '')}
+                    </p>
                     <p className="mt-2 text-xs text-text-muted">
                       {item.publishedAt ? formatDate(item.publishedAt) : ''}
                     </p>

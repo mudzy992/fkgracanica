@@ -11,8 +11,10 @@ import { Seo } from '../../components/seo/Seo';
 import { Skeleton } from '../../components/ui/skeleton';
 import { DataError } from '../../components/public/DataError';
 import type { Stadium } from '../../types/club-hub';
+import { useTranslation } from 'react-i18next';
 
 export function FirstTeamPage() {
+  const { t } = useTranslation();
   const { data: ownClub, isLoading: clubLoading } = useOwnClub();
   const {
     data: squad,
@@ -64,7 +66,7 @@ export function FirstTeamPage() {
             <TeamRosterSections bench={bench} squadPlayers={squadPlayers} statsMap={statsMap} />
           </>
         ) : (
-          <p className="py-20 text-center text-text-muted">Kadar trenutno nije objavljen.</p>
+          <p className="py-20 text-center text-text-muted">{t('pages.club.squadEmpty')}</p>
         )}
 
         {ownClub?.id ? <TeamSeasonStatsSection clubId={ownClub.id} /> : null}

@@ -12,6 +12,7 @@ import { EmptyState } from '../../components/public/EmptyState';
 import { DataError } from '../../components/public/DataError';
 import { Skeleton } from '../../components/ui/skeleton';
 import type { HallOfFameEntry } from '../../types';
+import { useTranslation } from 'react-i18next';
 
 function extractYears(years?: string | null): string[] {
   if (!years) return [];
@@ -37,6 +38,7 @@ function groupHofByYear(
 }
 
 export function HallOfFamePage() {
+  const { t } = useTranslation();
   const { data, isLoading, isError, refetch } = useHallOfFame();
   const [activeEntry, setActiveEntry] = useState<HallOfFameEntry | null>(null);
 
@@ -45,7 +47,7 @@ export function HallOfFamePage() {
 
   return (
     <div className="overflow-hidden bg-[linear-gradient(180deg,#030712_0%,#0b1220_42%,#161006_100%)] pb-16 sm:pb-20">
-      <Seo title="Kuća slavnih" description="Legende FK Gračanica" />
+      <Seo title={t('pages.hallOfFame.seoTitle')} description={t('pages.hallOfFame.seoDesc')} />
       <HallOfFameCinematicHero totalCount={data?.length ?? 0} yearCount={yearCount} />
       <PageContainer className="py-10 sm:py-12">
         <div className="rounded-[2rem] border border-white/10 bg-white/5 p-5 backdrop-blur-sm sm:p-6">
@@ -69,7 +71,7 @@ export function HallOfFamePage() {
         ) : (
           <>
             {!isLoading && sections.length === 0 && (
-              <EmptyState message="Nema unosa u Kući slavnih." />
+              <EmptyState message={t('pages.hallOfFame.empty')} />
             )}
           </>
         )}

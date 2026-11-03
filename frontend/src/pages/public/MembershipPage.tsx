@@ -16,8 +16,10 @@ import { Seo } from '../../components/seo/Seo';
 import { Skeleton } from '../../components/ui/skeleton';
 import { useAuth } from '../../lib/auth';
 import { parsePaymentProvider } from '../../lib/payment-providers';
+import { useTranslation } from 'react-i18next';
 
 export function MembershipPage() {
+  const { t } = useTranslation();
   const { isAuthenticated, isLoading: authLoading } = useAuth();
   const [searchParams] = useSearchParams();
   const paidReturn = searchParams.get('paid') === '1';
@@ -45,23 +47,21 @@ export function MembershipPage() {
 
   return (
     <div className="pb-16">
-      <Seo title={accountMode ? 'Moj račun' : 'Članstvo'} />
+      <Seo
+        title={accountMode ? t('pages.membership.seoTitleAccount') : t('pages.membership.seoTitle')}
+      />
       <PageHeroHeader
-        eyebrow="Zajednica"
-        title={accountMode ? 'Moj račun' : 'Članstvo'}
+        eyebrow={t('pages.membership.eyebrow')}
+        title={accountMode ? t('pages.membership.titleAccount') : t('pages.membership.title')}
         subtitle={
-          accountMode
-            ? 'Članstvo, ulaznice i pregled vaših narudžbi.'
-            : 'Pridružite se klubu i podržite FK Gračanica kao registrirani član.'
+          accountMode ? t('pages.membership.subtitleAccount') : t('pages.membership.subtitle')
         }
       />
       <FormShell
         layout={accountMode ? 'full' : 'split'}
-        title={accountMode ? 'Moj račun' : 'Postani član'}
+        title={accountMode ? t('pages.membership.accountTitle') : t('pages.membership.joinTitle')}
         description={
-          accountMode
-            ? 'Pregledajte člansku karticu i kupljene ulaznice.'
-            : 'Ekskluzivne pogodnosti za članove kluba.'
+          accountMode ? t('pages.membership.accountSubtitle') : t('pages.membership.joinSubtitle')
         }
       >
         {accountMode && <MemberHomeStrip />}

@@ -86,6 +86,18 @@ YouTube/Vimeo domena, `target="_blank"` dobija `rel="noopener noreferrer"`.
 `npx prettier` pravio style churn (double quotes) — ne mijenjati postavke bez
 dogovora.
 
+## i18n (FE-03b)
+
+- Javne stranice (`pages/public/**`) i home sekcije (`pages/home/**`) **nemaju**
+  hardkodiran tekst — sve ide kroz `t('pages.<sekcija>.<ključ')`; ključevi žive u
+  `src/locales/{bs,en}/common.json` (`pages.*` namespace).
+- Testovi koji to čuvaju: `src/i18n/i18n-keys.test.ts` (bs↔en parity + svaki `t()` ključ
+  postoji) i `src/i18n/no-hardcoded-text.test.ts` (nema literala u JSX-u/propsima).
+- Novi tekst: prvo ključ u **oba** locale fajla, pa `t()` u komponenti — testovi padaju
+  ako jedno od toga izostane.
+- Ostaje: `components/**` i `cms/**` (~261 string, dijele ih javni portal i admin) —
+  migracija uz FE-04.
+
 ## Poznata pravila
 
 - Ne dirati showcase intercept (mobile `_layout.tsx` — vidi MOBILE.md).

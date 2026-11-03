@@ -20,8 +20,10 @@ import { leagueEdition, pickDefaultCalendarId, type CalendarSeason } from '../..
 import { Seo } from '../../components/seo/Seo';
 import { Skeleton } from '../../components/ui/skeleton';
 import { DataError } from '../../components/public/DataError';
+import { useTranslation } from 'react-i18next';
 
 export function LeaguePage() {
+  const { t } = useTranslation();
   const { data: ownClub } = useOwnClub();
   const { data: seasons, isLoading: sl } = useSeasons();
   const calendars = useMemo(() => (seasons as CalendarSeason[] | undefined) ?? [], [seasons]);
@@ -61,13 +63,19 @@ export function LeaguePage() {
   }, [standings, prevStandings, prevRound]);
 
   const leader = standings?.[0];
-  const tableTitle = upToRound ? `Tabela do ${upToRound}. kola` : 'Ukupna tabela';
+  const tableTitle = upToRound
+    ? t('pages.league.tableToRound', { round: upToRound })
+    : t('pages.league.overallTable');
 
   return (
     <div className="pb-20">
       <Seo
-        title="Liga"
-        description={activeSeason ? `Liga — ${activeSeason.name}` : 'Tabela i rezultati lige'}
+        title={t('pages.league.seoTitle')}
+        description={
+          activeSeason
+            ? `${t('pages.league.seoTitle')} — ${activeSeason.name}`
+            : t('pages.league.seoDesc')
+        }
       />
 
       {sl ? (

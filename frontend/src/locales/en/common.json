@@ -52,7 +52,20 @@
     "latestNewsSubtitle": "Latest from the club",
     "sponsorsSubtitle": "Partners who support us",
     "teamSubtitle": "The players behind the badge",
-    "trophiesSubtitle": "Trophies through club history"
+    "trophiesSubtitle": "Trophies through club history",
+    "tableClub": "Club",
+    "tablePoints": "Pts",
+    "newsletterThanks": "Thanks for subscribing!",
+    "newsletterError": "Subscription failed. Check your email and try again.",
+    "teamHome": "Home",
+    "teamAway": "Away",
+    "tablePlayed": "P",
+    "tableWins": "W",
+    "tableDraws": "D",
+    "tableLosses": "L",
+    "tableGoalsFor": "GF",
+    "tableGoalsAgainst": "GA",
+    "season": "Season {{name}}"
   },
   "admin": {
     "dashboard": "Dashboard",
@@ -163,7 +176,144 @@
     "address": "Address"
   },
   "pages": {
-    "notFound": "Page not found."
+    "notFound": "Page not found.",
+    "gallery": {
+      "seoTitle": "Gallery",
+      "eyebrow": "Media",
+      "title": "Gallery",
+      "subtitle": "Photos from matches, events and behind the scenes.",
+      "empty": "No published galleries.",
+      "photos": "Photos",
+      "notFound": "Gallery not found."
+    },
+    "club": {
+      "notFound": "Club not found.",
+      "squadEmpty": "The squad has not been published yet.",
+      "timelineSeoDesc": "History and development of FK Gračanica",
+      "timelineEmpty": "Club history has not been published yet.",
+      "aboutClub": "About the club"
+    },
+    "news": {
+      "notFound": "News not found."
+    },
+    "search": {
+      "seoTitle": "Search",
+      "eyebrow": "Portal",
+      "title": "Search",
+      "subtitle": "Find news, players, clubs and matches.",
+      "placeholder": "Search news, players, matches...",
+      "minChars": "Enter at least 2 characters.",
+      "empty": "No results.",
+      "all": "All",
+      "previous": "Previous",
+      "next": "Next"
+    },
+    "sponsors": {
+      "seoTitle": "Sponsors",
+      "seoDesc": "Partners and sponsors of FK Gračanica",
+      "empty": "No sponsors."
+    },
+    "trophies": {
+      "seoTitle": "Trophies",
+      "seoDesc": "Trophies and titles of FK Gračanica",
+      "other": "Other trophies",
+      "empty": "No trophies."
+    },
+    "museum": {
+      "seoTitle": "Museum",
+      "seoDesc": "Artefacts and history of FK Gračanica",
+      "collection": "Collection",
+      "empty": "No exhibits in the museum."
+    },
+    "hallOfFame": {
+      "seoTitle": "Hall of Fame",
+      "seoDesc": "Legends of FK Gračanica",
+      "empty": "No Hall of Fame entries."
+    },
+    "league": {
+      "seoTitle": "League",
+      "seoDesc": "League table and results",
+      "tableToRound": "Table after round {{round}}",
+      "overallTable": "Overall table"
+    },
+    "newsletter": {
+      "seoTitle": "Newsletter unsubscribe",
+      "eyebrow": "Newsletter",
+      "title": "Unsubscribe",
+      "subtitle": "Manage your subscription.",
+      "formTitle": "Newsletter",
+      "formDesc": "Unsubscribe from the FK Gračanica mailing list.",
+      "loading": "Processing your request…",
+      "success": "You are unsubscribed. You will no longer receive the newsletter.",
+      "invalid": "The link is invalid or has already been used."
+    },
+    "player": {
+      "notFound": "Player not found.",
+      "about": "About the player",
+      "career": "Career (total)",
+      "appearances": "Appearances",
+      "goals": "Goals",
+      "assists": "Assists",
+      "minutes": "Minutes",
+      "yellowCards": "Yellow",
+      "redCards": "Red",
+      "matches": "Matches",
+      "loadingMatches": "Loading matches...",
+      "starter": "start",
+      "bench": "bench",
+      "goalsCount": "{{count}} goal(s)"
+    },
+    "tickets": {
+      "seoTitle": "Tickets",
+      "seoDesc": "Ticket reservations for FK Gračanica matches",
+      "eyebrow": "Stadium",
+      "title": "Tickets",
+      "subtitle": "Secure your seat at the match.",
+      "formTitle": "Tickets",
+      "formDesc": "Reserve tickets and review your orders.",
+      "signIn": "Sign in",
+      "moduleInactive": "The ticket module is currently inactive.",
+      "guestInfo": "Members and guests can buy tickets online or reserve them for the box office — sign-in is required.",
+      "signedInAs": "Signed in as: {{email}}",
+      "paymentCancelled": "The payment was cancelled. Your reservation is kept — pay it from \"My orders\".",
+      "tabsReserve": "Reserve",
+      "tabsOrders": "My orders",
+      "tabsSeason": "Season",
+      "onlyBoxOffice": "Reservation only — payment at the stadium box office.",
+      "onlineOrBoxOffice": "Pay online or reserve for the box office — your choice."
+    },
+    "membership": {
+      "seoTitle": "Membership",
+      "seoTitleAccount": "My account",
+      "eyebrow": "Community",
+      "title": "Membership",
+      "titleAccount": "My account",
+      "subtitle": "Join the club and support FK Gračanica as a registered member.",
+      "subtitleAccount": "Membership, tickets and a review of your orders.",
+      "joinTitle": "Become a member",
+      "joinSubtitle": "Exclusive benefits for club members.",
+      "accountTitle": "My account",
+      "accountSubtitle": "Review your membership card and purchased tickets."
+    },
+    "matchCenter": {
+      "notFound": "Match not found.",
+      "report": "Match report — ",
+      "editReport": "Edit report",
+      "createReport": "Create / edit report",
+      "backToLeague": "Back to the league"
+    },
+    "live": {
+      "notFound": "Match not found.",
+      "notLive": "The match is not live at the moment.",
+      "backToLeague": "Back to the league"
+    },
+    "monri": {
+      "seoTitle": "Payment",
+      "needLogin": "Signing in is required to pay.",
+      "formNotReady": "The Monri form is not ready. Check the keys in admin.",
+      "back": "Back",
+      "missingSession": "The Monri session is missing."
+    }
   },
   "match": {
     "fullStream": "Full match",

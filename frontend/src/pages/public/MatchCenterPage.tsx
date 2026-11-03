@@ -18,8 +18,10 @@ import {
 } from '../../components/match/MatchCenterSections';
 import { MatchStatisticsSection } from '../../components/match/MatchStatisticsSection';
 import { Skeleton } from '../../components/ui/skeleton';
+import { useTranslation } from 'react-i18next';
 
 export function MatchCenterPage() {
+  const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
   const { user } = useAuth();
   const { data, isLoading, isError } = useMatch(id ?? '');
@@ -42,9 +44,9 @@ export function MatchCenterPage() {
   if (isError || !data) {
     return (
       <div className="flex flex-col items-center gap-3 p-12 text-center">
-        <p className="text-text-muted">Utakmica nije pronađena.</p>
+        <p className="text-text-muted">{t('pages.matchCenter.notFound')}</p>
         <Link to="/liga" className="text-sm text-primary hover:underline">
-          Natrag na ligu
+          {t('pages.matchCenter.backToLeague')}
         </Link>
       </div>
     );
@@ -70,14 +72,14 @@ export function MatchCenterPage() {
             data.reportStatus === 'PENDING_APPROVAL' ||
             !data.reportStatus) && (
             <div className="mb-4 rounded-2xl border border-primary/30 bg-primary/5 px-4 py-3 text-sm">
-              <span className="text-text-muted">Izvještaj utakmice — </span>
+              <span className="text-text-muted">{t('pages.matchCenter.report')}</span>
               <Link
                 to={`/admin/matches/${data.id}/report`}
                 className="font-medium text-primary hover:underline"
               >
                 {data.reportStatus === 'PENDING_APPROVAL'
-                  ? 'Uredi izvještaj'
-                  : 'Kreiraj / uredi izvještaj'}
+                  ? t('pages.matchCenter.editReport')
+                  : t('pages.matchCenter.createReport')}
               </Link>
             </div>
           )}

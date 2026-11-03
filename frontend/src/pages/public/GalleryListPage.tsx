@@ -8,17 +8,19 @@ import {
   GalleryListBentoSkeleton,
 } from '../../components/gallery/GalleryListBento';
 import { Seo } from '../../components/seo/Seo';
+import { useTranslation } from 'react-i18next';
 
 export function GalleryListPage() {
+  const { t } = useTranslation();
   const { data, isLoading, isError, refetch } = useGalleryList();
 
   return (
     <div className="pb-16">
-      <Seo title="Galerija" />
+      <Seo title={t('pages.gallery.seoTitle')} />
       <PageHeroHeader
-        eyebrow="Mediji"
-        title="Galerija"
-        subtitle="Fotografije s utakmica, događaja i iza kulisa."
+        eyebrow={t('pages.gallery.eyebrow')}
+        title={t('pages.gallery.title')}
+        subtitle={t('pages.gallery.subtitle')}
       />
       <PageContainer className="py-10 sm:py-12">
         {isError ? (
@@ -28,7 +30,7 @@ export function GalleryListPage() {
         ) : data?.length ? (
           <GalleryListBento items={data} />
         ) : (
-          <EmptyState message="Nema objavljenih galerija." />
+          <EmptyState message={t('pages.gallery.empty')} />
         )}
       </PageContainer>
     </div>

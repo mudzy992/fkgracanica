@@ -31,9 +31,12 @@ export function Newsletter() {
             <h2 className="text-2xl font-bold">{t('home.newsletter')}</h2>
             <p className="mt-2 text-white/80">{t('home.newsletterDesc')}</p>
             {done ? (
-              <p className="mt-4 text-success">Hvala na pretplati!</p>
+              <p className="mt-4 text-success">{t('home.newsletterThanks')}</p>
             ) : (
-              <form onSubmit={(e) => void handleSubmit(e)} className="mt-4 flex flex-col gap-3 sm:flex-row">
+              <form
+                onSubmit={(e) => void handleSubmit(e)}
+                className="mt-4 flex flex-col gap-3 sm:flex-row"
+              >
                 <Input
                   type="email"
                   required
@@ -42,12 +45,16 @@ export function Newsletter() {
                   placeholder={t('common.email')}
                   className="bg-white text-text"
                 />
-                <Button type="submit" disabled={subscribe.isPending} className="bg-white text-primary">
+                <Button
+                  type="submit"
+                  disabled={subscribe.isPending}
+                  className="bg-white text-primary"
+                >
                   {t('actions.subscribe')}
                 </Button>
                 {subscribe.isError && (
                   <p className="text-sm text-red-200">
-                    {getApiErrorMessage(subscribe.error, 'Pretplata nije uspjela. Provjerite email i pokušajte ponovo.')}
+                    {getApiErrorMessage(subscribe.error, t('home.newsletterError'))}
                   </p>
                 )}
               </form>

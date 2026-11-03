@@ -8,8 +8,10 @@ import { GalleryAlbumHero } from '../../components/gallery/GalleryAlbumHero';
 import { NewsSectionTitle } from '../../components/news/NewsSectionTitle';
 import { Seo } from '../../components/seo/Seo';
 import { Skeleton } from '../../components/ui/skeleton';
+import { useTranslation } from 'react-i18next';
 
 export function GalleryDetailPage() {
+  const { t } = useTranslation();
   const { slug } = useParams<{ slug: string }>();
   const { data, isLoading, isError, refetch } = useGalleryItem(slug ?? '');
   const photos = data?.photos ?? [];
@@ -35,7 +37,7 @@ export function GalleryDetailPage() {
   }
 
   if (!data) {
-    return <p className="p-12 text-center text-text-muted">Galerija nije pronađena.</p>;
+    return <p className="p-12 text-center text-text-muted">{t('pages.gallery.notFound')}</p>;
   }
 
   return (
@@ -55,7 +57,7 @@ export function GalleryDetailPage() {
 
         {photos.length > 0 && (
           <section>
-            <NewsSectionTitle>Fotografije</NewsSectionTitle>
+            <NewsSectionTitle>{t('pages.gallery.photos')}</NewsSectionTitle>
             <PremiumPhotoBento photos={photos} />
           </section>
         )}

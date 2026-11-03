@@ -29,7 +29,13 @@ export function GallerySection() {
                   <Link key={g.id} to={`/galerija/${g.slug}`}>
                     <Card className="overflow-hidden">
                       {cover ? (
-                        <img loading="lazy" decoding="async" src={galleryPreviewUrl(cover)} alt="" className="aspect-square object-cover" />
+                        <img
+                          loading="lazy"
+                          decoding="async"
+                          src={galleryPreviewUrl(cover)}
+                          alt=""
+                          className="aspect-square object-cover"
+                        />
                       ) : (
                         <div className="flex aspect-square items-center justify-center bg-primary/5 text-sm text-text-muted">
                           {g.title}

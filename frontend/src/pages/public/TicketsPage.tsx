@@ -14,10 +14,12 @@ import { PageHeroHeader } from '../../components/public/shell/PageHeroHeader';
 import { Seo } from '../../components/seo/Seo';
 import { Button } from '../../components/ui/button';
 import { Skeleton } from '../../components/ui/skeleton';
+import { useTranslation } from 'react-i18next';
 
 type Tab = 'reserve' | 'orders' | 'season';
 
 export function TicketsPage() {
+  const { t } = useTranslation();
   const { isAuthenticated, isLoading, user } = useAuth();
   const location = useLocation();
   const [searchParams] = useSearchParams();
@@ -52,36 +54,34 @@ export function TicketsPage() {
 
   return (
     <div className="pb-16">
-      <Seo title="Ulaznice" description="Rezervacija ulaznica za utakmice FK Gračanica" />
+      <Seo title={t('pages.tickets.seoTitle')} description={t('pages.tickets.seoDesc')} />
       <PageHeroHeader
-        eyebrow="Stadion"
-        title="Ulaznice"
-        subtitle="Osigurajte svoje mjesto na utakmici."
+        eyebrow={t('pages.tickets.eyebrow')}
+        title={t('pages.tickets.title')}
+        subtitle={t('pages.tickets.subtitle')}
       />
       <FormShell
-        title="Ulaznice"
-        description="Rezervacija i pregled vaših narudžbi."
+        title={t('pages.tickets.formTitle')}
+        description={t('pages.tickets.formDesc')}
         layout={isAuthenticated ? 'full' : 'split'}
       >
         {!isAuthenticated ? (
           <div className="space-y-3">
-            <p className="text-text-muted">
-              Članovi i gosti mogu kupiti ulaznice online ili rezervisati za blagajnu — potrebna je
-              prijava.
-            </p>
+            <p className="text-text-muted">{t('pages.tickets.guestInfo')}</p>
             <Link to="/prijava" state={{ from: location }}>
-              <Button className="w-full">Prijavite se</Button>
+              <Button className="w-full">{t('pages.tickets.signIn')}</Button>
             </Link>
           </div>
         ) : !config?.modulesTicketing ? (
-          <p className="text-sm text-text-muted">Modul ulaznica trenutno nije aktivan.</p>
+          <p className="text-sm text-text-muted">{t('pages.tickets.moduleInactive')}</p>
         ) : (
           <div className="space-y-4">
-            <p className="text-sm text-text-muted">Prijavljeni: {user?.email}</p>
+            <p className="text-sm text-text-muted">
+              {t('pages.tickets.signedInAs', { email: user?.email ?? '' })}
+            </p>
             {cancelled && (
               <p className="rounded-lg border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm">
-                Plaćanje je otkazano. Rezervacija je sačuvana — platite iz &quot;Moje
-                narudžbe&quot;.
+                {t('pages.tickets.paymentCancelled')}
               </p>
             )}
             <div className="flex gap-2">
@@ -90,14 +90,14 @@ export function TicketsPage() {
                 variant={tab === 'reserve' ? 'default' : 'outline'}
                 onClick={() => setTab('reserve')}
               >
-                Rezervacija
+                {t('pages.tickets.tabsReserve')}
               </Button>
               <Button
                 size="sm"
                 variant={tab === 'orders' ? 'default' : 'outline'}
                 onClick={() => setTab('orders')}
               >
-                Moje narudžbe
+                {t('pages.tickets.tabsOrders')}
               </Button>
               {config?.seasonPassAvailable || tab === 'season' ? (
                 <Button
@@ -105,7 +105,7 @@ export function TicketsPage() {
                   variant={tab === 'season' ? 'default' : 'outline'}
                   onClick={() => setTab('season')}
                 >
-                  Sezona
+                  {t('pages.tickets.tabsSeason')}
                 </Button>
               ) : null}
             </div>
@@ -123,14 +123,10 @@ export function TicketsPage() {
             )}
 
             {tab === 'reserve' && sales?.boxOffice && !sales?.online && (
-              <p className="text-xs text-text-muted">
-                Samo rezervacija — plaćanje na blagajni stadiona.
-              </p>
+              <p className="text-xs text-text-muted">{t('pages.tickets.onlyBoxOffice')}</p>
             )}
             {tab === 'reserve' && sales?.online && sales?.boxOffice && (
-              <p className="text-xs text-text-muted">
-                Plaćanje online ili rezervacija za blagajnu — po izboru.
-              </p>
+              <p className="text-xs text-text-muted">{t('pages.tickets.onlineOrBoxOffice')}</p>
             )}
           </div>
         )}

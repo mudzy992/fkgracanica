@@ -29,7 +29,13 @@ export function SponsorsSection() {
                 className="flex items-center justify-center rounded-lg border border-slate-200 bg-background p-4"
               >
                 {s.logoPath ? (
-                  <img loading="lazy" decoding="async" src={mediaUrl(s.logoPath, 'thumb')} alt={s.name} className="max-h-12 object-contain" />
+                  <img
+                    loading="lazy"
+                    decoding="async"
+                    src={mediaUrl(s.logoPath, 'thumb')}
+                    alt={s.name}
+                    className="max-h-12 object-contain"
+                  />
                 ) : (
                   <span className="text-sm font-medium text-text-muted">{s.name}</span>
                 )}

@@ -12,8 +12,10 @@ import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
 import { Skeleton } from '../../components/ui/skeleton';
 import { SEARCH_FACET_LABELS, SEARCH_FACETS, type SearchFacet } from '../../types/search';
+import { useTranslation } from 'react-i18next';
 
 export function SearchPage() {
+  const { t } = useTranslation();
   const [params, setParams] = useSearchParams();
   const query = params.get('q') ?? '';
   const type = (params.get('type') as SearchFacet | null) ?? undefined;
@@ -53,13 +55,13 @@ export function SearchPage() {
   return (
     <div className="pb-16">
       <Seo
-        title="Pretraga"
+        title={t('pages.search.seoTitle')}
         url={query ? `/pretraga?q=${encodeURIComponent(query)}` : '/pretraga'}
       />
       <PageHeroHeader
-        eyebrow="Portal"
-        title="Pretraga"
-        subtitle="Pronađite vijesti, igrače, klubove i utakmice."
+        eyebrow={t('pages.search.eyebrow')}
+        title={t('pages.search.title')}
+        subtitle={t('pages.search.subtitle')}
       />
       <PageContainer size="md" className="py-10 sm:py-12">
         <PremiumCard className="mb-8 p-4" hover={false}>
@@ -67,12 +69,12 @@ export function SearchPage() {
             <Input
               value={q}
               onChange={(e) => setQ(e.target.value)}
-              placeholder="Pretraži vijesti, igrače, utakmice..."
+              placeholder={t('pages.search.placeholder')}
             />
           </form>
         </PremiumCard>
         {query.length < 2 ? (
-          <EmptyState message="Unesite najmanje 2 karaktera." />
+          <EmptyState message={t('pages.search.minChars')} />
         ) : isError ? (
           <DataError onRetry={() => void refetch()} />
         ) : isLoading ? (
@@ -86,7 +88,7 @@ export function SearchPage() {
                   variant={!type ? 'default' : 'outline'}
                   onClick={() => setSearch({ type: null, page: 1 })}
                 >
-                  Sve
+                  {t('pages.search.all')}
                 </Button>
                 {SEARCH_FACETS.map((facet) =>
                   data.facets[facet] > 0 ? (
@@ -105,7 +107,7 @@ export function SearchPage() {
             {hasResults && data ? (
               <SearchResultSections data={data} type={type} />
             ) : (
-              <EmptyState message="Nema rezultata." />
+              <EmptyState message={t('pages.search.empty')} />
             )}
             {type && data?.meta && data.meta.totalPages > 1 && (
               <div className="mt-6 flex justify-center gap-2">
@@ -115,7 +117,7 @@ export function SearchPage() {
                   disabled={page <= 1}
                   onClick={() => setSearch({ page: page - 1 })}
                 >
-                  Prethodna
+                  {t('pages.search.previous')}
                 </Button>
                 <span className="self-center text-sm text-text-muted">
                   {page} / {data.meta.totalPages}
@@ -126,7 +128,7 @@ export function SearchPage() {
                   disabled={page >= data.meta.totalPages}
                   onClick={() => setSearch({ page: page + 1 })}
                 >
-                  Sljedeća
+                  {t('pages.search.next')}
                 </Button>
               </div>
             )}

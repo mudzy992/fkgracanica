@@ -52,7 +52,20 @@
     "latestNewsSubtitle": "Najnovije iz kluba",
     "sponsorsSubtitle": "Partneri koji nas podržavaju",
     "teamSubtitle": "Igrači koji nose dres",
-    "trophiesSubtitle": "Trofeji kroz historiju kluba"
+    "trophiesSubtitle": "Trofeji kroz historiju kluba",
+    "tableClub": "Klub",
+    "tablePoints": "Bod",
+    "newsletterThanks": "Hvala na pretplati!",
+    "newsletterError": "Pretplata nije uspjela. Provjerite email i pokušajte ponovo.",
+    "teamHome": "Domaćin",
+    "teamAway": "Gost",
+    "tablePlayed": "O",
+    "tableWins": "B",
+    "tableDraws": "N",
+    "tableLosses": "P",
+    "tableGoalsFor": "DG",
+    "tableGoalsAgainst": "RG",
+    "season": "Sezona {{name}}"
   },
   "admin": {
     "dashboard": "Kontrolna tabla",
@@ -163,7 +176,144 @@
     "address": "Adresa"
   },
   "pages": {
-    "notFound": "Stranica nije pronađena."
+    "notFound": "Stranica nije pronađena.",
+    "gallery": {
+      "seoTitle": "Galerija",
+      "eyebrow": "Mediji",
+      "title": "Galerija",
+      "subtitle": "Fotografije s utakmica, događaja i iza kulisa.",
+      "empty": "Nema objavljenih galerija.",
+      "photos": "Fotografije",
+      "notFound": "Galerija nije pronađena."
+    },
+    "club": {
+      "notFound": "Klub nije pronađen.",
+      "squadEmpty": "Kadar trenutno nije objavljen.",
+      "timelineSeoDesc": "Historija i razvoj FK Gračanica",
+      "timelineEmpty": "Historija kluba još nije objavljena.",
+      "aboutClub": "O klubu"
+    },
+    "news": {
+      "notFound": "Vijest nije pronađena."
+    },
+    "search": {
+      "seoTitle": "Pretraga",
+      "eyebrow": "Portal",
+      "title": "Pretraga",
+      "subtitle": "Pronađite vijesti, igrače, klubove i utakmice.",
+      "placeholder": "Pretraži vijesti, igrače, utakmice...",
+      "minChars": "Unesite najmanje 2 karaktera.",
+      "empty": "Nema rezultata.",
+      "all": "Sve",
+      "previous": "Prethodna",
+      "next": "Sljedeća"
+    },
+    "sponsors": {
+      "seoTitle": "Sponzori",
+      "seoDesc": "Partneri i sponzori FK Gračanica",
+      "empty": "Nema sponzora."
+    },
+    "trophies": {
+      "seoTitle": "Trofeji",
+      "seoDesc": "Trofeji i titule FK Gračanica",
+      "other": "Ostali trofeji",
+      "empty": "Nema trofeja."
+    },
+    "museum": {
+      "seoTitle": "Muzej",
+      "seoDesc": "Artefakti i historija FK Gračanica",
+      "collection": "Zbirka",
+      "empty": "Nema predmeta u muzeju."
+    },
+    "hallOfFame": {
+      "seoTitle": "Kuća slavnih",
+      "seoDesc": "Legende FK Gračanica",
+      "empty": "Nema unosa u Kući slavnih."
+    },
+    "league": {
+      "seoTitle": "Liga",
+      "seoDesc": "Tabela i rezultati lige",
+      "tableToRound": "Tabela do {{round}}. kola",
+      "overallTable": "Ukupna tabela"
+    },
+    "newsletter": {
+      "seoTitle": "Odjava s newslettera",
+      "eyebrow": "Newsletter",
+      "title": "Odjava",
+      "subtitle": "Upravljanje pretplatom.",
+      "formTitle": "Newsletter",
+      "formDesc": "Odjava s mailing liste FK Gračanica.",
+      "loading": "Obrađujemo zahtjev…",
+      "success": "Odjavljeni ste. Više nećete primati newsletter.",
+      "invalid": "Link nije validan ili je već iskorišten."
+    },
+    "player": {
+      "notFound": "Igrač nije pronađen.",
+      "about": "O igraču",
+      "career": "Karijera (ukupno)",
+      "appearances": "Nastupi",
+      "goals": "Golovi",
+      "assists": "Asist.",
+      "minutes": "Minute",
+      "yellowCards": "Žuti",
+      "redCards": "Crveni",
+      "matches": "Utakmice",
+      "loadingMatches": "Učitavanje utakmica...",
+      "starter": "start",
+      "bench": "klupa",
+      "goalsCount": "{{count}} gol"
+    },
+    "tickets": {
+      "seoTitle": "Ulaznice",
+      "seoDesc": "Rezervacija ulaznica za utakmice FK Gračanica",
+      "eyebrow": "Stadion",
+      "title": "Ulaznice",
+      "subtitle": "Osigurajte svoje mjesto na utakmici.",
+      "formTitle": "Ulaznice",
+      "formDesc": "Rezervacija i pregled vaših narudžbi.",
+      "signIn": "Prijavite se",
+      "moduleInactive": "Modul ulaznica trenutno nije aktivan.",
+      "guestInfo": "Članovi i gosti mogu kupiti ulaznice online ili rezervisati za blagajnu — potrebna je prijava.",
+      "signedInAs": "Prijavljeni: {{email}}",
+      "paymentCancelled": "Plaćanje je otkazano. Rezervacija je sačuvana — platite iz „Moje narudžbe”.",
+      "tabsReserve": "Rezervacija",
+      "tabsOrders": "Moje narudžbe",
+      "tabsSeason": "Sezona",
+      "onlyBoxOffice": "Samo rezervacija — plaćanje na blagajni stadiona.",
+      "onlineOrBoxOffice": "Plaćanje online ili rezervacija za blagajnu — po izboru."
+    },
+    "membership": {
+      "seoTitle": "Članstvo",
+      "seoTitleAccount": "Moj račun",
+      "eyebrow": "Zajednica",
+      "title": "Članstvo",
+      "titleAccount": "Moj račun",
+      "subtitle": "Pridružite se klubu i podržite FK Gračanica kao registrirani član.",
+      "subtitleAccount": "Članstvo, ulaznice i pregled vaših narudžbi.",
+      "joinTitle": "Postani član",
+      "joinSubtitle": "Ekskluzivne pogodnosti za članove kluba.",
+      "accountTitle": "Moj račun",
+      "accountSubtitle": "Pregledajte člansku karticu i kupljene ulaznice."
+    },
+    "matchCenter": {
+      "notFound": "Utakmica nije pronađena.",
+      "report": "Izvještaj utakmice — ",
+      "editReport": "Uredi izvještaj",
+      "createReport": "Kreiraj / uredi izvještaj",
+      "backToLeague": "Natrag na ligu"
+    },
+    "live": {
+      "notFound": "Utakmica nije pronađena.",
+      "notLive": "Utakmica trenutno nije uživo.",
+      "backToLeague": "Natrag na ligu"
+    },
+    "monri": {
+      "seoTitle": "Plaćanje",
+      "needLogin": "Prijava je potrebna za plaćanje.",
+      "formNotReady": "Monri forma nije spremna. Provjerite ključeve u adminu.",
+      "back": "Nazad",
+      "missingSession": "Nedostaje Monri sesija."
+    }
   },
   "match": {
     "fullStream": "Snimak",

@@ -1,6 +1,10 @@
 import { useTranslation } from 'react-i18next';
 import { useSeasons, useStandings } from '../../../hooks';
-import { leagueEdition, pickDefaultCalendarId, type CalendarSeason } from '../../../lib/season-utils';
+import {
+  leagueEdition,
+  pickDefaultCalendarId,
+  type CalendarSeason,
+} from '../../../lib/season-utils';
 import { Card, CardContent } from '../../../components/ui/card';
 import { Skeleton } from '../../../components/ui/skeleton';
 
@@ -25,14 +29,14 @@ export function LeagueTable() {
               <thead>
                 <tr className="border-b border-slate-200 text-left text-text-muted">
                   <th className="p-3">#</th>
-                  <th className="p-3">Klub</th>
-                  <th className="p-3">O</th>
-                  <th className="p-3">B</th>
-                  <th className="p-3">N</th>
-                  <th className="p-3">P</th>
-                  <th className="p-3">DG</th>
-                  <th className="p-3">RG</th>
-                  <th className="p-3 font-bold">Bod</th>
+                  <th className="p-3">{t('home.tableClub')}</th>
+                  <th className="p-3">{t('home.tablePlayed')}</th>
+                  <th className="p-3">{t('home.tableWins')}</th>
+                  <th className="p-3">{t('home.tableDraws')}</th>
+                  <th className="p-3">{t('home.tableLosses')}</th>
+                  <th className="p-3">{t('home.tableGoalsFor')}</th>
+                  <th className="p-3">{t('home.tableGoalsAgainst')}</th>
+                  <th className="p-3 font-bold">{t('home.tablePoints')}</th>
                 </tr>
               </thead>
               <tbody>

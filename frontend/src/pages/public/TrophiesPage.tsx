@@ -11,8 +11,10 @@ import { TrophyFeaturedShowcase } from '../../components/public/trophies/TrophyF
 import { NewsSectionTitle } from '../../components/news/NewsSectionTitle';
 import { Reveal } from '../../lib/motion/Reveal';
 import { Skeleton } from '../../components/ui/skeleton';
+import { useTranslation } from 'react-i18next';
 
 export function TrophiesPage() {
+  const { t } = useTranslation();
   const { data, isLoading, isError, refetch } = useTrophies();
   const trophies = data ?? [];
   const { featured, rest } = splitFeaturedTrophy(trophies);
@@ -24,7 +26,7 @@ export function TrophiesPage() {
 
   return (
     <div className="pb-16 sm:pb-20">
-      <Seo title="Trofeji" description="Trofeji i titule FK Gračanica" />
+      <Seo title={t('pages.trophies.seoTitle')} description={t('pages.trophies.seoDesc')} />
       <TrophiesCinematicHero
         totalCount={stats.total}
         featuredYear={featured?.year}
@@ -50,7 +52,7 @@ export function TrophiesPage() {
             {rest.length > 0 && (
               <section className="pt-10 sm:pt-12">
                 <Reveal>
-                  <NewsSectionTitle>Ostali trofeji</NewsSectionTitle>
+                  <NewsSectionTitle>{t('pages.trophies.other')}</NewsSectionTitle>
                 </Reveal>
                 <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                   {rest.map((t, i) => (
@@ -63,7 +65,7 @@ export function TrophiesPage() {
             )}
           </>
         ) : (
-          <EmptyState message="Nema trofeja." />
+          <EmptyState message={t('pages.trophies.empty')} />
         )}
       </PageContainer>
     </div>

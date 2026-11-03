@@ -14,7 +14,9 @@ export function MembershipCTA() {
             <p className="mt-2 text-white/80">{t('home.membershipDesc')}</p>
           </div>
           <Link to="/clanstvo">
-            <Button className="bg-white text-primary hover:bg-white/90">{t('home.membership')}</Button>
+            <Button className="bg-white text-primary hover:bg-white/90">
+              {t('home.membership')}
+            </Button>
           </Link>
         </CardContent>
       </Card>

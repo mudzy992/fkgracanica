@@ -7,8 +7,10 @@ import { EmptyState } from '../../components/public/EmptyState';
 import { DataError } from '../../components/public/DataError';
 import { Seo } from '../../components/seo/Seo';
 import { Skeleton } from '../../components/ui/skeleton';
+import { useTranslation } from 'react-i18next';
 
 export function SponsorsPage() {
+  const { t } = useTranslation();
   const { data, isLoading, isError, refetch } = useSponsors();
   const sponsors = data ?? [];
   const groups = groupSponsorsByTier(sponsors);
@@ -21,7 +23,7 @@ export function SponsorsPage() {
 
   return (
     <div className="pb-16 sm:pb-20">
-      <Seo title="Sponzori" description="Partneri i sponzori FK Gračanica" />
+      <Seo title={t('pages.sponsors.seoTitle')} description={t('pages.sponsors.seoDesc')} />
       <SponsorsCinematicHero
         totalCount={stats.total}
         premiumCount={stats.premium}
@@ -45,7 +47,7 @@ export function SponsorsPage() {
           ))}
         </div>
       ) : (
-        <EmptyState message="Nema sponzora." />
+        <EmptyState message={t('pages.sponsors.empty')} />
       )}
     </div>
   );
