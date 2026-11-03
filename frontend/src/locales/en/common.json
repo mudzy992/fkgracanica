@@ -321,7 +321,9 @@
     "addHighlight": "Add clip",
     "highlightTitle": "Clip title",
     "highlightStart": "Start (seconds, optional)",
-    "highlightSaveError": "Could not save clip."
+    "highlightSaveError": "Could not save clip.",
+    "highlightDeleteTitle": "Delete highlight?",
+    "highlightDeleteDesc": "\"{{title}}\" will be deleted."
   },
   "appDownload": {
     "seoTitle": "Android app",

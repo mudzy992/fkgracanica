@@ -10,7 +10,7 @@ import { CmsMenuSortableList } from './CmsMenuSortableList';
 import { menuItemToDraft, type MenuDraftItem } from './menu-utils';
 
 export function CmsMenuEditor() {
-  const { data: menu, isLoading } = useCmsMenu('main');
+  const { data: menu, isLoading, isError, refetch } = useCmsMenu('main');
   const { data: pagesRaw } = useCmsPages(true);
   const { data: moduleFlags } = useModuleFlags();
   const pages = asArray<CmsPage>(pagesRaw);
@@ -44,12 +44,18 @@ export function CmsMenuEditor() {
   };
 
   return (
-    <AdminPageShell title="Glavni meni" isLoading={isLoading}>
+    <AdminPageShell
+      isError={isError}
+      onRetry={() => void refetch()}
+      title="Glavni meni"
+      isLoading={isLoading}
+    >
       <div className="space-y-4 p-3">
         <CmsMenuPreviewBar items={items} moduleFlags={moduleFlags} />
         <p className="text-xs text-text-muted">
-          Sistemske stavke (zaključane) možete samo ugašiti ili premjestiti. Prilagođene stavke možete potpuno
-          uređivati. Javna navigacija također skriva stavke čiji je modul isključen u Postavkama.
+          Sistemske stavke (zaključane) možete samo ugašiti ili premjestiti. Prilagođene stavke
+          možete potpuno uređivati. Javna navigacija također skriva stavke čiji je modul isključen u
+          Postavkama.
         </p>
         <CmsMenuSortableList
           items={items}

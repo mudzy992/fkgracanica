@@ -16,7 +16,7 @@ import type { Player } from '../../types';
 export function PlayersAdminPage() {
   const { user } = useAuth();
   const canManage = hasPermission(user?.permissions, 'players.manage');
-  const { data, isLoading } = usePlayers();
+  const { data, isLoading, isError, refetch } = usePlayers();
   const remove = useDeletePlayer();
   const { confirm, dialog } = useConfirm();
   const [open, setOpen] = useState(false);
@@ -37,11 +37,19 @@ export function PlayersAdminPage() {
       <Seo title="Igrači" />
       {dialog}
       <AdminPageShell
+        isError={isError}
+        onRetry={() => void refetch()}
         title="Igrači"
         isLoading={isLoading}
         actions={
           canManage ? (
-            <Button size="sm" onClick={() => { setEdit(null); setOpen(true); }}>
+            <Button
+              size="sm"
+              onClick={() => {
+                setEdit(null);
+                setOpen(true);
+              }}
+            >
               <Plus className="mr-1 h-4 w-4" />
               Novi
             </Button>
@@ -70,7 +78,14 @@ export function PlayersAdminPage() {
               render: (r) =>
                 canManage ? (
                   <div className="flex gap-1">
-                    <Button variant="ghost" size="icon" onClick={() => { setEdit(r); setOpen(true); }}>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => {
+                        setEdit(r);
+                        setOpen(true);
+                      }}
+                    >
                       <Pencil className="h-4 w-4" />
                     </Button>
                     <Button variant="ghost" size="icon" onClick={() => void onDelete(r)}>
@@ -84,7 +99,10 @@ export function PlayersAdminPage() {
       </AdminPageShell>
       <PlayersAdminFormSheet
         open={open}
-        onOpenChange={(o) => { setOpen(o); if (!o) setEdit(null); }}
+        onOpenChange={(o) => {
+          setOpen(o);
+          if (!o) setEdit(null);
+        }}
         edit={edit}
       />
     </>

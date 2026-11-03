@@ -44,7 +44,7 @@ const FILTERS: { key: Filter; label: string }[] = [
 export function MembershipAdminPage() {
   const { user } = useAuth();
   const canManage = hasPermission(user?.permissions, 'membership.manage');
-  const { data, isLoading } = useMemberships();
+  const { data, isLoading, isError, refetch } = useMemberships();
   const activate = useActivateMembership();
   const renew = useRenewMembership();
   const suspend = useSuspendMembership();
@@ -70,6 +70,8 @@ export function MembershipAdminPage() {
       <Seo title="Članstvo" />
       {dialog}
       <AdminPageShell
+        isError={isError}
+        onRetry={() => void refetch()}
         title="Članstvo"
         isLoading={isLoading}
         actions={

@@ -15,7 +15,7 @@ import type { Trophy } from '../../types';
 export function TrophiesAdminPage() {
   const { user } = useAuth();
   const canManage = hasPermission(user?.permissions, 'trophies.manage');
-  const { data, isLoading } = useTrophies();
+  const { data, isLoading, isError, refetch } = useTrophies();
   const remove = useDeleteTrophy();
   const { confirm, dialog } = useConfirm();
   const [open, setOpen] = useState(false);
@@ -36,11 +36,19 @@ export function TrophiesAdminPage() {
       <Seo title="Trofeji" />
       {dialog}
       <AdminPageShell
+        isError={isError}
+        onRetry={() => void refetch()}
         title="Trofeji"
         isLoading={isLoading}
         actions={
           canManage ? (
-            <Button size="sm" onClick={() => { setEdit(null); setOpen(true); }}>
+            <Button
+              size="sm"
+              onClick={() => {
+                setEdit(null);
+                setOpen(true);
+              }}
+            >
               <Plus className="mr-1 h-4 w-4" />
               Novi
             </Button>
@@ -50,12 +58,21 @@ export function TrophiesAdminPage() {
         <AdminDataTable
           rows={data ?? []}
           columns={[
-            { key: 'name', header: 'Naziv', render: (r) => (
-              <span className="flex items-center gap-2">
-                {r.name}
-                {r.featured && <Badge variant="success"><Star className="mr-1 h-3 w-3" />Istaknut</Badge>}
-              </span>
-            )},
+            {
+              key: 'name',
+              header: 'Naziv',
+              render: (r) => (
+                <span className="flex items-center gap-2">
+                  {r.name}
+                  {r.featured && (
+                    <Badge variant="success">
+                      <Star className="mr-1 h-3 w-3" />
+                      Istaknut
+                    </Badge>
+                  )}
+                </span>
+              ),
+            },
             { key: 'year', header: 'Godina', render: (r) => r.year },
             {
               key: 'actions',
@@ -63,7 +80,14 @@ export function TrophiesAdminPage() {
               render: (r) =>
                 canManage ? (
                   <div className="flex gap-1">
-                    <Button variant="ghost" size="icon" onClick={() => { setEdit(r); setOpen(true); }}>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => {
+                        setEdit(r);
+                        setOpen(true);
+                      }}
+                    >
                       <Pencil className="h-4 w-4" />
                     </Button>
                     <Button variant="ghost" size="icon" onClick={() => void onDelete(r)}>
@@ -77,7 +101,10 @@ export function TrophiesAdminPage() {
       </AdminPageShell>
       <TrophiesAdminFormSheet
         open={open}
-        onOpenChange={(o) => { setOpen(o); if (!o) setEdit(null); }}
+        onOpenChange={(o) => {
+          setOpen(o);
+          if (!o) setEdit(null);
+        }}
         edit={edit}
       />
     </>

@@ -1,6 +1,6 @@
 import { useGalleryList } from '../../hooks';
 import { EmptyState } from '../../components/public/EmptyState';
-import { DataError } from '../../components/public/DataError';
+import { DataError } from '../../components/common/DataError';
 import { PageContainer } from '../../components/public/PageContainer';
 import { PageHeroHeader } from '../../components/public/shell/PageHeroHeader';
 import {

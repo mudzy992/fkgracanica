@@ -7,11 +7,15 @@ import { Button } from '../../components/ui/button';
 import { Seo } from '../../components/seo/Seo';
 
 export function LivePendingPage() {
-  const { data, isLoading } = usePendingLiveReports();
+  const { data, isLoading, isError, refetch } = usePendingLiveReports();
   const approve = useApproveMatchReport();
 
   return (
-    <AdminPageShell title="Live izvještaji na odobrenje">
+    <AdminPageShell
+      isError={isError}
+      onRetry={() => void refetch()}
+      title="Live izvještaji na odobrenje"
+    >
       <Seo title="Live odobrenje" />
       <AdminDataTable
         rows={data ?? []}
@@ -35,7 +39,9 @@ export function LivePendingPage() {
             render: (r) => (
               <div className="flex flex-wrap gap-2">
                 <Link to={`/utakmice/${r.id}`}>
-                  <Button size="sm" variant="outline">Pregled</Button>
+                  <Button size="sm" variant="outline">
+                    Pregled
+                  </Button>
                 </Link>
                 <Button
                   size="sm"

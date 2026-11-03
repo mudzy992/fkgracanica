@@ -14,7 +14,7 @@ import type { Sponsor } from '../../types';
 export function SponsorsAdminPage() {
   const { user } = useAuth();
   const canManage = hasPermission(user?.permissions, 'sponsors.manage');
-  const { data, isLoading } = useSponsors();
+  const { data, isLoading, isError, refetch } = useSponsors();
   const remove = useDeleteSponsor();
   const reorder = useReorderSponsors();
   const { confirm, dialog } = useConfirm();
@@ -45,11 +45,19 @@ export function SponsorsAdminPage() {
       <Seo title="Sponzori" />
       {dialog}
       <AdminPageShell
+        isError={isError}
+        onRetry={() => void refetch()}
         title="Sponzori"
         isLoading={isLoading}
         actions={
           canManage ? (
-            <Button size="sm" onClick={() => { setEdit(null); setOpen(true); }}>
+            <Button
+              size="sm"
+              onClick={() => {
+                setEdit(null);
+                setOpen(true);
+              }}
+            >
               <Plus className="mr-1 h-4 w-4" />
               Novi
             </Button>
@@ -70,7 +78,12 @@ export function SponsorsAdminPage() {
                   <div className="flex gap-1">
                     {canManage && (
                       <>
-                        <Button variant="ghost" size="icon" disabled={index === 0} onClick={() => move(index, -1)}>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          disabled={index === 0}
+                          onClick={() => move(index, -1)}
+                        >
                           <ArrowUp className="h-4 w-4" />
                         </Button>
                         <Button
@@ -81,7 +94,14 @@ export function SponsorsAdminPage() {
                         >
                           <ArrowDown className="h-4 w-4" />
                         </Button>
-                        <Button variant="ghost" size="icon" onClick={() => { setEdit(r); setOpen(true); }}>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => {
+                            setEdit(r);
+                            setOpen(true);
+                          }}
+                        >
                           <Pencil className="h-4 w-4" />
                         </Button>
                         <Button variant="ghost" size="icon" onClick={() => void onDelete(r)}>
@@ -98,7 +118,10 @@ export function SponsorsAdminPage() {
       </AdminPageShell>
       <SponsorsAdminFormSheet
         open={open}
-        onOpenChange={(o) => { setOpen(o); if (!o) setEdit(null); }}
+        onOpenChange={(o) => {
+          setOpen(o);
+          if (!o) setEdit(null);
+        }}
         edit={edit}
       />
     </>

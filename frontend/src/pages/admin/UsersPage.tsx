@@ -37,7 +37,7 @@ export function UsersPage({ embedded = false }: Props) {
   const [page, setPage] = useState(1);
   const [sheetOpen, setSheetOpen] = useState(false);
   const [editUser, setEditUser] = useState<UserRow | null>(null);
-  const { data, isLoading } = useUsers({ page, search: search || undefined });
+  const { data, isLoading, isError, refetch } = useUsers({ page, search: search || undefined });
   const remove = useDeleteUser();
   const { confirm, dialog } = useConfirm();
   const rows = (data?.data as UserRow[] | undefined) ?? [];
@@ -53,7 +53,13 @@ export function UsersPage({ embedded = false }: Props) {
   };
 
   const createAction = canCreate ? (
-    <Button size="sm" onClick={() => { setEditUser(null); setSheetOpen(true); }}>
+    <Button
+      size="sm"
+      onClick={() => {
+        setEditUser(null);
+        setSheetOpen(true);
+      }}
+    >
       <Plus className="mr-1 h-4 w-4" />
       Novi
     </Button>
@@ -68,16 +74,17 @@ export function UsersPage({ embedded = false }: Props) {
   ) : (
     <>
       {embedded && createAction && (
-        <div className="flex justify-end border-b border-slate-200 p-4">
-          {createAction}
-        </div>
+        <div className="flex justify-end border-b border-slate-200 p-4">{createAction}</div>
       )}
       <div className={`border-b border-slate-200 p-4 ${embedded && createAction ? 'pt-0' : ''}`}>
         <Input
           className="max-w-xs"
           placeholder="Pretraži..."
           value={search}
-          onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+          onChange={(e) => {
+            setSearch(e.target.value);
+            setPage(1);
+          }}
         />
       </div>
       <AdminDataTable
@@ -110,7 +117,14 @@ export function UsersPage({ embedded = false }: Props) {
             render: (r) => (
               <div className="flex gap-1">
                 {canUpdate && (
-                  <Button variant="ghost" size="icon" onClick={() => { setEditUser(r); setSheetOpen(true); }}>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => {
+                      setEditUser(r);
+                      setSheetOpen(true);
+                    }}
+                  >
                     <Pencil className="h-4 w-4" />
                   </Button>
                 )}
@@ -148,7 +162,13 @@ export function UsersPage({ embedded = false }: Props) {
     <>
       <Seo title="Korisnici" />
       {dialog}
-      <AdminPageShell title="Korisnici" isLoading={isLoading} actions={createAction}>
+      <AdminPageShell
+        isError={isError}
+        onRetry={() => void refetch()}
+        title="Korisnici"
+        isLoading={isLoading}
+        actions={createAction}
+      >
         {body}
       </AdminPageShell>
       <UserAdminFormSheet

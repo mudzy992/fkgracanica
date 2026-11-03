@@ -321,7 +321,9 @@
     "addHighlight": "Dodaj klip",
     "highlightTitle": "Naslov klipa",
     "highlightStart": "Početak (sekunde, opcionalno)",
-    "highlightSaveError": "Klip nije spremljen."
+    "highlightSaveError": "Klip nije spremljen.",
+    "highlightDeleteTitle": "Obrisati highlight?",
+    "highlightDeleteDesc": "„{{title}}” će biti obrisan."
   },
   "appDownload": {
     "seoTitle": "Android aplikacija",

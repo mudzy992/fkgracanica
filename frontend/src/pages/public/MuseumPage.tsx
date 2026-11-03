@@ -9,7 +9,7 @@ import { Reveal } from '../../lib/motion/Reveal';
 import { Seo } from '../../components/seo/Seo';
 import { museumCategoryLabel } from '../../lib/museum-categories';
 import { EmptyState } from '../../components/public/EmptyState';
-import { DataError } from '../../components/public/DataError';
+import { DataError } from '../../components/common/DataError';
 import { Skeleton } from '../../components/ui/skeleton';
 import { useTranslation } from 'react-i18next';
 

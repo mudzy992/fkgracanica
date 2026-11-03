@@ -20,7 +20,7 @@ export function ClubsListPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const canManage = hasPermission(user?.permissions, 'clubs.manage');
-  const { data, isLoading } = useClubsWithCounts();
+  const { data, isLoading, isError, refetch } = useClubsWithCounts();
   const remove = useDeleteClub();
   const { confirm, dialog } = useConfirm();
   const [open, setOpen] = useState(false);
@@ -40,6 +40,8 @@ export function ClubsListPage() {
       <Seo title="Klub & kadar" />
       {dialog}
       <AdminPageShell
+        isError={isError}
+        onRetry={() => void refetch()}
         title="Klub & kadar"
         isLoading={isLoading}
         actions={
@@ -69,7 +71,11 @@ export function ClubsListPage() {
               key: 'own',
               header: 'Tip',
               render: (r) =>
-                r.isOwnClub ? <Badge variant="success">Naš klub</Badge> : <Badge variant="muted">Protivnik</Badge>,
+                r.isOwnClub ? (
+                  <Badge variant="success">Naš klub</Badge>
+                ) : (
+                  <Badge variant="muted">Protivnik</Badge>
+                ),
             },
             {
               key: 'actions',
@@ -77,7 +83,9 @@ export function ClubsListPage() {
               render: (r) => (
                 <div className="flex gap-1">
                   <Link to={`/admin/clubs/${r.id}`}>
-                    <Button variant="ghost" size="sm">Upravljaj</Button>
+                    <Button variant="ghost" size="sm">
+                      Upravljaj
+                    </Button>
                   </Link>
                   {canManage && !r.isOwnClub && (
                     <Button variant="ghost" size="icon" onClick={() => void onDelete(r)}>

@@ -18,7 +18,7 @@ function canDeletePage(page: CmsPage) {
 }
 
 export function CmsPagesList({ onCreate }: Props) {
-  const { data, isLoading } = useCmsPages(true);
+  const { data, isLoading, isError, refetch } = useCmsPages(true);
   const pages = asArray<CmsPage>(data);
   const remove = useDeleteCmsPage();
   const { confirm, dialog } = useConfirm();
@@ -37,6 +37,8 @@ export function CmsPagesList({ onCreate }: Props) {
   return (
     <>
       <AdminPageShell
+        isError={isError}
+        onRetry={() => void refetch()}
         title="CMS stranice"
         isLoading={isLoading}
         actions={<Button onClick={onCreate}>Nova stranica</Button>}
@@ -67,7 +69,12 @@ export function CmsPagesList({ onCreate }: Props) {
                     </Button>
                   </Link>
                   {canDeletePage(r) && (
-                    <Button size="sm" variant="outline" className="text-danger" onClick={() => void onDelete(r)}>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="text-danger"
+                      onClick={() => void onDelete(r)}
+                    >
                       Obriši
                     </Button>
                   )}

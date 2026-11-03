@@ -1,22 +1,43 @@
 import type { ReactNode } from 'react';
 import { Card, CardContent } from '../ui/card';
 import { Skeleton } from '../ui/skeleton';
+import { DataError } from '../common/DataError';
 
 interface AdminListPageProps {
   title: string;
   isLoading?: boolean;
+  /**
+   * FE-04/P-FE04-1: admin tabele su imale samo `isLoading` — pad API-ja je izgledao
+   * kao prazna tabela („Nema podataka”), pa je administrator mislio da nema
+   * zapisa umjesto da vidi grešku i dugme za ponovni pokušaj.
+   */
+  isError?: boolean;
+  onRetry?: () => void;
   actions?: ReactNode;
   children: ReactNode;
 }
 
-export function AdminPageShell({ title, isLoading, actions, children }: AdminListPageProps) {
+export function AdminPageShell({
+  title,
+  isLoading,
+  isError,
+  onRetry,
+  actions,
+  children,
+}: AdminListPageProps) {
   return (
     <div>
       <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
         <h1 className="text-2xl font-bold text-text">{title}</h1>
         {actions}
       </div>
-      {isLoading ? (
+      {isError ? (
+        <Card>
+          <CardContent className="p-0">
+            <DataError onRetry={onRetry} />
+          </CardContent>
+        </Card>
+      ) : isLoading ? (
         <div className="space-y-3">
           {Array.from({ length: 5 }).map((_, i) => (
             <Skeleton key={i} className="h-12 w-full" />

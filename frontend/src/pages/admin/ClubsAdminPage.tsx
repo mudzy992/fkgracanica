@@ -17,7 +17,7 @@ import type { Club } from '../../types';
 export function ClubsAdminPage() {
   const { user } = useAuth();
   const canManage = hasPermission(user?.permissions, 'clubs.manage');
-  const { data, isLoading } = useClubs();
+  const { data, isLoading, isError, refetch } = useClubs();
   const remove = useDeleteClub();
   const { confirm, dialog } = useConfirm();
   const [open, setOpen] = useState(false);
@@ -38,11 +38,19 @@ export function ClubsAdminPage() {
       <Seo title="Klubovi" />
       {dialog}
       <AdminPageShell
+        isError={isError}
+        onRetry={() => void refetch()}
         title="Klubovi"
         isLoading={isLoading}
         actions={
           canManage ? (
-            <Button size="sm" onClick={() => { setEdit(null); setOpen(true); }}>
+            <Button
+              size="sm"
+              onClick={() => {
+                setEdit(null);
+                setOpen(true);
+              }}
+            >
               <Plus className="mr-1 h-4 w-4" />
               Novi
             </Button>
@@ -71,7 +79,11 @@ export function ClubsAdminPage() {
               key: 'own',
               header: 'Naš klub',
               render: (r) =>
-                r.isOwnClub ? <Badge variant="success">Da</Badge> : <Badge variant="muted">Ne</Badge>,
+                r.isOwnClub ? (
+                  <Badge variant="success">Da</Badge>
+                ) : (
+                  <Badge variant="muted">Ne</Badge>
+                ),
             },
             {
               key: 'actions',
@@ -79,7 +91,14 @@ export function ClubsAdminPage() {
               render: (r) =>
                 canManage ? (
                   <div className="flex gap-1">
-                    <Button variant="ghost" size="icon" onClick={() => { setEdit(r); setOpen(true); }}>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => {
+                        setEdit(r);
+                        setOpen(true);
+                      }}
+                    >
                       <Pencil className="h-4 w-4" />
                     </Button>
                     <Button variant="ghost" size="icon" onClick={() => void onDelete(r)}>
@@ -93,7 +112,10 @@ export function ClubsAdminPage() {
       </AdminPageShell>
       <ClubsAdminFormSheet
         open={open}
-        onOpenChange={(o) => { setOpen(o); if (!o) setEdit(null); }}
+        onOpenChange={(o) => {
+          setOpen(o);
+          if (!o) setEdit(null);
+        }}
         edit={edit}
       />
     </>

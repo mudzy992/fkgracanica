@@ -5,7 +5,7 @@ import { asArray } from '../../lib/as-array';
 import type { NewsCategory } from '../../hooks/use-news-admin';
 import type { NewsItem } from '../../types';
 import { EmptyState } from '../../components/public/EmptyState';
-import { DataError } from '../../components/public/DataError';
+import { DataError } from '../../components/common/DataError';
 import { PageContainer } from '../../components/public/PageContainer';
 import { PageHeroHeader } from '../../components/public/shell/PageHeroHeader';
 import { Seo } from '../../components/seo/Seo';

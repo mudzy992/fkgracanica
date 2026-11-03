@@ -7,13 +7,26 @@
 | Polje | Vrijednost |
 |-------|------------|
 | **Aktivna grana** | `arena/290a6f13-fkgracanica` |
-| **Trenutna faza** | CI-01 ✔ INF-01 ✔ INF-02 ✔ BE-01…**BE-09 ✔** → FE-01 ✔ FE-02 ✔ FE-03 ✔ **FE-03b ✔** → sljedeće: **FE-04** (admin audit) |
-| **Trenutni segment** | **CI-04 (parcijalno)** — B-CI04-01 Coolify `npm ci` blokator riješen (jedan root lock); prije: **FE-03b ✅**, **FE-03 ✅**, **FE-02 ✅**, **FE-01 ✅**, **BE-09c ✅** |
+| **Trenutna faza** | CI-01 ✔ INF-01 ✔ INF-02 ✔ BE-01…**BE-09 ✔** → FE-01 ✔ FE-02 ✔ FE-03 ✔ FE-03b ✔ → CI-04 ✔ (Coolify build/env/React fixevi) → **FE-04a ✔** → sljedeće: **FE-04b** (forme/editori) |
+| **Trenutni segment** | **FE-04a ✅ ZATVOREN** (admin liste: error+retry na 20 stranica, 3 potvrde za brisanje, 4 RBAC rute) ; prije: **CI-04 ✅**, **FE-03b ✅**, **FE-03 ✅**, **FE-02 ✅**, **FE-01 ✅**, **BE-09c ✅** |
 | **Zadnji commit** | `29b2b22` fix(frontend): resolve.dedupe react/react-dom + bundle-react guard (crn ekran) [CI-04] |
 | **Zadnji CI run** | ✅ **`41719000159` success** (`29b2b22` — CI-04: React dedupe + `bundle-react` guard, sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41719000159 ; ✅ **`41716321472`**, **`41715938871`** (uklonjen `DATABASE_URL` build-arg + entrypoint preflight) ; ✅ **`41713331928`**, **`41712830091`**, **`41707559600`**, **`41707129119`** (env/Docker dijagnostika) ; ✅ **`41702499943`**, **`41702051432`** (Docker lock fix) ; ✅ **`41697059984`**, **`41696508780`** (FE-03b) ; ✅ **`41694786018`**, **`41694299634`**, **`41693656143`**, **`41671042459`** (FE-03) ; ✅ **`41668846835`**, **`41668139741`** (FE-02) ; ✅ **`41666815620`**, **`41666291342`**, **`41665768088`** (FE-01) ; ✅ **`41663810393`**, **`41663339512`**, **`41662863623`** (BE-09) ; ranije BE serija: `41662277103`, `41661451237`❌→fix, `41660810750`❌→fix, `41658424979`, `41657925166`, `41655487255`, `41654943345`, `41654422296`❌→fix, `41652033940`, `41651332872`, `41647575733`, `41646963311`, `41646330945`, `41644096377`❌/`41644777234`❌/`41645566467`❌→fix, `41640408790`, `41639946345`, `41638624709`, `41634063555`, `41630034505`, `41629707127`❌→fix, `41627914148`, `41583848187` |
 | **check:all** | `npm run check:all` → **7/7** (check-coverage, file-size, console-ban, **token-check**, secrets-ban, layer-deps, docs-links); u CI-ju jobovi `audit-gate` + `standards`; pre-push hook pokreće `check:all` |
 
 ## Šta je urađeno (hronološki)
+
+### Sesija FE-04a — 2026-11-03 (admin: hub, liste, navigacija)
+
+Korisnik: „Konačno je sve oky, možeš nastaviti dalje."
+
+- **B-FE04-01 (Medium):** 45 admin fajlova imalo `isLoading` bez `isError` → pad API-ja
+  izgledao kao prazna tabela. `AdminPageShell` dobio `isError`/`onRetry` (`DataError`),
+  povezano na **20 stranica**; `DataError` preseljen u `components/common/`.
+- **B-FE04-02 (Medium):** 3 destruktivne akcije bez potvrde (CMS sekcija, match highlight,
+  zapis iz izvještaja) → `useConfirm` svuda; ostale admin akcije su već bile ispravne.
+- **B-FE04-03 (Low):** 4 rute bez `PermissionRoute` (`users`, `heritage`, `comms`,
+  `notifications`) → dodan `anyOf` prop i pokrivene; backend ih je i prije štitio.
+- Ostaje: `aria-label` (39) i i18n admina → FE-04b/FE-04c.
 
 ### HITNO — 2026-11-03 (Coolify build pao: `npm ci` EUSAGE)
 

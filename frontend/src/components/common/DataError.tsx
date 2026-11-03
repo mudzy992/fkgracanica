@@ -11,9 +11,10 @@ interface Props {
 }
 
 /**
- * FE-03/P-FE03-2: javne stranice su imale samo `isLoading` granu — pad API-ja je
- * izgledao kao „nema sadržaja” (lažno prazno stanje) i korisnik nije imao retry.
- * `role="alert"` da ekranski čitači odmah objave grešku.
+ * FE-03/P-FE03-2 (javni portal) + FE-04/P-FE04-1 (admin): stranice su imale samo
+ * `isLoading` granu — pad API-ja je izgledao kao „nema sadržaja” (lažno prazno
+ * stanje) i korisnik nije imao retry. `role="alert"` da ekranski čitači odmah
+ * objave grešku. Zajednička komponenta za javni i admin sloj.
  */
 export function DataError({ message, onRetry, className }: Props) {
   const { t } = useTranslation();

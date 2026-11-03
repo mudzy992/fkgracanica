@@ -1,6 +1,11 @@
 import { useState, type MouseEvent } from 'react';
 import { Trash2 } from 'lucide-react';
-import { useContactMessages, useDeleteContact, useMarkAllContactRead, useMarkContactRead } from '../../hooks/use-contact-admin';
+import {
+  useContactMessages,
+  useDeleteContact,
+  useMarkAllContactRead,
+  useMarkContactRead,
+} from '../../hooks/use-contact-admin';
 import { useConfirm } from '../../hooks/use-confirm';
 import { formatDateTime } from '../../lib/utils';
 import { Seo } from '../../components/seo/Seo';
@@ -21,7 +26,11 @@ export function ContactAdminPage({ embedded = false }: Props) {
   const [search, setSearch] = useState('');
   const [unreadOnly, setUnreadOnly] = useState(false);
   const [selected, setSelected] = useState<ContactMessage | null>(null);
-  const { data, isLoading } = useContactMessages({ page, search: search || undefined, unreadOnly });
+  const { data, isLoading, isError, refetch } = useContactMessages({
+    page,
+    search: search || undefined,
+    unreadOnly,
+  });
   const markRead = useMarkContactRead();
   const markAllRead = useMarkAllContactRead();
   const remove = useDeleteContact();
@@ -45,7 +54,12 @@ export function ContactAdminPage({ embedded = false }: Props) {
   };
 
   const markAllAction = (
-    <Button size="sm" variant="outline" onClick={() => void markAllRead.mutateAsync()} disabled={markAllRead.isPending}>
+    <Button
+      size="sm"
+      variant="outline"
+      onClick={() => void markAllRead.mutateAsync()}
+      disabled={markAllRead.isPending}
+    >
       Označi sve pročitanim
     </Button>
   );
@@ -62,9 +76,19 @@ export function ContactAdminPage({ embedded = false }: Props) {
           className="max-w-xs"
           placeholder="Pretraži..."
           value={search}
-          onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+          onChange={(e) => {
+            setSearch(e.target.value);
+            setPage(1);
+          }}
         />
-        <Button size="sm" variant={unreadOnly ? 'default' : 'outline'} onClick={() => { setUnreadOnly((v) => !v); setPage(1); }}>
+        <Button
+          size="sm"
+          variant={unreadOnly ? 'default' : 'outline'}
+          onClick={() => {
+            setUnreadOnly((v) => !v);
+            setPage(1);
+          }}
+        >
           Samo nepročitane
         </Button>
       </div>
@@ -80,7 +104,9 @@ export function ContactAdminPage({ embedded = false }: Props) {
             key: 'read',
             header: 'Status',
             render: (r) => (
-              <Badge variant={r.isRead ? 'success' : 'default'}>{r.isRead ? 'Pročitano' : 'Novo'}</Badge>
+              <Badge variant={r.isRead ? 'success' : 'default'}>
+                {r.isRead ? 'Pročitano' : 'Novo'}
+              </Badge>
             ),
           },
           { key: 'date', header: 'Datum', render: (r) => formatDateTime(r.createdAt) },
@@ -123,7 +149,13 @@ export function ContactAdminPage({ embedded = false }: Props) {
     <>
       <Seo title="Kontakt" />
       {dialog}
-      <AdminPageShell title="Kontakt poruke" isLoading={isLoading} actions={markAllAction}>
+      <AdminPageShell
+        isError={isError}
+        onRetry={() => void refetch()}
+        title="Kontakt poruke"
+        isLoading={isLoading}
+        actions={markAllAction}
+      >
         {body}
       </AdminPageShell>
       {sheet}

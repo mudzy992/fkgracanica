@@ -4,7 +4,7 @@ import { groupSponsorsByTier } from '../../lib/sponsor-tiers';
 import { SponsorsCinematicHero } from '../../components/public/sponsors/SponsorsCinematicHero';
 import { SponsorsTierSection } from '../../components/public/sponsors/SponsorsTierSection';
 import { EmptyState } from '../../components/public/EmptyState';
-import { DataError } from '../../components/public/DataError';
+import { DataError } from '../../components/common/DataError';
 import { Seo } from '../../components/seo/Seo';
 import { Skeleton } from '../../components/ui/skeleton';
 import { useTranslation } from 'react-i18next';

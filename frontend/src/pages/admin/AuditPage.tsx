@@ -13,7 +13,7 @@ export function AuditPage() {
   const [from, setFrom] = useState('');
   const [to, setTo] = useState('');
   const [page, setPage] = useState(1);
-  const { data, isLoading } = useAuditLog({
+  const { data, isLoading, isError, refetch } = useAuditLog({
     page,
     action: action || undefined,
     entity: entity || undefined,
@@ -25,7 +25,12 @@ export function AuditPage() {
   return (
     <>
       <Seo title="Audit" />
-      <AdminPageShell title="Audit log" isLoading={isLoading}>
+      <AdminPageShell
+        isError={isError}
+        onRetry={() => void refetch()}
+        title="Audit log"
+        isLoading={isLoading}
+      >
         <div className="grid gap-2 border-b border-[var(--border-subtle)] p-4 sm:grid-cols-2 lg:grid-cols-4">
           <Input placeholder="Akcija" value={action} onChange={(e) => setAction(e.target.value)} />
           <Input placeholder="Entitet" value={entity} onChange={(e) => setEntity(e.target.value)} />
@@ -43,10 +48,17 @@ export function AuditPage() {
         />
         {data?.meta && data.meta.totalPages > 1 && (
           <div className="flex justify-center gap-2 p-4">
-            <Button variant="outline" size="sm" disabled={page <= 1} onClick={() => setPage((p) => p - 1)}>
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={page <= 1}
+              onClick={() => setPage((p) => p - 1)}
+            >
               Prethodna
             </Button>
-            <span className="self-center text-sm">{page} / {data.meta.totalPages}</span>
+            <span className="self-center text-sm">
+              {page} / {data.meta.totalPages}
+            </span>
             <Button
               variant="outline"
               size="sm"

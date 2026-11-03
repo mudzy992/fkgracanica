@@ -14,7 +14,7 @@ import type { ClubTimelineEvent } from '../../types';
 export function TimelineAdminPage() {
   const { user } = useAuth();
   const canManage = hasPermission(user?.permissions, 'club-timeline.manage');
-  const { data, isLoading } = useClubTimeline();
+  const { data, isLoading, isError, refetch } = useClubTimeline();
   const remove = useDeleteTimelineEvent();
   const reorder = useReorderTimelineEvents();
   const { confirm, dialog } = useConfirm();
@@ -45,11 +45,19 @@ export function TimelineAdminPage() {
       <Seo title="Vremenska linija" />
       {dialog}
       <AdminPageShell
+        isError={isError}
+        onRetry={() => void refetch()}
         title="Vremenska linija kluba"
         isLoading={isLoading}
         actions={
           canManage ? (
-            <Button size="sm" onClick={() => { setEdit(null); setOpen(true); }}>
+            <Button
+              size="sm"
+              onClick={() => {
+                setEdit(null);
+                setOpen(true);
+              }}
+            >
               <Plus className="mr-1 h-4 w-4" />
               Novi
             </Button>
@@ -68,7 +76,12 @@ export function TimelineAdminPage() {
                 const index = rows.findIndex((row) => row.id === r.id);
                 return canManage ? (
                   <div className="flex gap-1">
-                    <Button variant="ghost" size="icon" disabled={index === 0} onClick={() => move(index, -1)}>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      disabled={index === 0}
+                      onClick={() => move(index, -1)}
+                    >
                       <ArrowUp className="h-4 w-4" />
                     </Button>
                     <Button
@@ -79,7 +92,14 @@ export function TimelineAdminPage() {
                     >
                       <ArrowDown className="h-4 w-4" />
                     </Button>
-                    <Button variant="ghost" size="icon" onClick={() => { setEdit(r); setOpen(true); }}>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => {
+                        setEdit(r);
+                        setOpen(true);
+                      }}
+                    >
                       <Pencil className="h-4 w-4" />
                     </Button>
                     <Button variant="ghost" size="icon" onClick={() => void onDelete(r)}>
@@ -94,7 +114,10 @@ export function TimelineAdminPage() {
       </AdminPageShell>
       <TimelineAdminFormSheet
         open={open}
-        onOpenChange={(o) => { setOpen(o); if (!o) setEdit(null); }}
+        onOpenChange={(o) => {
+          setOpen(o);
+          if (!o) setEdit(null);
+        }}
         edit={edit}
       />
     </>

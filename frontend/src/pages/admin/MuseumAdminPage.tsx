@@ -17,7 +17,7 @@ interface Props {
 }
 
 export function MuseumAdminPage({ embedded = false }: Props) {
-  const { data, isLoading } = useMuseum();
+  const { data, isLoading, isError, refetch } = useMuseum();
   const remove = useDeleteMuseumItem();
   const { confirm, dialog } = useConfirm();
   const [open, setOpen] = useState(false);
@@ -34,7 +34,13 @@ export function MuseumAdminPage({ embedded = false }: Props) {
   };
 
   const createAction = (
-    <Button size="sm" onClick={() => { setEdit(null); setOpen(true); }}>
+    <Button
+      size="sm"
+      onClick={() => {
+        setEdit(null);
+        setOpen(true);
+      }}
+    >
       <Plus className="mr-1 h-4 w-4" />
       Novi
     </Button>
@@ -52,14 +58,25 @@ export function MuseumAdminPage({ embedded = false }: Props) {
         empty="Nema predmeta u muzeju."
         columns={[
           { key: 'title', header: 'Naslov', render: (r) => r.title },
-          { key: 'category', header: 'Kategorija', render: (r) => museumCategoryLabel(r.category) || '—' },
+          {
+            key: 'category',
+            header: 'Kategorija',
+            render: (r) => museumCategoryLabel(r.category) || '—',
+          },
           { key: 'year', header: 'Godina', render: (r) => r.year ?? '—' },
           {
             key: 'actions',
             header: 'Akcije',
             render: (r) => (
               <div className="flex gap-1">
-                <Button variant="ghost" size="icon" onClick={() => { setEdit(r); setOpen(true); }}>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => {
+                    setEdit(r);
+                    setOpen(true);
+                  }}
+                >
                   <Pencil className="h-4 w-4" />
                 </Button>
                 <Button variant="ghost" size="icon" onClick={() => void onDelete(r)}>
@@ -76,7 +93,10 @@ export function MuseumAdminPage({ embedded = false }: Props) {
   const sheet = (
     <MuseumAdminFormSheet
       open={open}
-      onOpenChange={(o) => { setOpen(o); if (!o) setEdit(null); }}
+      onOpenChange={(o) => {
+        setOpen(o);
+        if (!o) setEdit(null);
+      }}
       edit={edit}
     />
   );
@@ -95,7 +115,13 @@ export function MuseumAdminPage({ embedded = false }: Props) {
     <>
       <Seo title="Muzej" />
       {dialog}
-      <AdminPageShell title="Muzej" isLoading={isLoading} actions={createAction}>
+      <AdminPageShell
+        isError={isError}
+        onRetry={() => void refetch()}
+        title="Muzej"
+        isLoading={isLoading}
+        actions={createAction}
+      >
         {body}
       </AdminPageShell>
       {sheet}

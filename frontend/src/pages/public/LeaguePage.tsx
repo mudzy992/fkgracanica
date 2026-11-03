@@ -19,7 +19,7 @@ import { computePositionChanges, maxFinishedRound } from '../../lib/league-posit
 import { leagueEdition, pickDefaultCalendarId, type CalendarSeason } from '../../lib/season-utils';
 import { Seo } from '../../components/seo/Seo';
 import { Skeleton } from '../../components/ui/skeleton';
-import { DataError } from '../../components/public/DataError';
+import { DataError } from '../../components/common/DataError';
 import { useTranslation } from 'react-i18next';
 
 export function LeaguePage() {

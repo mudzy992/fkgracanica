@@ -9,7 +9,7 @@ import { TeamSeasonStatsSection } from '../../components/team/TeamSeasonStatsSec
 import { spotlightPlayers, statsByPlayerId } from '../../components/team/team-stats-utils';
 import { Seo } from '../../components/seo/Seo';
 import { Skeleton } from '../../components/ui/skeleton';
-import { DataError } from '../../components/public/DataError';
+import { DataError } from '../../components/common/DataError';
 import type { Stadium } from '../../types/club-hub';
 import { useTranslation } from 'react-i18next';
 

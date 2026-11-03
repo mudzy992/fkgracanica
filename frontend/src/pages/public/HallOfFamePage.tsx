@@ -9,7 +9,7 @@ import { HofLegendDialog } from '../../components/public/hall-of-fame/HofLegendD
 import { Reveal } from '../../lib/motion/Reveal';
 import { Seo } from '../../components/seo/Seo';
 import { EmptyState } from '../../components/public/EmptyState';
-import { DataError } from '../../components/public/DataError';
+import { DataError } from '../../components/common/DataError';
 import { Skeleton } from '../../components/ui/skeleton';
 import type { HallOfFameEntry } from '../../types';
 import { useTranslation } from 'react-i18next';

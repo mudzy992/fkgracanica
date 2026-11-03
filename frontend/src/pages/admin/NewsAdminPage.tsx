@@ -35,7 +35,7 @@ export function NewsAdminPage() {
   const [categoryId, setCategoryId] = useState('');
   const { data: categoriesRaw } = useNewsCategories();
   const categories = asArray<NewsCategory>(categoriesRaw);
-  const { data, isLoading } = useNewsList(undefined, categoryId || undefined);
+  const { data, isLoading, isError, refetch } = useNewsList(undefined, categoryId || undefined);
   const updateStatus = useUpdateNewsStatus();
   const submitReview = useSubmitNewsForReview();
   const deleteNews = useDeleteNews();
@@ -58,6 +58,8 @@ export function NewsAdminPage() {
     <>
       <Seo title="Vijesti" />
       <AdminPageShell
+        isError={isError}
+        onRetry={() => void refetch()}
         title="Vijesti"
         isLoading={isLoading}
         actions={
@@ -89,9 +91,15 @@ export function NewsAdminPage() {
           rows={asArray<NewsItem>(data)}
           empty="Nema vijesti — kreirajte prvu."
           columns={[
-            { key: 'title', header: 'Naslov', render: (r) => (
-              <Link to={`/admin/news/${r.id}/edit`} className="font-medium hover:underline">{r.title}</Link>
-            ) },
+            {
+              key: 'title',
+              header: 'Naslov',
+              render: (r) => (
+                <Link to={`/admin/news/${r.id}/edit`} className="font-medium hover:underline">
+                  {r.title}
+                </Link>
+              ),
+            },
             {
               key: 'category',
               header: 'Kategorija',
@@ -110,10 +118,17 @@ export function NewsAdminPage() {
               render: (r) => (
                 <div className="flex flex-wrap gap-2">
                   <Link to={`/admin/news/${r.id}/edit`}>
-                    <Button size="sm" variant="outline">Uredi</Button>
+                    <Button size="sm" variant="outline">
+                      Uredi
+                    </Button>
                   </Link>
                   {r.status === 'DRAFT' && canSubmit && !canApprove && (
-                    <Button size="sm" variant="outline" onClick={() => submit(r)} disabled={submitReview.isPending}>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => submit(r)}
+                      disabled={submitReview.isPending}
+                    >
                       Predaj na pregled
                     </Button>
                   )}

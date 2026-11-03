@@ -34,7 +34,7 @@ interface Permission {
 export function RolesPage({ embedded = false }: Props) {
   const { user } = useAuth();
   const canUpdate = hasPermission(user?.permissions, 'rbac.update');
-  const { data: roles, isLoading } = useRoles();
+  const { data: roles, isLoading, isError, refetch } = useRoles();
   const { data: permissions } = usePermissions();
   const updatePerms = useUpdateRolePermissions();
   const deleteRole = useDeleteRole();
@@ -89,9 +89,7 @@ export function RolesPage({ embedded = false }: Props) {
   ) : (
     <>
       {embedded && createAction && (
-        <div className="flex justify-end border-b border-slate-200 p-4">
-          {createAction}
-        </div>
+        <div className="flex justify-end border-b border-slate-200 p-4">{createAction}</div>
       )}
       <AdminDataTable
         rows={roleList}
@@ -138,7 +136,12 @@ export function RolesPage({ embedded = false }: Props) {
         <div className="max-h-[60vh] space-y-2 overflow-y-auto">
           {permList.map((p) => (
             <label key={p.key} className="flex cursor-pointer items-start gap-2 text-sm">
-              <input type="checkbox" checked={selected.includes(p.key)} onChange={() => toggle(p.key)} className="mt-1" />
+              <input
+                type="checkbox"
+                checked={selected.includes(p.key)}
+                onChange={() => toggle(p.key)}
+                className="mt-1"
+              />
               <span className="font-medium">{p.description ?? p.key}</span>
             </label>
           ))}
@@ -169,7 +172,13 @@ export function RolesPage({ embedded = false }: Props) {
     <>
       <Seo title="Uloge" />
       {dialog}
-      <AdminPageShell title="Uloge i dozvole" isLoading={isLoading} actions={createAction}>
+      <AdminPageShell
+        isError={isError}
+        onRetry={() => void refetch()}
+        title="Uloge i dozvole"
+        isLoading={isLoading}
+        actions={createAction}
+      >
         {body}
       </AdminPageShell>
       {sheets}

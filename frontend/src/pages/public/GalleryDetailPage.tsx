@@ -2,7 +2,7 @@ import { useParams } from 'react-router-dom';
 import { useGalleryItem } from '../../hooks';
 import { RichContent } from '../../components/public/RichContent';
 import { PageContainer } from '../../components/public/PageContainer';
-import { DataError } from '../../components/public/DataError';
+import { DataError } from '../../components/common/DataError';
 import { PremiumPhotoBento } from '../../components/public/PremiumPhotoBento';
 import { GalleryAlbumHero } from '../../components/gallery/GalleryAlbumHero';
 import { NewsSectionTitle } from '../../components/news/NewsSectionTitle';

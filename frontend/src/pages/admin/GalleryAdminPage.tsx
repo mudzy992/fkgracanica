@@ -19,7 +19,7 @@ export function GalleryAdminPage() {
   const { user } = useAuth();
   const canManage = hasPermission(user?.permissions, 'gallery.manage');
   const canApprove = hasPermission(user?.permissions, 'gallery.approve');
-  const { data, isLoading } = useGalleryAdminList();
+  const { data, isLoading, isError, refetch } = useGalleryAdminList();
   const publish = useUpdateGalleryStatus();
   const remove = useDeleteGallery();
   const { confirm, dialog } = useConfirm();
@@ -39,6 +39,8 @@ export function GalleryAdminPage() {
       <Seo title="Galerija" />
       {dialog}
       <AdminPageShell
+        isError={isError}
+        onRetry={() => void refetch()}
         title="Galerija"
         isLoading={isLoading}
         actions={
@@ -64,7 +66,11 @@ export function GalleryAdminPage() {
                 </Link>
               ),
             },
-            { key: 'status', header: 'Status', render: (r) => <Badge>{contentStatusLabel(r.status)}</Badge> },
+            {
+              key: 'status',
+              header: 'Status',
+              render: (r) => <Badge>{contentStatusLabel(r.status)}</Badge>,
+            },
             {
               key: 'actions',
               header: 'Akcije',
@@ -78,7 +84,11 @@ export function GalleryAdminPage() {
                     </Link>
                   )}
                   {canApprove && r.status !== 'PUBLISHED' && (
-                    <Button size="sm" variant="outline" onClick={() => void publish.mutateAsync({ id: r.id, status: 'PUBLISHED' })}>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => void publish.mutateAsync({ id: r.id, status: 'PUBLISHED' })}
+                    >
                       Objavi
                     </Button>
                   )}

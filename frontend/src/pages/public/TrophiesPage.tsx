@@ -4,7 +4,7 @@ import { splitFeaturedTrophy } from '../../lib/trophy-utils';
 import { PageContainer } from '../../components/public/PageContainer';
 import { TrophiesCinematicHero } from '../../components/public/trophies/TrophiesCinematicHero';
 import { EmptyState } from '../../components/public/EmptyState';
-import { DataError } from '../../components/public/DataError';
+import { DataError } from '../../components/common/DataError';
 import { Seo } from '../../components/seo/Seo';
 import { TrophyCard } from '../../components/public/trophies/TrophyCard';
 import { TrophyFeaturedShowcase } from '../../components/public/trophies/TrophyFeaturedShowcase';

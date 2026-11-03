@@ -14,7 +14,7 @@ interface Props {
 }
 
 export function HallOfFameAdminPage({ embedded = false }: Props) {
-  const { data, isLoading } = useHallOfFame();
+  const { data, isLoading, isError, refetch } = useHallOfFame();
   const remove = useDeleteHallOfFame();
   const { confirm, dialog } = useConfirm();
   const [open, setOpen] = useState(false);
@@ -31,7 +31,13 @@ export function HallOfFameAdminPage({ embedded = false }: Props) {
   };
 
   const createAction = (
-    <Button size="sm" onClick={() => { setEdit(null); setOpen(true); }}>
+    <Button
+      size="sm"
+      onClick={() => {
+        setEdit(null);
+        setOpen(true);
+      }}
+    >
       <Plus className="mr-1 h-4 w-4" />
       Novi
     </Button>
@@ -56,7 +62,14 @@ export function HallOfFameAdminPage({ embedded = false }: Props) {
             header: 'Akcije',
             render: (r) => (
               <div className="flex gap-1">
-                <Button variant="ghost" size="icon" onClick={() => { setEdit(r); setOpen(true); }}>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => {
+                    setEdit(r);
+                    setOpen(true);
+                  }}
+                >
                   <Pencil className="h-4 w-4" />
                 </Button>
                 <Button variant="ghost" size="icon" onClick={() => void onDelete(r)}>
@@ -73,7 +86,10 @@ export function HallOfFameAdminPage({ embedded = false }: Props) {
   const sheet = (
     <HallOfFameAdminFormSheet
       open={open}
-      onOpenChange={(o) => { setOpen(o); if (!o) setEdit(null); }}
+      onOpenChange={(o) => {
+        setOpen(o);
+        if (!o) setEdit(null);
+      }}
       edit={edit}
     />
   );
@@ -92,7 +108,13 @@ export function HallOfFameAdminPage({ embedded = false }: Props) {
     <>
       <Seo title="Hall of Fame" />
       {dialog}
-      <AdminPageShell title="Hall of Fame" isLoading={isLoading} actions={createAction}>
+      <AdminPageShell
+        isError={isError}
+        onRetry={() => void refetch()}
+        title="Hall of Fame"
+        isLoading={isLoading}
+        actions={createAction}
+      >
         {body}
       </AdminPageShell>
       {sheet}

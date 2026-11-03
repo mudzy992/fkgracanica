@@ -7,6 +7,7 @@ import {
   useUpdateCmsPage,
   useUpdateCmsSection,
 } from '../../../hooks/use-cms-pages';
+import { useConfirm } from '../../../hooks/use-confirm';
 import { asArray } from '../../../lib/as-array';
 import { Seo } from '../../../components/seo/Seo';
 import { Button } from '../../../components/ui/button';
@@ -24,6 +25,25 @@ export function CmsPageBuilderPage() {
   const updatePage = useUpdateCmsPage();
   const updateSection = useUpdateCmsSection(page?.id ?? '');
   const deleteSection = useDeleteCmsSection(page?.id ?? '');
+  const { confirm, dialog: confirmDialog } = useConfirm();
+
+  /**
+   * FE-04/P-FE04-2: brisanje CMS sekcije (i njenog sadržaja) je išlo na jedan klik
+   * iz sortabilne liste, bez potvrde — slučajan klik je brisao sekciju sa stranice.
+   */
+  const removeSection = async (sectionId: string, widgetType?: string) => {
+    const ok = await confirm({
+      title: 'Obrisati sekciju?',
+      description: widgetType
+        ? `Sekcija „${widgetType}” i njen sadržaj biće obrisani.`
+        : 'Sekcija i njen sadržaj biće obrisani.',
+      confirmLabel: 'Obriši',
+      variant: 'danger',
+    });
+    if (!ok) return;
+    if (editSection?.id === sectionId) closeEdit();
+    await deleteSection.mutateAsync(sectionId);
+  };
   const reorder = useReorderCmsSections(page?.id ?? '');
 
   const [pickerOpen, setPickerOpen] = useState(false);
@@ -65,6 +85,7 @@ export function CmsPageBuilderPage() {
   return (
     <>
       <Seo title={`CMS: ${page?.title ?? ''}`} />
+      {confirmDialog}
       <Link to="/admin/cms" className="mb-4 inline-block text-sm text-accent hover:underline">
         ← Nazad na CMS
       </Link>
@@ -92,8 +113,8 @@ export function CmsPageBuilderPage() {
               onSelect={openEdit}
               onReorder={(ids) => void reorder.mutateAsync(ids)}
               onDelete={(sid) => {
-                if (editSection?.id === sid) closeEdit();
-                void deleteSection.mutateAsync(sid);
+                const section = sections.find((item) => item.id === sid);
+                void removeSection(sid, section?.widgetType);
               }}
               onToggleEnabled={(sid, enabled) => {
                 void updateSection.mutateAsync({ sectionId: sid, enabled });
