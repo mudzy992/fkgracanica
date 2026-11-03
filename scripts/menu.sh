@@ -3,7 +3,7 @@
 # Prikaz opcija korisniku
 echo "Odaberite opciju za pokretanje:"
 echo "1) Rebuild docker"
-echo "2) Popravka CI"
+echo "2) Regeneracija Docker lock fajlova (sync-docker-locks)"
 echo "3) Prisma migracija"
 echo "4) GIT commit/push"
 echo "5) Mobile EAS build (development, lokalno)"
@@ -26,7 +26,12 @@ case $izbor in
         ./scripts/sync-docker-locks.sh
         ;;
     3)
-        echo "Pokrećem: Prisma migracija..."
+        echo "Pokrećem: Prisma migracija (migrate deploy)..."
+        read -r -p "Baza iz backend/.env — potvrdi [y/N]: " potvrda
+        if [[ ! "$potvrda" =~ ^[yY]$ ]]; then
+          echo "Otkazano."
+          exit 1
+        fi
         cd "$ROOT_DIR/backend" && npx prisma migrate deploy
         ;;
     4)

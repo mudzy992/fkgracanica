@@ -8,18 +8,42 @@ import { io } from 'socket.io-client';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 loadEnv({ path: resolve(__dirname, '../.env') });
 
-const API_BASE = (process.env.API_PUBLIC_URL ?? 'https://fkgracanica.ba101.top/backend').replace(/\/$/, '');
-const API = `${API_BASE}/api/v1`;
+// BE-09c/P-B09c-6: NEMA produkcijskog defaulta — skripta starta/golira/završava
+// live utakmicu, pa cilj MORA biti eksplicitan (prije je default bio produkcijski
+// URL, a ADMIN_PASSWORD se čitao iz .env-a → slučajno pokretanje = prava izmjena).
+const API_BASE = (process.env.API_PUBLIC_URL ?? '').replace(/\/$/, '');
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL ?? 'admin@fkgracanica.ba';
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
-const REALTIME_URL = process.env.VITE_REALTIME_URL ?? 'https://fkgracanica.ba101.top/realtime';
+const REALTIME_URL = process.env.VITE_REALTIME_URL ?? '';
 const SOCKET_PATH = process.env.VITE_SOCKET_IO_PATH ?? '/backend/socket.io';
-const TARGET_ROUND = Number(process.env.QA_MATCH_ROUND ?? 13);
+const ROUND_RAW = process.env.QA_MATCH_ROUND;
+const TARGET_ROUND = Number(ROUND_RAW);
 
+if (!API_BASE) {
+  console.error(
+    'API_PUBLIC_URL nije postavljen — skripta mijenja live utakmicu, pa cilj ' +
+      'mora biti eksplicitan (npr. API_PUBLIC_URL=http://localhost:3000).',
+  );
+  process.exit(1);
+}
 if (!ADMIN_PASSWORD) {
   console.error('ADMIN_PASSWORD missing in .env');
   process.exit(1);
 }
+if (!Number.isInteger(TARGET_ROUND) || TARGET_ROUND <= 0) {
+  console.error('QA_MATCH_ROUND mora biti pozitivan cijeli broj.');
+  process.exit(1);
+}
+
+if (!process.argv.includes('--yes')) {
+  console.error(
+    `Potvrda nedostaje: skripta mijenja utakmicu kola ${TARGET_ROUND} na ${API_BASE}. ` +
+      'Pokreni sa --yes ako je to zaista cilj.',
+  );
+  process.exit(1);
+}
+
+const API = `${API_BASE}/api/v1`;
 
 async function api(method, path, token, body) {
   const res = await fetch(`${API}${path}`, {
