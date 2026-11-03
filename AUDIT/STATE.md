@@ -7,9 +7,9 @@
 | Polje | Vrijednost |
 |-------|------------|
 | **Aktivna grana** | `arena/290a6f13-fkgracanica` |
-| **Trenutna faza** | CI-01 ✔ INF-01 ✔ INF-02 ✔ BE-01…BE-07 ✔ → **BE-08 u toku (audit završen, čekaju se odluke)** |
-| **Trenutni segment** | **BE-08** (showcase/SEO/pretraga/dashboard/app-releases/health/nasljeđe) — audit ✔, 7 predloga čeka odluku; posljednji zatvoren **BE-07** |
-| **Zadnji commit** | `ed4df65` docs(audit): BE-08 audit [BE-08] |
+| **Trenutna faza** | CI-01 ✔ INF-01 ✔ INF-02 ✔ BE-01…BE-07 ✔ → **BE-08 u toku (implementirano P-B08-1/2/3/4/5/7; P-B08-6 odbijen)** |
+| **Trenutni segment** | **BE-08** (showcase/SEO/pretraga/dashboard/app-releases/health/nasljeđe) — audit ✔, odobreni predlozi implementirani, čeka zelen CI; posljednji zatvoren **BE-07** |
+| **Zadnji commit** | `34d31e4` test(backend): 39 testova za BE-08 popravke [BE-08] |
 | **Zadnji CI run** | ✅ **`41634063555` success** (`ed4df65` — BE-08 audit docs, sva 3 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41634063555 ; ranije ✅ **`41630034505` success** (`7b00aa9` — idempotencija + Q-15 + P-B07-6, sva 3 joba, 203 testa) https://github.com/mudzy992/fkgracanica/actions/runs/41630034505 ; ❌ `41629707127` (`19bf9ed` — 1 test tvrdio staro `includeMembership` ponašanje → popravljeno); ✅ `41627914148` (`c16385f`); ❌ `41627571734` (TS2724 import `PaymentProviderId`); ✅ BE-07 audit `41583848187`/`41584048206`/`41584323691` |
 | **check:all** | `npm run check:all` → **6/6** (check-coverage, file-size, console-ban, secrets-ban, layer-deps, docs-links); u CI-ju jobovi `audit-gate` + `standards`; pre-push hook pokreće `check:all` |
 
@@ -305,15 +305,38 @@
     `MaxLength`, pokrivenost 2 speca;
   - ✅ zdravo: sve write rute iza `*.manage`/`dashboard.read`, APK traversal
     guard + streaming, sitemap/robots bez tajni, share resolveri samo PUBLISHED.
-- **Predlozi P-B08-1…7** čekaju izričitu riječ korisnika.
-- Matrica: 52 reda → BE-08.
+- **Korisnik odobrio P-B08-1,2,3,4,5,7; P-B08-6 (case-insensitive pretraga +
+  `q MaxLength`) NIJE odobren → nije implementiran** (ostaje u backlogu).
+- Implementacija (`6a6ca14`, `f4757fa`, `cae229e`, `34d31e4`):
+  - **P-B08-2**: novi `common/utils/entity-payload.util.ts`
+    (`parseEntityPayload`, `parseIdList`) + allowliste u `sponsors`, `trophies`,
+    `museum`, `hall-of-fame`, `club-timeline` → nepoznato/sistemsko polje = 400,
+    `ids` validiran (ne-array/duplikati/predugo → 400), `clearFeatured(exceptId)`,
+    `sortOrder` se računa iz `aggregate _max` (ne iz bodyja).
+  - **P-B08-1**: `seo-url.util` bez `process.env` (API base iz `ConfigService`);
+    sirovi `UPLOAD_PATH` ključ → `uploadPath` u seo/app-releases/auth/media/upload/
+    newsletter.
+  - **P-B08-4**: `/seo/share?path=` prima samo site-relativnu putanju
+    (`normalizeSharePath`), apsolutni/protokol-relativni URL → `/`.
+  - **P-B08-5**: sitemap XML-escape (`escapeXml`) + `changefreq` po tipu
+    (vijesti/galerije `weekly`, statične/arhivske `monthly`); gradnja izdvojena u
+    `seo-sitemap.util.ts` + `seo-sitemap-sources.ts` → `seo.service.ts` 225 → 180
+    linija i **uklonjen iz file-size baseline-a**.
+  - **P-B08-3**: APK upload `memoryStorage` → `diskStorage` (temp) + strim sha256
+    + move u `uploads/app-releases/<g>/<m>/`; logika u `apk-storage.util.ts`
+    (`app-releases.service.ts` 205 → 175).
+  - **P-B08-7**: 4 nova speca, **39 testova** lokalno zeleno (entity-payload 13,
+    seo-url 13, seo-sitemap 5, apk-storage 5 + postojeći apk-download 3).
+- Matrica: 52 → **60 redova** (8 novih fajlova) → BE-08, statusi
+  `popravljeno`/`pokriveno testom`; `check:all` **6/6** lokalno.
 - Segment dokument: `AUDIT/segments/BE-08.md`.
 
 ## Šta je sljedeće (tačan sljedeći korak)
 
-1. **BE-08** — audit ✔; sljedeće: **odluka o P-B08-1…7** → implementacija
-   (invisible prvo: P-B08-1/2/3/4/5/7), pa P-B08-6 (vidljivo, pretraga) uz
-   odobrenje. Backlog (ne blokira): P-B06-1/2, P-B02-1/2/3, P-B03-1, B-07-10…13.
+1. **BE-08** — implementacija odobrenih predloga ✔ lokalno; sljedeće:
+   push + `gh run watch` + run ID ovdje → izvještaj → **BE-09**
+   (ili zatvaranje BE-08 ako korisnik potvrdi). Backlog (ne blokira):
+   **P-B08-6**, P-B06-1/2, P-B02-1/2/3, P-B03-1, B-07-10…13.
    ⚠️ Deploy: potreban `prisma migrate deploy` za `20261103120000_…`
    (PaymentEvent + Payment.membershipId).
 2. Zatim BE-02…08 → FE → MOB → CI-02/03/04 → E2E-01 (INF-03 paralelno kad zatreba).
