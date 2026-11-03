@@ -30,7 +30,9 @@
     "create": "Kreiraj",
     "back": "Nazad",
     "retry": "Pokušaj ponovo",
-    "close": "Zatvori"
+    "close": "Zatvori",
+    "confirm": "Potvrdi",
+    "language": "Jezik"
   },
   "home": {
     "heroTitle": "FK Gračanica",
@@ -132,7 +134,117 @@
     "cmdkPlaceholder": "Traži stranicu ili akciju…",
     "cmdkEmpty": "Nema rezultata za „{{query}}\"",
     "cmdkResults": "Rezultati",
-    "cmdkActions": "Brze akcije"
+    "cmdkActions": "Brze akcije",
+    "common": {
+      "loading": "Učitavanje…",
+      "select": "Odaberi…",
+      "error": "Došlo je do greške."
+    },
+    "mediaPicker": {
+      "pick": "Odabir medija",
+      "pickGallery": "Odabir fotografija za galeriju",
+      "searchPlaceholder": "Pretraga po nazivu, tagu ili putanji…",
+      "searchResults": "Pretraga kroz sve mape ({{count}} rezultata)",
+      "folderView": "Prikaz medija u odabranoj mapi",
+      "empty": "Nema medija za prikaz.",
+      "newFolder": "Nova mapa",
+      "addAllFromFolder": "Dodaj sve iz mape",
+      "addAllHint": "Dodaju se sve slike uploadovane u odabranu mapu medija.",
+      "toggleFolders": "Prikaži ili sakrij podmape",
+      "insertImage": "Ubaci sliku"
+    },
+    "season": {
+      "participants": "Učesnici sezone *",
+      "selectAll": "Svi",
+      "clear": "Očisti",
+      "ownClub": "(naš klub)",
+      "emptyClubs": "Nema klubova — prvo dodajte klubove u adminu.",
+      "selected": "Odabrano: {{count}} · Samo učesnici se pojavljuju u ligaškoj tabeli."
+    },
+    "slug": {
+      "label": "Slug"
+    },
+    "formation": {
+      "allAssigned": "Svi igrači su raspoređeni.",
+      "pool": "Dostupni igrači (povuci na teren)"
+    },
+    "home": {
+      "metaTitle": "Kontrolna tabla",
+      "title": "Kontrolna tabla",
+      "subtitle": "Šta čeka akciju, pa zdravlje kluba.",
+      "queue": "Čeka akciju",
+      "health": "Zdravlje kluba",
+      "open": "Otvori →",
+      "kpiError": "Nije moguće učitati KPI podatke.",
+      "writerTitle": "Writer — kontrolna tabla",
+      "writerHint": "Samo sadržaj: vijesti i galerija. Objavu radi moderator.",
+      "moderatorTitle": "Moderator — kontrolna tabla",
+      "moderatorHint": "Queue za odobrenje. Settings i korisnike ne dirate.",
+      "commentatorTitle": "Komentator — kontrolna tabla",
+      "commentatorHint": "Semafor, događaji i predaja izvještaja. Bez kalendara i takmičenja.",
+      "commentatorHintShort": "Semafor, događaji, izvještaji.",
+      "matchesError": "Nije moguće učitati utakmice."
+    },
+    "content": {
+      "news": "Vijesti",
+      "galleries": "Galerije",
+      "liveReports": "Live izvještaji",
+      "unread": "Nepročitano",
+      "afterMatch": "Nakon utakmice",
+      "drafts": "Nacrti",
+      "draftsHint": "Vijesti u izradi",
+      "pending": "Na odobrenju",
+      "pendingHint": "Čeka moderatora",
+      "published": "Objavljene",
+      "publishedHint": "Na portalu",
+      "albums": "Albumi",
+      "newNews": "Nova vijest",
+      "mediaFolders": "Mediji / mape",
+      "newAlbum": "Novi album",
+      "unpublishedNews": "Neobjavljene vijesti",
+      "noDrafts": "Nema nacrta ni predaja.",
+      "newsQueue": "Red vijesti",
+      "galleryQueue": "Red galerija",
+      "emptyQueue": "Nema stavki na čekanju.",
+      "approve": "Odobri"
+    },
+    "commentator": {
+      "liveOnDesk": "Uživo na desku",
+      "openDesk": "Otvori desk",
+      "publicLive": "Javni live",
+      "report": "Izvještaj",
+      "live": "Uživo",
+      "liveHint": "Live / poluvrijeme",
+      "today": "Danas",
+      "todayHint": "Zakazane danas",
+      "draftReports": "Nacrti izvještaja",
+      "draftReportsHint": "Još nisu predati",
+      "awaitingApproval": "Čeka odobrenje",
+      "awaitingApprovalHint": "Kod moderatora"
+    },
+    "match": {
+      "homeTeam": "Domaćin",
+      "awayTeam": "Gost"
+    },
+    "visitors": {
+      "title": "Posjetioci (30 dana)",
+      "web": "Web",
+      "mobile": "Mobile",
+      "total": "Ukupno",
+      "uniqueVisitors": "Unikatni posjetioci",
+      "webMobile": "Web + mobile"
+    },
+    "commsInbox": "Inbox",
+    "kpi": {
+      "users": "Korisnici",
+      "members": "Članovi",
+      "activeMemberships": "Aktivna članstva",
+      "publishedNews": "Objavljene vijesti",
+      "matches": "Utakmice",
+      "goals": "Golovi",
+      "ticketsSold": "Prodane ulaznice",
+      "pendingNews": "Vijesti na odobrenju"
+    }
   },
   "common": {
     "loading": "Učitavanje...",

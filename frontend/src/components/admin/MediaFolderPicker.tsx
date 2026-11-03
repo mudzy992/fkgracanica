@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { ChevronDown, ChevronRight } from 'lucide-react';
 import type { MediaFolder } from '../../hooks/use-media-admin';
 import { asArray } from '../../lib/as-array';
@@ -28,6 +29,7 @@ function FolderNode({
   onSelect: (id: string) => void;
   depth: number;
 }) {
+  const { t } = useTranslation();
   const kids = childrenOf(folders, folder.id);
   const [open, setOpen] = useState(true);
   return (
@@ -38,7 +40,7 @@ function FolderNode({
             type="button"
             className="p-1 text-text-muted"
             onClick={() => setOpen((v) => !v)}
-            aria-label="Toggle"
+            aria-label={t('admin.mediaPicker.toggleFolders')}
           >
             {open ? (
               <ChevronDown className="h-3.5 w-3.5" />

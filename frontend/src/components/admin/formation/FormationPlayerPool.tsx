@@ -1,4 +1,5 @@
 import { useDraggable } from '@dnd-kit/core';
+import { useTranslation } from 'react-i18next';
 import { CSS } from '@dnd-kit/utilities';
 import type { Player } from '../../../types';
 import { playerDndId } from '../../../lib/formation-dnd';
@@ -34,13 +35,14 @@ interface Props {
 }
 
 export function FormationPlayerPool({ players }: Props) {
+  const { t } = useTranslation();
   if (!players.length) {
-    return <p className="text-sm text-text-muted">Svi igrači su raspoređeni.</p>;
+    return <p className="text-sm text-text-muted">{t('admin.formation.allAssigned')}</p>;
   }
 
   return (
     <div>
-      <h3 className="mb-2 text-sm font-semibold">Dostupni igrači (povuci na teren)</h3>
+      <h3 className="mb-2 text-sm font-semibold">{t('admin.formation.pool')}</h3>
       <div className="flex flex-wrap gap-2">
         {players.map((p) => (
           <DraggableChip key={p.id} player={p} />

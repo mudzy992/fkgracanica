@@ -12,7 +12,12 @@ export function AdminPagination({ meta, page, onPageChange }: AdminPaginationPro
 
   return (
     <div className="flex justify-center gap-2 p-4">
-      <Button variant="outline" size="sm" disabled={page <= 1} onClick={() => onPageChange(page - 1)}>
+      <Button
+        variant="outline"
+        size="sm"
+        disabled={page <= 1}
+        onClick={() => onPageChange(page - 1)}
+      >
         Prethodna
       </Button>
       <span className="self-center text-sm text-text-muted">

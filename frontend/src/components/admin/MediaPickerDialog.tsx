@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Check } from 'lucide-react';
 import { asArray } from '../../lib/as-array';
 import {
@@ -33,6 +34,7 @@ export function MediaPickerDialog({
   selectedPaths = [],
   onConfirm,
 }: Props) {
+  const { t } = useTranslation();
   const [folderId, setFolderId] = useState<string | undefined>();
   const [search, setSearch] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
@@ -94,7 +96,11 @@ export function MediaPickerDialog({
   const addFolderHint = folderId && !debouncedSearch;
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange} className="max-h-[min(92dvh,820px)] w-full max-w-[min(96vw,1100px)]">
+    <Dialog
+      open={open}
+      onOpenChange={onOpenChange}
+      className="max-h-[min(92dvh,820px)] w-full max-w-[min(96vw,1100px)]"
+    >
       <DialogHeader onClose={() => onOpenChange(false)}>{title}</DialogHeader>
       <DialogBody className="flex min-h-0 flex-col gap-0 p-0 sm:flex-row">
         <aside className="max-h-40 shrink-0 overflow-y-auto border-b border-[var(--border-subtle)] p-3 sm:max-h-none sm:w-52 sm:border-b-0 sm:border-r">
@@ -104,17 +110,19 @@ export function MediaPickerDialog({
           <Input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Pretraga po nazivu, tagu ili putanji…"
+            placeholder={t('admin.mediaPicker.searchPlaceholder')}
           />
           {debouncedSearch && (
-            <p className="text-xs text-text-muted">Pretraga kroz sve mape ({assets.length} rezultata)</p>
+            <p className="text-xs text-text-muted">
+              {t('admin.mediaPicker.searchResults', { count: assets.length })}
+            </p>
           )}
           {addFolderHint && (
-            <p className="text-xs text-text-muted">Prikaz medija u odabranoj mapi</p>
+            <p className="text-xs text-text-muted">{t('admin.mediaPicker.folderView')}</p>
           )}
           <div className="min-h-[200px] flex-1 overflow-y-auto">
             {isLoading ? (
-              <p className="text-sm text-text-muted">Učitavanje…</p>
+              <p className="text-sm text-text-muted">{t('admin.common.loading')}</p>
             ) : (
               <div className="grid grid-cols-3 gap-2 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6">
                 {assets.map((a) => {
@@ -126,7 +134,9 @@ export function MediaPickerDialog({
                       onClick={() => toggle(a.originalPath)}
                       className={cn(
                         'relative overflow-hidden rounded-lg border transition',
-                        selected ? 'border-primary-light ring-2 ring-primary-light/40' : 'border-slate-200 hover:border-primary-light/50',
+                        selected
+                          ? 'border-primary-light ring-2 ring-primary-light/40'
+                          : 'border-slate-200 hover:border-primary-light/50',
                       )}
                     >
                       <img
@@ -145,7 +155,9 @@ export function MediaPickerDialog({
               </div>
             )}
             {!isLoading && !assets.length && (
-              <p className="py-8 text-center text-sm text-text-muted">Nema medija za prikaz.</p>
+              <p className="py-8 text-center text-sm text-text-muted">
+                {t('admin.mediaPicker.empty')}
+              </p>
             )}
           </div>
         </div>
@@ -155,7 +167,13 @@ export function MediaPickerDialog({
           <div className="flex w-full flex-wrap items-center justify-between gap-2">
             <span className="text-sm text-text-muted">Odabrano: {picked.size}</span>
             <div className="flex flex-wrap gap-2">
-              <Button type="button" variant="outline" size="sm" onClick={selectVisible} disabled={!visiblePaths.length}>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={selectVisible}
+                disabled={!visiblePaths.length}
+              >
                 Odaberi vidljive
               </Button>
               <Button type="button" size="sm" onClick={confirmMultiple} disabled={!picked.size}>

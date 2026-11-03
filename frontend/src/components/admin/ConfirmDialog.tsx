@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Button } from '../ui/button';
 import { Dialog, DialogBody, DialogFooter, DialogHeader } from '../ui/dialog';
 
@@ -19,12 +20,13 @@ export function ConfirmDialog({
   onOpenChange,
   title,
   description,
-  confirmLabel = 'Potvrdi',
+  confirmLabel,
   onConfirm,
   isPending,
   confirmDisabled,
   variant = 'default',
 }: ConfirmDialogProps) {
+  const { t } = useTranslation();
   const handleConfirm = () => {
     void Promise.resolve(onConfirm()).then(() => onOpenChange(false));
   };
@@ -33,24 +35,23 @@ export function ConfirmDialog({
     <Dialog open={open} onOpenChange={onOpenChange} className="max-w-sm">
       <DialogHeader onClose={() => onOpenChange(false)}>{title}</DialogHeader>
       <DialogBody>
-        {description && (
-          typeof description === 'string' ? (
+        {description &&
+          (typeof description === 'string' ? (
             <p className="text-sm text-text-muted">{description}</p>
           ) : (
             description
-          )
-        )}
+          ))}
       </DialogBody>
       <DialogFooter>
         <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isPending}>
-          Odustani
+          {t('actions.cancel')}
         </Button>
         <Button
           className={variant === 'danger' ? 'bg-danger hover:bg-danger/90' : ''}
           onClick={handleConfirm}
           disabled={isPending || confirmDisabled}
         >
-          {isPending ? '...' : confirmLabel}
+          {isPending ? '...' : (confirmLabel ?? t('actions.confirm'))}
         </Button>
       </DialogFooter>
     </Dialog>

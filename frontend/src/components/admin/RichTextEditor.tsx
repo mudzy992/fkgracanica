@@ -1,4 +1,5 @@
 import { useEditor, EditorContent } from '@tiptap/react';
+import { useTranslation } from 'react-i18next';
 import { useEffect, useState } from 'react';
 import { asArray } from '../../lib/as-array';
 import { useMediaAssets, type MediaAsset } from '../../hooks/use-media-admin';
@@ -17,6 +18,7 @@ interface Props {
 }
 
 export function RichTextEditor({ value, onChange, className, tall }: Props) {
+  const { t } = useTranslation();
   const [mediaOpen, setMediaOpen] = useState(false);
   const { data, isLoading } = useMediaAssets({ limit: 100 });
   const assets = asArray<MediaAsset>(data?.data ?? data);
@@ -53,9 +55,11 @@ export function RichTextEditor({ value, onChange, className, tall }: Props) {
       <RichTextToolbar editor={editor} onInsertImage={() => setMediaOpen(true)} />
       <EditorContent editor={editor} />
       <Dialog open={mediaOpen} onOpenChange={setMediaOpen} className="max-w-md">
-        <DialogHeader onClose={() => setMediaOpen(false)}>Ubaci sliku</DialogHeader>
+        <DialogHeader onClose={() => setMediaOpen(false)}>
+          {t('admin.mediaPicker.insertImage')}
+        </DialogHeader>
         <DialogBody>
-          {isLoading && <p className="text-sm text-text-muted">Učitavanje...</p>}
+          {isLoading && <p className="text-sm text-text-muted">{t('admin.common.loading')}</p>}
           <div className="grid grid-cols-3 gap-2">
             {assets.map((a) => (
               <button

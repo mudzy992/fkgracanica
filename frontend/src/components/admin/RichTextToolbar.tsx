@@ -41,12 +41,36 @@ export function RichTextToolbar({ editor, onInsertImage }: Props) {
     <div className="flex flex-wrap gap-1 border-b border-slate-200 p-2">
       {tool('B', () => editor.chain().focus().toggleBold().run(), editor.isActive('bold'))}
       {tool('I', () => editor.chain().focus().toggleItalic().run(), editor.isActive('italic'))}
-      {tool('U', () => editor.chain().focus().toggleUnderline().run(), editor.isActive('underline'))}
-      {tool('H2', () => editor.chain().focus().toggleHeading({ level: 2 }).run(), editor.isActive('heading', { level: 2 }))}
-      {tool('H3', () => editor.chain().focus().toggleHeading({ level: 3 }).run(), editor.isActive('heading', { level: 3 }))}
-      {tool('•', () => editor.chain().focus().toggleBulletList().run(), editor.isActive('bulletList'))}
-      {tool('1.', () => editor.chain().focus().toggleOrderedList().run(), editor.isActive('orderedList'))}
-      {tool('❝', () => editor.chain().focus().toggleBlockquote().run(), editor.isActive('blockquote'))}
+      {tool(
+        'U',
+        () => editor.chain().focus().toggleUnderline().run(),
+        editor.isActive('underline'),
+      )}
+      {tool(
+        'H2',
+        () => editor.chain().focus().toggleHeading({ level: 2 }).run(),
+        editor.isActive('heading', { level: 2 }),
+      )}
+      {tool(
+        'H3',
+        () => editor.chain().focus().toggleHeading({ level: 3 }).run(),
+        editor.isActive('heading', { level: 3 }),
+      )}
+      {tool(
+        '•',
+        () => editor.chain().focus().toggleBulletList().run(),
+        editor.isActive('bulletList'),
+      )}
+      {tool(
+        '1.',
+        () => editor.chain().focus().toggleOrderedList().run(),
+        editor.isActive('orderedList'),
+      )}
+      {tool(
+        '❝',
+        () => editor.chain().focus().toggleBlockquote().run(),
+        editor.isActive('blockquote'),
+      )}
       {tool('—', () => editor.chain().focus().setHorizontalRule().run())}
       {tool('Link', setLink, editor.isActive('link'))}
       {tool('Slika', onInsertImage)}

@@ -1,4 +1,5 @@
 import { cn } from '../../lib/utils';
+import { useTranslation } from 'react-i18next';
 
 interface ClubOption {
   id: string;
@@ -14,6 +15,7 @@ interface Props {
 }
 
 export function SeasonClubPicker({ clubs, value, onChange, className }: Props) {
+  const { t } = useTranslation();
   const toggle = (id: string) => {
     onChange(value.includes(id) ? value.filter((x) => x !== id) : [...value, id]);
   };
@@ -24,14 +26,14 @@ export function SeasonClubPicker({ clubs, value, onChange, className }: Props) {
   return (
     <div className={cn('space-y-3', className)}>
       <div className="flex items-center justify-between gap-2">
-        <p className="text-sm font-medium">Učesnici sezone *</p>
+        <p className="text-sm font-medium">{t('admin.season.participants')}</p>
         <div className="flex gap-2 text-xs">
           <button type="button" className="text-primary hover:underline" onClick={selectAll}>
-            Svi
+            {t('admin.season.selectAll')}
           </button>
           <span className="text-text-muted">·</span>
           <button type="button" className="text-text-muted hover:underline" onClick={clearAll}>
-            Očisti
+            {t('admin.season.clear')}
           </button>
         </div>
       </div>
@@ -50,17 +52,17 @@ export function SeasonClubPicker({ clubs, value, onChange, className }: Props) {
             <span className="text-sm">
               {club.name}
               {club.isOwnClub && (
-                <span className="ml-2 text-xs font-medium text-primary">(naš klub)</span>
+                <span className="ml-2 text-xs font-medium text-primary">
+                  {t('admin.season.ownClub')}
+                </span>
               )}
             </span>
           </label>
         ))}
-        {!clubs.length && (
-          <p className="text-sm text-text-muted">Nema klubova — prvo dodajte klubove u adminu.</p>
-        )}
+        {!clubs.length && <p className="text-sm text-text-muted">{t('admin.season.emptyClubs')}</p>}
       </div>
       <p className="text-xs text-text-muted">
-        Odabrano: {value.length} · Samo učesnici se pojavljuju u ligaškoj tabeli.
+        {t('admin.season.selected', { count: value.length })}
       </p>
     </div>
   );

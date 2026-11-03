@@ -34,7 +34,9 @@ export function FormationPitch({ slots, players, onSlotChange }: FormationPitchP
         const assignedElsewhere = new Set(
           slots.filter((_, idx) => idx !== i && slots[idx].playerId).map((s) => s.playerId),
         );
-        const available = players.filter((p) => !assignedElsewhere.has(p.id) || p.id === slot.playerId);
+        const available = players.filter(
+          (p) => !assignedElsewhere.has(p.id) || p.id === slot.playerId,
+        );
         return (
           <div
             key={i}

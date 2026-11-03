@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Input } from '../ui/input';
 import { slugify } from '../../lib/slug';
 
@@ -10,6 +11,7 @@ interface Props {
 }
 
 export function SlugField({ title, value, onChange, disabled }: Props) {
+  const { t } = useTranslation();
   const manual = useRef(false);
 
   useEffect(() => {
@@ -19,7 +21,7 @@ export function SlugField({ title, value, onChange, disabled }: Props) {
 
   return (
     <div>
-      <label className="mb-1 block text-sm font-medium">Slug</label>
+      <label className="mb-1 block text-sm font-medium">{t('admin.slug.label')}</label>
       <Input
         value={value}
         disabled={disabled}

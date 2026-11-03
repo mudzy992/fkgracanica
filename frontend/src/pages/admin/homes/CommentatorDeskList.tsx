@@ -36,7 +36,13 @@ function DeskRow({ match }: { match: Match }) {
   );
 }
 
-export function CommentatorDeskList({ matches, isLoading }: { matches: Match[]; isLoading: boolean }) {
+export function CommentatorDeskList({
+  matches,
+  isLoading,
+}: {
+  matches: Match[];
+  isLoading: boolean;
+}) {
   if (isLoading) {
     return (
       <div className="space-y-2 rounded-xl border border-[var(--border-subtle)] p-4">

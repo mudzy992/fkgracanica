@@ -30,7 +30,9 @@
     "create": "Create",
     "back": "Back",
     "retry": "Try again",
-    "close": "Close"
+    "close": "Close",
+    "confirm": "Confirm",
+    "language": "Language"
   },
   "home": {
     "heroTitle": "FK Gračanica",
@@ -132,7 +134,117 @@
     "cmdkPlaceholder": "Search pages or actions…",
     "cmdkEmpty": "No results for “{{query}}”",
     "cmdkResults": "Results",
-    "cmdkActions": "Quick actions"
+    "cmdkActions": "Quick actions",
+    "common": {
+      "loading": "Loading…",
+      "select": "Select…",
+      "error": "Something went wrong."
+    },
+    "mediaPicker": {
+      "pick": "Select media",
+      "pickGallery": "Select gallery photos",
+      "searchPlaceholder": "Search by name, tag or path…",
+      "searchResults": "Searching all folders ({{count}} results)",
+      "folderView": "Showing media in the selected folder",
+      "empty": "No media to show.",
+      "newFolder": "New folder",
+      "addAllFromFolder": "Add all from folder",
+      "addAllHint": "All images uploaded to the selected media folder will be added.",
+      "toggleFolders": "Show or hide subfolders",
+      "insertImage": "Insert image"
+    },
+    "season": {
+      "participants": "Season participants *",
+      "selectAll": "All",
+      "clear": "Clear",
+      "ownClub": "(our club)",
+      "emptyClubs": "No clubs — add clubs in the admin first.",
+      "selected": "Selected: {{count}} · Only participants appear in the league table."
+    },
+    "slug": {
+      "label": "Slug"
+    },
+    "formation": {
+      "allAssigned": "All players are placed.",
+      "pool": "Available players (drag onto the pitch)"
+    },
+    "home": {
+      "metaTitle": "Dashboard",
+      "title": "Dashboard",
+      "subtitle": "What needs action, then club health.",
+      "queue": "Needs action",
+      "health": "Club health",
+      "open": "Open →",
+      "kpiError": "Could not load KPI data.",
+      "writerTitle": "Writer — dashboard",
+      "writerHint": "Content only: news and gallery. A moderator publishes.",
+      "moderatorTitle": "Moderator — dashboard",
+      "moderatorHint": "Approval queue. Settings and users are off limits.",
+      "commentatorTitle": "Commentator — dashboard",
+      "commentatorHint": "Scoreboard, events and report submission. No calendar or competitions.",
+      "commentatorHintShort": "Scoreboard, events, reports.",
+      "matchesError": "Could not load matches."
+    },
+    "content": {
+      "news": "News",
+      "galleries": "Galleries",
+      "liveReports": "Live reports",
+      "unread": "Unread",
+      "afterMatch": "After the match",
+      "drafts": "Drafts",
+      "draftsHint": "News in progress",
+      "pending": "Pending approval",
+      "pendingHint": "Waiting for moderator",
+      "published": "Published",
+      "publishedHint": "On the portal",
+      "albums": "Albums",
+      "newNews": "New news",
+      "mediaFolders": "Media / folders",
+      "newAlbum": "New album",
+      "unpublishedNews": "Unpublished news",
+      "noDrafts": "No drafts or submissions.",
+      "newsQueue": "News queue",
+      "galleryQueue": "Gallery queue",
+      "emptyQueue": "Nothing pending.",
+      "approve": "Approve"
+    },
+    "commentator": {
+      "liveOnDesk": "Live on the desk",
+      "openDesk": "Open desk",
+      "publicLive": "Public live",
+      "report": "Report",
+      "live": "Live",
+      "liveHint": "Live / half-time",
+      "today": "Today",
+      "todayHint": "Scheduled today",
+      "draftReports": "Report drafts",
+      "draftReportsHint": "Not submitted yet",
+      "awaitingApproval": "Awaiting approval",
+      "awaitingApprovalHint": "With the moderator"
+    },
+    "match": {
+      "homeTeam": "Home",
+      "awayTeam": "Away"
+    },
+    "visitors": {
+      "title": "Visitors (30 days)",
+      "web": "Web",
+      "mobile": "Mobile",
+      "total": "Total",
+      "uniqueVisitors": "Unique visitors",
+      "webMobile": "Web + mobile"
+    },
+    "commsInbox": "Inbox",
+    "kpi": {
+      "users": "Users",
+      "members": "Members",
+      "activeMemberships": "Active memberships",
+      "publishedNews": "Published news",
+      "matches": "Matches",
+      "goals": "Goals",
+      "ticketsSold": "Tickets sold",
+      "pendingNews": "News awaiting approval"
+    }
   },
   "common": {
     "loading": "Loading...",

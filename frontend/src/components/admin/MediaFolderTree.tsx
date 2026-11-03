@@ -1,4 +1,5 @@
 import type { MediaFolder } from '../../hooks/use-media-admin';
+import { useTranslation } from 'react-i18next';
 import { useState } from 'react';
 import { asArray } from '../../lib/as-array';
 import { Button } from '../ui/button';
@@ -66,10 +67,19 @@ function FolderNode({
         {!editing && (onRename || onDelete) ? (
           <div className="flex gap-1">
             {onRename ? (
-              <Button type="button" size="sm" variant="ghost" onClick={() => setEditing(true)}>✎</Button>
+              <Button type="button" size="sm" variant="ghost" onClick={() => setEditing(true)}>
+                ✎
+              </Button>
             ) : null}
             {onDelete ? (
-              <Button type="button" size="sm" variant="ghost" onClick={() => onDelete(folder.id, folder.name)}>×</Button>
+              <Button
+                type="button"
+                size="sm"
+                variant="ghost"
+                onClick={() => onDelete(folder.id, folder.name)}
+              >
+                ×
+              </Button>
             ) : null}
           </div>
         ) : null}
@@ -101,6 +111,7 @@ export function MediaFolderTree({
   onDelete,
   className,
 }: MediaFolderTreeProps) {
+  const { t } = useTranslation();
   const roots = asArray<MediaFolder>(folders).filter((f) => !f.parentId);
 
   return (
@@ -131,7 +142,7 @@ export function MediaFolderTree({
           <Input
             value={newName}
             onChange={(e) => onNewNameChange(e.target.value)}
-            placeholder="Nova mapa"
+            placeholder={t('admin.mediaPicker.newFolder')}
             className="text-sm"
           />
           <Button size="sm" onClick={onCreate} disabled={!newName || isCreating}>

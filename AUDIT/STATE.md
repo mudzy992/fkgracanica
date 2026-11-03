@@ -7,13 +7,34 @@
 | Polje | Vrijednost |
 |-------|------------|
 | **Aktivna grana** | `arena/290a6f13-fkgracanica` |
-| **Trenutna faza** | CI-01 ✔ INF-01 ✔ INF-02 ✔ BE-01…**BE-09 ✔** → FE-01 ✔ FE-02 ✔ FE-03 ✔ FE-03b ✔ → CI-04 ✔ → FE-04a ✔ FE-04b ✔ → **FE-05 ✅** |
-| **Trenutni segment** | **FE-05 ✅** (a11y labele, IA guard, ⌘K paleta, breadcrumbs, sidebar 6 grupa; P-FE05-6 → FE-04c) ; prije: **FE-04b ✅**, **FE-04a ✅**, **CI-04 ✅**, **FE-03b ✅**, **FE-03 ✅**, **FE-02 ✅**, **FE-01 ✅**, **BE-09c ✅** |
+| **Trenutna faza** | CI-01 ✔ INF-01 ✔ INF-02 ✔ BE-01…**BE-09 ✔** → FE-01 ✔ FE-02 ✔ FE-03 ✔ FE-03b ✔ → CI-04 ✔ → FE-04a ✔ FE-04b ✔ → FE-05 ✔ → **FE-04c (u toku, batch 1/3)** |
+| **Trenutni segment** | **FE-04c — U TOKU** (batch 1/3: ratchet guard 496→454 nalaza, shared komponente + role homes) ; prije: **FE-05 ✅**, **FE-04b ✅**, **FE-04a ✅**, **CI-04 ✅**, **FE-03b ✅**, **FE-03 ✅**, **FE-02 ✅**, **FE-01 ✅**, **BE-09c ✅** |
 | **Zadnji commit** | `92a9cd5` feat(frontend): komandna paleta ⌘K, breadcrumbs i konsolidovan sidebar [FE-05] |
 | **Zadnji CI run** | ✅ **`41733113107` success** (`92a9cd5` — FE-05 paleta/breadcrumbs/sidebar, sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41733113107 ; ✅ **`41730815375`**, **`41730312807`** (FE-05 a11y + IA guard) (`f1d8f62` — FE-05 a11y + IA guard, sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41730312807 ; ✅ **`41728627687`**, **`41728094543`** (FE-04b) ; ✅ **`41725081358`**, **`41724729510`** (FE-04a) ; ✅ **`41719477554`**, **`41719000159`** (CI-04 React dedupe) ; ✅ **`41716321472`**, **`41715938871`** (build-arg fix) ; ✅ **`41713331928`**, **`41712830091`**, **`41707559600`**, **`41707129119`** (env dijagnostika) ; ✅ **`41702499943`**, **`41702051432`** (lock fix) ; ✅ **`41697059984`**, **`41696508780`** (FE-03b) ; ✅ **`41694786018`**, **`41694299634`**, **`41693656143`**, **`41671042459`** (FE-03) ; ✅ **`41668846835`**, **`41668139741`** (FE-02) ; ✅ **`41666815620`**, **`41666291342`**, **`41665768088`** (FE-01) ; ✅ **`41663810393`**, **`41663339512`**, **`41662863623`** (BE-09) ; ranije BE serija: `41662277103`, `41661451237`❌→fix, `41660810750`❌→fix, `41658424979`, `41657925166`, `41655487255`, `41654943345`, `41654422296`❌→fix, `41652033940`, `41651332872`, `41647575733`, `41646963311`, `41646330945`, `41644096377`❌/`41644777234`❌/`41645566467`❌→fix, `41640408790`, `41639946345`, `41638624709`, `41634063555`, `41630034505`, `41629707127`❌→fix, `41627914148`, `41583848187` |
 | **check:all** | `npm run check:all` → **7/7** (check-coverage, file-size, console-ban, **token-check**, secrets-ban, layer-deps, docs-links); u CI-ju jobovi `audit-gate` + `standards`; pre-push hook pokreće `check:all` |
 
 ## Šta je urađeno (hronološki)
+
+### Sesija FE-04c — 2026-11-03 (i18n admina — batch 1)
+
+Korisnik: „Možeš nastaviti dalje na FE-04c."
+
+- **B-FE04-10:** admin je bio praktično BS-only (21/170 fajlova sa `useTranslation`),
+  pa EN korisnik na javnom portalu vidi engleski, a u adminu bosanski.
+- **P-FE04-9 ratchet guard:** `src/i18n/admin-no-hardcoded-text.test.ts` +
+  `admin-i18n-baseline.json` (fajl → dozvoljeni broj nalaza). Pad ako fajl pređe
+  baseline ili se pojavi nov fajl sa hardkodiranim tekstom; baseline se spušta
+  komandom `UPDATE_I18N_BASELINE=1 npx vitest run src/i18n/admin-no-hardcoded-text.test.ts`.
+- **Batch 1 (shared + role homes):** media picker dijalog/mape, `RichTextEditor`,
+  `SeasonClubPicker`, `EntitySelect` (default placeholder je bio zakucan),
+  `SlugField`, `FormationPlayerPool`, `ConfirmDialog` (default `Potvrdi`/`Odustani`
+  — koristi se svuda), `ErrorBoundary` (klasa → `i18n.t()`), `LanguageSwitcher`,
+  `AdminHome`/`ModeratorHome`/`WriterHome`/`CommentatorHome`/`CommentatorLiveHero`/
+  `HomeKpiGrid` + `admin.kpi.*` labele.
+- **Rezultat:** nalaza **496 → 454**, fajlova **130 → 113**; 0 kolizija ključeva
+  (`admin.media`/`admin.analytics` su zauzeti kao nav-labele → `admin.mediaPicker.*`
+  i `admin.visitors.*`).
+- **Otvoreno:** batch 2 (forme/tabele) i batch 3 (ostatak `pages/admin`).
 
 ### Sesija FE-05 — 2026-11-03 (interna IA; KAPIJA 2)
 
