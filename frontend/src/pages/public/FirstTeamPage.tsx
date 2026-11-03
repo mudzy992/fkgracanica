@@ -1,19 +1,16 @@
-import { useMemo } from "react";
-import { useClubSquad, useClubStats } from "../../hooks/use-club-hub";
-import { useOwnClub } from "../../hooks";
-import { TeamCinematicHero } from "../../components/team/TeamCinematicHero";
-import { TeamFormationSection } from "../../components/team/TeamFormationSection";
-import { TeamSpotlight } from "../../components/team/TeamSpotlight";
-import { TeamRosterSections } from "../../components/team/TeamRosterSections";
-import { TeamSeasonStatsSection } from "../../components/team/TeamSeasonStatsSection";
-import {
-  spotlightPlayers,
-  statsByPlayerId,
-} from "../../components/team/team-stats-utils";
-import { Seo } from "../../components/seo/Seo";
-import { Skeleton } from "../../components/ui/skeleton";
-import { DataError } from "../../components/public/DataError";
-import type { Stadium } from "../../types/club-hub";
+import { useMemo } from 'react';
+import { useClubSquad, useClubStats } from '../../hooks/use-club-hub';
+import { useOwnClub } from '../../hooks';
+import { TeamCinematicHero } from '../../components/team/TeamCinematicHero';
+import { TeamFormationSection } from '../../components/team/TeamFormationSection';
+import { TeamSpotlight } from '../../components/team/TeamSpotlight';
+import { TeamRosterSections } from '../../components/team/TeamRosterSections';
+import { TeamSeasonStatsSection } from '../../components/team/TeamSeasonStatsSection';
+import { spotlightPlayers, statsByPlayerId } from '../../components/team/team-stats-utils';
+import { Seo } from '../../components/seo/Seo';
+import { Skeleton } from '../../components/ui/skeleton';
+import { DataError } from '../../components/public/DataError';
+import type { Stadium } from '../../types/club-hub';
 
 export function FirstTeamPage() {
   const { data: ownClub, isLoading: clubLoading } = useOwnClub();
@@ -22,18 +19,12 @@ export function FirstTeamPage() {
     isLoading: squadLoading,
     isError: squadError,
     refetch: refetchSquad,
-  } = useClubSquad(ownClub?.id ?? "");
-  const { data: stats } = useClubStats(ownClub?.id ?? "");
+  } = useClubSquad(ownClub?.id ?? '');
+  const { data: stats } = useClubStats(ownClub?.id ?? '');
 
-  const bench = useMemo(
-    () => squad?.slots.filter((s) => s.isBench && s.player) ?? [],
-    [squad],
-  );
+  const bench = useMemo(() => squad?.slots.filter((s) => s.isBench && s.player) ?? [], [squad]);
   const squadPlayers = useMemo(
-    () =>
-      squad?.slots
-        .filter((s) => !s.isBench && s.player)
-        .map((s) => s.player!) ?? [],
+    () => squad?.slots.filter((s) => !s.isBench && s.player).map((s) => s.player!) ?? [],
     [squad],
   );
   const allPlayers = useMemo(
@@ -41,20 +32,16 @@ export function FirstTeamPage() {
     [squad],
   );
   const statsMap = useMemo(() => statsByPlayerId(stats), [stats]);
-  const scorers = useMemo(
-    () => spotlightPlayers(stats, allPlayers),
-    [stats, allPlayers],
-  );
+  const scorers = useMemo(() => spotlightPlayers(stats, allPlayers), [stats, allPlayers]);
 
-  const stadiumRel = (ownClub as { stadiumRel?: Stadium | null } | undefined)
-    ?.stadiumRel;
+  const stadiumRel = (ownClub as { stadiumRel?: Stadium | null } | undefined)?.stadiumRel;
   const isLoading = clubLoading || squadLoading;
 
   return (
     <div className="pb-20">
       <Seo
-        title={ownClub ? `Prvi tim — ${ownClub.name}` : "Prvi tim"}
-        description={ownClub?.description ?? "Kadrovi prvog tima"}
+        title={ownClub ? `Prvi tim — ${ownClub.name}` : 'Prvi tim'}
+        description={ownClub?.description ?? 'Kadrovi prvog tima'}
       />
 
       <TeamCinematicHero
@@ -73,19 +60,11 @@ export function FirstTeamPage() {
         ) : squad?.slots.length ? (
           <>
             <TeamFormationSection squad={squad} />
-            {scorers.length > 0 && (
-              <TeamSpotlight players={scorers} statsMap={statsMap} />
-            )}
-            <TeamRosterSections
-              bench={bench}
-              squadPlayers={squadPlayers}
-              statsMap={statsMap}
-            />
+            {scorers.length > 0 && <TeamSpotlight players={scorers} statsMap={statsMap} />}
+            <TeamRosterSections bench={bench} squadPlayers={squadPlayers} statsMap={statsMap} />
           </>
         ) : (
-          <p className="py-20 text-center text-text-muted">
-            Kadar trenutno nije objavljen.
-          </p>
+          <p className="py-20 text-center text-text-muted">Kadar trenutno nije objavljen.</p>
         )}
 
         {ownClub?.id ? <TeamSeasonStatsSection clubId={ownClub.id} /> : null}

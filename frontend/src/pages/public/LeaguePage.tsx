@@ -1,11 +1,11 @@
-import { useEffect, useMemo, useState } from "react";
-import { LeagueCinematicHero } from "../../components/public/league/LeagueCinematicHero";
-import { LeagueFilterBar } from "../../components/public/league/LeagueFilterBar";
-import { LeagueStandingsSection } from "../../components/public/league/LeagueStandingsSection";
-import { LeagueResultsRound } from "../../components/public/league/LeagueResultsRound";
-import { LeagueTopScorers } from "../../components/public/league/LeagueTopScorers";
-import { LeagueLiveMatches } from "../../components/public/league/LeagueLiveMatches";
-import { LeagueNextMatch } from "../../components/public/league/LeagueNextMatch";
+import { useEffect, useMemo, useState } from 'react';
+import { LeagueCinematicHero } from '../../components/public/league/LeagueCinematicHero';
+import { LeagueFilterBar } from '../../components/public/league/LeagueFilterBar';
+import { LeagueStandingsSection } from '../../components/public/league/LeagueStandingsSection';
+import { LeagueResultsRound } from '../../components/public/league/LeagueResultsRound';
+import { LeagueTopScorers } from '../../components/public/league/LeagueTopScorers';
+import { LeagueLiveMatches } from '../../components/public/league/LeagueLiveMatches';
+import { LeagueNextMatch } from '../../components/public/league/LeagueNextMatch';
 import {
   useMatches,
   useOwnClub,
@@ -13,37 +13,25 @@ import {
   useStandings,
   useTopAssists,
   useTopScorers,
-} from "../../hooks";
-import { useRounds } from "../../hooks/use-rounds";
-import {
-  computePositionChanges,
-  maxFinishedRound,
-} from "../../lib/league-position.util";
-import {
-  leagueEdition,
-  pickDefaultCalendarId,
-  type CalendarSeason,
-} from "../../lib/season-utils";
-import { Seo } from "../../components/seo/Seo";
-import { Skeleton } from "../../components/ui/skeleton";
-import { DataError } from "../../components/public/DataError";
+} from '../../hooks';
+import { useRounds } from '../../hooks/use-rounds';
+import { computePositionChanges, maxFinishedRound } from '../../lib/league-position.util';
+import { leagueEdition, pickDefaultCalendarId, type CalendarSeason } from '../../lib/season-utils';
+import { Seo } from '../../components/seo/Seo';
+import { Skeleton } from '../../components/ui/skeleton';
+import { DataError } from '../../components/public/DataError';
 
 export function LeaguePage() {
   const { data: ownClub } = useOwnClub();
   const { data: seasons, isLoading: sl } = useSeasons();
-  const calendars = useMemo(
-    () => (seasons as CalendarSeason[] | undefined) ?? [],
-    [seasons],
-  );
+  const calendars = useMemo(() => (seasons as CalendarSeason[] | undefined) ?? [], [seasons]);
   const [calendarId, setCalendarId] = useState<string | undefined>();
   const [upToRound, setUpToRound] = useState<number | null>(null);
 
   useEffect(() => {
     if (!calendars.length) return;
     setCalendarId((prev) =>
-      prev && calendars.some((s) => s.id === prev)
-        ? prev
-        : pickDefaultCalendarId(calendars),
+      prev && calendars.some((s) => s.id === prev) ? prev : pickDefaultCalendarId(calendars),
     );
   }, [calendars]);
 
@@ -68,25 +56,18 @@ export function LeaguePage() {
   const { data: prevStandings } = useStandings(editionId, prevRound);
 
   const positionChanges = useMemo(() => {
-    if (!prevRound || !prevStandings?.length || !standings?.length)
-      return undefined;
+    if (!prevRound || !prevStandings?.length || !standings?.length) return undefined;
     return computePositionChanges(standings, prevStandings);
   }, [standings, prevStandings, prevRound]);
 
   const leader = standings?.[0];
-  const tableTitle = upToRound
-    ? `Tabela do ${upToRound}. kola`
-    : "Ukupna tabela";
+  const tableTitle = upToRound ? `Tabela do ${upToRound}. kola` : 'Ukupna tabela';
 
   return (
     <div className="pb-20">
       <Seo
         title="Liga"
-        description={
-          activeSeason
-            ? `Liga — ${activeSeason.name}`
-            : "Tabela i rezultati lige"
-        }
+        description={activeSeason ? `Liga — ${activeSeason.name}` : 'Tabela i rezultati lige'}
       />
 
       {sl ? (
@@ -113,9 +94,7 @@ export function LeaguePage() {
           />
         )}
 
-        {standingsError && (
-          <DataError onRetry={() => void refetchStandings()} className="py-8" />
-        )}
+        {standingsError && <DataError onRetry={() => void refetchStandings()} className="py-8" />}
 
         <LeagueNextMatch matches={matches ?? []} />
         <LeagueLiveMatches matches={matches ?? []} />

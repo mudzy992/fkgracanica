@@ -1,16 +1,16 @@
-import { useMemo, useState } from "react";
-import { useMuseum } from "../../hooks";
-import { PageContainer } from "../../components/public/PageContainer";
-import { MuseumCinematicHero } from "../../components/public/museum/MuseumCinematicHero";
-import { MuseumExhibitCard } from "../../components/public/museum/MuseumExhibitCard";
-import { MuseumFilters } from "../../components/public/museum/MuseumFilters";
-import { NewsSectionTitle } from "../../components/news/NewsSectionTitle";
-import { Reveal } from "../../lib/motion/Reveal";
-import { Seo } from "../../components/seo/Seo";
-import { museumCategoryLabel } from "../../lib/museum-categories";
-import { EmptyState } from "../../components/public/EmptyState";
-import { DataError } from "../../components/public/DataError";
-import { Skeleton } from "../../components/ui/skeleton";
+import { useMemo, useState } from 'react';
+import { useMuseum } from '../../hooks';
+import { PageContainer } from '../../components/public/PageContainer';
+import { MuseumCinematicHero } from '../../components/public/museum/MuseumCinematicHero';
+import { MuseumExhibitCard } from '../../components/public/museum/MuseumExhibitCard';
+import { MuseumFilters } from '../../components/public/museum/MuseumFilters';
+import { NewsSectionTitle } from '../../components/news/NewsSectionTitle';
+import { Reveal } from '../../lib/motion/Reveal';
+import { Seo } from '../../components/seo/Seo';
+import { museumCategoryLabel } from '../../lib/museum-categories';
+import { EmptyState } from '../../components/public/EmptyState';
+import { DataError } from '../../components/public/DataError';
+import { Skeleton } from '../../components/ui/skeleton';
 
 export function MuseumPage() {
   const { data, isLoading, isError, refetch } = useMuseum();

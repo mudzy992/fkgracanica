@@ -1,21 +1,17 @@
-import { useState } from "react";
-import { useTranslation } from "react-i18next";
-import { useNewsCategories, usePublishedNews } from "../../hooks";
-import { asArray } from "../../lib/as-array";
-import type { NewsCategory } from "../../hooks/use-news-admin";
-import type { NewsItem } from "../../types";
-import { EmptyState } from "../../components/public/EmptyState";
-import { DataError } from "../../components/public/DataError";
-import { PageContainer } from "../../components/public/PageContainer";
-import { PageHeroHeader } from "../../components/public/shell/PageHeroHeader";
-import { Seo } from "../../components/seo/Seo";
-import { SkeletonCard } from "../../components/ui/skeleton";
-import { NewsCategoryFilter } from "../../components/news/NewsCategoryFilter";
-import {
-  NewsCompactCard,
-  NewsFeaturedCard,
-  NewsGridCard,
-} from "../../cms/widgets/news-feed-cards";
+import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useNewsCategories, usePublishedNews } from '../../hooks';
+import { asArray } from '../../lib/as-array';
+import type { NewsCategory } from '../../hooks/use-news-admin';
+import type { NewsItem } from '../../types';
+import { EmptyState } from '../../components/public/EmptyState';
+import { DataError } from '../../components/public/DataError';
+import { PageContainer } from '../../components/public/PageContainer';
+import { PageHeroHeader } from '../../components/public/shell/PageHeroHeader';
+import { Seo } from '../../components/seo/Seo';
+import { SkeletonCard } from '../../components/ui/skeleton';
+import { NewsCategoryFilter } from '../../components/news/NewsCategoryFilter';
+import { NewsCompactCard, NewsFeaturedCard, NewsGridCard } from '../../cms/widgets/news-feed-cards';
 
 function NewsFeedLayout({ items }: { items: NewsItem[] }) {
   const [featured, ...rest] = items;
@@ -60,15 +56,11 @@ export function NewsListPage() {
 
   return (
     <div className="pb-16">
-      <Seo
-        title={t("news.title")}
-        description={t("news.seoDesc")}
-        url="/vijesti"
-      />
+      <Seo title={t('news.title')} description={t('news.seoDesc')} url="/vijesti" />
       <PageHeroHeader
-        eyebrow={t("news.eyebrow")}
-        title={t("news.title")}
-        subtitle={t("news.subtitle")}
+        eyebrow={t('news.eyebrow')}
+        title={t('news.title')}
+        subtitle={t('news.subtitle')}
       />
       <PageContainer className="py-10 sm:py-12">
         <NewsCategoryFilter
@@ -86,7 +78,7 @@ export function NewsListPage() {
             ))}
           </div>
         ) : items.length === 0 ? (
-          <EmptyState message={t("news.empty")} />
+          <EmptyState message={t('news.empty')} />
         ) : filtered ? (
           <NewsGridLayout items={items} />
         ) : (

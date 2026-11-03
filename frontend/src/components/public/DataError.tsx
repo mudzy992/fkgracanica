@@ -1,6 +1,6 @@
-import { useTranslation } from "react-i18next";
-import { Button } from "../ui/button";
-import { cn } from "../../lib/utils";
+import { useTranslation } from 'react-i18next';
+import { Button } from '../ui/button';
+import { cn } from '../../lib/utils';
 
 interface Props {
   /** Poruka; podrazumijevano `common.loadError` iz locale fajlova. */
@@ -20,17 +20,14 @@ export function DataError({ message, onRetry, className }: Props) {
   return (
     <div
       role="alert"
-      className={cn(
-        "flex flex-col items-center gap-4 py-16 text-center",
-        className,
-      )}
+      className={cn('flex flex-col items-center gap-4 py-16 text-center', className)}
     >
       <p className="max-w-md text-text-muted">
-        {message ?? t("common.loadError", "Podatke nije moguće učitati.")}
+        {message ?? t('common.loadError', 'Podatke nije moguće učitati.')}
       </p>
       {onRetry && (
         <Button variant="outline" size="sm" onClick={onRetry}>
-          {t("actions.retry", "Pokušaj ponovo")}
+          {t('actions.retry', 'Pokušaj ponovo')}
         </Button>
       )}
     </div>

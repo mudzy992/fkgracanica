@@ -1,17 +1,17 @@
-import { useMemo, useState } from "react";
-import { Link } from "react-router-dom";
-import { ArrowLeft, Landmark } from "lucide-react";
-import { useHallOfFame } from "../../hooks";
-import { PageContainer } from "../../components/public/PageContainer";
-import { HallOfFameCinematicHero } from "../../components/public/hall-of-fame/HallOfFameCinematicHero";
-import { HofLegendCard } from "../../components/public/hall-of-fame/HofLegendCard";
-import { HofLegendDialog } from "../../components/public/hall-of-fame/HofLegendDialog";
-import { Reveal } from "../../lib/motion/Reveal";
-import { Seo } from "../../components/seo/Seo";
-import { EmptyState } from "../../components/public/EmptyState";
-import { DataError } from "../../components/public/DataError";
-import { Skeleton } from "../../components/ui/skeleton";
-import type { HallOfFameEntry } from "../../types";
+import { useMemo, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { ArrowLeft, Landmark } from 'lucide-react';
+import { useHallOfFame } from '../../hooks';
+import { PageContainer } from '../../components/public/PageContainer';
+import { HallOfFameCinematicHero } from '../../components/public/hall-of-fame/HallOfFameCinematicHero';
+import { HofLegendCard } from '../../components/public/hall-of-fame/HofLegendCard';
+import { HofLegendDialog } from '../../components/public/hall-of-fame/HofLegendDialog';
+import { Reveal } from '../../lib/motion/Reveal';
+import { Seo } from '../../components/seo/Seo';
+import { EmptyState } from '../../components/public/EmptyState';
+import { DataError } from '../../components/public/DataError';
+import { Skeleton } from '../../components/ui/skeleton';
+import type { HallOfFameEntry } from '../../types';
 
 function extractYears(years?: string | null): string[] {
   if (!years) return [];
@@ -23,7 +23,7 @@ function groupHofByYear(
 ): { year: string; entries: HallOfFameEntry[] }[] {
   const map = new Map<string, HallOfFameEntry[]>();
   for (const entry of entries) {
-    const year = extractYears(entry.years)[0] ?? "";
+    const year = extractYears(entry.years)[0] ?? '';
     const bucket = map.get(year) ?? [];
     bucket.push(entry);
     map.set(year, bucket);
@@ -31,15 +31,9 @@ function groupHofByYear(
   return [...map.entries()]
     .map(([year, groupEntries]) => ({
       year,
-      entries: [...groupEntries].sort((a, b) =>
-        a.name.localeCompare(b.name, "bs"),
-      ),
+      entries: [...groupEntries].sort((a, b) => a.name.localeCompare(b.name, 'bs')),
     }))
-    .sort(
-      (a, b) =>
-        (Number(b.year) || 0) - (Number(a.year) || 0) ||
-        b.year.localeCompare(a.year),
-    );
+    .sort((a, b) => (Number(b.year) || 0) - (Number(a.year) || 0) || b.year.localeCompare(a.year));
 }
 
 export function HallOfFamePage() {
@@ -52,10 +46,7 @@ export function HallOfFamePage() {
   return (
     <div className="overflow-hidden bg-[linear-gradient(180deg,#030712_0%,#0b1220_42%,#161006_100%)] pb-16 sm:pb-20">
       <Seo title="Kuća slavnih" description="Legende FK Gračanica" />
-      <HallOfFameCinematicHero
-        totalCount={data?.length ?? 0}
-        yearCount={yearCount}
-      />
+      <HallOfFameCinematicHero totalCount={data?.length ?? 0} yearCount={yearCount} />
       <PageContainer className="py-10 sm:py-12">
         <div className="rounded-[2rem] border border-white/10 bg-white/5 p-5 backdrop-blur-sm sm:p-6">
           <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
@@ -85,10 +76,7 @@ export function HallOfFamePage() {
         {isError ? null : isLoading ? (
           <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {Array.from({ length: 6 }).map((_, i) => (
-              <Skeleton
-                key={i}
-                className="h-80 rounded-[1.75rem] bg-white/10"
-              />
+              <Skeleton key={i} className="h-80 rounded-[1.75rem] bg-white/10" />
             ))}
           </div>
         ) : (
@@ -112,13 +100,11 @@ export function HallOfFamePage() {
             Završna nota
           </p>
           <p className="font-display mt-3 max-w-3xl text-2xl font-bold tracking-tight text-white sm:text-3xl">
-            Kuća slavnih nije samo lista imena, već prostor u kojem klub čuva
-            svoju mjeru veličine.
+            Kuća slavnih nije samo lista imena, već prostor u kojem klub čuva svoju mjeru veličine.
           </p>
           <p className="mt-4 max-w-3xl text-sm leading-relaxed text-slate-200 sm:text-base">
-            Svaka karta ovdje predstavlja lice iza jednog razdoblja, jedne
-            pobjede, jedne tribine i jednog osjećaja pripadnosti koji traje
-            mnogo duže od jedne sezone.
+            Svaka karta ovdje predstavlja lice iza jednog razdoblja, jedne pobjede, jedne tribine i
+            jednog osjećaja pripadnosti koji traje mnogo duže od jedne sezone.
           </p>
         </div>
         <HofLegendDialog

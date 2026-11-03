@@ -1,6 +1,6 @@
-import path from "node:path";
-import { defineConfig } from "vitest/config";
-import react from "@vitejs/plugin-react";
+import path from 'node:path';
+import { defineConfig } from 'vitest/config';
+import react from '@vitejs/plugin-react';
 
 /**
  * FE-02 — frontend test infra.
@@ -11,13 +11,13 @@ import react from "@vitejs/plugin-react";
 export default defineConfig({
   plugins: [react()],
   resolve: {
-    alias: { "@": path.resolve(__dirname, "./src") },
+    alias: { '@': path.resolve(__dirname, './src') },
   },
   test: {
-    environment: "jsdom",
+    environment: 'jsdom',
     globals: false,
-    setupFiles: ["./src/test/setup.ts"],
-    include: ["src/**/*.{test,spec}.{ts,tsx}"],
+    setupFiles: ['./src/test/setup.ts'],
+    include: ['src/**/*.{test,spec}.{ts,tsx}'],
     restoreMocks: true,
   },
 });
