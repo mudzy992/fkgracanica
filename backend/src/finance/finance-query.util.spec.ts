@@ -1,6 +1,7 @@
 import { buildFinanceSummary } from './finance-aggregate.util';
 import {
   includeMembership,
+  membershipSheet,
   parseFinanceRange,
   parseFinanceStatus,
   seasonPassFinanceStatus,
@@ -38,11 +39,42 @@ describe('finance-query.util', () => {
     );
   });
 
-  it('membership sheet only without provider and CONFIRMED/empty status', () => {
+  it('membership is always included and filtered by status/provider', () => {
+    // BE-07/Q-15: članstvo ima Payment red → isti filteri kao ulaznice.
     expect(includeMembership(undefined, undefined)).toBe(true);
     expect(includeMembership('CONFIRMED', undefined)).toBe(true);
-    expect(includeMembership('PENDING_ONLINE', undefined)).toBe(false);
-    expect(includeMembership(undefined, 'stripe')).toBe(false);
+    expect(includeMembership('PENDING_ONLINE', undefined)).toBe(true);
+    expect(includeMembership(undefined, 'stripe')).toBe(true);
+  });
+
+  it('membership sheet exports provider and amount (no estimate note)', () => {
+    const sheet = membershipSheet([
+      {
+        id: 'm1',
+        updatedAt: new Date('2026-11-03T10:00:00.000Z'),
+        amount: 50,
+        status: 'ACTIVE',
+        provider: 'stripe',
+        email: 'a@x.ba',
+        estimated: false,
+      },
+    ]);
+    expect(sheet[0]).toEqual([
+      'Datum',
+      'ID',
+      'Iznos',
+      'Status',
+      'Provider',
+      'Email',
+    ]);
+    expect(sheet[1]).toEqual([
+      '2026-11-03T10:00:00.000Z',
+      'm1',
+      '50',
+      'ACTIVE',
+      'stripe',
+      'a@x.ba',
+    ]);
   });
 });
 
