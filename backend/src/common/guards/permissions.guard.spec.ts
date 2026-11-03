@@ -8,6 +8,12 @@ import {
 import type { AuditService } from '../../audit/audit.service';
 import { PermissionsGuard } from './permissions.guard';
 
+interface AuditCall {
+  actorId?: string;
+  action: string;
+  metadata?: { reason?: string; required?: string[] };
+}
+
 interface RequestStub {
   user?: { id: string; email: string; permissions: string[] };
   method?: string;
@@ -22,7 +28,8 @@ function makeGuard(
   const reflector = {
     getAllAndOverride: (key: string) => metadata[key],
   } as unknown as Reflector;
-  const audit = { log: jest.fn().mockResolvedValue(undefined) };
+  const log = jest.fn((_input: AuditCall) => Promise.resolve(undefined));
+  const audit = { log };
   const context = {
     getHandler: () => () => undefined,
     getClass: () => class {},
@@ -32,7 +39,7 @@ function makeGuard(
     reflector,
     audit as unknown as AuditService,
   );
-  return { guard, audit, context };
+  return { guard, log, context };
 }
 
 describe('PermissionsGuard (BE-09 / P-B09-7)', () => {
@@ -64,7 +71,7 @@ describe('PermissionsGuard (BE-09 / P-B09-7)', () => {
   });
 
   it('odbija kad nedostaje dozvola i upisuje audit', async () => {
-    const { guard, audit, context } = makeGuard(
+    const { guard, log, context } = makeGuard(
       { [PERMISSIONS_KEY]: ['users.read'] },
       {
         user: { id: 'u1', email: 'a@b.c', permissions: [] },
@@ -76,8 +83,8 @@ describe('PermissionsGuard (BE-09 / P-B09-7)', () => {
     await expect(guard.canActivate(context)).rejects.toBeInstanceOf(
       ForbiddenException,
     );
-    expect(audit.log).toHaveBeenCalledTimes(1);
-    expect(audit.log).toHaveBeenCalledWith(
+    expect(log).toHaveBeenCalledTimes(1);
+    expect(log).toHaveBeenCalledWith(
       expect.objectContaining({
         actorId: 'u1',
         action: 'authz.denied',
@@ -85,35 +92,33 @@ describe('PermissionsGuard (BE-09 / P-B09-7)', () => {
         ipAddress: '10.0.0.1',
       }),
     );
-    const meta = audit.log.mock.calls[0][0].metadata;
-    expect(meta.reason).toBe('nedostaju dozvole');
-    expect(meta.required).toEqual(['users.read']);
+    const meta = log.mock.calls[0][0].metadata;
+    expect(meta?.reason).toBe('nedostaju dozvole');
+    expect(meta?.required).toEqual(['users.read']);
   });
 
   it('odbija zahtjev bez korisnika (401/403 scenarij)', async () => {
-    const { guard, audit, context } = makeGuard(
+    const { guard, log, context } = makeGuard(
       { [PERMISSIONS_KEY]: ['users.read'] },
       { method: 'GET', url: '/api/v1/users' },
     );
     await expect(guard.canActivate(context)).rejects.toBeInstanceOf(
       ForbiddenException,
     );
-    expect(audit.log).toHaveBeenCalledWith(
+    expect(log).toHaveBeenCalledWith(
       expect.objectContaining({ actorId: undefined }),
     );
   });
 
   it('fail-closed: prazna lista dozvola ne propušta nikoga', async () => {
-    const { guard, audit, context } = makeGuard(
+    const { guard, log, context } = makeGuard(
       { [PERMISSIONS_KEY]: [] },
       { user: { id: 'admin', email: 'a@b.c', permissions: ['users.read'] } },
     );
     await expect(guard.canActivate(context)).rejects.toBeInstanceOf(
       ForbiddenException,
     );
-    expect(audit.log.mock.calls[0][0].metadata.reason).toBe(
-      'prazna lista dozvola',
-    );
+    expect(log.mock.calls[0][0].metadata?.reason).toBe('prazna lista dozvola');
   });
 
   it('fail-closed i kad su obje liste prazne', async () => {
@@ -127,11 +132,11 @@ describe('PermissionsGuard (BE-09 / P-B09-7)', () => {
   });
 
   it('greška u audit logu ne mijenja ishod (i dalje 403)', async () => {
-    const { guard, audit, context } = makeGuard(
+    const { guard, log, context } = makeGuard(
       { [PERMISSIONS_KEY]: ['users.read'] },
       { user: { id: 'u1', email: 'a@b.c', permissions: [] } },
     );
-    audit.log.mockRejectedValueOnce(new Error('db down'));
+    log.mockRejectedValueOnce(new Error('db down'));
     await expect(guard.canActivate(context)).rejects.toBeInstanceOf(
       ForbiddenException,
     );

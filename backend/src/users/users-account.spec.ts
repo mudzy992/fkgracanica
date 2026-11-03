@@ -21,12 +21,13 @@ describe('UsersService.create/remove (BE-09 / P-B09-8)', () => {
 
     await svc.remove('actor', 'u1');
 
-    expect(prisma.user.update).toHaveBeenCalledWith(
-      expect.objectContaining({
-        where: { id: 'u1' },
-        data: expect.objectContaining({ isActive: false }),
-      }),
-    );
+    const softDelete = expect.objectContaining({
+      isActive: false,
+    }) as unknown;
+    expect(prisma.user.update).toHaveBeenCalledWith({
+      where: { id: 'u1' },
+      data: softDelete,
+    });
     expect(audit.log).toHaveBeenCalledWith(
       expect.objectContaining({ action: 'users.delete', entityId: 'u1' }),
     );

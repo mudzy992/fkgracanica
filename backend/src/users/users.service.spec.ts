@@ -3,7 +3,7 @@ import {
   ConflictException,
   NotFoundException,
 } from '@nestjs/common';
-import { EXISTING, makePrisma, service, setup } from './users-service.mock';
+import { EXISTING, setup } from './users-service.mock';
 
 describe('UsersService.update (BE-09 / P-B09-2, P-B09-8)', () => {
   it('409 kad je novi email zauzet (prije: 500)', async () => {
