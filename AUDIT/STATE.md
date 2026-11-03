@@ -7,13 +7,28 @@
 | Polje | Vrijednost |
 |-------|------------|
 | **Aktivna grana** | `arena/290a6f13-fkgracanica` |
-| **Trenutna faza** | CI-01 ✔ INF-01 ✔ INF-02 ✔ BE-01…**BE-09 ✔** → FE-01 ✔ FE-02 ✔ **FE-03 ✔** → sljedeće: **FE-03b** (i18n migracija) ili **FE-04** (admin audit) |
-| **Trenutni segment** | **FE-03 ✅ ZATVOREN** (error+retry na 10 stranica, i18n ključevi + test, 31 slika lazy, SearchPage sync, **XSS sanitizacija (dompurify)**, `noindex` za prijavu/plaćanje) ; **FE-02 ✅ ZATVOREN** (vitest + jsdom + testing-library, 34 testa u 9 fajlova, CI korak `frontend test (vitest)`) ; **FE-01 ✅ ZATVOREN** (tokeni u `@theme`, `token-check` u `check:all` 7/7, ratchet palete 417; P-FE01-7 `@custom-variant dark` i P-FE01-8 migracija palete čekaju odobrenje/FE-03-04) ; **BE-09c ✅ ZATVOREN** (12 nalaza: 11 odobrenih predloga implementirano, B-09c-11 → backlog; novi CI job `e2e` zelen 18/18); **BE-09a ✅, BE-09b ✅, BE-09c ✅** |
+| **Trenutna faza** | CI-01 ✔ INF-01 ✔ INF-02 ✔ BE-01…**BE-09 ✔** → FE-01 ✔ FE-02 ✔ FE-03 ✔ **FE-03b ✔** → sljedeće: **FE-04** (admin audit) |
+| **Trenutni segment** | **FE-03b ✅ ZATVOREN** (i18n: 25 javnih stranica + home sekcije kroz `t()`, ~140 ključeva bs/en, guard test) ; prije: **FE-03 ✅**, **FE-02 ✅**, **FE-01 ✅**, **BE-09c ✅** |
 | **Zadnji commit** | `898343d` docs(audit): FE-03 follow-up (XSS sanitizacija, noindex, prettier config) [FE-03] |
 | **Zadnji CI run** | ✅ **`41694299634` success** (`898343d` — FE-03 follow-up docs, sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41694299634 ; ✅ **`41693656143` success** (`1b76eca` — XSS sanitizacija + noindex, sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41693656143 ; ✅ **`41671042459` success** (`251db73` — FE-03 implementacija, sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41671042459 ; ✅ **`41668846835`** / **`41668139741`** success (`c9a48c6`/`116feca` — FE-02: vitest infra **i korak `frontend test (vitest)` zelen**) ; ✅ **`41666815620`** / **`41666291342`** / **`41665768088`** success (FE-01: tokeni + `token-check`, `@custom-variant dark`) ; ✅ **`41663810393`** / **`41663339512`** / **`41662863623`** success (BE-09 zatvaranje, novi `e2e` job zelen 18/18) ; ranije (BE-01…BE-09): `41662277103`, `41660810750`❌→fix, `41661451237`❌→fix, `41657925166`, `41658424979`, `41655487255`, `41654943345`, `41654422296`❌→fix, `41652033940`, `41651332872`, `41647575733`, `41646963311`, `41646330945`, `41644096377`❌/`41644777234`❌/`41645566467`❌→fix, `41640408790`, `41639946345`, `41638624709`, `41634063555`, `41630034505`, `41629707127`❌→fix, `41627914148`, `41583848187` |
 | **check:all** | `npm run check:all` → **7/7** (check-coverage, file-size, console-ban, **token-check**, secrets-ban, layer-deps, docs-links); u CI-ju jobovi `audit-gate` + `standards`; pre-push hook pokreće `check:all` |
 
 ## Šta je urađeno (hronološki)
+
+### Sesija FE-03b — 2026-11-03 (i18n migracija javnog portala)
+
+Korisnik: „Odobravam sve preporuke u blokatorima kako si rekao" (P-FE03-6 odobren).
+
+- **25 javnih stranica + 12 home sekcija** migrirano na `t()`: novi `pages.*` namespace
+  sa **17 sekcija** i **~140 ključeva po jeziku** (bs ↔ en usklađeno), interpolacije za
+  kolo/email/broj golova/sezonu.
+- **SEO meta** (title/description) sada iz locale fajlova — EN korisnik dobija EN opis.
+- **Guard test** `src/i18n/no-hardcoded-text.test.ts`: pada na hardkodiran UI tekst u
+  `pages/public/**` i `pages/home/**` (probe potvrdio da hvata regresiju).
+- **Rezultat:** 0 hardkodiranih stringova u opsegu; 48 testa / 13 fajlova; BS tekst
+  identičan kao prije (1:1 prenos), EN sada stvarno engleski.
+- **Ostaje:** ~261 string u `components/**`/`cms/**` (dijele ih javni portal i admin) →
+  uz **FE-04**.
 
 ### Sesija FE-03 follow-up — 2026-11-03 (odobreni blokeri)
 
