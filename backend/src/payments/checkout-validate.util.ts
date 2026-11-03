@@ -1,5 +1,5 @@
 import { BadRequestException } from '@nestjs/common';
-import type { PaymentProviderId } from './providers/payment-provider.interface';
+import type { PaymentProviderId } from './provider-gate.util';
 
 /**
  * Validacija checkout bodyja (BE-07 / P-B07-4).
