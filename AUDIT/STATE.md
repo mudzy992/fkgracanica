@@ -9,8 +9,8 @@
 | **Aktivna grana** | `arena/290a6f13-fkgracanica` |
 | **Trenutna faza** | CI-01 ✔ INF-01 ✔ INF-02 ✔ BE-01…**BE-09 ✔** → FE-01 ✔ FE-02 ✔ FE-03 ✔ **FE-03b ✔** → sljedeće: **FE-04** (admin audit) |
 | **Trenutni segment** | **CI-04 (parcijalno)** — B-CI04-01 Coolify `npm ci` blokator riješen (jedan root lock); prije: **FE-03b ✅**, **FE-03 ✅**, **FE-02 ✅**, **FE-01 ✅**, **BE-09c ✅** |
-| **Zadnji commit** | `f54c595` fix(docker): frontend build iz root konteksta (jedan package-lock) + docker-context guard [CI-04] |
-| **Zadnji CI run** | ✅ **`41702051432` success** (`f54c595` — CI-04 Docker lock fix + `docker-context` guard, sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41702051432 ; ✅ **`41697059984`** / **`41696508780`** success (FE-03b i18n) ; ✅ **`41694786018`**, **`41694299634`**, **`41693656143`** (FE-03 XSS sanitizacija, `noindex`, prettier config) ; ✅ **`41671042459`** (FE-03 implementacija) ; ✅ **`41668846835`**, **`41668139741`** (FE-02 vitest infra) ; ✅ **`41666815620`**, **`41666291342`**, **`41665768088`** (FE-01 tokeni) ; ✅ **`41663810393`**, **`41663339512`**, **`41662863623`** (BE-09, e2e 18/18) ; ranije BE serija: `41662277103`, `41661451237`❌→fix, `41660810750`❌→fix, `41658424979`, `41657925166`, `41655487255`, `41654943345`, `41654422296`❌→fix, `41652033940`, `41651332872`, `41647575733`, `41646963311`, `41646330945`, `41644096377`❌/`41644777234`❌/`41645566467`❌→fix, `41640408790`, `41639946345`, `41638624709`, `41634063555`, `41630034505`, `41629707127`❌→fix, `41627914148`, `41583848187` |
+| **Zadnji commit** | `a0d2ee2` fix(ops): fail-fast env u compose + diag-deploy dijagnostika za Coolify [CI-04] |
+| **Zadnji CI run** | ✅ **`41707129119` success** (`a0d2ee2` — CI-04 fail-fast env + `diag-deploy.sh`, sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41707129119 ; ✅ **`41702499943`**, **`41702051432`** (CI-04 Docker lock fix) ; ✅ **`41697059984`**, **`41696508780`** (FE-03b i18n) ; ✅ **`41694786018`**, **`41694299634`**, **`41693656143`** (FE-03) ; ✅ **`41671042459`** (FE-03 implementacija) ; ✅ **`41668846835`**, **`41668139741`** (FE-02) ; ✅ **`41666815620`**, **`41666291342`**, **`41665768088`** (FE-01) ; ✅ **`41663810393`**, **`41663339512`**, **`41662863623`** (BE-09) ; ranije BE serija: `41662277103`, `41661451237`❌→fix, `41660810750`❌→fix, `41658424979`, `41657925166`, `41655487255`, `41654943345`, `41654422296`❌→fix, `41652033940`, `41651332872`, `41647575733`, `41646963311`, `41646330945`, `41644096377`❌/`41644777234`❌/`41645566467`❌→fix, `41640408790`, `41639946345`, `41638624709`, `41634063555`, `41630034505`, `41629707127`❌→fix, `41627914148`, `41583848187` |
 | **check:all** | `npm run check:all` → **7/7** (check-coverage, file-size, console-ban, **token-check**, secrets-ban, layer-deps, docs-links); u CI-ju jobovi `audit-gate` + `standards`; pre-push hook pokreće `check:all` |
 
 ## Šta je urađeno (hronološki)
@@ -33,6 +33,16 @@ package.json are not in sync", `Missing: vitest@5.1.0`, `dompurify@3.4.17` …
 - Verifikacija: simuliran builder stage (`npm ci` + `npm run build -w frontend` u
   root workspace tree-u) ✅; `npm ci --workspace frontend` dokazano **neispravan**
   (tsc pada) → Dockerfile koristi pun `npm ci`. Detalji: `AUDIT/segments/CI-04.md`.
+- **B-CI04-02 (High, runtime) — `P1001 localhost:5432`:** Coolify upisane varijable
+  stižu kroz `/artifacts/<uuid>/.env` → `docker compose` interpolacija u `environment:`
+  blok; `${VAR}` bez vrijednosti postaje prazan string, a `environment:` je allowlista
+  (varijabla koja nije u compose-u nikad ne dođe do kontejnera). Uvedeno:
+  **`${VAR:?}` fail-fast** za `DATABASE_URL`, `API_PUBLIC_URL`, JWT sekrete i admin
+  kredencijale + **`scripts/diag-deploy.sh`** (env u kontejneru maskirano, host/port iz
+  `DATABASE_URL`, DNS unutar mreže, TCP provjera). `injected env (0)` iz `dotenv` je
+  očekivano — u slici nema `.env`, Prisma radi samo sa procesnim env varijablama.
+  Korisnik treba provjeriti da `DATABASE_URL` nije `localhost` (unutar kontejnera to je
+  sam kontejner) nego ime DB servisa na `db_net` ili javni host uz `verify-full`.
 - **PAŽNJA:** Coolify gradi sa grane **`main`** — dok fix ne dođe na `main`, deploy
   će i dalje padati. `main` nije dobio ni FE-03/FE-03b izmjene.
 
