@@ -67,6 +67,18 @@ DB_PORT="${HOSTPORT#*:}"
 DB_PORT="${DB_PORT%%/*}"
 DB_PORT="${DB_PORT%%\?*}"
 
+echo "== da li je URL upisan u SLIKU (baked ENV — čest uzrok P1001)"
+IMAGE="$(docker inspect "$CONTAINER" --format '{{.Config.Image}}' 2>/dev/null || true)"
+BAKED="$(docker image inspect "$IMAGE" --format '{{range .Config.Env}}{{println .}}{{end}}' 2>/dev/null | grep -c '^DATABASE_URL=' || true)"
+if [ "${BAKED:-0}" -gt 0 ]; then
+  echo "  ✗ SLIKA ($IMAGE) ima ugrađen ENV DATABASE_URL:"
+  docker image inspect "$IMAGE" --format '{{range .Config.Env}}{{println .}}{{end}}' \
+    | grep '^DATABASE_URL=' | sed -E 's#(://[^:/@]+):[^@]*@#\1:***@#' | sed 's/^/    /'
+  echo "    → build-arg ili ENV u Dockerfile-u; Coolify build-args pregaze runtime env."
+else
+  echo "  ✓ slika nema ugrađen DATABASE_URL (env dolazi iz compose 'environment:')"
+fi
+
 echo "== baza: host='$DB_HOST' port='${DB_PORT:-5432}'"
 case "$DB_URL" in
   *"&amp;"*)

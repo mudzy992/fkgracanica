@@ -11,10 +11,10 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
-      args:
-        # BE-09c/P-B09c-2: build arg je DUMMY — `prisma generate` ne treba živu
-        # bazu, a pravi `DATABASE_URL` ne smije završiti u slojevima slike.
-        DATABASE_URL: postgresql://build:build@build-arg-dummy.invalid:5432/fkgracanica
+      # CI-04/B-CI04-02: NEMA `DATABASE_URL` u build.args. Coolify izvozi
+      # build-args i u runtime env, pa je dummy vrijednost pregazila pravi
+      # DATABASE_URL iz `environment:` bloka ispod (P1001 na `.invalid` host).
+      # `prisma generate` ne treba URL (placeholder je u prisma.config.ts).
 
     environment:
       # CI-04/B-CI04-02: `${VAR:?poruka}` = fail-fast. Ako varijabla NIJE u

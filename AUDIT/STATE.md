@@ -48,6 +48,13 @@ package.json are not in sync", `Missing: vitest@5.1.0`, `dompurify@3.4.17` …
   u `build-arg-dummy.invalid` da se to odmah vidi.
   **Nađen i HTML-entitet:** korisnikov `DATABASE_URL` sadrži `&amp;` umjesto `&` →
   `sslrootcert` se ne parsira (radi samo zahvaljujući `NODE_EXTRA_CERTS`).
+- **B-CI04-02 KONAČNO RIJEŠENO:** `.invalid` dummy se pojavio u runtime grešci ⇒
+  **Coolify izvozi `build.args` i u `up`**, pa je build-arg `DATABASE_URL` pregazio
+  pravi URL iz `environment:`. Uklonjen `DATABASE_URL` build-arg iz
+  `docker-compose.yml` i `backend/Dockerfile`; `prisma.config.ts` više ne koristi
+  `env()` (placeholder za `generate`); novi `backend/docker-entrypoint.sh` radi
+  preflight (fali URL / placeholder / maskiran ispis) prije `prisma migrate deploy`;
+  `docker-context` guard zabranjuje tajne u `build.args`/`ARG`.
 - **PAŽNJA:** Coolify gradi sa grane **`main`** — dok fix ne dođe na `main`, deploy
   će i dalje padati. `main` nije dobio ni FE-03/FE-03b izmjene.
 

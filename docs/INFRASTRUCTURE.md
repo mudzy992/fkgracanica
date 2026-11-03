@@ -44,6 +44,19 @@ Napomena o logu `injected env (0) from .env`: to je `dotenv` iz `backend/prisma.
 image); Prisma tada radi isključivo sa procesnim env varijablama. Ako su one prazne,
 Prisma nema fallback.
 
+### Build args su zamka (B-CI04-02, dokazano na Coolifyju)
+
+Coolify **izvozi `build.args` i u runtime okruženje** (`up`), pa build-arg sa istim
+imenom kao runtime varijabla **pregazi** pravu vrijednost iz `environment:` bloka.
+Tako je `DATABASE_URL` build-arg (dummy `build-arg-dummy.invalid`) srušio backend na
+`P1001` iako je Coolify UI imao ispravan URL.
+
+Zato: **nikad ne stavljaj `DATABASE_URL`, `REDIS_URL`, `*SECRET*`, `*PASSWORD*`,
+`*TOKEN*` u `build.args`/`ARG`.** Guard: `docker-context` u `check:all` to odbija.
+Backend starta kroz `backend/docker-entrypoint.sh`, koji prije `prisma migrate deploy`
+provjeri da `DATABASE_URL` postoji i da nije build placeholder, pa ispiše **maskiran**
+host.
+
 ### Dijagnostika na serveru
 
 ```bash

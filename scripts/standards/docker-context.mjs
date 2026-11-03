@@ -89,6 +89,68 @@ for (const { service, context, dockerfile } of builds()) {
   }
 }
 
+// CI-04/B-CI04-02: build-argovi ne smiju nositi tajne ni `DATABASE_URL`.
+// Coolify (docker-compose pack) izvozi `build.args` u okruženje i za `up`, pa
+// build-arg pregazi runtime env iz `environment:` bloka -> `P1001` na dummy host.
+const FORBIDDEN_ARG = /(DATABASE_URL|REDIS_URL|PASSWORD|SECRET|TOKEN|_KEY)/i;
+
+/** `build.args` ključevi iz docker-compose.yml (samo unutar `args:` bloka). */
+function composeBuildArgs() {
+  const out = [];
+  let argsIndent = null; // indentacija ključeva unutar `args:`
+  readFileSync(join(ROOT, 'docker-compose.yml'), 'utf8')
+    .split('\n')
+    .forEach((line, index) => {
+      const trimmed = line.trim();
+      if (!trimmed || trimmed.startsWith('#')) return;
+      const indent = line.length - line.trimStart().length;
+      if (/^args:\s*$/.test(trimmed)) {
+        argsIndent = null; // postavlja se prvim ključem ispod
+        argsIndent = indent + 2;
+        return;
+      }
+      if (argsIndent !== null) {
+        const key = new RegExp(`^ {${argsIndent}}([A-Za-z0-9_]+):`).exec(line)?.[1];
+        if (key) {
+          out.push({ key, line: index + 1 });
+          return;
+        }
+        if (indent < argsIndent) argsIndent = null; // izašli smo iz args bloka
+      }
+    });
+  return out;
+}
+
+/** `ARG` deklaracije iz Dockerfile-ova. */
+function dockerfileArgs(file) {
+  return readFileSync(join(ROOT, file), 'utf8')
+    .split('\n')
+    .map((line, index) => ({ line: index + 1, text: line.trim() }))
+    .filter(({ text }) => /^ARG\s+[A-Z0-9_]+/.test(text))
+    .map(({ line, text }) => ({ key: /^ARG\s+([A-Z0-9_]+)/.exec(text)[1], line }));
+}
+
+for (const { key, line } of composeBuildArgs()) {
+  if (!FORBIDDEN_ARG.test(key)) continue;
+  errors.push({
+    where: `docker-compose.yml:${line} → build.args ${key}`,
+    why: 'Coolify izvozi build-args i u runtime env, pa pregaze pravu vrijednost iz `environment:` (uzrok P1001 na dummy hostu)',
+    how: 'ukloni iz `build.args`; vrijednost daj samo kroz runtime `environment:` (vidi AUDIT/segments/CI-04.md)',
+  });
+}
+
+for (const file of ['backend/Dockerfile', 'frontend/Dockerfile']) {
+  if (!existsSync(join(ROOT, file))) continue;
+  for (const { key, line } of dockerfileArgs(file)) {
+    if (!FORBIDDEN_ARG.test(key)) continue;
+    errors.push({
+      where: `${file}:${line} → ARG ${key}`,
+      why: 'build-arg sa URL-om/tajnom: može završiti u slici ili pregaziti runtime env',
+      how: 'ukloni ARG; pravu vrijednost daj kroz runtime `environment:`',
+    });
+  }
+}
+
 // Per-workspace lockovi koji se ne koriste (workspace se gradi iz root konteksta).
 const rootPkg = JSON.parse(readFileSync(join(ROOT, 'package.json'), 'utf8'));
 const workspaces = (rootPkg.workspaces ?? []).map((ws) => ws.replace(/\/$/, ''));
