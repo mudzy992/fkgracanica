@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ConflictException,
   Injectable,
   NotFoundException,
   OnModuleInit,
@@ -62,15 +63,19 @@ export class RbacService implements OnModuleInit {
       throw new BadRequestException('Nepoznata dozvola u listi');
     }
 
-    await this.prisma.rolePermission.deleteMany({ where: { roleId } });
-    if (permissions.length) {
-      await this.prisma.rolePermission.createMany({
-        data: permissions.map((p) => ({ roleId, permissionId: p.id })),
+    // BE-09/P-B09-1: zamjena dozvola u JEDNOJ transakciji — prije je pad
+    // `createMany`-a ostavljao ulogu bez ijedne dozvole.
+    const updated = await this.prisma.$transaction(async (tx) => {
+      await tx.rolePermission.deleteMany({ where: { roleId } });
+      if (permissions.length) {
+        await tx.rolePermission.createMany({
+          data: permissions.map((p) => ({ roleId, permissionId: p.id })),
+        });
+      }
+      return tx.role.findUnique({
+        where: { id: roleId },
+        include: { permissions: { include: { permission: true } } },
       });
-    }
-    const updated = await this.prisma.role.findUnique({
-      where: { id: roleId },
-      include: { permissions: { include: { permission: true } } },
     });
     await this.audit.log({
       actorId,
@@ -86,7 +91,13 @@ export class RbacService implements OnModuleInit {
     actorId: string,
     data: { name: string; description?: string },
   ) {
-    const role = await this.prisma.role.create({ data });
+    // BE-09/P-B09-1: duplikat imena = 409 (prije: P2002 → 500).
+    const name = data.name.trim();
+    const clash = await this.prisma.role.findUnique({ where: { name } });
+    if (clash) throw new ConflictException('Uloga s tim imenom već postoji');
+    const role = await this.prisma.role.create({
+      data: { ...data, name },
+    });
     await this.audit.log({
       actorId,
       action: 'rbac.role.create',
@@ -103,9 +114,12 @@ export class RbacService implements OnModuleInit {
     if (this.isSystemRole(role.name)) {
       throw new BadRequestException('Sistemska uloga se ne može obrisati');
     }
-    await this.prisma.rolePermission.deleteMany({ where: { roleId } });
-    await this.prisma.userRole.deleteMany({ where: { roleId } });
-    await this.prisma.role.delete({ where: { id: roleId } });
+    // BE-09/P-B09-1: tri brisanja atomarno (prije: djelimično obrisana uloga).
+    await this.prisma.$transaction([
+      this.prisma.rolePermission.deleteMany({ where: { roleId } }),
+      this.prisma.userRole.deleteMany({ where: { roleId } }),
+      this.prisma.role.delete({ where: { id: roleId } }),
+    ]);
     await this.audit.log({
       actorId,
       action: 'rbac.role.delete',
