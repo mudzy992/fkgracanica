@@ -51,7 +51,7 @@ export function Lightbox({ images, index, onClose, onChange }: LightboxProps) {
           ‹
         </Button>
       )}
-      <img
+      <img loading="lazy" decoding="async"
         src={current.src}
         alt={current.alt ?? ''}
         className="max-h-[90vh] max-w-full object-contain"

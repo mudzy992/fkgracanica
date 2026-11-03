@@ -1,33 +1,49 @@
-import { useEffect, useMemo, useState } from 'react';
-import { LeagueCinematicHero } from '../../components/public/league/LeagueCinematicHero';
-import { LeagueFilterBar } from '../../components/public/league/LeagueFilterBar';
-import { LeagueStandingsSection } from '../../components/public/league/LeagueStandingsSection';
-import { LeagueResultsRound } from '../../components/public/league/LeagueResultsRound';
-import { LeagueTopScorers } from '../../components/public/league/LeagueTopScorers';
-import { LeagueLiveMatches } from '../../components/public/league/LeagueLiveMatches';
-import { LeagueNextMatch } from '../../components/public/league/LeagueNextMatch';
-import { useMatches, useOwnClub, useSeasons, useStandings, useTopAssists, useTopScorers } from '../../hooks';
-import { useRounds } from '../../hooks/use-rounds';
-import { computePositionChanges, maxFinishedRound } from '../../lib/league-position.util';
+import { useEffect, useMemo, useState } from "react";
+import { LeagueCinematicHero } from "../../components/public/league/LeagueCinematicHero";
+import { LeagueFilterBar } from "../../components/public/league/LeagueFilterBar";
+import { LeagueStandingsSection } from "../../components/public/league/LeagueStandingsSection";
+import { LeagueResultsRound } from "../../components/public/league/LeagueResultsRound";
+import { LeagueTopScorers } from "../../components/public/league/LeagueTopScorers";
+import { LeagueLiveMatches } from "../../components/public/league/LeagueLiveMatches";
+import { LeagueNextMatch } from "../../components/public/league/LeagueNextMatch";
+import {
+  useMatches,
+  useOwnClub,
+  useSeasons,
+  useStandings,
+  useTopAssists,
+  useTopScorers,
+} from "../../hooks";
+import { useRounds } from "../../hooks/use-rounds";
+import {
+  computePositionChanges,
+  maxFinishedRound,
+} from "../../lib/league-position.util";
 import {
   leagueEdition,
   pickDefaultCalendarId,
   type CalendarSeason,
-} from '../../lib/season-utils';
-import { Seo } from '../../components/seo/Seo';
-import { Skeleton } from '../../components/ui/skeleton';
+} from "../../lib/season-utils";
+import { Seo } from "../../components/seo/Seo";
+import { Skeleton } from "../../components/ui/skeleton";
+import { DataError } from "../../components/public/DataError";
 
 export function LeaguePage() {
   const { data: ownClub } = useOwnClub();
   const { data: seasons, isLoading: sl } = useSeasons();
-  const calendars = useMemo(() => (seasons as CalendarSeason[] | undefined) ?? [], [seasons]);
+  const calendars = useMemo(
+    () => (seasons as CalendarSeason[] | undefined) ?? [],
+    [seasons],
+  );
   const [calendarId, setCalendarId] = useState<string | undefined>();
   const [upToRound, setUpToRound] = useState<number | null>(null);
 
   useEffect(() => {
     if (!calendars.length) return;
     setCalendarId((prev) =>
-      prev && calendars.some((s) => s.id === prev) ? prev : pickDefaultCalendarId(calendars),
+      prev && calendars.some((s) => s.id === prev)
+        ? prev
+        : pickDefaultCalendarId(calendars),
     );
   }, [calendars]);
 
@@ -36,7 +52,12 @@ export function LeaguePage() {
   const activeSeason = calendars.find((s) => s.id === calendarId);
   const editionId = leagueEdition(activeSeason)?.id;
   const { data: rounds } = useRounds(editionId);
-  const { data: standings, isLoading: stl } = useStandings(editionId, upToRound);
+  const {
+    data: standings,
+    isLoading: stl,
+    isError: standingsError,
+    refetch: refetchStandings,
+  } = useStandings(editionId, upToRound);
   const { data: scorers, isLoading: scl } = useTopScorers(editionId);
   const { data: assists, isLoading: acl } = useTopAssists(editionId);
   const { data: matches, isLoading: ml } = useMatches(editionId);
@@ -47,16 +68,26 @@ export function LeaguePage() {
   const { data: prevStandings } = useStandings(editionId, prevRound);
 
   const positionChanges = useMemo(() => {
-    if (!prevRound || !prevStandings?.length || !standings?.length) return undefined;
+    if (!prevRound || !prevStandings?.length || !standings?.length)
+      return undefined;
     return computePositionChanges(standings, prevStandings);
   }, [standings, prevStandings, prevRound]);
 
   const leader = standings?.[0];
-  const tableTitle = upToRound ? `Tabela do ${upToRound}. kola` : 'Ukupna tabela';
+  const tableTitle = upToRound
+    ? `Tabela do ${upToRound}. kola`
+    : "Ukupna tabela";
 
   return (
     <div className="pb-20">
-      <Seo title="Liga" description={activeSeason ? `Liga — ${activeSeason.name}` : 'Tabela i rezultati lige'} />
+      <Seo
+        title="Liga"
+        description={
+          activeSeason
+            ? `Liga — ${activeSeason.name}`
+            : "Tabela i rezultati lige"
+        }
+      />
 
       {sl ? (
         <Skeleton className="h-72 w-full rounded-none" />
@@ -80,6 +111,10 @@ export function LeaguePage() {
             upToRound={upToRound}
             onRoundChange={setUpToRound}
           />
+        )}
+
+        {standingsError && (
+          <DataError onRetry={() => void refetchStandings()} className="py-8" />
         )}
 
         <LeagueNextMatch matches={matches ?? []} />

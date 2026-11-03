@@ -1,30 +1,42 @@
-import { Link, useParams } from 'react-router-dom';
-import { useMatch, useMatchStatistics, useNewsForMatch, usePublicSettings } from '../../hooks';
-import { useAuth } from '../../lib/auth';
-import { hasPermission } from '../../lib/permissions';
-import { formatDateTime } from '../../lib/utils';
-import { matchShareDescription, matchShareImage, matchShareTitle } from '../../lib/match-seo';
-import { matchStatusLabel } from '../../lib/match-status-label';
-import { MatchScoreHero } from '../../components/match/MatchScoreHero';
-import { MatchCenterToolbar } from '../../components/match/MatchCenterToolbar';
-import { MatchEventsSection } from '../../components/match/MatchEventsSection';
-import { PageContainer } from '../../components/public/PageContainer';
-import { Seo } from '../../components/seo/Seo';
-import { MatchHighlights } from '../../components/match/MatchHighlights';
-import { MatchReportApproval } from '../../components/match/MatchReportApproval';
-import { MatchLineupSection, MatchRelatedNewsSection } from '../../components/match/MatchCenterSections';
-import { MatchStatisticsSection } from '../../components/match/MatchStatisticsSection';
-import { Skeleton } from '../../components/ui/skeleton';
+import { Link, useParams } from "react-router-dom";
+import {
+  useMatch,
+  useMatchStatistics,
+  useNewsForMatch,
+  usePublicSettings,
+} from "../../hooks";
+import { useAuth } from "../../lib/auth";
+import { hasPermission } from "../../lib/permissions";
+import { formatDateTime } from "../../lib/utils";
+import {
+  matchShareDescription,
+  matchShareImage,
+  matchShareTitle,
+} from "../../lib/match-seo";
+import { matchStatusLabel } from "../../lib/match-status-label";
+import { MatchScoreHero } from "../../components/match/MatchScoreHero";
+import { MatchCenterToolbar } from "../../components/match/MatchCenterToolbar";
+import { MatchEventsSection } from "../../components/match/MatchEventsSection";
+import { PageContainer } from "../../components/public/PageContainer";
+import { Seo } from "../../components/seo/Seo";
+import { MatchHighlights } from "../../components/match/MatchHighlights";
+import { MatchReportApproval } from "../../components/match/MatchReportApproval";
+import {
+  MatchLineupSection,
+  MatchRelatedNewsSection,
+} from "../../components/match/MatchCenterSections";
+import { MatchStatisticsSection } from "../../components/match/MatchStatisticsSection";
+import { Skeleton } from "../../components/ui/skeleton";
 
 export function MatchCenterPage() {
   const { id } = useParams<{ id: string }>();
   const { user } = useAuth();
-  const { data, isLoading, isError } = useMatch(id ?? '');
+  const { data, isLoading, isError } = useMatch(id ?? "");
   const { data: matchStats, isLoading: msl } = useMatchStatistics(id);
   const { data: relatedNews, isLoading: rnl } = useNewsForMatch(id);
   const { data: settings } = usePublicSettings();
-  const canApprove = hasPermission(user?.permissions, 'live.approve');
-  const canCommentate = hasPermission(user?.permissions, 'live.manage');
+  const canApprove = hasPermission(user?.permissions, "live.approve");
+  const canCommentate = hasPermission(user?.permissions, "live.manage");
 
   if (isLoading) {
     return (
@@ -47,9 +59,9 @@ export function MatchCenterPage() {
     );
   }
 
-  const isLive = data.status === 'LIVE' || data.status === 'HALFTIME';
+  const isLive = data.status === "LIVE" || data.status === "HALFTIME";
   const meta =
-    formatDateTime(data.scheduledAt) + (data.venue ? ` · ${data.venue}` : '');
+    formatDateTime(data.scheduledAt) + (data.venue ? ` · ${data.venue}` : "");
 
   return (
     <div className="pb-16 sm:pb-20">
@@ -57,15 +69,20 @@ export function MatchCenterPage() {
         <Seo
           title={matchShareTitle(data)}
           description={matchShareDescription(data)}
-          image={matchShareImage(data, settings?.['club.crestUrl'])}
+          image={matchShareImage(data, settings?.["club.crestUrl"])}
           url={`/utakmice/${data.id}`}
           type="article"
         />
-        {canApprove && <MatchReportApproval matchId={data.id} reportStatus={data.reportStatus} />}
+        {canApprove && (
+          <MatchReportApproval
+            matchId={data.id}
+            reportStatus={data.reportStatus}
+          />
+        )}
         {canCommentate &&
-          data.status === 'FINISHED' &&
-          (data.reportStatus === 'DRAFT' ||
-            data.reportStatus === 'PENDING_APPROVAL' ||
+          data.status === "FINISHED" &&
+          (data.reportStatus === "DRAFT" ||
+            data.reportStatus === "PENDING_APPROVAL" ||
             !data.reportStatus) && (
             <div className="mb-4 rounded-2xl border border-primary/30 bg-primary/5 px-4 py-3 text-sm">
               <span className="text-text-muted">Izvještaj utakmice — </span>
@@ -73,9 +90,9 @@ export function MatchCenterPage() {
                 to={`/admin/matches/${data.id}/report`}
                 className="font-medium text-primary hover:underline"
               >
-                {data.reportStatus === 'PENDING_APPROVAL'
-                  ? 'Uredi izvještaj'
-                  : 'Kreiraj / uredi izvještaj'}
+                {data.reportStatus === "PENDING_APPROVAL"
+                  ? "Uredi izvještaj"
+                  : "Kreiraj / uredi izvještaj"}
               </Link>
             </div>
           )}
@@ -97,7 +114,10 @@ export function MatchCenterPage() {
           statusLabel={matchStatusLabel(data.status)}
         />
 
-        <MatchHighlights streamUrl={data.youtubeUrl} highlights={data.highlights} />
+        <MatchHighlights
+          streamUrl={data.youtubeUrl}
+          highlights={data.highlights}
+        />
 
         <MatchLineupSection match={data} />
         <MatchStatisticsSection match={data} stats={matchStats} loading={msl} />

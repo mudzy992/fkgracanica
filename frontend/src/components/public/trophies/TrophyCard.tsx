@@ -10,7 +10,7 @@ export function TrophyCard({ trophy }: Props) {
     <div className="glass-premium card-lift h-full overflow-hidden rounded-2xl p-5">
       <div className="flex gap-4">
         {trophy.imagePath ? (
-          <img
+          <img loading="lazy" decoding="async"
             src={mediaUrl(trophy.imagePath, 'thumb')}
             alt=""
             className="h-16 w-16 shrink-0 object-contain"

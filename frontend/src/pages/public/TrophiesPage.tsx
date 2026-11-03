@@ -1,23 +1,26 @@
-import { useMemo } from 'react';
-import { useTrophies } from '../../hooks';
-import { splitFeaturedTrophy } from '../../lib/trophy-utils';
-import { PageContainer } from '../../components/public/PageContainer';
-import { TrophiesCinematicHero } from '../../components/public/trophies/TrophiesCinematicHero';
-import { EmptyState } from '../../components/public/EmptyState';
-import { Seo } from '../../components/seo/Seo';
-import { TrophyCard } from '../../components/public/trophies/TrophyCard';
-import { TrophyFeaturedShowcase } from '../../components/public/trophies/TrophyFeaturedShowcase';
-import { NewsSectionTitle } from '../../components/news/NewsSectionTitle';
-import { Reveal } from '../../lib/motion/Reveal';
-import { Skeleton } from '../../components/ui/skeleton';
+import { useMemo } from "react";
+import { useTrophies } from "../../hooks";
+import { splitFeaturedTrophy } from "../../lib/trophy-utils";
+import { PageContainer } from "../../components/public/PageContainer";
+import { TrophiesCinematicHero } from "../../components/public/trophies/TrophiesCinematicHero";
+import { EmptyState } from "../../components/public/EmptyState";
+import { DataError } from "../../components/public/DataError";
+import { Seo } from "../../components/seo/Seo";
+import { TrophyCard } from "../../components/public/trophies/TrophyCard";
+import { TrophyFeaturedShowcase } from "../../components/public/trophies/TrophyFeaturedShowcase";
+import { NewsSectionTitle } from "../../components/news/NewsSectionTitle";
+import { Reveal } from "../../lib/motion/Reveal";
+import { Skeleton } from "../../components/ui/skeleton";
 
 export function TrophiesPage() {
-  const { data, isLoading } = useTrophies();
+  const { data, isLoading, isError, refetch } = useTrophies();
   const trophies = data ?? [];
   const { featured, rest } = splitFeaturedTrophy(trophies);
 
   const stats = useMemo(() => {
-    const competitions = new Set(trophies.map((t) => t.competition).filter(Boolean));
+    const competitions = new Set(
+      trophies.map((t) => t.competition).filter(Boolean),
+    );
     return { total: trophies.length, competitionCount: competitions.size };
   }, [trophies]);
 
@@ -30,7 +33,9 @@ export function TrophiesPage() {
         competitionCount={stats.competitionCount}
       />
       <PageContainer className="py-10 sm:py-12">
-        {isLoading ? (
+        {isError ? (
+          <DataError onRetry={() => void refetch()} />
+        ) : isLoading ? (
           <div className="space-y-6">
             <Skeleton className="h-72 rounded-3xl" />
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">

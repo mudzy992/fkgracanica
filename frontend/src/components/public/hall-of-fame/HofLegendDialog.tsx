@@ -29,7 +29,7 @@ export function HofLegendDialog({ entry, open, onClose }: Props) {
           <div className="relative border-b border-white/10 md:border-b-0 md:border-r">
             <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(245,158,11,0.16),transparent_38%)]" />
             {photo ? (
-              <img src={mediaUrl(photo, 'original')} alt="" className="h-full min-h-[24rem] w-full object-cover" />
+              <img loading="lazy" decoding="async" src={mediaUrl(photo, 'original')} alt="" className="h-full min-h-[24rem] w-full object-cover" />
             ) : (
               <div className="flex min-h-[24rem] items-center justify-center bg-[linear-gradient(180deg,#1f1508,#4b320d)] font-display text-6xl font-bold text-amber-100/80">
                 {entry.name[0]}

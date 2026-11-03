@@ -27,7 +27,8 @@
     "delete": "Delete",
     "edit": "Edit",
     "create": "Create",
-    "back": "Back"
+    "back": "Back",
+    "retry": "Try again"
   },
   "home": {
     "heroTitle": "FK Gračanica",
@@ -45,7 +46,13 @@
     "ticketsDesc": "Secure your seat at the stadium.",
     "trophies": "Trophies",
     "newsletter": "Newsletter",
-    "newsletterDesc": "Get the latest news in your inbox."
+    "newsletterDesc": "Get the latest news in your inbox.",
+    "gallerySubtitle": "Moments from the pitch",
+    "leagueSubtitle": "Current league standings",
+    "latestNewsSubtitle": "Latest from the club",
+    "sponsorsSubtitle": "Partners who support us",
+    "teamSubtitle": "The players behind the badge",
+    "trophiesSubtitle": "Trophies through club history"
   },
   "admin": {
     "dashboard": "Dashboard",
@@ -114,7 +121,8 @@
     "message": "Message",
     "subject": "Subject",
     "livePushTitle": "Live match push",
-    "livePushHint": "Goals, cards and other live actions. Turn off to mute push."
+    "livePushHint": "Goals, cards and other live actions. Turn off to mute push.",
+    "loadError": "We could not load the data. Check your connection and try again."
   },
   "footer": {
     "menu": "Menu",

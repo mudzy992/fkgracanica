@@ -79,7 +79,7 @@ export function GalleryWidget({ config }: Props) {
                 >
                   <Link to={`/galerija/${g.slug}`} className="group relative block h-full overflow-hidden rounded-2xl">
                     {cover ? (
-                      <img
+                      <img loading="lazy" decoding="async"
                         src={mediaUrl(cover, 'medium')}
                         alt=""
                         className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"

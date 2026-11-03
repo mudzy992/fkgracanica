@@ -1,16 +1,20 @@
-import { Link, useParams } from 'react-router-dom';
-import { LiveStreamBroadcast } from '../../components/live/LiveStreamBroadcast';
-import { LiveCenterShell } from '../../components/live/LiveCenterShell';
-import { LivePreMatchShell } from '../../components/live/LivePreMatchShell';
-import { useMatch, usePublicSettings } from '../../hooks';
-import { useMatchRealtime } from '../../hooks/use-match-realtime';
-import { useLiveClock } from '../../hooks/use-live-clock';
-import { matchShareDescription, matchShareImage, matchShareTitle } from '../../lib/match-seo';
-import { matchStatusLabel } from '../../lib/match-status-label';
-import type { Match } from '../../types';
-import { Seo } from '../../components/seo/Seo';
-import { Skeleton } from '../../components/ui/skeleton';
-import { ClubCrest } from '../../components/public/clubs/ClubCrest';
+import { Link, useParams } from "react-router-dom";
+import { LiveStreamBroadcast } from "../../components/live/LiveStreamBroadcast";
+import { LiveCenterShell } from "../../components/live/LiveCenterShell";
+import { LivePreMatchShell } from "../../components/live/LivePreMatchShell";
+import { useMatch, usePublicSettings } from "../../hooks";
+import { useMatchRealtime } from "../../hooks/use-match-realtime";
+import { useLiveClock } from "../../hooks/use-live-clock";
+import {
+  matchShareDescription,
+  matchShareImage,
+  matchShareTitle,
+} from "../../lib/match-seo";
+import { matchStatusLabel } from "../../lib/match-status-label";
+import type { Match } from "../../types";
+import { Seo } from "../../components/seo/Seo";
+import { Skeleton } from "../../components/ui/skeleton";
+import { ClubCrest } from "../../components/public/clubs/ClubCrest";
 
 function LiveMatchSeo({
   match,
@@ -30,7 +34,7 @@ function LiveMatchSeo({
     <Seo
       title={title}
       description={matchShareDescription(match, live)}
-      image={matchShareImage(match, settings?.['club.crestUrl'])}
+      image={matchShareImage(match, settings?.["club.crestUrl"])}
       url={`/live/${match.id}`}
       type="article"
     />
@@ -39,7 +43,7 @@ function LiveMatchSeo({
 
 export function LiveMatchPage() {
   const { id } = useParams<{ id: string }>();
-  const { data, isLoading } = useMatch(id ?? '');
+  const { data, isLoading } = useMatch(id ?? "");
   useMatchRealtime(id);
   const clock = useLiveClock(data);
 
@@ -62,8 +66,8 @@ export function LiveMatchPage() {
     );
   }
 
-  const isLive = data.status === 'LIVE' || data.status === 'HALFTIME';
-  const isScheduled = data.status === 'SCHEDULED';
+  const isLive = data.status === "LIVE" || data.status === "HALFTIME";
+  const isScheduled = data.status === "SCHEDULED";
   const showBroadcast = !!(data.liveStreamUrl && isLive);
 
   if (isScheduled) {
@@ -111,7 +115,9 @@ export function LiveMatchPage() {
         <p className="mt-4 text-sm text-white/60">
           {data.homeClub?.name} — {data.awayClub?.name}
         </p>
-        <p className="mt-2 text-sm text-white/40">Utakmica trenutno nije uživo.</p>
+        <p className="mt-2 text-sm text-white/40">
+          Utakmica trenutno nije uživo.
+        </p>
       </div>
       <div className="relative flex flex-wrap justify-center gap-3">
         <Link
@@ -120,7 +126,10 @@ export function LiveMatchPage() {
         >
           Detalji utakmice
         </Link>
-        <Link to="/liga" className="rounded-full bg-white/10 px-5 py-2.5 text-sm hover:bg-white/20">
+        <Link
+          to="/liga"
+          className="rounded-full bg-white/10 px-5 py-2.5 text-sm hover:bg-white/20"
+        >
           Liga
         </Link>
       </div>

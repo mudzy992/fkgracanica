@@ -32,7 +32,7 @@ export function PhotoGridWithLightbox({ photos, columns = 'two' }: Props) {
               className="w-full cursor-zoom-in"
               onClick={() => setLightboxIndex(index)}
             >
-              <img
+              <img loading="lazy" decoding="async"
                 src={galleryPreviewUrl(photo.path)}
                 alt={photo.caption ?? ''}
                 className="w-full object-cover transition hover:opacity-90"

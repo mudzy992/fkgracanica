@@ -55,7 +55,7 @@ export function ClubAboutCtaWidget({ config: _config }: Props) {
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="overflow-hidden rounded-[1.75rem] border border-white/10 bg-slate-900/60">
               {storyImage ? (
-                <img src={storyImage} alt="" className="h-80 w-full object-cover sm:h-[26rem]" />
+                <img loading="lazy" decoding="async" src={storyImage} alt="" className="h-80 w-full object-cover sm:h-[26rem]" />
               ) : (
                 <div className="flex h-80 items-center justify-center bg-[linear-gradient(160deg,#0f172a,#1d4ed8)] text-sm font-semibold uppercase tracking-[0.3em] text-white/70 sm:h-[26rem]">
                   O klubu
@@ -64,7 +64,7 @@ export function ClubAboutCtaWidget({ config: _config }: Props) {
             </div>
             <div className="overflow-hidden rounded-[1.75rem] border border-amber-300/20 bg-slate-950/70 sm:mt-10">
               {heritageImage ? (
-                <img src={heritageImage} alt="" className="h-80 w-full object-cover sm:h-[26rem]" />
+                <img loading="lazy" decoding="async" src={heritageImage} alt="" className="h-80 w-full object-cover sm:h-[26rem]" />
               ) : (
                 <div className="flex h-80 items-center justify-center bg-[linear-gradient(180deg,#120d05,#3f2a0f)] text-sm font-semibold uppercase tracking-[0.3em] text-amber-100/75 sm:h-[26rem]">
                   Baština

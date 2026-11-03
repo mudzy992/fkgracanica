@@ -16,7 +16,7 @@ export function SponsorHeroCard({ sponsor, className }: Props) {
           {SPONSOR_TIER_META.GENERAL.label}
         </span>
         {sponsor.logoPath ? (
-          <img
+          <img loading="lazy" decoding="async"
             src={mediaUrl(sponsor.logoPath, 'medium')}
             alt={sponsor.name}
             className="mx-auto max-h-24 object-contain"

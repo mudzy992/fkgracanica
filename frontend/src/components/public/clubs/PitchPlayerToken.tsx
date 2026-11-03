@@ -54,9 +54,9 @@ export function PitchPlayerToken({
       >
         <div className={cn(vertical && 'origin-center')}>
           {slot.player?.photoPath ? (
-            <img src={mediaUrl(slot.player.photoPath, 'thumb')} alt="" className={avatar} />
+            <img loading="lazy" decoding="async" src={mediaUrl(slot.player.photoPath, 'thumb')} alt="" className={avatar} />
           ) : crest ? (
-            <img
+            <img loading="lazy" decoding="async"
               src={mediaUrl(crest, 'thumb')}
               alt={crestFallback?.name ?? ''}
               className={crestImg}

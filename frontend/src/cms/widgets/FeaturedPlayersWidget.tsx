@@ -48,7 +48,7 @@ export function FeaturedPlayersWidget({ config }: Props) {
                   <Link to={playerPath(player.id)} className="group block">
                     <div className="border-gradient-club relative aspect-[3/4] overflow-hidden rounded-2xl bg-surface">
                       {player.photoPath ? (
-                        <img
+                        <img loading="lazy" decoding="async"
                           src={mediaUrl(player.photoPath, 'medium')}
                           alt=""
                           className="absolute inset-0 h-full w-full object-cover object-top transition-transform duration-500 group-hover:scale-105"

@@ -1,5 +1,5 @@
-import { useParams } from 'react-router-dom';
-import { PageRenderer } from '../../cms/PageRenderer';
+import { useParams } from "react-router-dom";
+import { PageRenderer } from "../../cms/PageRenderer";
 
 export function CmsDynamicPage() {
   const { slug } = useParams<{ slug: string }>();

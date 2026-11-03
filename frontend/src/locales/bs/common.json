@@ -27,7 +27,8 @@
     "delete": "Obriši",
     "edit": "Uredi",
     "create": "Kreiraj",
-    "back": "Nazad"
+    "back": "Nazad",
+    "retry": "Pokušaj ponovo"
   },
   "home": {
     "heroTitle": "FK Gračanica",
@@ -45,7 +46,13 @@
     "ticketsDesc": "Osiguraj svoje mjesto na stadionu.",
     "trophies": "Trofeji",
     "newsletter": "Newsletter",
-    "newsletterDesc": "Primaj najnovije vijesti direktno u inbox."
+    "newsletterDesc": "Primaj najnovije vijesti direktno u inbox.",
+    "gallerySubtitle": "Trenuci sa terena",
+    "leagueSubtitle": "Trenutno stanje u ligi",
+    "latestNewsSubtitle": "Najnovije iz kluba",
+    "sponsorsSubtitle": "Partneri koji nas podržavaju",
+    "teamSubtitle": "Igrači koji nose dres",
+    "trophiesSubtitle": "Trofeji kroz historiju kluba"
   },
   "admin": {
     "dashboard": "Kontrolna tabla",
@@ -114,7 +121,8 @@
     "message": "Poruka",
     "subject": "Naslov",
     "livePushTitle": "Live push obavijesti",
-    "livePushHint": "Golovi, kartoni i ostale akcije uživo. Isključite da utišate push."
+    "livePushHint": "Golovi, kartoni i ostale akcije uživo. Isključite da utišate push.",
+    "loadError": "Podatke nije moguće učitati. Provjerite vezu i pokušajte ponovo."
   },
   "footer": {
     "menu": "Meni",
