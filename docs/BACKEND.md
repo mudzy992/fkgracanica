@@ -66,6 +66,18 @@ npm run prisma:generate | prisma:migrate | prisma:seed | prisma:seed:rbac
   - **Pristup narudžbi**: `GET /ticketing/orders/:id` — vlasnik ili
     `ticketing.manage` (inače 404); skeniranje ulaznice je atomsko
     (`updateMany` + `count === 1`).
+  - **Idempotencija (P-B07-2 A)**: `PaymentEvent(provider, externalId)` je
+    claim — webhook retry i dvostruki `confirm-session` ne mogu dvaput
+    produžiti članstvo (`payments/payment-event.util.ts`,
+    `webhook-confirm.util.ts`). Claim se oslobađa ako obrada padne.
+  - **Članstvo ima Payment red (Q-15)**: `Payment.membershipId` (uz
+    `orderId`) — checkout otvara `PENDING_ONLINE`, potvrda ga zaključava;
+    `finance/` prihod čita iz Payment redova (`finance-loaders.ts`), polje
+    `estimated` u API-ju ostaje ali je sada `false` za plaćena članstva.
+  - **Otkazivanje / povrat (P-B07-6)**: korisnik otkazuje samo **neplaćenu**
+    narudžbu (`pending`); povrat samo za **plaćenu** (`paid`) bez iskorištenih
+    ulaznica (`USED`); admin ne otkazuje plaćeno — ide kroz povrat
+    (`refund_requested` → `refunded`, ulaznice `CANCELLED`).
 - Realtime: Socket.IO path iz `SOCKET_IO_PATH` (default `/socket.io`), sobe `match:*`, `newsletter`.
 
 ## Queue / keš (opciono, TLS)

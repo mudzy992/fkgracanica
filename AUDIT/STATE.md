@@ -7,8 +7,8 @@
 | Polje | Vrijednost |
 |-------|------------|
 | **Aktivna grana** | `arena/290a6f13-fkgracanica` |
-| **Trenutna faza** | CI-01 ✔ INF-01 ✔ INF-02 ✔ BE-01…BE-06 ✔ → **BE-07 u toku (5/7 predloga implementirano, 2 čekaju odluku)** |
-| **Trenutni segment** | **BE-07** (članstvo + ulaznice + plaćanja — High: novac/QR); implementirani P-B07-1/3/4/5/7; čekaju **P-B07-2** (idempotencija) i **P-B07-6** (cancel/refund) |
+| **Trenutna faza** | CI-01 ✔ INF-01 ✔ INF-02 ✔ BE-01…BE-06 ✔ → **BE-07: svi predlozi implementirani (P-B07-1…7 + Q-15), čeka zelen CI za zatvaranje** |
+| **Trenutni segment** | **BE-07** (članstvo + ulaznice + plaćanja) — implementirano **P-B07-1…7** + **Q-15** (PaymentEvent, Payment.membershipId, pravila povrata); čeka se zelen CI → ZATVOREN |
 | **Zadnji commit** | `c16385f` fix(payments): PaymentProviderId iz provider-gate.util [BE-07] |
 | **Zadnji CI run** | ✅ **`41627914148` success** (`c16385f` — 5 fixeva + tip, sva 3 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41627914148 ; ❌ `41627571734` (`657dda0` — build pao: `PaymentProviderId` importovan iz pogrešnog fajla, TS2724 → popravljeno `c16385f`); ranije: BE-07 audit `41583848187` ✅ / `41584048206` ✅ / `41584323691` ✅, BE-06 `41539179038` ✅, `41538504328` ✅ |
 | **check:all** | `npm run check:all` → **6/6** (check-coverage, file-size, console-ban, secrets-ban, layer-deps, docs-links); u CI-ju jobovi `audit-gate` + `standards`; pre-push hook pokreće `check:all` |
@@ -221,6 +221,27 @@
   P-B06-2 (matchId postojanje → ok:false).
 - CI ✅ **`41538504328`** (iz prve); matrica 39 redova → BE-06.
 - Segment dokument: `AUDIT/segments/BE-06.md` (Status segmenta: ZATVOREN).
+
+### SEGMENT BE-07 — 2026-11-03 (drugi krug: P-B07-2 A, Q-15, P-B07-6)
+
+- **Odobrenje „odobravam P-B07-2 (A) i Q-15 = da i P-B07-6"** → **D-007**.
+- `fa97684` **šema + migracija**: `PaymentEvent(provider, externalId @unique,
+  kind, refId)` + `Payment.membershipId` (`orderId` postaje opcionalan),
+  migracija `20261103120000_be07_payment_event_membership_payment`.
+- `0fb3d4b` **P-B07-2 (A)**: `payment-event.util.ts` (claim/release +
+  `runPaymentEventOnce`), `webhook-confirm.util.ts` (zajednička potvrda iz
+  webhooka), wiring u Stripe/PayPal/Monri (webhook **i** confirm-session) —
+  retry ne može dvaput produžiti članstvo. **7 testova**.
+- `a2d16b0` **Q-15**: checkout otvara `Payment` red za članstvo
+  (`PENDING_ONLINE`), potvrda ga zaključava; `finance/` čita prihod iz
+  Payment redova (`finance-loaders.ts`, servis 203→103 linije), API polje
+  `estimated` ostaje ali je `false` za plaćena članstva; izvoz članstva dobija
+  `Provider` kolonu.
+- `9072e3c` **P-B07-6** (vidljivo, odobreno): otkazivanje samo `pending`
+  (payment → `CANCELLED`), povrat samo `paid` + bez `USED` ulaznica
+  (ulaznice → `REFUND_REQUESTED`), admin ne otkazuje plaćeno, `confirmRefund`
+  gasi ulaznice atomski. **7 testova** (`ticketing-orders.service.spec.ts`).
+- Ukupno u segmentu: **24 nova testa** u 5 novih spec fajlova.
 
 ### SEGMENT BE-07 — 2026-11-03 (U TOKU — audit ✅ + 5 fixeva)
 
