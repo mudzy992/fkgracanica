@@ -86,12 +86,40 @@ export class PaymentsService {
     // BE-07/P-B07-1: iznos određuje server (klijentski `amount` se ignoriše).
     const amount = await readMembershipAmount(this.prisma);
     const provider = await this.resolveProvider(providerId);
-    return provider.createMembershipCheckout(
+    const created = await provider.createMembershipCheckout(
       membershipId,
       amount,
       successUrl,
       cancelUrl,
     );
+    // BE-07/Q-15: Payment red za članstvo → tačan prihod u finansijama.
+    await this.openMembershipPayment(
+      membershipId,
+      amount,
+      provider.id,
+      created.sessionId,
+    );
+    return created;
+  }
+
+  private async openMembershipPayment(
+    membershipId: string,
+    amount: number,
+    provider: string,
+    externalId?: string,
+  ) {
+    const data = {
+      amount,
+      status: 'PENDING_ONLINE' as const,
+      method: provider,
+      provider,
+      externalId,
+    };
+    await this.prisma.payment.upsert({
+      where: { membershipId },
+      create: { membershipId, ...data },
+      update: data,
+    });
   }
 
   async checkoutSeasonPass(

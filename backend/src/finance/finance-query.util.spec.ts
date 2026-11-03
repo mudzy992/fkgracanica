@@ -71,7 +71,9 @@ describe('buildFinanceSummary', () => {
           updatedAt: from,
           amount: 50,
           status: 'ACTIVE',
+          provider: 'stripe',
           email: 'b@x.ba',
+          estimated: false,
         },
       ],
       [
@@ -87,13 +89,11 @@ describe('buildFinanceSummary', () => {
       ],
     );
     expect(s.tickets).toEqual({ count: 1, sum: 10.5 });
-    expect(s.membership).toEqual({ count: 1, sum: 50, estimated: true });
+    // BE-07/Q-15: članstvo sada ima Payment red → prihod nije procjena.
+    expect(s.membership).toEqual({ count: 1, sum: 50, estimated: false });
     expect(s.seasonPass).toEqual({ count: 1, sum: 80 });
     expect(s.totalSum).toBe(140.5);
-    expect(s.byProvider.map((b) => b.key).sort()).toEqual([
-      'membership',
-      'stripe',
-    ]);
+    expect(s.byProvider.map((b) => b.key).sort()).toEqual(['stripe']);
   });
 });
 

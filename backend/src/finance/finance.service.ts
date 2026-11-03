@@ -1,5 +1,4 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { PaymentStatus, Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { buildFinanceSummary } from './finance-aggregate.util';
 import {
@@ -8,18 +7,16 @@ import {
   parseFinanceRange,
   parseFinanceStatus,
   seasonPassSheet,
-  seasonPassStatusFilter,
   ticketSheet,
 } from './finance-query.util';
+import {
+  loadMembership,
+  loadSeasonPasses,
+  loadTickets,
+} from './finance-loaders';
 import { buildFinancePdf } from './pdf.util';
 import { buildFinanceXlsx } from './xlsx.util';
-import type {
-  FinanceBundle,
-  FinanceQuery,
-  MembershipExportRow,
-  SeasonPassExportRow,
-  TicketExportRow,
-} from './finance.types';
+import type { FinanceBundle, FinanceQuery } from './finance.types';
 
 @Injectable()
 export class FinanceService {
@@ -46,7 +43,7 @@ export class FinanceService {
       `Period: ${s.from.slice(0, 10)} - ${s.to.slice(0, 10)}`,
       `Ulaznice: ${s.tickets.count} / ${km(s.tickets.sum)}`,
       `Sezona: ${s.seasonPass.count} / ${km(s.seasonPass.sum)}`,
-      `Clanstvo (procjena): ${s.membership.count} / ${km(s.membership.sum)}`,
+      `Clanstvo${s.membership.estimated ? ' (procjena)' : ''}: ${s.membership.count} / ${km(s.membership.sum)}`,
       `Ukupno: ${km(s.totalSum)}`,
       '',
       'Po provideru:',
@@ -65,20 +62,28 @@ export class FinanceService {
     if (status && typeof status === 'object')
       throw new BadRequestException(status.error);
     const provider = query.provider?.trim() || undefined;
-    const tickets = await this.loadTickets(
+    const tickets = await loadTickets(
+      this.prisma,
       range.from,
       range.to,
       provider,
       status,
     );
-    const seasonPass = await this.loadSeasonPasses(
+    const seasonPass = await loadSeasonPasses(
+      this.prisma,
       range.from,
       range.to,
       provider,
       status,
     );
     const membership = includeMembership(status, provider)
-      ? await this.loadMembership(range.from, range.to)
+      ? await loadMembership(
+          this.prisma,
+          range.from,
+          range.to,
+          provider,
+          status,
+        )
       : [];
     return {
       from: range.from,
@@ -94,82 +99,5 @@ export class FinanceService {
         seasonPass,
       ),
     };
-  }
-
-  private async loadTickets(
-    from: Date,
-    to: Date,
-    provider?: string,
-    status?: string,
-  ): Promise<TicketExportRow[]> {
-    const where: Prisma.PaymentWhereInput = {
-      createdAt: { gte: from, lte: to },
-    };
-    if (provider) where.provider = provider;
-    if (status) where.status = status as PaymentStatus;
-    const rows = await this.prisma.payment.findMany({
-      where,
-      include: { order: { include: { user: { select: { email: true } } } } },
-      orderBy: { createdAt: 'asc' },
-    });
-    return rows.map((p) => ({
-      id: p.id,
-      createdAt: p.createdAt,
-      amount: Number(p.amount),
-      status: p.status,
-      provider: p.provider,
-      method: p.method,
-      orderId: p.orderId,
-      email: p.order.user.email,
-    }));
-  }
-
-  private async loadSeasonPasses(
-    from: Date,
-    to: Date,
-    provider?: string,
-    status?: string,
-  ): Promise<SeasonPassExportRow[]> {
-    const passStatus = seasonPassStatusFilter(status);
-    const rows = await this.prisma.seasonPass.findMany({
-      where: {
-        updatedAt: { gte: from, lte: to },
-        ...(provider ? { paymentProvider: provider } : {}),
-        ...(passStatus ? { status: passStatus } : {}),
-      },
-      include: { user: { select: { email: true } } },
-      orderBy: { updatedAt: 'asc' },
-    });
-    return rows.map((p) => ({
-      id: p.id,
-      updatedAt: p.updatedAt,
-      amount: Number(p.price),
-      status: p.status,
-      provider: p.paymentProvider,
-      label: p.label,
-      email: p.user.email,
-    }));
-  }
-
-  private async loadMembership(
-    from: Date,
-    to: Date,
-  ): Promise<MembershipExportRow[]> {
-    const priceRow = await this.prisma.setting.findUnique({
-      where: { key: 'membership.annualPrice' },
-    });
-    const amount = Number(priceRow?.value || '50');
-    const rows = await this.prisma.membership.findMany({
-      where: { status: 'ACTIVE', updatedAt: { gte: from, lte: to } },
-      include: { user: { select: { email: true } } },
-      orderBy: { updatedAt: 'asc' },
-    });
-    return rows.map((m) => ({
-      id: m.id,
-      updatedAt: m.updatedAt,
-      amount,
-      status: m.status,
-      email: m.user.email,
-    }));
   }
 }

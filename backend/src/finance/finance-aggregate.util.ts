@@ -26,12 +26,16 @@ export function buildFinanceSummary(
     to: iso(to),
     tickets: { count: tickets.length, sum: ticketSum },
     seasonPass: { count: seasonPass.length, sum: seasonSum },
-    membership: { count: membership.length, sum: memberSum, estimated: true },
+    membership: {
+      count: membership.length,
+      sum: memberSum,
+      estimated: membership.some((r) => r.estimated),
+    },
     totalSum: round2(ticketSum + memberSum + seasonSum),
     byProvider: bucketize([
       ...tickets.map((r) => ({ key: r.provider, amount: r.amount })),
       ...seasonPass.map((r) => ({ key: r.provider, amount: r.amount })),
-      ...membership.map((r) => ({ key: 'membership', amount: r.amount })),
+      ...membership.map((r) => ({ key: r.provider, amount: r.amount })),
     ]),
     byStatus: bucketize([
       ...tickets.map((r) => ({ key: r.status, amount: r.amount })),

@@ -61,9 +61,13 @@ export function round2(n: number) {
   return Math.round(n * 100) / 100;
 }
 
-export function includeMembership(status?: string, provider?: string) {
-  if (provider) return false;
-  return !status || status === 'CONFIRMED';
+/**
+ * BE-07/Q-15: članstvo sada ima Payment red (`Payment.membershipId`), pa ga
+ * filtriramo isto kao ulaznice — status/provider filteri više ne isključuju
+ * članstvo.
+ */
+export function includeMembership(_status?: string, _provider?: string) {
+  return true;
 }
 
 export function seasonPassStatusFilter(paymentStatus?: string) {
@@ -119,14 +123,7 @@ export function ticketSheet(rows: TicketExportRow[]): string[][] {
 }
 
 export function membershipSheet(rows: MembershipExportRow[]): string[][] {
-  const header = [
-    'Datum',
-    'ID',
-    'Iznos (procjena)',
-    'Status',
-    'Email',
-    'Napomena',
-  ];
+  const header = ['Datum', 'ID', 'Iznos', 'Status', 'Provider', 'Email'];
   return [
     header,
     ...rows.map((r) => [
@@ -134,8 +131,8 @@ export function membershipSheet(rows: MembershipExportRow[]): string[][] {
       r.id,
       String(r.amount),
       r.status,
+      r.provider,
       r.email,
-      'Nema Payment reda; annualPrice',
     ]),
   ];
 }

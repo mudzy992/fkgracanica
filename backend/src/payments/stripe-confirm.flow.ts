@@ -60,6 +60,13 @@ export async function confirmMembershipFlow(
     });
   }
 
+  // BE-07/Q-15: članstvo ima svoj Payment red — potvrda ga zaključava
+  // (ako red ne postoji — npr. admin aktivacija — updateMany je no-op).
+  await prisma.payment.updateMany({
+    where: { membershipId },
+    data: { status: 'CONFIRMED', confirmedAt: new Date() },
+  });
+
   const cardNumber = `FK-${membershipId.slice(-8).toUpperCase()}`;
   await prisma.membershipCard.upsert({
     where: { membershipId },
