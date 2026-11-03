@@ -37,7 +37,7 @@ export class ClubTimelineController {
   @UseGuards(PermissionsGuard)
   @RequirePermissions('club-timeline.manage')
   @ApiBearerAuth()
-  reorder(@Body('ids') ids: string[]) {
+  reorder(@Body('ids') ids: unknown) {
     return this.service.reorder(ids);
   }
 

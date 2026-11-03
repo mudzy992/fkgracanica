@@ -37,7 +37,7 @@ export class SponsorsController {
   @UseGuards(PermissionsGuard)
   @RequirePermissions('sponsors.manage')
   @ApiBearerAuth()
-  reorder(@Body('ids') ids: string[]) {
+  reorder(@Body('ids') ids: unknown) {
     return this.service.reorder(ids);
   }
 
