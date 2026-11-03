@@ -46,8 +46,8 @@ describe('GalleryService — allowlist i 404 (BE-09b)', () => {
   it('promjena naslova regeneriše slug, ali ne dira status', async () => {
     const prisma = makePrisma();
     prisma.gallery.findUnique.mockImplementation(
-      async (args: { where: { id?: string; slug?: string } }) =>
-        args.where.id ? GALLERY : null,
+      (args: { where: { id?: string; slug?: string } }) =>
+        Promise.resolve(args.where.id ? GALLERY : null),
     );
     prisma.gallery.update.mockResolvedValue(GALLERY);
 

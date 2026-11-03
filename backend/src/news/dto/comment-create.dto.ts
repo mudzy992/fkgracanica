@@ -1,4 +1,4 @@
-import { Transform } from 'class-transformer';
+import { Transform, type TransformFnParams } from 'class-transformer';
 import { IsString, Length } from 'class-validator';
 
 /**
@@ -7,7 +7,9 @@ import { IsString, Length } from 'class-validator';
  * prihvaćen, a ne-string (`{"content": {...}}`) rušio servis sa 500.
  */
 export class CommentCreateDto {
-  @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))
+  @Transform(({ value }: TransformFnParams): unknown =>
+    typeof value === 'string' ? value.trim() : value,
+  )
   @IsString({ message: 'Sadržaj komentara mora biti tekst' })
   @Length(2, 2000, {
     message: 'Komentar mora imati između 2 i 2000 znakova',

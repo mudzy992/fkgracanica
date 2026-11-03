@@ -70,7 +70,7 @@ describe('CommentsService (BE-09b / P-B09b-8)', () => {
     expect(prisma.comment.create).toHaveBeenCalledWith(
       expect.objectContaining({
         data: { newsId: 'n1', userId: 'u1', content: 'Bravo momci!' },
-      }) as unknown,
+      }),
     );
   });
 
@@ -108,11 +108,11 @@ describe('CommentsService (BE-09b / P-B09b-8)', () => {
   it('moderator sa news.manage briše tuđi komentar', async () => {
     const prisma = prismaMock();
     prisma.comment.findUnique.mockResolvedValue({ id: 'cm1', userId: 'u2' });
-    const moderator = {
+    const moderator: AuthUser = {
       id: 'm1',
       email: 'm@fk.ba',
       permissions: ['news.manage'],
-    } as AuthUser;
+    };
 
     await svc(prisma).remove('cm1', moderator);
 
