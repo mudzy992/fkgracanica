@@ -4,12 +4,15 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
+import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { AuditService } from '../audit/audit.service';
 import { CreateUserDto, UpdateUserDto } from './dto/user.dto';
 import { PaginatedQueryDto } from '../common/dto/paginated-query.dto';
 import { paginate, parsePagination } from '../common/utils/pagination.util';
 import {
+  assertEmailAvailable,
+  assertRoleIdsExist,
   ensureNotLastAdmin,
   ensureNotSelf,
   ensureNotSelfAdminRemoval,
@@ -113,25 +116,39 @@ export class UsersService {
       ensureNotSelfAdminRemoval(actorId, id, hadAdmin, willHaveAdmin);
       if (hadAdmin && !willHaveAdmin) await ensureNotLastAdmin(this.prisma, id);
     }
-    const data: Record<string, unknown> = {
+    // BE-09/P-B09-2: duplikat emaila = 409 (prije: P2002 → 500) i nepoznata
+    // uloga = 400 (prije: FK greška → 500) — provjere u `users-security.util`.
+    if (dto.email && dto.email !== existing.email) {
+      await assertEmailAvailable(this.prisma, dto.email, id);
+    }
+    if (dto.roleIds?.length) {
+      await assertRoleIdsExist(this.prisma, dto.roleIds);
+    }
+
+    const data: Prisma.UserUncheckedUpdateInput = {
       email: dto.email,
       firstName: dto.firstName,
       lastName: dto.lastName,
       isActive: dto.isActive,
     };
     if (dto.password) data.passwordHash = await bcrypt.hash(dto.password, 10);
-    if (dto.roleIds) {
-      await this.prisma.userRole.deleteMany({ where: { userId: id } });
-      if (dto.roleIds.length) {
-        await this.prisma.userRole.createMany({
-          data: dto.roleIds.map((roleId) => ({ userId: id, roleId })),
-        });
+
+    // BE-09/P-B09-2: role + update su atomski — prije je pad update-a ostavljao
+    // korisnika bez ijedne role.
+    const user = await this.prisma.$transaction(async (tx) => {
+      if (dto.roleIds) {
+        await tx.userRole.deleteMany({ where: { userId: id } });
+        if (dto.roleIds.length) {
+          await tx.userRole.createMany({
+            data: dto.roleIds.map((roleId) => ({ userId: id, roleId })),
+          });
+        }
       }
-    }
-    const user = await this.prisma.user.update({
-      where: { id },
-      data,
-      select: this.userSelect(),
+      return tx.user.update({
+        where: { id },
+        data,
+        select: this.userSelect(),
+      });
     });
     await this.audit.log({
       actorId,

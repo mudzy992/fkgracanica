@@ -1,4 +1,4 @@
-import { BadRequestException } from '@nestjs/common';
+import { BadRequestException, ConflictException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 
 export async function ensureNotLastAdmin(
@@ -54,5 +54,32 @@ export function ensureNotSelfAdminRemoval(
     throw new BadRequestException(
       'Ne možete sami sebi ukloniti administratorsku ulogu',
     );
+  }
+}
+
+/** BE-09/P-B09-2: duplikat emaila pri izmjeni = 409 (prije: P2002 → 500). */
+export async function assertEmailAvailable(
+  prisma: PrismaService,
+  email: string,
+  userId: string,
+): Promise<void> {
+  const clash = await prisma.user.findUnique({ where: { email } });
+  if (clash && clash.id !== userId) {
+    throw new ConflictException('Email već postoji');
+  }
+}
+
+/** BE-09/P-B09-2: nepoznata uloga u `roleIds` = 400 (prije: FK greška → 500). */
+export async function assertRoleIdsExist(
+  prisma: PrismaService,
+  roleIds: string[],
+): Promise<void> {
+  const unique = [...new Set(roleIds)];
+  const found = await prisma.role.findMany({
+    where: { id: { in: unique } },
+    select: { id: true },
+  });
+  if (found.length !== unique.length) {
+    throw new BadRequestException('Nepoznata uloga u listi');
   }
 }
