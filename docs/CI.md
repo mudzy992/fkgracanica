@@ -17,7 +17,8 @@
 |-----|----------|-------|
 | `audit-gate` | `node scripts/audit/check-coverage.mjs` | matrica pokrivenosti — svaki izvorni fajl mora imati red (pravilo 4) |
 | `standards` | `node scripts/standards/check-all.mjs` | file-size, console-ban, secrets-ban, layer-deps, docs-links (+ coverage) |
-| `build-test` | `npm ci` → `prisma generate` → `prisma validate` → backend `nest build` → jest unit → backend eslint → frontend `tsc -b && vite build` → oxlint | build + testovi slojeva; e2e servisi dolaze u CI-02 |
+| `build-test` | `npm ci` → `prisma generate` → `prisma validate` → backend `nest build` → jest unit → backend eslint → frontend `tsc -b && vite build` → oxlint | build + testovi slojeva |
+| `e2e` | `postgres:16` + `redis:7` servisi → `prisma migrate deploy` → `prisma:seed` (RBAC + settings + admin + demo) → `npm run test:e2e` | **BE-09c/P-B09c-4**: e2e suite (8 specova) se prije nije izvršavao nigdje; sada je pokriven u CI-ju |
 
 Sve skripte su **zero-dep** (node built-ins) — ne zavise od `node_modules` osim gdje je navedeno.
 
@@ -37,7 +38,7 @@ npx eslint "{src,apps,libs,test}/**/*.ts"   # u backend/
 
 ## Budući koraci (ne blokiraju CI-01)
 
-- **CI-02** — backend e2e (postgres + redis servisi, seed, health-wait, coverage prag).
+- **CI-02** — coverage prag + health-wait u `e2e` jobu (servisi i seed su uvedeni u BE-09c).
 - **CI-03** — frontend test jobovi (vitest — dolazi s FE-02).
 - **CI-04** — mobile build + Maestro E2E (`needs: svi prethodni`).
 - `gitleaks` (binarka u CI-ju) i `npm audit --audit-level=high` — dodaju se kad prođu

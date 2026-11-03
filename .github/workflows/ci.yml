@@ -129,3 +129,74 @@ jobs:
         run: npm run build -w frontend
       - name: frontend lint (oxlint)
         run: npm run lint -w frontend
+
+  # BE-09c/P-B09c-4: e2e suite se prije NIJE izvršavao nigdje (8 specova / 729
+  # LOC). Job diže Postgres + Redis, primijeni sve migracije, seeduje RBAC +
+  # settings + admin (+ demo sadržaj koji e2e specovi koriste) i pokrene
+  # `npm run test:e2e`.
+  e2e:
+    name: e2e (postgres + redis)
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          # BE-09c: lokalna trust auth unutar runnera — DATABASE_URL tako ne
+          # sadrži ugrađenu lozinku (secrets-ban pravilo, F-001 klasa).
+          POSTGRES_HOST_AUTH_METHOD: trust
+          POSTGRES_DB: fkgracanica_e2e
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
+      redis:
+        image: redis:7
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      DATABASE_URL: postgresql://postgres@localhost:5432/fkgracanica_e2e?schema=public
+      REDIS_URL: redis://127.0.0.1:6379
+      JWT_ACCESS_SECRET: ci-e2e-access-secret
+      JWT_REFRESH_SECRET: ci-e2e-refresh-secret
+      JWT_ACCESS_EXPIRES: 15m
+      JWT_REFRESH_EXPIRES: 7d
+      ADMIN_EMAIL: admin@fkgracanica.ba
+      ADMIN_PASSWORD: Admin123!
+      SEED_DEMO: '1'
+      NODE_ENV: test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: npm ci
+        run: npm ci
+      - name: prisma generate
+        run: npm run db:generate
+      - name: prisma migrate deploy
+        run: npx prisma migrate deploy
+        working-directory: backend
+      - name: prisma seed (RBAC + settings + admin + demo)
+        run: npm run prisma:seed -w backend
+      - name: e2e suite
+        run: |
+          set +e
+          npm run test:e2e -w backend -- --ci > /tmp/e2e.out 2>&1
+          code=$?
+          if [ $code -ne 0 ]; then
+            echo "::error title=e2e failed::$(grep -E '✕|●|Tests:|Suites:' /tmp/e2e.out | tail -40 | tr '\n' '|' | cut -c1-3400)"
+            tail -60 /tmp/e2e.out
+          else
+            grep -E 'Tests:|Suites:' /tmp/e2e.out
+          fi
+          exit $code

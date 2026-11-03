@@ -30,7 +30,14 @@ npm run prisma:generate | prisma:migrate | prisma:seed | prisma:seed:rbac
 
 - Prefiks: `/api/v1` (`main.ts`), Swagger: `/api/docs`, health: `/api/v1/health` (`SELECT 1`).
 - Autentikacija: JWT access (kratki) + refresh token; login endpointi u `auth/`.
-- RBAC: 6 rola (seed: `prisma/seed/rbac.ts`) + permission tabele.
+- RBAC: 6 rola (definicija: `src/rbac/rbac-seed.constants.ts`, upis: `prisma/seed/rbac.ts`) + permission tabele.
+- **Seed (BE-09c):** `ADMIN_PASSWORD` je **obavezan** pri prvom kreiranju admina
+  (seed odbija rad bez njega); postojeći admin se ne prepisuje — namjerni reset je
+  `ADMIN_RESET_PASSWORD=1`. Demo sadržaj (vijesti, galerije, CMS, utakmice, igrači)
+  se puni **samo** uz `SEED_DEMO=1`; bez flaga seed radi RBAC + settings + admin.
+- **Docker slika (BE-09c):** `DATABASE_URL` se koristi samo za `prisma generate`
+  i ne ostaje u slojevima slike; `npm prune --omit=dev` uklanja devDependencies
+  (seed se zato pokreće iz repoa/CI-ja, ne iz produkcijske slike).
   **Globalni `JwtAuthGuard` (BE-02/D-006)** = default-deny za sav HTTP; javne
   rute nose `@Public()` (**70 ruta** (BE-04: `gallery/:id` više nije javan) — invariant testa `route-access.spec.ts`,
   popis u `guards/approved-public-routes.ts`) uz **tihu autorizaciju**
