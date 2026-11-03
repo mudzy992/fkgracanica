@@ -15,6 +15,54 @@ B-CI04-01). Guard: `npm run check:all` pokreće `docker-context`, koji provjerav
 da sva `COPY` putanja postoje i da nema „stranog” locka za workspace koji se
 gradi iz root konteksta.
 
+## Env varijable na Coolify — zašto ne dođu do kontejnera (B-CI04-02)
+
+Coolify (docker-compose resurs) NE ubacuje varijable direktno u kontejner. Tok je:
+
+```
+Coolify UI (Environment Variables)  ->  /artifacts/<uuid>/.env  ->  docker compose
+                                        (--env-file)              interpolacija ${VAR}
+                                                                  u `environment:` bloku
+```
+
+Iz toga slijede tri pravila koja objašnjavaju „varijable su upisane, ali ih aplikacija ne vidi":
+
+1. **`environment:` u `docker-compose.yml` je allowlista.** Varijabla koja postoji u
+   Coolify UI, a nije navedena u compose `environment:` bloku, **nikad** ne dođe do
+   kontejnera. Novu varijablu uvijek dodaj na oba mjesta.
+2. **`${VAR}` bez vrijednosti = prazan string.** Ako varijabla nije u `.env` fajlu,
+   kontejner dobije `VAR=""` i aplikacija padne na nekoj kasnijoj provjeri
+   (npr. Prisma: `P1001 Can't reach database server at localhost:5432`).
+   Zato od CI-04 stoji **`${VAR:?poruka}`** za kritične varijable — deploy padne
+   odmah, sa imenom varijable koja fali.
+3. **`localhost` unutar kontejnera = sam kontejner.** Za bazu na Coolify mreži
+   `db_net` koristi ime DB servisa (npr. `postgres` / Coolify UUID) ili javni host
+   (`sql.ba101.top`) uz `?sslmode=verify-full&sslrootcert=/etc/ssl/certs/coolify-ca.crt`.
+
+Napomena o logu `injected env (0) from .env`: to je `dotenv` iz `backend/prisma.config.ts`.
+`(0)` znači „u slici nema `.env` fajla" — to je **ispravno i očekivano** (tajne ne idu u
+image); Prisma tada radi isključivo sa procesnim env varijablama. Ako su one prazne,
+Prisma nema fallback.
+
+### Dijagnostika na serveru
+
+```bash
+./scripts/diag-deploy.sh              # nađe backend kontejner sam
+./scripts/diag-deploy.sh <container>  # ili eksplicitno
+```
+
+Skripta ispisuje: koje env varijable **stvarno postoje** u kontejneru (tajne maskirane),
+na koji host/port pokazuje `DATABASE_URL`, da li se host razrješava unutar docker mreže
+i da li je TCP port otvoren — bez ispisivanja lozinki.
+
+Ručno, ako skripta nije pri ruci:
+
+```bash
+docker exec <backend> printenv DATABASE_URL | sed -E 's#(://[^:/@]+):[^@]*@#\1:***@#'
+docker exec <backend> getent hosts <db-host>
+docker inspect <backend> --format '{{range .Config.Env}}{{println .}}{{end}}' | grep DATABASE
+```
+
 ## Šta je implementirano
 
 ### Datoteke
