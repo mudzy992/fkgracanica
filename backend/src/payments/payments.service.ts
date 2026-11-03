@@ -13,6 +13,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { StripeProvider } from './providers/stripe.provider';
 import { PaypalProvider } from './providers/paypal.provider';
 import { MonriProvider } from './providers/monri.provider';
+import { readMembershipAmount } from './membership-price.util';
 
 @Injectable()
 export class PaymentsService {
@@ -73,7 +74,6 @@ export class PaymentsService {
 
   async checkoutMembership(
     membershipId: string,
-    amount: number,
     successUrl: string,
     cancelUrl: string,
     userId: string,
@@ -83,6 +83,8 @@ export class PaymentsService {
     if (!allowed)
       throw new BadRequestException('Online članstvo nije omogućeno');
     await this.membership.assertPayableMembership(membershipId, userId);
+    // BE-07/P-B07-1: iznos određuje server (klijentski `amount` se ignoriše).
+    const amount = await readMembershipAmount(this.prisma);
     const provider = await this.resolveProvider(providerId);
     return provider.createMembershipCheckout(
       membershipId,

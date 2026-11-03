@@ -18,6 +18,7 @@ import {
 } from '../common/decorators/permissions.decorator';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
 import type { AuthUser } from '../common/types/auth-user.type';
+import { parsePageNumber } from '../payments/checkout-validate.util';
 
 @ApiTags('ticketing')
 @Controller('ticketing')
@@ -75,8 +76,8 @@ export class TicketingController {
   }
 
   @Get('orders/:orderId')
-  findOrder(@Param('orderId') orderId: string, @CurrentUser() _user: AuthUser) {
-    return this.service.findOrderById(orderId);
+  findOrder(@Param('orderId') orderId: string, @CurrentUser() user: AuthUser) {
+    return this.service.findOrderById(orderId, user);
   }
 
   @Post('orders/:orderId/cancel')
@@ -119,7 +120,10 @@ export class TicketingController {
   @UseGuards(PermissionsGuard)
   @RequirePermissions('ticketing.manage')
   findAllOrders(@Query('page') page?: string, @Query('limit') limit?: string) {
-    return this.service.findAllOrders(Number(page) || 1, Number(limit) || 20);
+    return this.service.findAllOrders(
+      parsePageNumber(page, 1),
+      Math.min(parsePageNumber(limit, 20), 100),
+    );
   }
 
   @Post('orders/:orderId/confirm-refund')

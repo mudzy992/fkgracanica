@@ -15,6 +15,11 @@ import { PaymentsService } from './payments.service';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
 import type { AuthUser } from '../common/types/auth-user.type';
 import { buildMobileReturnUrl } from './mobile-return.util';
+import {
+  parseProviderId,
+  requireHttpUrl,
+  requireId,
+} from './checkout-validate.util';
 
 import { Public } from '../common/decorators/public.decorator';
 @ApiTags('payments')
@@ -52,11 +57,11 @@ export class PaymentsController {
     },
   ) {
     return this.service.checkoutTickets(
-      body.orderId,
-      body.successUrl,
-      body.cancelUrl,
+      requireId(body.orderId, 'Narudžba nedostaje'),
+      requireHttpUrl(body.successUrl, 'Povratni URL nije validan'),
+      requireHttpUrl(body.cancelUrl, 'Povratni URL nije validan'),
       user.id,
-      body.provider,
+      parseProviderId(body.provider),
     );
   }
 
@@ -67,19 +72,18 @@ export class PaymentsController {
     @Body()
     body: {
       membershipId: string;
-      amount: number;
       successUrl: string;
       cancelUrl: string;
       provider?: 'stripe' | 'paypal' | 'monri';
     },
   ) {
+    // BE-07/P-B07-1: klijentski iznos se ne prima — cijena dolazi sa servera.
     return this.service.checkoutMembership(
-      body.membershipId,
-      body.amount,
-      body.successUrl,
-      body.cancelUrl,
+      requireId(body.membershipId, 'Članstvo nedostaje'),
+      requireHttpUrl(body.successUrl, 'Povratni URL nije validan'),
+      requireHttpUrl(body.cancelUrl, 'Povratni URL nije validan'),
       user.id,
-      body.provider,
+      parseProviderId(body.provider),
     );
   }
 
@@ -96,11 +100,11 @@ export class PaymentsController {
     },
   ) {
     return this.service.checkoutSeasonPass(
-      body.passId,
-      body.successUrl,
-      body.cancelUrl,
+      requireId(body.passId, 'Sezonska karta nedostaje'),
+      requireHttpUrl(body.successUrl, 'Povratni URL nije validan'),
+      requireHttpUrl(body.cancelUrl, 'Povratni URL nije validan'),
       user.id,
-      body.provider,
+      parseProviderId(body.provider),
     );
   }
 
@@ -116,9 +120,9 @@ export class PaymentsController {
     },
   ) {
     return this.service.confirmMembershipSession(
-      body.sessionId,
+      requireId(body.sessionId, 'Sesija plaćanja nedostaje'),
       user.id,
-      body.provider,
+      parseProviderId(body.provider),
       body.returnUrl,
     );
   }
@@ -135,9 +139,9 @@ export class PaymentsController {
     },
   ) {
     return this.service.confirmTicketSession(
-      body.sessionId,
+      requireId(body.sessionId, 'Sesija plaćanja nedostaje'),
       user.id,
-      body.provider,
+      parseProviderId(body.provider),
       body.returnUrl,
     );
   }
@@ -154,9 +158,9 @@ export class PaymentsController {
     },
   ) {
     return this.service.confirmSeasonPassSession(
-      body.sessionId,
+      requireId(body.sessionId, 'Sesija plaćanja nedostaje'),
       user.id,
-      body.provider,
+      parseProviderId(body.provider),
       body.returnUrl,
     );
   }
