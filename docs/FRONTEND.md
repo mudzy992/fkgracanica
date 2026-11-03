@@ -70,6 +70,22 @@ npm run test:watch  # vitest watch
 5. Broj sirovih palette klasa ≤ baseline (`palette-ratchet`; baseline samo pada).
 6. `dark:` klase traže `@custom-variant dark` (`dark-variant`, upozorenje).
 
+## HTML iz CMS-a i vijesti (FE-03 / P-FE03-1)
+
+Sav HTML se renderuje **samo** kroz `RichContent`, koji prvo poziva
+`sanitizeHtml()` (`src/lib/sanitize-html.ts`, DOMPurify + allowlista):
+`script/style/form/input/object/embed/link` su zabranjeni, `on*` atributi uklonjeni,
+`javascript:`/`data:text/html` linkovi odbijeni, `iframe` dozvoljen samo sa
+YouTube/Vimeo domena, `target="_blank"` dobija `rel="noopener noreferrer"`.
+**Nikad ne koristi `dangerouslySetInnerHTML` van `RichContent`** — za to postoji
+`token-check`-susjedno pravilo u reviziji (vidi `AUDIT/segments/FE-03.md`).
+
+## Formatiranje
+
+`.prettierrc.json`: `singleQuote: true`, `printWidth: 100`. Bez ovog fajla je
+`npx prettier` pravio style churn (double quotes) — ne mijenjati postavke bez
+dogovora.
+
 ## Poznata pravila
 
 - Ne dirati showcase intercept (mobile `_layout.tsx` — vidi MOBILE.md).
