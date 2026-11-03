@@ -68,6 +68,19 @@ DB_PORT="${DB_PORT%%/*}"
 DB_PORT="${DB_PORT%%\?*}"
 
 echo "== baza: host='$DB_HOST' port='${DB_PORT:-5432}'"
+case "$DB_URL" in
+  *"&amp;"*)
+    echo "  ✗ DATABASE_URL sadrži HTML-entitet '&amp;' umjesto '&'."
+    echo "    Tada se 'sslrootcert' NE parsira (postaje 'amp;sslrootcert') i TLS/CA"
+    echo "    podešavanja se ignoriraju. Upiši vrijednost ponovo sa običnim '&'."
+    ;;
+esac
+case "$DB_HOST" in
+  *build-arg-dummy*)
+    echo "  ✗ Ovo je DUMMY build-arg iz backend/Dockerfile, ne prava vrijednost —"
+    echo "    proces je radio bez Coolify env varijable (npr. tokom builda)."
+    ;;
+esac
 case "$DB_HOST" in
   localhost | 127.0.0.1)
     echo "  ✗ 'localhost' UNUTAR kontejnera znači sam kontejner, ne bazu."

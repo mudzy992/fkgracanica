@@ -14,7 +14,7 @@ services:
       args:
         # BE-09c/P-B09c-2: build arg je DUMMY — `prisma generate` ne treba živu
         # bazu, a pravi `DATABASE_URL` ne smije završiti u slojevima slike.
-        DATABASE_URL: postgresql://build:build@localhost:5432/fkgracanica
+        DATABASE_URL: postgresql://build:build@build-arg-dummy.invalid:5432/fkgracanica
 
     environment:
       # CI-04/B-CI04-02: `${VAR:?poruka}` = fail-fast. Ako varijabla NIJE u

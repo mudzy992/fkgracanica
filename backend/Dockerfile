@@ -11,7 +11,9 @@ COPY . .
 # BE-09c/P-B09c-2: `DATABASE_URL` se koristi SAMO za `prisma generate` (kojem ne
 # treba živa baza) i NE ostaje u slici — prije je `ENV DATABASE_URL=$DATABASE_URL`
 # upisivao produkcijske kredencijale u slojeve slike (`docker history`).
-ARG DATABASE_URL=postgresql://build:build@localhost:5432/fkgracanica
+# CI-04/B-CI04-02: dummy host je namjerno `.invalid` — ako se ikad pojavi u
+# runtime grešci, odmah se vidi da je to BUILD-ARG, a ne Coolify env.
+ARG DATABASE_URL=postgresql://build:build@build-arg-dummy.invalid:5432/fkgracanica
 RUN DATABASE_URL="$DATABASE_URL" npx prisma generate
 RUN npm run build
 
