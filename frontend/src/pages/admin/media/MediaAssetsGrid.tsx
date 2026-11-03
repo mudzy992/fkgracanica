@@ -99,9 +99,7 @@ export function MediaAssetsGrid({
                     aria-label="Kopiraj URL"
                   >
                     <Copy className="h-3.5 w-3.5" />
-                    {copied === asset.originalPath && (
-                      <span className="sr-only">Kopirano</span>
-                    )}
+                    {copied === asset.originalPath && <span className="sr-only">Kopirano</span>}
                   </Button>
                   {onDelete ? (
                     <Button

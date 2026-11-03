@@ -6,6 +6,7 @@ import { AdminFormSheet } from '../../components/admin/AdminFormSheet';
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
 import { mediaUrl } from '../../lib/media';
+import { getApiErrorMessage } from '../../lib/api-error';
 
 interface Props {
   asset: MediaAsset | null;
@@ -20,6 +21,7 @@ export function MediaAssetFormSheet({ asset, open, onOpenChange }: Props) {
   const [filename, setFilename] = useState('');
   const [tags, setTags] = useState('');
   const [folderId, setFolderId] = useState('');
+  const [error, setError] = useState('');
 
   useEffect(() => {
     if (!asset) return;
@@ -28,15 +30,25 @@ export function MediaAssetFormSheet({ asset, open, onOpenChange }: Props) {
     setFolderId(asset.folderId ?? '');
   }, [asset]);
 
+  /**
+   * FE-04b/P-FE04-7: prije je greška bila tiho pojedena (unhandled rejection) —
+   * dijalog ostane otvoren, spinner stane, a korisnik ne zna da izmjena nije
+   * sačuvana.
+   */
   const onSave = async () => {
     if (!asset) return;
-    await update.mutateAsync({
-      id: asset.id,
-      filename,
-      tags,
-      folderId: folderId || null,
-    });
-    onOpenChange(false);
+    setError('');
+    try {
+      await update.mutateAsync({
+        id: asset.id,
+        filename,
+        tags,
+        folderId: folderId || null,
+      });
+      onOpenChange(false);
+    } catch (err) {
+      setError(getApiErrorMessage(err, 'Izmjena medija nije sačuvana.'));
+    }
   };
 
   if (!asset) return null;
@@ -49,8 +61,11 @@ export function MediaAssetFormSheet({ asset, open, onOpenChange }: Props) {
             <div key={size} className="text-center">
               <img
                 src={mediaUrl(
-                  (size === 'thumb' ? asset.thumbPath : size === 'medium' ? asset.mediumPath : asset.originalPath) ??
-                    asset.originalPath,
+                  (size === 'thumb'
+                    ? asset.thumbPath
+                    : size === 'medium'
+                      ? asset.mediumPath
+                      : asset.originalPath) ?? asset.originalPath,
                   size === 'original' ? 'original' : size,
                 )}
                 alt=""
@@ -66,7 +81,11 @@ export function MediaAssetFormSheet({ asset, open, onOpenChange }: Props) {
         </div>
         <div>
           <label className="mb-1 block text-sm font-medium">Tagovi</label>
-          <Input value={tags} onChange={(e) => setTags(e.target.value)} placeholder="vijesti, hero" />
+          <Input
+            value={tags}
+            onChange={(e) => setTags(e.target.value)}
+            placeholder="vijesti, hero"
+          />
         </div>
         <div>
           <label className="mb-1 block text-sm font-medium">Mapa</label>
@@ -77,11 +96,20 @@ export function MediaAssetFormSheet({ asset, open, onOpenChange }: Props) {
           >
             <option value="">Bez mape</option>
             {folders.map((f) => (
-              <option key={f.id} value={f.id}>{f.name}</option>
+              <option key={f.id} value={f.id}>
+                {f.name}
+              </option>
             ))}
           </select>
         </div>
-        <Button onClick={() => void onSave()} disabled={update.isPending}>Sačuvaj</Button>
+        {error && (
+          <p role="alert" className="text-sm text-danger">
+            {error}
+          </p>
+        )}
+        <Button onClick={() => void onSave()} disabled={update.isPending}>
+          Sačuvaj
+        </Button>
       </div>
     </AdminFormSheet>
   );

@@ -114,7 +114,12 @@ export function ContactAdminPage({ embedded = false }: Props) {
             key: 'actions',
             header: '',
             render: (r) => (
-              <Button variant="ghost" size="icon" onClick={(e) => void onDelete(r, e)}>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={(e) => void onDelete(r, e)}
+                aria-label="Obriši"
+              >
                 <Trash2 className="h-4 w-4 text-danger" />
               </Button>
             ),

@@ -8,6 +8,7 @@ import {
   useUpdateCmsSection,
 } from '../../../hooks/use-cms-pages';
 import { useConfirm } from '../../../hooks/use-confirm';
+import { getApiErrorMessage } from '../../../lib/api-error';
 import { asArray } from '../../../lib/as-array';
 import { Seo } from '../../../components/seo/Seo';
 import { Button } from '../../../components/ui/button';
@@ -26,6 +27,11 @@ export function CmsPageBuilderPage() {
   const updateSection = useUpdateCmsSection(page?.id ?? '');
   const deleteSection = useDeleteCmsSection(page?.id ?? '');
   const { confirm, dialog: confirmDialog } = useConfirm();
+  /**
+   * FE-04b/P-FE04-7: spremanje SEO/meta podataka je prije padalo bez poruke
+   * (`void mutateAsync`) — korisnik nije znao da izmjena nije sačuvana.
+   */
+  const [metaError, setMetaError] = useState('');
 
   /**
    * FE-04/P-FE04-2: brisanje CMS sekcije (i njenog sadržaja) je išlo na jedan klik
@@ -82,10 +88,27 @@ export function CmsPageBuilderPage() {
     return <p className="p-8 text-text-muted">Stranica nije pronađena.</p>;
   }
 
+  const saveMeta = async (pageId: string) => {
+    setMetaError('');
+    try {
+      await updatePage.mutateAsync({ id: pageId, ...meta });
+    } catch (err) {
+      setMetaError(getApiErrorMessage(err, 'Meta podaci nisu sačuvani.'));
+    }
+  };
+
   return (
     <>
       <Seo title={`CMS: ${page?.title ?? ''}`} />
       {confirmDialog}
+      {metaError && (
+        <p
+          role="alert"
+          className="mb-3 rounded-lg border border-danger/40 bg-danger/10 px-3 py-2 text-sm text-danger"
+        >
+          {metaError}
+        </p>
+      )}
       <Link to="/admin/cms" className="mb-4 inline-block text-sm text-accent hover:underline">
         ← Nazad na CMS
       </Link>
@@ -94,7 +117,7 @@ export function CmsPageBuilderPage() {
           page={page}
           meta={meta}
           onChange={setMeta}
-          onSave={() => void updatePage.mutateAsync({ id: page.id, ...meta })}
+          onSave={() => void saveMeta(page.id)}
           isPending={updatePage.isPending}
         />
       )}

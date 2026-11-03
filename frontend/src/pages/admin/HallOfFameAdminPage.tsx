@@ -69,10 +69,17 @@ export function HallOfFameAdminPage({ embedded = false }: Props) {
                     setEdit(r);
                     setOpen(true);
                   }}
+
+                  aria-label="Uredi"
                 >
                   <Pencil className="h-4 w-4" />
                 </Button>
-                <Button variant="ghost" size="icon" onClick={() => void onDelete(r)}>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => void onDelete(r)}
+                  aria-label="Obriši"
+                >
                   <Trash2 className="h-4 w-4 text-danger" />
                 </Button>
               </div>

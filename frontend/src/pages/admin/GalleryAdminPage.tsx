@@ -78,7 +78,7 @@ export function GalleryAdminPage() {
                 <div className="flex gap-1">
                   {canManage && (
                     <Link to={`/admin/gallery/${r.id}/edit`}>
-                      <Button variant="ghost" size="icon">
+                      <Button variant="ghost" size="icon" aria-label="Uredi">
                         <Pencil className="h-4 w-4" />
                       </Button>
                     </Link>
@@ -93,7 +93,12 @@ export function GalleryAdminPage() {
                     </Button>
                   )}
                   {canManage && (
-                    <Button variant="ghost" size="icon" onClick={() => void onDelete(r)}>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => void onDelete(r)}
+                      aria-label="Obriši"
+                    >
                       <Trash2 className="h-4 w-4 text-danger" />
                     </Button>
                   )}

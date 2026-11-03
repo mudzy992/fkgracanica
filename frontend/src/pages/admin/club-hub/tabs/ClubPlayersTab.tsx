@@ -38,8 +38,15 @@ export function ClubPlayersTab({ clubId }: { clubId: string }) {
       {dialog}
       <div className="mb-4 flex justify-end">
         {canManage && (
-          <Button size="sm" onClick={() => { setEdit(null); setOpen(true); }}>
-            <Plus className="mr-1 h-4 w-4" />Novi igrač
+          <Button
+            size="sm"
+            onClick={() => {
+              setEdit(null);
+              setOpen(true);
+            }}
+          >
+            <Plus className="mr-1 h-4 w-4" />
+            Novi igrač
           </Button>
         )}
       </div>
@@ -64,10 +71,23 @@ export function ClubPlayersTab({ clubId }: { clubId: string }) {
             render: (r) =>
               canManage ? (
                 <div className="flex gap-1">
-                  <Button variant="ghost" size="icon" onClick={() => { setEdit(r); setOpen(true); }}>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => {
+                      setEdit(r);
+                      setOpen(true);
+                    }}
+                    aria-label="Uredi"
+                  >
                     <Pencil className="h-4 w-4" />
                   </Button>
-                  <Button variant="ghost" size="icon" onClick={() => void onDelete(r)}>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => void onDelete(r)}
+                    aria-label="Obriši"
+                  >
                     <Trash2 className="h-4 w-4 text-danger" />
                   </Button>
                 </div>
@@ -77,7 +97,10 @@ export function ClubPlayersTab({ clubId }: { clubId: string }) {
       />
       <PlayersAdminFormSheet
         open={open}
-        onOpenChange={(o) => { setOpen(o); if (!o) setEdit(null); }}
+        onOpenChange={(o) => {
+          setOpen(o);
+          if (!o) setEdit(null);
+        }}
         edit={edit}
         clubId={clubId}
       />

@@ -51,7 +51,13 @@ export function RoundMatchesPanel({ seasonId, roundId, canManage }: Props) {
       <div className="flex items-center justify-between border-b border-slate-200 px-4 py-3">
         <h3 className="text-sm font-semibold">Utakmice u kolu</h3>
         {canManage && (
-          <Button size="sm" onClick={() => { setEdit(null); setOpen(true); }}>
+          <Button
+            size="sm"
+            onClick={() => {
+              setEdit(null);
+              setOpen(true);
+            }}
+          >
             <Plus className="mr-1 h-4 w-4" />
             Utakmica
           </Button>
@@ -96,63 +102,85 @@ export function RoundMatchesPanel({ seasonId, roundId, canManage }: Props) {
           },
           { key: 'date', header: 'Datum', render: (r) => formatDateTime(r.scheduledAt) },
           ...(canManage || canLive
-            ? [{
-                key: 'actions',
-                header: 'Akcije',
-                render: (r: Match) => {
-                  const finished = r.status === 'FINISHED';
-                  const retro = isRetrospectiveMatch(r);
-                  const reportEditable = canEditReport(r);
-                  return (
-                    <div className="flex flex-wrap gap-1">
-                      {canLive && !finished && (
-                        <Link to={`/admin/live/${r.id}`}>
-                          <Button size="sm" variant="outline">
-                            <Radio className="mr-1 h-3 w-3" />
-                            Live
-                          </Button>
-                        </Link>
-                      )}
-                      {canLive && reportEditable && (
-                        <Link to={`/admin/matches/${r.id}/report`}>
-                          <Button size="sm" variant="outline">
-                            <FileText className="mr-1 h-3 w-3" />
-                            Izvještaj
-                          </Button>
-                        </Link>
-                      )}
-                      {canManage && (!finished || retro) && (
-                        <>
-                          {!finished && (
-                            <Button variant="ghost" size="icon" onClick={() => { setEdit(r); setOpen(true); }}>
-                              <Pencil className="h-4 w-4" />
+            ? [
+                {
+                  key: 'actions',
+                  header: 'Akcije',
+                  render: (r: Match) => {
+                    const finished = r.status === 'FINISHED';
+                    const retro = isRetrospectiveMatch(r);
+                    const reportEditable = canEditReport(r);
+                    return (
+                      <div className="flex flex-wrap gap-1">
+                        {canLive && !finished && (
+                          <Link to={`/admin/live/${r.id}`}>
+                            <Button size="sm" variant="outline">
+                              <Radio className="mr-1 h-3 w-3" />
+                              Live
                             </Button>
-                          )}
-                          <Button size="sm" variant="outline" onClick={() => setLineupId(r.id)}>
-                            Postava
-                          </Button>
-                          {!finished && (
-                            <Button variant="ghost" size="icon" onClick={() => void onDelete(r)}>
-                              <Trash2 className="h-4 w-4 text-danger" />
+                          </Link>
+                        )}
+                        {canLive && reportEditable && (
+                          <Link to={`/admin/matches/${r.id}/report`}>
+                            <Button size="sm" variant="outline">
+                              <FileText className="mr-1 h-3 w-3" />
+                              Izvještaj
                             </Button>
-                          )}
-                        </>
-                      )}
-                    </div>
-                  );
+                          </Link>
+                        )}
+                        {canManage && (!finished || retro) && (
+                          <>
+                            {!finished && (
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => {
+                                  setEdit(r);
+                                  setOpen(true);
+                                }}
+                                aria-label="Uredi"
+                              >
+                                <Pencil className="h-4 w-4" />
+                              </Button>
+                            )}
+                            <Button size="sm" variant="outline" onClick={() => setLineupId(r.id)}>
+                              Postava
+                            </Button>
+                            {!finished && (
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => void onDelete(r)}
+                                aria-label="Obriši"
+                              >
+                                <Trash2 className="h-4 w-4 text-danger" />
+                              </Button>
+                            )}
+                          </>
+                        )}
+                      </div>
+                    );
+                  },
                 },
-              }]
+              ]
             : []),
         ]}
       />
       <MatchFormSheet
         open={open}
-        onOpenChange={(o) => { setOpen(o); if (!o) setEdit(null); }}
+        onOpenChange={(o) => {
+          setOpen(o);
+          if (!o) setEdit(null);
+        }}
         edit={edit}
         seasonId={seasonId}
         roundId={roundId}
       />
-      <MatchLineupSheet matchId={lineupId} open={!!lineupId} onOpenChange={(o) => !o && setLineupId(null)} />
+      <MatchLineupSheet
+        matchId={lineupId}
+        open={!!lineupId}
+        onOpenChange={(o) => !o && setLineupId(null)}
+      />
     </>
   );
 }

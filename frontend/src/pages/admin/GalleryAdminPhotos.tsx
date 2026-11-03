@@ -41,7 +41,13 @@ export function GalleryAdminPhotos({ galleryId, photos }: Props) {
             {p.caption ?? p.path.split('/').pop()}
           </figcaption>
           <div className="absolute top-2 right-2 flex gap-1 rounded-lg bg-background/90 p-0.5 opacity-0 transition group-hover:opacity-100">
-            <Button variant="ghost" size="icon" disabled={index === 0} onClick={() => move(index, -1)}>
+            <Button
+              variant="ghost"
+              size="icon"
+              disabled={index === 0}
+              onClick={() => move(index, -1)}
+              aria-label="Pomjeri gore"
+            >
               <ArrowUp className="h-4 w-4" />
             </Button>
             <Button
@@ -49,6 +55,8 @@ export function GalleryAdminPhotos({ galleryId, photos }: Props) {
               size="icon"
               disabled={index === photos.length - 1}
               onClick={() => move(index, 1)}
+
+              aria-label="Pomjeri dolje"
             >
               <ArrowDown className="h-4 w-4" />
             </Button>
@@ -56,6 +64,8 @@ export function GalleryAdminPhotos({ galleryId, photos }: Props) {
               variant="ghost"
               size="icon"
               onClick={() => void removePhoto.mutateAsync({ galleryId, photoId: p.id })}
+
+              aria-label="Obriši"
             >
               <Trash2 className="h-4 w-4 text-danger" />
             </Button>

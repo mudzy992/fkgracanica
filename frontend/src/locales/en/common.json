@@ -122,7 +122,8 @@
       "heritage": "Heritage",
       "comms": "Communication",
       "monetization": "Monetization"
-    }
+    },
+    "unsavedChanges": "There are unsaved changes. Close without saving?"
   },
   "common": {
     "loading": "Loading...",

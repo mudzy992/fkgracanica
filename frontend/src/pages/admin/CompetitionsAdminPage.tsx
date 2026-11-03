@@ -109,10 +109,10 @@ export function CompetitionsAdminPage() {
                   header: 'Akcije',
                   render: (r: Season) => (
                     <div className="flex gap-1">
-                      <Button variant="ghost" size="icon" onClick={() => openForm('season', null, r)}>
+                      <Button variant="ghost" size="icon" onClick={() => openForm('season', null, r)} aria-label="Uredi">
                         <Pencil className="h-4 w-4" />
                       </Button>
-                      <Button variant="ghost" size="icon" onClick={() => void onDeleteSeason(r)}>
+                      <Button variant="ghost" size="icon" onClick={() => void onDeleteSeason(r)} aria-label="Obriši">
                         <Trash2 className="h-4 w-4 text-danger" />
                       </Button>
                     </div>
@@ -140,10 +140,10 @@ export function CompetitionsAdminPage() {
                   header: 'Akcije',
                   render: (r: Competition) => (
                     <div className="flex gap-1">
-                      <Button variant="ghost" size="icon" onClick={() => openForm('competition', r, null)}>
+                      <Button variant="ghost" size="icon" onClick={() => openForm('competition', r, null)} aria-label="Uredi">
                         <Pencil className="h-4 w-4" />
                       </Button>
-                      <Button variant="ghost" size="icon" onClick={() => void onDeleteComp(r)}>
+                      <Button variant="ghost" size="icon" onClick={() => void onDeleteComp(r)} aria-label="Obriši">
                         <Trash2 className="h-4 w-4 text-danger" />
                       </Button>
                     </div>

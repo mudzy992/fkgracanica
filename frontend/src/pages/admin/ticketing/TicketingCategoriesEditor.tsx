@@ -38,7 +38,10 @@ export function TicketingCategoriesEditor({ categories, onChange }: Props) {
   return (
     <div className="space-y-3">
       {draft.map((cat, index) => (
-        <div key={cat.id} className="flex flex-wrap items-end gap-2 rounded-lg border border-[var(--border-subtle)] p-3">
+        <div
+          key={cat.id}
+          className="flex flex-wrap items-end gap-2 rounded-lg border border-[var(--border-subtle)] p-3"
+        >
           <div className="min-w-[120px] flex-1">
             <label className="mb-1 block text-xs text-text-muted">Naziv</label>
             <Input value={cat.label} onChange={(e) => update(index, { label: e.target.value })} />
@@ -53,10 +56,19 @@ export function TicketingCategoriesEditor({ categories, onChange }: Props) {
             />
           </div>
           <label className="flex items-center gap-2 pb-2 text-sm">
-            <Switch checked={cat.isActive !== false} onCheckedChange={(v) => update(index, { isActive: v })} />
+            <Switch
+              checked={cat.isActive !== false}
+              onCheckedChange={(v) => update(index, { isActive: v })}
+            />
             Aktivna
           </label>
-          <Button type="button" variant="ghost" size="icon" onClick={() => remove(index)}>
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            onClick={() => remove(index)}
+            aria-label="Obriši"
+          >
             <Trash2 className="h-4 w-4 text-danger" />
           </Button>
         </div>

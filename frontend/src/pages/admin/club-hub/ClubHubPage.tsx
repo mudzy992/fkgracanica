@@ -35,7 +35,9 @@ export function ClubHubPage() {
       <Seo title={club.name} />
       <div className="flex flex-wrap items-center gap-3">
         <Link to="/admin/clubs">
-          <Button variant="ghost" size="icon"><ArrowLeft className="h-4 w-4" /></Button>
+          <Button variant="ghost" size="icon" aria-label="Nazad">
+            <ArrowLeft className="h-4 w-4" />
+          </Button>
         </Link>
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
@@ -46,7 +48,9 @@ export function ClubHubPage() {
               <Badge variant="muted">Protivnik</Badge>
             )}
           </div>
-          <p className="text-sm text-text-muted">Upravljanje klubom, kadrom, stadionom i statistikama</p>
+          <p className="text-sm text-text-muted">
+            Upravljanje klubom, kadrom, stadionom i statistikama
+          </p>
         </div>
       </div>
       <div className="flex flex-wrap gap-2 border-b border-slate-200/80 pb-3">

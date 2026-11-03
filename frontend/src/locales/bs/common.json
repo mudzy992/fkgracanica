@@ -122,7 +122,8 @@
       "heritage": "Baština",
       "comms": "Komunikacija",
       "monetization": "Monetizacija"
-    }
+    },
+    "unsavedChanges": "Ima nesačuvanih izmjena. Zatvoriti bez spremanja?"
   },
   "common": {
     "loading": "Učitavanje...",

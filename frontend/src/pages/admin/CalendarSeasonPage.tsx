@@ -47,17 +47,27 @@ export function CalendarSeasonPage() {
       {dialog}
       <div className="flex flex-wrap items-center gap-3">
         <Link to="/admin/competitions">
-          <Button variant="ghost" size="icon"><ArrowLeft className="h-4 w-4" /></Button>
+          <Button variant="ghost" size="icon" aria-label="Nazad">
+            <ArrowLeft className="h-4 w-4" />
+          </Button>
         </Link>
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
             <h1 className="text-2xl font-bold">{season.name}</h1>
             {season.isActive && <Badge variant="success">Aktivna</Badge>}
           </div>
-          <p className="text-sm text-text-muted">{season.yearStart}/{season.yearEnd}</p>
+          <p className="text-sm text-text-muted">
+            {season.yearStart}/{season.yearEnd}
+          </p>
         </div>
         {canManage && (
-          <Button size="sm" onClick={() => { setEdit(null); setOpen(true); }}>
+          <Button
+            size="sm"
+            onClick={() => {
+              setEdit(null);
+              setOpen(true);
+            }}
+          >
             <Plus className="mr-1 h-4 w-4" />
             Takmičenje
           </Button>
@@ -73,7 +83,11 @@ export function CalendarSeasonPage() {
               key: 'league',
               header: 'Liga',
               render: (r) =>
-                r.competition?.isLeague ? <Badge variant="success">Liga</Badge> : <Badge variant="muted">Ostalo</Badge>,
+                r.competition?.isLeague ? (
+                  <Badge variant="success">Liga</Badge>
+                ) : (
+                  <Badge variant="muted">Ostalo</Badge>
+                ),
             },
             {
               key: 'participants',
@@ -93,27 +107,45 @@ export function CalendarSeasonPage() {
               ),
             },
             ...(canManage
-              ? [{
-                  key: 'actions',
-                  header: 'Akcije',
-                  render: (r: SeasonEditionRow) => (
-                    <div className="flex gap-1">
-                      <Button variant="ghost" size="icon" onClick={() => { setEdit(r); setOpen(true); }}>
-                        <Pencil className="h-4 w-4" />
-                      </Button>
-                      <Button variant="ghost" size="icon" onClick={() => void onDelete(r)}>
-                        <Trash2 className="h-4 w-4 text-danger" />
-                      </Button>
-                    </div>
-                  ),
-                }]
+              ? [
+                  {
+                    key: 'actions',
+                    header: 'Akcije',
+                    render: (r: SeasonEditionRow) => (
+                      <div className="flex gap-1">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => {
+                            setEdit(r);
+                            setOpen(true);
+                          }}
+                          aria-label="Uredi"
+                        >
+                          <Pencil className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => void onDelete(r)}
+                          aria-label="Obriši"
+                        >
+                          <Trash2 className="h-4 w-4 text-danger" />
+                        </Button>
+                      </div>
+                    ),
+                  },
+                ]
               : []),
           ]}
         />
       </div>
       <SeasonEditionFormSheet
         open={open}
-        onOpenChange={(o) => { setOpen(o); if (!o) setEdit(null); }}
+        onOpenChange={(o) => {
+          setOpen(o);
+          if (!o) setEdit(null);
+        }}
         seasonId={seasonId}
         editEdition={edit}
       />

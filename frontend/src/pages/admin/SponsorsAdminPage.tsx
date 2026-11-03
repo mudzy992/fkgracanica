@@ -83,6 +83,8 @@ export function SponsorsAdminPage() {
                           size="icon"
                           disabled={index === 0}
                           onClick={() => move(index, -1)}
+
+                          aria-label="Pomjeri gore"
                         >
                           <ArrowUp className="h-4 w-4" />
                         </Button>
@@ -91,6 +93,8 @@ export function SponsorsAdminPage() {
                           size="icon"
                           disabled={index === rows.length - 1}
                           onClick={() => move(index, 1)}
+
+                          aria-label="Pomjeri dolje"
                         >
                           <ArrowDown className="h-4 w-4" />
                         </Button>
@@ -101,10 +105,17 @@ export function SponsorsAdminPage() {
                             setEdit(r);
                             setOpen(true);
                           }}
+
+                          aria-label="Uredi"
                         >
                           <Pencil className="h-4 w-4" />
                         </Button>
-                        <Button variant="ghost" size="icon" onClick={() => void onDelete(r)}>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => void onDelete(r)}
+                          aria-label="Obriši"
+                        >
                           <Trash2 className="h-4 w-4 text-danger" />
                         </Button>
                       </>
