@@ -2,6 +2,7 @@ import { Link, useParams, useSearchParams } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import { useClub } from '../../../hooks/use-club-hub';
 import { Seo } from '../../../components/seo/Seo';
+import { AdminBreadcrumbs } from '../../../components/admin/AdminBreadcrumbs';
 import { Badge } from '../../../components/ui/badge';
 import { Button } from '../../../components/ui/button';
 import { Skeleton } from '../../../components/ui/skeleton';
@@ -33,6 +34,13 @@ export function ClubHubPage() {
   return (
     <div className="space-y-6 pb-8">
       <Seo title={club.name} />
+      <AdminBreadcrumbs
+        items={[
+          { label: 'Admin', to: '/admin' },
+          { label: 'Klub', to: '/admin/clubs' },
+          { label: club.name },
+        ]}
+      />
       <div className="flex flex-wrap items-center gap-3">
         <Link to="/admin/clubs">
           <Button variant="ghost" size="icon" aria-label="Nazad">

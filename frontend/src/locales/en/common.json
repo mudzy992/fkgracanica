@@ -29,7 +29,8 @@
     "edit": "Edit",
     "create": "Create",
     "back": "Back",
-    "retry": "Try again"
+    "retry": "Try again",
+    "close": "Close"
   },
   "home": {
     "heroTitle": "FK Gračanica",
@@ -125,7 +126,13 @@
       "monetization": "Monetization"
     },
     "unsavedChanges": "There are unsaved changes. Close without saving?",
-    "openMenu": "Open menu"
+    "openMenu": "Open menu",
+    "breadcrumb": "Breadcrumb",
+    "cmdkTitle": "Admin search",
+    "cmdkPlaceholder": "Search pages or actions…",
+    "cmdkEmpty": "No results for “{{query}}”",
+    "cmdkResults": "Results",
+    "cmdkActions": "Quick actions"
   },
   "common": {
     "loading": "Loading...",

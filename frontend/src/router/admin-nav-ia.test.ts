@@ -80,6 +80,15 @@ describe('interna IA (FE-05)', () => {
     expect(orphans, `admin stranice bez ulaza: ${orphans.join(', ')}`).toEqual([]);
   });
 
+  it('sidebar je konsolidovan (≤6 grupa) i nema duplih stavki (P-FE05-5)', () => {
+    expect(ADMIN_NAV_GROUPS.length).toBeLessThanOrEqual(6);
+    const targets = navTargets();
+    expect(new Set(targets).size, `duple stavke: ${targets.join(', ')}`).toBe(targets.length);
+    // moduli koji su bili zasebne grupe moraju ostati dostupni
+    expect(targets).toContain('/admin/comms');
+    expect(targets).toContain('/admin/heritage');
+  });
+
   it('stranice iz admin direktorija prate imenovanje ruta (bez tihih duplikata)', () => {
     const pages = readdirSync(resolve(process.cwd(), ADMIN_DIR))
       .filter((f) => f.endsWith('Page.tsx'))

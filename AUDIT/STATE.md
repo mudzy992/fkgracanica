@@ -7,8 +7,8 @@
 | Polje | Vrijednost |
 |-------|------------|
 | **Aktivna grana** | `arena/290a6f13-fkgracanica` |
-| **Trenutna faza** | CI-01 ✔ INF-01 ✔ INF-02 ✔ BE-01…**BE-09 ✔** → FE-01 ✔ FE-02 ✔ FE-03 ✔ FE-03b ✔ → CI-04 ✔ → FE-04a ✔ FE-04b ✔ → **FE-05 (djelimično: a11y + IA guard; vidljive IA promjene čekaju odobrenje)** |
-| **Trenutni segment** | **FE-05 — DJELIMIČNO** (aria-label u layoutima, IA guard test; **P-FE05-3/4/5 čekaju odobrenje**) ; prije: **FE-04b ✅**, **FE-04a ✅**, **CI-04 ✅**, **FE-03b ✅**, **FE-03 ✅**, **FE-02 ✅**, **FE-01 ✅**, **BE-09c ✅** |
+| **Trenutna faza** | CI-01 ✔ INF-01 ✔ INF-02 ✔ BE-01…**BE-09 ✔** → FE-01 ✔ FE-02 ✔ FE-03 ✔ FE-03b ✔ → CI-04 ✔ → FE-04a ✔ FE-04b ✔ → **FE-05 ✅** |
+| **Trenutni segment** | **FE-05 ✅** (a11y labele, IA guard, ⌘K paleta, breadcrumbs, sidebar 6 grupa; P-FE05-6 → FE-04c) ; prije: **FE-04b ✅**, **FE-04a ✅**, **CI-04 ✅**, **FE-03b ✅**, **FE-03 ✅**, **FE-02 ✅**, **FE-01 ✅**, **BE-09c ✅** |
 | **Zadnji commit** | `f1d8f62` fix(frontend): a11y labele u layoutima + guard za internu IA [FE-05] |
 | **Zadnji CI run** | ✅ **`41730312807` success** (`f1d8f62` — FE-05 a11y + IA guard, sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41730312807 ; ✅ **`41728627687`**, **`41728094543`** (FE-04b) ; ✅ **`41725081358`**, **`41724729510`** (FE-04a) ; ✅ **`41719477554`**, **`41719000159`** (CI-04 React dedupe) ; ✅ **`41716321472`**, **`41715938871`** (build-arg fix) ; ✅ **`41713331928`**, **`41712830091`**, **`41707559600`**, **`41707129119`** (env dijagnostika) ; ✅ **`41702499943`**, **`41702051432`** (lock fix) ; ✅ **`41697059984`**, **`41696508780`** (FE-03b) ; ✅ **`41694786018`**, **`41694299634`**, **`41693656143`**, **`41671042459`** (FE-03) ; ✅ **`41668846835`**, **`41668139741`** (FE-02) ; ✅ **`41666815620`**, **`41666291342`**, **`41665768088`** (FE-01) ; ✅ **`41663810393`**, **`41663339512`**, **`41662863623`** (BE-09) ; ranije BE serija: `41662277103`, `41661451237`❌→fix, `41660810750`❌→fix, `41658424979`, `41657925166`, `41655487255`, `41654943345`, `41654422296`❌→fix, `41652033940`, `41651332872`, `41647575733`, `41646963311`, `41646330945`, `41644096377`❌/`41644777234`❌/`41645566467`❌→fix, `41640408790`, `41639946345`, `41638624709`, `41634063555`, `41630034505`, `41629707127`❌→fix, `41627914148`, `41583848187` |
 | **check:all** | `npm run check:all` → **7/7** (check-coverage, file-size, console-ban, **token-check**, secrets-ban, layer-deps, docs-links); u CI-ju jobovi `audit-gate` + `standards`; pre-push hook pokreće `check:all` |
@@ -30,6 +30,18 @@ Korisnik: „Može kreni sa sljedećim korakom."
   pozitivnim testom. Trenutno: 0 mrtvih linkova, 0 siročića.
 - Zdravo: nav filtriran po dozvolama **i** modulima; 5 rolnih početnih stranica;
   javni meni CMS-driven sa fallbackom; aktivna grupa se auto-otvara na mobilnom.
+
+**Odobreno („odobravam P-FE05-3,4,5") i implementirano:**
+
+- **P-FE05-3 komandna paleta ⌘K:** `admin-command-palette.ts` (normalize skida
+  dijakritiku, filter po naslovu/grupi/ključnim riječima, AND preko riječi, prefiks
+  rangira prvi) + `AdminCommandPalette.tsx` (dialog/combobox/listbox, ↑↓/Enter/Esc).
+  20 stavki menija + 6 brzih akcija, sve filtrirano po dozvolama i modulima.
+  Trigger u sidebaru i mobilnom headeru; **6 testova**.
+- **P-FE05-4 breadcrumbs** (`AdminBreadcrumbs.tsx`, `aria-current="page"`) na
+  ClubHub, SeasonHub, CmsPageBuilder, MatchReport.
+- **P-FE05-5 sidebar 8 → 6 grupa** (Naslijeđe → Klub, Komunikacije → Sadržaj);
+  20 stavki zadržano, guard test provjerava da nema gubitka ni duplikata.
 
 ### Sesija FE-04b — 2026-11-03 (admin: forme i editori)
 

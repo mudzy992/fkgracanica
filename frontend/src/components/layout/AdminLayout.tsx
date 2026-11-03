@@ -1,5 +1,5 @@
 import { Link, Outlet } from 'react-router-dom';
-import { Menu, LogOut } from 'lucide-react';
+import { Menu, LogOut, Search } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../lib/auth';
@@ -13,6 +13,7 @@ import { Sheet, SheetContent, SheetHeader } from '../ui/sheet';
 import { filterNavLeaves, type AdminNavLeaf } from './admin-nav-groups';
 import { AdminSidebarNav } from './AdminSidebarNav';
 import { AdminShowcaseBanner } from './AdminShowcaseBanner';
+import { AdminCommandPalette } from './AdminCommandPalette';
 
 function SidebarFooter({ onLogout }: { onLogout: () => void }) {
   const { t } = useTranslation();
@@ -27,6 +28,7 @@ function SidebarFooter({ onLogout }: { onLogout: () => void }) {
 export function AdminLayout() {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
+  const [paletteOpen, setPaletteOpen] = useState(false);
   const { user, logout } = useAuth();
   const { data: publicSettings } = usePublicSettings();
   const { data: privateSettings } = usePrivateSettings();
@@ -63,6 +65,20 @@ export function AdminLayout() {
             </div>
             <NotificationBell admin />
           </div>
+          <button
+            type="button"
+            onClick={() => setPaletteOpen(true)}
+            className="mb-3 flex shrink-0 items-center gap-2 rounded-lg border border-[var(--border-subtle)] px-2.5 py-2 text-left text-sm text-text-muted transition-colors hover:bg-surface"
+            aria-label={t('admin.cmdkTitle', 'Pretraga admina')}
+          >
+            <Search aria-hidden className="h-4 w-4 shrink-0" />
+            <span className="min-w-0 flex-1 truncate">
+              {t('admin.cmdkPlaceholder', 'Traži stranicu ili akciju…')}
+            </span>
+            <kbd className="shrink-0 rounded border border-[var(--border-subtle)] px-1 py-0.5 text-[10px]">
+              ⌘K
+            </kbd>
+          </button>
           <div className="min-h-0 flex-1 overflow-y-auto">
             <AdminSidebarNav groups={navGroups} />
           </div>
@@ -79,6 +95,14 @@ export function AdminLayout() {
           </Link>
           <div className="flex items-center gap-1">
             <NotificationBell admin />
+            <Button
+              variant="ghost"
+              size="icon"
+              aria-label={t('admin.cmdkTitle', 'Pretraga admina')}
+              onClick={() => setPaletteOpen(true)}
+            >
+              <Search className="h-5 w-5" />
+            </Button>
             <Button
               variant="ghost"
               size="icon"
@@ -106,6 +130,7 @@ export function AdminLayout() {
           </div>
         </Sheet>
 
+        <AdminCommandPalette open={paletteOpen} onOpenChange={setPaletteOpen} groups={navGroups} />
         <AdminShowcaseBanner />
         <main className="flex-1 overflow-auto p-4 md:p-6">
           <ErrorBoundary>

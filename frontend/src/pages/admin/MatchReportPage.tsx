@@ -3,6 +3,7 @@ import { useMatch } from '../../hooks';
 import { useMatchRealtime } from '../../hooks/use-match-realtime';
 import { canEditReport } from '../../lib/match-report';
 import { Seo } from '../../components/seo/Seo';
+import { AdminBreadcrumbs } from '../../components/admin/AdminBreadcrumbs';
 import { Card, CardContent } from '../../components/ui/card';
 import { Skeleton } from '../../components/ui/skeleton';
 import { Button } from '../../components/ui/button';
@@ -57,6 +58,16 @@ export function MatchReportPage() {
   return (
     <div>
       <Seo title="Izvještaj utakmice" />
+      <AdminBreadcrumbs
+        className="mb-3"
+        items={[
+          { label: 'Admin', to: '/admin' },
+          { label: 'Takmičenja', to: '/admin/competitions' },
+          {
+            label: `Izvještaj: ${data.homeClub?.name ?? 'Domaćin'} – ${data.awayClub?.name ?? 'Gost'}`,
+          },
+        ]}
+      />
       <CommentatorDeskHeader
         match={data}
         title="Izvještaj utakmice"

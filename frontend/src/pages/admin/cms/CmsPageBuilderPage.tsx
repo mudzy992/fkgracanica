@@ -11,6 +11,7 @@ import { useConfirm } from '../../../hooks/use-confirm';
 import { getApiErrorMessage } from '../../../lib/api-error';
 import { asArray } from '../../../lib/as-array';
 import { Seo } from '../../../components/seo/Seo';
+import { AdminBreadcrumbs } from '../../../components/admin/AdminBreadcrumbs';
 import { Button } from '../../../components/ui/button';
 import type { CmsPage, CmsPageSection } from '../../../cms/types';
 import { CmsWidgetPicker } from './CmsWidgetPicker';
@@ -109,6 +110,14 @@ export function CmsPageBuilderPage() {
           {metaError}
         </p>
       )}
+      <AdminBreadcrumbs
+        className="mb-3"
+        items={[
+          { label: 'Admin', to: '/admin' },
+          { label: 'CMS', to: '/admin/cms' },
+          { label: page?.title ?? 'Stranica' },
+        ]}
+      />
       <Link to="/admin/cms" className="mb-4 inline-block text-sm text-accent hover:underline">
         ← Nazad na CMS
       </Link>

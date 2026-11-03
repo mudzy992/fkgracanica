@@ -29,7 +29,8 @@
     "edit": "Uredi",
     "create": "Kreiraj",
     "back": "Nazad",
-    "retry": "Pokušaj ponovo"
+    "retry": "Pokušaj ponovo",
+    "close": "Zatvori"
   },
   "home": {
     "heroTitle": "FK Gračanica",
@@ -125,7 +126,13 @@
       "monetization": "Monetizacija"
     },
     "unsavedChanges": "Ima nesačuvanih izmjena. Zatvoriti bez spremanja?",
-    "openMenu": "Otvori meni"
+    "openMenu": "Otvori meni",
+    "breadcrumb": "Putanja",
+    "cmdkTitle": "Pretraga admina",
+    "cmdkPlaceholder": "Traži stranicu ili akciju…",
+    "cmdkEmpty": "Nema rezultata za „{{query}}\"",
+    "cmdkResults": "Rezultati",
+    "cmdkActions": "Brze akcije"
   },
   "common": {
     "loading": "Učitavanje...",

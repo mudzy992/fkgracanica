@@ -5,6 +5,7 @@ import { useAuth } from '../../../lib/auth';
 import { hasPermission } from '../../../lib/permissions';
 import { findEdition, type CalendarSeason } from '../../../lib/season-utils';
 import { Seo } from '../../../components/seo/Seo';
+import { AdminBreadcrumbs } from '../../../components/admin/AdminBreadcrumbs';
 import { Badge } from '../../../components/ui/badge';
 import { Button } from '../../../components/ui/button';
 import { Skeleton } from '../../../components/ui/skeleton';
@@ -31,6 +32,14 @@ export function SeasonHubPage() {
   return (
     <div className="space-y-6 pb-8">
       <Seo title={found.edition.competition?.name ?? found.calendar.name} />
+      <AdminBreadcrumbs
+        items={[
+          { label: 'Admin', to: '/admin' },
+          { label: 'Takmičenja', to: '/admin/competitions' },
+          { label: found.calendar.name, to: `/admin/seasons/${found.calendar.id}` },
+          { label: found.edition.competition?.name ?? found.calendar.name },
+        ]}
+      />
       <div className="flex flex-wrap items-center gap-3">
         <Link to={backTo}>
           <Button variant="ghost" size="icon" aria-label="Nazad">
