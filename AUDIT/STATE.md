@@ -7,8 +7,8 @@
 | Polje | Vrijednost |
 |-------|------------|
 | **Aktivna grana** | `arena/290a6f13-fkgracanica` |
-| **Trenutna faza** | CI-01 ✔ INF-01 ✔ INF-02 ✔ BE-01…BE-07 ✔ → **BE-08 u toku (implementirano P-B08-1/2/3/4/5/7; P-B08-6 odbijen)** |
-| **Trenutni segment** | **BE-08** (showcase/SEO/pretraga/dashboard/app-releases/health/nasljeđe) — audit ✔, odobreni predlozi implementirani, čeka zelen CI; posljednji zatvoren **BE-07** |
+| **Trenutna faza** | CI-01 ✔ INF-01 ✔ INF-02 ✔ BE-01…**BE-08 ✔** → **BE-09 u toku (backend zaostaci — audit)** |
+| **Trenutni segment** | **BE-09** (backend zaostaci — fajlovi koji nisu ušli u BE-01…BE-08) — audit u toku; posljednji zatvoren **BE-08** |
 | **Zadnji commit** | `86b3179` docs(audit): BE-08 implementirani odobreni predlozi + matrica [BE-08] |
 | **Zadnji CI run** | ✅ **`41638624709` success** (`86b3179` — BE-08 implementacija P-B08-1/2/3/4/5/7, sva 3 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41638624709 ; ranije ✅ **`41634063555` success** (`ed4df65` — BE-08 audit docs, sva 3 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41634063555 ; ranije ✅ **`41630034505` success** (`7b00aa9` — idempotencija + Q-15 + P-B07-6, sva 3 joba, 203 testa) https://github.com/mudzy992/fkgracanica/actions/runs/41630034505 ; ❌ `41629707127` (`19bf9ed` — 1 test tvrdio staro `includeMembership` ponašanje → popravljeno); ✅ `41627914148` (`c16385f`); ❌ `41627571734` (TS2724 import `PaymentProviderId`); ✅ BE-07 audit `41583848187`/`41584048206`/`41584323691` |
 | **check:all** | `npm run check:all` → **6/6** (check-coverage, file-size, console-ban, secrets-ban, layer-deps, docs-links); u CI-ju jobovi `audit-gate` + `standards`; pre-push hook pokreće `check:all` |
@@ -288,7 +288,7 @@
 - Matrica: 65 redova → BE-07 (`pregledano`/`pokriveno testom`).
 - Segment dokument: `AUDIT/segments/BE-07.md`.
 
-### SEGMENT BE-08 — 2026-11-03 (U TOKU — audit završen ✅)
+### SEGMENT BE-08 — 2026-11-03 (ZATVOREN ✅)
 
 - Opseg: `showcase` 10 + `seo` 9 + `search` 5 + `dashboard` 3 +
   `app-releases` 8 + `health` 2 + `museum` 3 + `hall-of-fame` 3 +
@@ -327,9 +327,13 @@
     (`app-releases.service.ts` 205 → 175).
   - **P-B08-7**: 4 nova speca, **39 testova** lokalno zeleno (entity-payload 13,
     seo-url 13, seo-sitemap 5, apk-storage 5 + postojeći apk-download 3).
-- Matrica: 52 → **60 redova** (8 novih fajlova) → BE-08, statusi
-  `popravljeno`/`pokriveno testom`; `check:all` **6/6** lokalno.
-- Segment dokument: `AUDIT/segments/BE-08.md`.
+- Matrica: 52 → **64 reda** → BE-08, statusi `popravljeno`/`pokriveno testom`/
+  `pregledano` (0 neobrađenih); `check:all` **6/6** lokalno.
+- **CI ✅ `41638624709`** (`86b3179`, implementacija) i **✅ `41639125072`**
+  (`cc6959b`, docs) — sva 3 joba.
+- Segment dokument: `AUDIT/segments/BE-08.md` (**Status segmenta: ZATVOREN**).
+- Backlog nakon zatvaranja: **P-B08-6** (pretraga, vidljivo — nije odobreno),
+  Info nalazi B-08-08…B-08-11 (prihvaćeni kao stanje).
 
 ## Šta je sljedeće (tačan sljedeći korak)
 
