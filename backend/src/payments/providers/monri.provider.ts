@@ -1,4 +1,5 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { PrismaService } from '../../prisma/prisma.service';
 import { PaymentsReadinessService } from '../payments-readiness.service';
 import { MonriOps } from '../monri-ops';
@@ -14,6 +15,8 @@ import {
   toMinorUnits,
   withMonriReturnUrl,
 } from '../monri-digest.util';
+import { readMembershipAmount } from '../membership-price.util';
+import { allowedOrigins, isAllowedPaymentOrigin } from '../payment-origin.util';
 
 export type MonriFormPayload = {
   action: string;
@@ -34,6 +37,7 @@ export class MonriProvider implements PaymentProvider {
     private readonly prisma: PrismaService,
     private readonly readiness: PaymentsReadinessService,
     private readonly ops: MonriOps,
+    private readonly config: ConfigService,
   ) {}
 
   isReady() {
@@ -120,7 +124,9 @@ export class MonriProvider implements PaymentProvider {
   ): Promise<MonriFormPayload> {
     const ref = parseMonriRef(sessionId);
     if (!ref) throw new BadRequestException('Neispravna Monri sesija');
-    if (!origin.startsWith('http'))
+    // BE-07/P-B07-5: origin mora biti sa allowliste (CORS_ORIGINS + API URL) —
+    // ranije je bilo koji `http…` string prolazio i potpisivao tuđi domen.
+    if (!isAllowedPaymentOrigin(origin, this.paymentOrigins()))
       throw new BadRequestException('Origin nije validan');
     const user = await this.prisma.user.findUnique({ where: { id: userId } });
     if (!user) throw new BadRequestException('Korisnik nije pronađen');
@@ -180,11 +186,9 @@ export class MonriProvider implements PaymentProvider {
       where: { id: ref.id, userId },
     });
     if (!membership) throw new BadRequestException('Članstvo nije pronađeno');
-    const price = await this.prisma.setting.findUnique({
-      where: { key: 'membership.annualPrice' },
-    });
     return {
-      amount: Number(price?.value || '50'),
+      // BE-07/P-B07-1: cijena sa servera (isti helper kao checkout).
+      amount: await readMembershipAmount(this.prisma),
       label: 'Clanstvo FK Gracanica',
       cancelPath: '/clanstvo',
     };
@@ -200,6 +204,13 @@ export class MonriProvider implements PaymentProvider {
       sessionId: orderNumber,
       provider: 'monri',
     };
+  }
+
+  private paymentOrigins(): string[] {
+    return allowedOrigins(
+      this.config.get<string>('corsOrigins'),
+      this.config.get<string>('apiPublicUrl'),
+    );
   }
 
   private async buildForm(
@@ -253,7 +264,11 @@ export class MonriProvider implements PaymentProvider {
     const token = map['payments.monri.authenticationKey']?.trim() ?? '';
     if (!key || !token)
       throw new BadRequestException('Monri nije konfigurisan');
-    const publicApi = (process.env.API_PUBLIC_URL ?? '').replace(/\/$/, '');
+    // BE-07/P-B07-5: BE-01/P2 konvencija — nema `process.env` u modulima.
+    const publicApi = (this.config.get<string>('apiPublicUrl') ?? '').replace(
+      /\/$/,
+      '',
+    );
     return {
       key,
       token,
