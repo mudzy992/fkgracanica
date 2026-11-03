@@ -14,6 +14,7 @@ import {
 import { JobsService } from '../../jobs/jobs.module';
 import { NotificationsService } from '../../notifications/notifications.service';
 import { createSimpleStripeCheckout } from '../stripe-checkout.util';
+import { paymentEventKey, runPaymentEventOnce } from '../payment-event.util';
 import type {
   CheckoutSessionResult,
   PaymentProvider,
@@ -148,7 +149,11 @@ export class StripeProvider implements PaymentProvider {
     if (!order) throw new BadRequestException('Narudžba nije pronađena');
 
     if (session.payment_status === 'paid') {
-      const fresh = await confirmTicketOrderFlow(this.prisma, meta.orderId);
+      const fresh = await runPaymentEventOnce(
+        this.prisma,
+        paymentEventKey('stripe', sessionId, 'tickets', meta.orderId),
+        () => confirmTicketOrderFlow(this.prisma, meta.orderId),
+      );
       if (fresh)
         await notifyTicketPaid(
           this.prisma,
@@ -180,7 +185,11 @@ export class StripeProvider implements PaymentProvider {
     if (!membership) throw new BadRequestException('Članstvo nije pronađeno');
 
     if (session.payment_status === 'paid') {
-      const fresh = await confirmMembershipFlow(this.prisma, meta.membershipId);
+      const fresh = await runPaymentEventOnce(
+        this.prisma,
+        paymentEventKey('stripe', sessionId, 'membership', meta.membershipId),
+        () => confirmMembershipFlow(this.prisma, meta.membershipId),
+      );
       if (fresh)
         await notifyMembershipActive(
           this.prisma,

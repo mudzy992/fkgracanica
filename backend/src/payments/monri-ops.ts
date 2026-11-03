@@ -12,6 +12,8 @@ import {
   notifySeasonPassActive,
   notifyTicketPaid,
 } from './payment-notify';
+import { paymentEventKey, runPaymentEventOnce } from './payment-event.util';
+import { confirmFromWebhook } from './webhook-confirm.util';
 import {
   hexEqual,
   monriCallbackDigest,
@@ -47,7 +49,11 @@ export class MonriOps {
       where: { id: ref.id, userId },
     });
     if (!order) throw new BadRequestException('Narudžba nije pronađena');
-    const fresh = await confirmTicketOrderFlow(this.prisma, ref.id);
+    const fresh = await runPaymentEventOnce(
+      this.prisma,
+      paymentEventKey('monri', sessionId, 'tickets', ref.id),
+      () => confirmTicketOrderFlow(this.prisma, ref.id),
+    );
     if (fresh)
       await notifyTicketPaid(
         this.prisma,
@@ -71,7 +77,11 @@ export class MonriOps {
       where: { id: ref.id, userId },
     });
     if (!membership) throw new BadRequestException('Članstvo nije pronađeno');
-    const fresh = await confirmMembershipFlow(this.prisma, ref.id);
+    const fresh = await runPaymentEventOnce(
+      this.prisma,
+      paymentEventKey('monri', sessionId, 'membership', ref.id),
+      () => confirmMembershipFlow(this.prisma, ref.id),
+    );
     if (fresh)
       await notifyMembershipActive(
         this.prisma,
@@ -95,10 +105,15 @@ export class MonriOps {
       where: { id: ref.id, userId },
     });
     if (!pass) throw new BadRequestException('Sezonska karta nije pronađena');
-    const fresh = await confirmSeasonPassFlow(this.prisma, ref.id, {
-      paymentProvider: 'monri',
-      externalId: sessionId,
-    });
+    const fresh = await runPaymentEventOnce(
+      this.prisma,
+      paymentEventKey('monri', sessionId, 'season_pass', ref.id),
+      () =>
+        confirmSeasonPassFlow(this.prisma, ref.id, {
+          paymentProvider: 'monri',
+          externalId: sessionId,
+        }),
+    );
     if (fresh)
       await notifySeasonPassActive(
         this.prisma,
@@ -127,38 +142,13 @@ export class MonriOps {
     if (payload.status !== 'approved' || !payload.order_number)
       return { received: true };
     const ref = parseMonriRef(payload.order_number);
-    if (ref?.kind === 'tickets') {
-      const fresh = await confirmTicketOrderFlow(this.prisma, ref.id);
-      if (fresh)
-        await notifyTicketPaid(
-          this.prisma,
-          this.jobs,
-          ref.id,
-          this.notifications,
-        );
-    }
-    if (ref?.kind === 'membership') {
-      const fresh = await confirmMembershipFlow(this.prisma, ref.id);
-      if (fresh)
-        await notifyMembershipActive(
-          this.prisma,
-          this.jobs,
-          ref.id,
-          this.notifications,
-        );
-    }
-    if (ref?.kind === 'season') {
-      const fresh = await confirmSeasonPassFlow(this.prisma, ref.id, {
-        paymentProvider: 'monri',
+    if (ref) {
+      await confirmFromWebhook(this.prisma, this.jobs, this.notifications, {
+        provider: 'monri',
         externalId: payload.order_number,
+        kind: ref.kind === 'season' ? 'season_pass' : ref.kind,
+        refId: ref.id,
       });
-      if (fresh)
-        await notifySeasonPassActive(
-          this.prisma,
-          this.jobs,
-          ref.id,
-          this.notifications,
-        );
     }
     return { received: true };
   }

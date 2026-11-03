@@ -19,6 +19,8 @@ import {
   paypalGetOrder,
   paypalVerifyWebhook,
 } from './paypal-http.util';
+import { paymentEventKey, runPaymentEventOnce } from './payment-event.util';
+import { confirmFromWebhook } from './webhook-confirm.util';
 import {
   extractPaypalCustomId,
   extractPaypalOrderId,
@@ -77,7 +79,11 @@ export class PaypalOps {
       where: { id: meta.id, userId },
     });
     if (!row) throw new BadRequestException('Narudžba nije pronađena');
-    const fresh = await confirmTicketOrderFlow(this.prisma, meta.id);
+    const fresh = await runPaymentEventOnce(
+      this.prisma,
+      paymentEventKey('paypal', sessionId, 'tickets', meta.id),
+      () => confirmTicketOrderFlow(this.prisma, meta.id),
+    );
     if (fresh)
       await notifyTicketPaid(
         this.prisma,
@@ -97,7 +103,11 @@ export class PaypalOps {
       where: { id: meta.id, userId },
     });
     if (!membership) throw new BadRequestException('Članstvo nije pronađeno');
-    const fresh = await confirmMembershipFlow(this.prisma, meta.id);
+    const fresh = await runPaymentEventOnce(
+      this.prisma,
+      paymentEventKey('paypal', sessionId, 'membership', meta.id),
+      () => confirmMembershipFlow(this.prisma, meta.id),
+    );
     if (fresh)
       await notifyMembershipActive(
         this.prisma,
@@ -117,10 +127,15 @@ export class PaypalOps {
       where: { id: meta.id, userId },
     });
     if (!pass) throw new BadRequestException('Sezonska karta nije pronađena');
-    const fresh = await confirmSeasonPassFlow(this.prisma, meta.id, {
-      paymentProvider: 'paypal',
-      externalId: sessionId,
-    });
+    const fresh = await runPaymentEventOnce(
+      this.prisma,
+      paymentEventKey('paypal', sessionId, 'season_pass', meta.id),
+      () =>
+        confirmSeasonPassFlow(this.prisma, meta.id, {
+          paymentProvider: 'paypal',
+          externalId: sessionId,
+        }),
+    );
     if (fresh)
       await notifySeasonPassActive(
         this.prisma,
@@ -149,38 +164,13 @@ export class PaypalOps {
       const order = await paypalGetOrder(ctx.baseUrl, ctx.token, orderId);
       meta = parsePaypalCustomId(order.purchase_units?.[0]?.custom_id);
     }
-    if (meta?.kind === 'tickets') {
-      const fresh = await confirmTicketOrderFlow(this.prisma, meta.id);
-      if (fresh)
-        await notifyTicketPaid(
-          this.prisma,
-          this.jobs,
-          meta.id,
-          this.notifications,
-        );
-    }
-    if (meta?.kind === 'membership') {
-      const fresh = await confirmMembershipFlow(this.prisma, meta.id);
-      if (fresh)
-        await notifyMembershipActive(
-          this.prisma,
-          this.jobs,
-          meta.id,
-          this.notifications,
-        );
-    }
-    if (meta?.kind === 'season') {
-      const fresh = await confirmSeasonPassFlow(this.prisma, meta.id, {
-        paymentProvider: 'paypal',
+    if (meta) {
+      await confirmFromWebhook(this.prisma, this.jobs, this.notifications, {
+        provider: 'paypal',
         externalId: orderId,
+        kind: meta.kind === 'season' ? 'season_pass' : meta.kind,
+        refId: meta.id,
       });
-      if (fresh)
-        await notifySeasonPassActive(
-          this.prisma,
-          this.jobs,
-          meta.id,
-          this.notifications,
-        );
     }
     return { received: true };
   }

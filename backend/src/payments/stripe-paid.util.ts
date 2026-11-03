@@ -12,6 +12,7 @@ import {
 import type { PrismaService } from '../prisma/prisma.service';
 import type { JobsService } from '../jobs/jobs.module';
 import type { NotificationsService } from '../notifications/notifications.service';
+import { paymentEventKey, runPaymentEventOnce } from './payment-event.util';
 
 type Meta = Record<string, string>;
 
@@ -22,13 +23,22 @@ export async function applyStripePaidMeta(
   sessionId?: string,
   notifications?: NotificationsService,
 ) {
+  // BE-07/P-B07-2: svaka uplata se obrađuje najviše jednom (webhook + confirm-session).
   if (meta.type === 'tickets' && meta.orderId) {
-    const fresh = await confirmTicketOrderFlow(prisma, meta.orderId);
+    const fresh = await runPaymentEventOnce(
+      prisma,
+      paymentEventKey('stripe', sessionId, 'tickets', meta.orderId),
+      () => confirmTicketOrderFlow(prisma, meta.orderId),
+    );
     if (fresh)
       await notifyTicketPaid(prisma, jobs, meta.orderId, notifications);
   }
   if (meta.type === 'membership' && meta.membershipId) {
-    const fresh = await confirmMembershipFlow(prisma, meta.membershipId);
+    const fresh = await runPaymentEventOnce(
+      prisma,
+      paymentEventKey('stripe', sessionId, 'membership', meta.membershipId),
+      () => confirmMembershipFlow(prisma, meta.membershipId),
+    );
     if (fresh)
       await notifyMembershipActive(
         prisma,
@@ -38,10 +48,15 @@ export async function applyStripePaidMeta(
       );
   }
   if (meta.type === 'season_pass' && meta.passId) {
-    const fresh = await confirmSeasonPassFlow(prisma, meta.passId, {
-      paymentProvider: 'stripe',
-      externalId: sessionId,
-    });
+    const fresh = await runPaymentEventOnce(
+      prisma,
+      paymentEventKey('stripe', sessionId, 'season_pass', meta.passId),
+      () =>
+        confirmSeasonPassFlow(prisma, meta.passId, {
+          paymentProvider: 'stripe',
+          externalId: sessionId,
+        }),
+    );
     if (fresh)
       await notifySeasonPassActive(prisma, jobs, meta.passId, notifications);
   }
