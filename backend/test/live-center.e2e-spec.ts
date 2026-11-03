@@ -13,6 +13,10 @@ describe('Live center (e2e)', () => {
   let app: INestApplication<App>;
   let accessToken: string;
   let matchId: string;
+  // BE-09c: `GOAL` od BE-09a zahtijeva `playerId` (live-event-rules) — spec je
+  // ranije slao gol bez igrača i padao na 400. Igrača uzimamo iz domaćeg
+  // sastava (demo seed), a ako ga nema — kreiramo minimalnog.
+  let playerId: string;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -63,11 +67,30 @@ describe('Live center (e2e)', () => {
           homeClubId: clubIds[0],
           awayClubId: clubIds[1],
           scheduledAt: new Date(Date.now() + 86400000).toISOString(),
-          round: 99,
         });
       scheduled = created.body as { id: string; status: string };
     }
     matchId = scheduled.id;
+
+    const detail = await request(app.getHttpServer()).get(
+      `/api/v1/matches/${matchId}`,
+    );
+    const clubIds = [detail.body.homeClubId, detail.body.awayClubId].filter(
+      (id): id is string => typeof id === 'string',
+    );
+    const players = await request(app.getHttpServer()).get('/api/v1/players');
+    const existing = (
+      players.body as { id: string; clubId: string | null }[]
+    ).find((p) => p.clubId !== null && clubIds.includes(p.clubId));
+    if (existing) {
+      playerId = existing.id;
+      return;
+    }
+    const createdPlayer = await request(app.getHttpServer())
+      .post('/api/v1/players')
+      .set('Authorization', `Bearer ${accessToken}`)
+      .send({ firstName: 'E2E', lastName: 'Gol', clubId: clubIds[0] });
+    playerId = (createdPlayer.body as { id: string }).id;
   });
 
   afterAll(async () => {
@@ -91,6 +114,7 @@ describe('Live center (e2e)', () => {
         type: 'GOAL',
         minute: 23,
         teamSide: 'home',
+        playerId,
         description: 'E2E gol',
       })
       .expect(201);
