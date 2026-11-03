@@ -86,12 +86,13 @@ describe('i18n admina (FE-04c, ratchet)', () => {
   });
 
   it('baseline se samo spušta (migracija napreduje)', () => {
-    const remaining = totalBaseline - total;
-    if (remaining > 0) {
-      // nije greška — migracija je u toku; poruka vodi na osvježavanje baseline-a
-      console.info(`FE-04c: ${remaining} stringova manje od baseline-a — spusti baseline.`);
-    }
-    expect(total).toBeLessThanOrEqual(totalBaseline);
+    // Ako je `total` manji od baseline-a, migracija je napredovala: spusti baseline
+    // sa UPDATE_I18N_BASELINE=1 (poruka ide kroz assertion message, ne u konzolu —
+    // console-ban zabranjuje console.info u src).
+    expect(
+      total,
+      `FE-04c: ${totalBaseline - total} stringova manje od baseline-a — osvježi baseline`,
+    ).toBeLessThanOrEqual(totalBaseline);
   });
 });
 
