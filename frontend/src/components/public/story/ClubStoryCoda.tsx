@@ -51,7 +51,7 @@ export function ClubStoryCoda({ storyImages, heritageImage }: Props) {
           </div>
           <Link
             to="/o-klubu/kuca-slavnih"
-            className="group mt-10 block rounded-[2rem] border border-amber-300/20 bg-[#0b1320]/90 p-4 text-left shadow-[0_24px_80px_rgba(0,0,0,0.35)] transition hover:-translate-y-1 hover:border-amber-200/35 sm:p-5"
+            className="group mt-10 block rounded-[2rem] border border-amber-300/20 bg-surface-story/90 p-4 text-left shadow-[0_24px_80px_rgba(0,0,0,0.35)] transition hover:-translate-y-1 hover:border-amber-200/35 sm:p-5"
           >
             <div className="grid gap-4 lg:grid-cols-[1.2fr_0.8fr] lg:items-center">
               <div className="grid min-h-[17rem] gap-4 sm:grid-cols-[1.15fr_0.85fr]">
@@ -74,7 +74,7 @@ export function ClubStoryCoda({ storyImages, heritageImage }: Props) {
                       </div>
                     )}
                   </div>
-                  <div className="overflow-hidden rounded-[1.5rem] border border-amber-300/25 bg-[#1a1207]">
+                  <div className="overflow-hidden rounded-[1.5rem] border border-amber-300/25 bg-wood-dark">
                     {hallImage ? (
                       <img src={hallImage} alt="" className="h-32 w-full object-cover sm:h-full sm:min-h-[8rem]" />
                     ) : (

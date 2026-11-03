@@ -8,6 +8,7 @@
  *   1. audit/check-coverage.mjs  — matrica pokrivenosti (pravilo 4)
  *   2. file-size                 — ≤200/400 linija (baseline: scripts/standards/baselines/)
  *   3. console-ban               — nema console.log/debug/info u src
+ *   3b. token-check              — design tokeni (boje samo u index.css @theme; ratchet palete)
  *   4. secrets-ban               — nema novih tajni u trackanim fajlovima
  *   5. layer-deps                — nema cross-layer importa
  *   6. docs-links                — nema mrtvih relativnih linkova u docs/ i README
@@ -25,6 +26,7 @@ const CHECKS = [
   { name: 'check-coverage', script: join(ROOT, 'scripts', 'audit', 'check-coverage.mjs') },
   { name: 'file-size', script: join(HERE, 'file-size.mjs') },
   { name: 'console-ban', script: join(HERE, 'console-ban.mjs') },
+  { name: 'token-check', script: join(HERE, 'token-check.mjs') },
   { name: 'secrets-ban', script: join(HERE, 'secrets-ban.mjs') },
   { name: 'layer-deps', script: join(HERE, 'layer-deps.mjs') },
   { name: 'docs-links', script: join(HERE, 'docs-links.mjs') },

@@ -16,7 +16,7 @@ export function HofLegendDialog({ entry, open, onClose }: Props) {
     <Dialog
       open={open}
       onOpenChange={(next) => !next && onClose()}
-      className="max-w-4xl overflow-hidden border-amber-300/20 bg-[#08111d]"
+      className="max-w-4xl overflow-hidden border-amber-300/20 bg-surface-night"
     >
       <DialogHeader onClose={onClose}>
         <div>
@@ -35,7 +35,7 @@ export function HofLegendDialog({ entry, open, onClose }: Props) {
                 {entry.name[0]}
               </div>
             )}
-            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-[#08111d] via-[#08111d]/55 to-transparent p-6">
+            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-surface-night via-surface-night/55 to-transparent p-6">
               <p className="text-[11px] font-semibold uppercase tracking-[0.26em] text-amber-100/70">Baština kluba</p>
               <p className="mt-2 font-display text-3xl font-bold text-white">{entry.name}</p>
               {entry.role && (

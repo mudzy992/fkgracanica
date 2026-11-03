@@ -30,7 +30,7 @@ export function ClubAboutCtaWidget({ config: _config }: Props) {
 
   return (
     <section className="mx-auto max-w-6xl px-4 py-12 sm:px-6 md:py-16">
-      <div className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-[#07111f] p-6 shadow-[0_30px_90px_rgba(2,6,23,0.45)] sm:p-8 lg:p-10">
+      <div className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-surface-deep p-6 shadow-[0_30px_90px_rgba(2,6,23,0.45)] sm:p-8 lg:p-10">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(59,130,246,0.18),transparent_38%),radial-gradient(circle_at_bottom_right,rgba(245,158,11,0.16),transparent_30%)]" />
         <div className="relative grid gap-6 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
           <div className="space-y-5">

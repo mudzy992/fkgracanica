@@ -13,7 +13,7 @@ export function ShowcaseChrome({ club }: { club: ShowcaseClub }) {
   const crest = mediaUrl(club.crestUrl, 'thumb');
 
   return (
-    <header className="sticky top-0 z-40 border-b border-white/10 bg-[#0a1628]/85 backdrop-blur-xl">
+    <header className="sticky top-0 z-40 border-b border-white/10 bg-surface-chrome/85 backdrop-blur-xl">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
         <a href="#top" className="flex min-w-0 items-center gap-3">
           {crest ? <img src={crest} alt={club.name} className="h-10 w-10 object-contain" /> : null}

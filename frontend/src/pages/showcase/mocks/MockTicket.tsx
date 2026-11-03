@@ -1,7 +1,7 @@
 export function MockTicket() {
   return (
     <div className="grid gap-3 sm:grid-cols-2">
-      <div className="rounded-2xl border border-white/10 bg-gradient-to-br from-blue-900 to-[#07101c] p-4">
+      <div className="rounded-2xl border border-white/10 bg-gradient-to-br from-blue-900 to-surface-mock p-4">
         <p className="text-[10px] uppercase tracking-widest text-blue-200/70">Članska kartica</p>
         <p className="font-display mt-2 text-lg font-bold text-white">FK-2026-084</p>
         <div className="mt-4 grid h-16 w-16 place-items-center rounded-lg bg-white">

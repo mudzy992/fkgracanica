@@ -1,6 +1,6 @@
 export function MockPortal() {
   return (
-    <div className="bg-[#07101c] p-3">
+    <div className="bg-surface-mock p-3">
       <div className="flex items-center gap-2">
         <span className="h-4 w-4 rounded-full bg-blue-500" />
         <span className="h-1.5 w-16 rounded bg-white/40" />
