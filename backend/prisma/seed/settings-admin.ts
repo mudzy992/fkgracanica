@@ -2,6 +2,30 @@ import * as bcrypt from 'bcrypt';
 import { SETTINGS_REGISTRY, settingDefToCreate } from '../../src/settings/settings.registry';
 import type { SeedPrisma } from './prisma-client';
 
+/**
+ * BE-09c/P-B09c-1: lozinka admina se NIKAD ne izmišlja i ne resetuje slučajno.
+ * - prvi seed: `ADMIN_PASSWORD` je OBAVEZAN (nema `change-me` fallbacka),
+ * - postojeći admin: hash se NE prepisuje (prije se lozinka resetovala na
+ *   svakom pokretanju seederа i gasila promjenu kroz aplikaciju),
+ * - namjerni reset: `ADMIN_RESET_PASSWORD=1` (uz `ADMIN_PASSWORD`).
+ */
+function resolveAdminPassword(): string {
+  const password = process.env.ADMIN_PASSWORD?.trim();
+  if (!password) {
+    throw new Error(
+      'ADMIN_PASSWORD nije postavljen — seed odbija kreirati admina sa ' +
+        'default lozinkom (postavi ADMIN_PASSWORD u .env ili produkcijskom env-u).',
+    );
+  }
+  if (password.length < 8) {
+    throw new Error('ADMIN_PASSWORD mora imati najmanje 8 znakova.');
+  }
+  if (process.env.NODE_ENV === 'production' && /^change[-_]?me$/i.test(password)) {
+    throw new Error('ADMIN_PASSWORD ne smije biti "change-me" u produkciji.');
+  }
+  return password;
+}
+
 const DEMO_SETTINGS: Record<string, string> = {
   'contact.phone': '+387 33 000 000',
   'contact.address': 'Gračanica, Bosna i Hercegovina',
@@ -25,21 +49,34 @@ export async function seedSettingsAndAdmin(prisma: SeedPrisma): Promise<string |
   }
 
   const adminEmail = process.env.ADMIN_EMAIL ?? 'admin@fkgracanica.ba';
-  const adminPassword = process.env.ADMIN_PASSWORD ?? 'change-me';
-  const adminRole = await prisma.role.findUnique({ where: { name: 'Administrator' } });
+  const adminRole = await prisma.role.findUnique({
+    where: { name: 'Administrator' },
+  });
   if (!adminRole) return null;
 
-  const passwordHash = await bcrypt.hash(adminPassword, 10);
+  const existing = await prisma.user.findUnique({ where: { email: adminEmail } });
+  const resetPassword = process.env.ADMIN_RESET_PASSWORD === '1';
+  // Lozinka se traži SAMO kad je zaista potrebna (kreiranje ili eksplicitan reset).
+  const passwordHash =
+    !existing || resetPassword
+      ? await bcrypt.hash(resolveAdminPassword(), 10)
+      : undefined;
+
   const admin = await prisma.user.upsert({
     where: { email: adminEmail },
     create: {
       email: adminEmail,
-      passwordHash,
+      passwordHash: passwordHash as string,
       firstName: 'Admin',
       lastName: 'FK Gračanica',
       roles: { create: [{ roleId: adminRole.id }] },
     },
-    update: { passwordHash, isActive: true, deletedAt: null },
+    update: {
+      // BE-09c/P-B09c-1: bez reset flaga se NE dira postojeća lozinka.
+      ...(passwordHash ? { passwordHash } : {}),
+      isActive: true,
+      deletedAt: null,
+    },
   });
 
   const hasRole = await prisma.userRole.findUnique({

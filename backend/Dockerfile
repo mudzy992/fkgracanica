@@ -8,9 +8,11 @@ RUN npm ci
 
 FROM deps AS build
 COPY . .
+# BE-09c/P-B09c-2: `DATABASE_URL` se koristi SAMO za `prisma generate` (kojem ne
+# treba živa baza) i NE ostaje u slici — prije je `ENV DATABASE_URL=$DATABASE_URL`
+# upisivao produkcijske kredencijale u slojeve slike (`docker history`).
 ARG DATABASE_URL=postgresql://build:build@localhost:5432/fkgracanica
-ENV DATABASE_URL=$DATABASE_URL
-RUN npx prisma generate
+RUN DATABASE_URL="$DATABASE_URL" npx prisma generate
 RUN npm run build
 
 FROM node:22-bookworm-slim AS runner
@@ -23,6 +25,9 @@ RUN groupadd --system app && useradd --system --gid app --home-dir /app app
 COPY --from=build /app/package.json ./
 COPY --from=build /app/package-lock.json ./
 COPY --from=build /app/node_modules ./node_modules
+# BE-09c/P-B09c-3: devDependencies (jest, eslint, ts-node, typescript) ne idu u
+# produkcijsku sliku. `prisma` CLI ostaje jer ga CMD koristi za `migrate deploy`.
+RUN npm prune --omit=dev
 COPY --from=build /app/dist ./dist
 COPY --from=build /app/prisma ./prisma
 COPY --from=build /app/prisma.config.ts ./

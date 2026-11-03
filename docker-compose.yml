@@ -12,7 +12,9 @@ services:
       context: ./backend
       dockerfile: Dockerfile
       args:
-        DATABASE_URL: ${DATABASE_URL}
+        # BE-09c/P-B09c-2: build arg je DUMMY — `prisma generate` ne treba živu
+        # bazu, a pravi `DATABASE_URL` ne smije završiti u slojevima slike.
+        DATABASE_URL: postgresql://build:build@localhost:5432/fkgracanica
 
     environment:
       NODE_ENV: production
