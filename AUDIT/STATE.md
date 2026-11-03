@@ -7,8 +7,8 @@
 | Polje | Vrijednost |
 |-------|------------|
 | **Aktivna grana** | `arena/290a6f13-fkgracanica` |
-| **Trenutna faza** | CI-01 ✔ INF-01 ✔ INF-02 ✔ BE-01…**BE-08 ✔** → **BE-09 u toku (BE-09a implementiran; sljedeće BE-09b)** |
-| **Trenutni segment** | **BE-09a** (common/rbac/users/auth/prisma — 29 fajlova) — P-B09-1/2/5/7/8 implementirano, čeka zelen CI; sljedeće **BE-09b** |
+| **Trenutna faza** | CI-01 ✔ INF-01 ✔ INF-02 ✔ BE-01…**BE-08 ✔** → **BE-09 u toku (BE-09a ✔ ZATVOREN; BE-09b audit)** |
+| **Trenutni segment** | **BE-09b** (cms/news/gallery/media/upload — 20 fajlova) — audit u toku; **BE-09a ✅ ZATVOREN** (2026-11-03) |
 | **Zadnji commit** | `86b3179` docs(audit): BE-08 implementirani odobreni predlozi + matrica [BE-08] |
 | **Zadnji CI run** | ✅ **`41646963311` success** (`28fb5f2` — BE-09a docs/run-ID, sva 3 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41646963311 ; ✅ **`41646330945` success** (`d1d261d` — BE-09a implementacija, sva 3 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41646330945 ; ❌ `41644096377` (`3a78c94` — DI: PermissionsGuard tražio AuditService u controller specovima), ❌ `41644777234` (`b9d3bdf` — eslint unsafe-* u novim specovima), ❌ `41645566467` (`fd41c42` — matcher u users-account specu) — sve tri popravljeno; ranije ✅ **`41640408790` success** (`ff833ce` — BE-09a audit, sva 3 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41640408790 ; ✅ **`41639946345` success** (`719423d` — zatvaranje BE-08, sva 3 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41639946345 ; ✅ **`41638624709` success** (`86b3179` — BE-08 implementacija P-B08-1/2/3/4/5/7, sva 3 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41638624709 ; ranije ✅ **`41634063555` success** (`ed4df65` — BE-08 audit docs, sva 3 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41634063555 ; ranije ✅ **`41630034505` success** (`7b00aa9` — idempotencija + Q-15 + P-B07-6, sva 3 joba, 203 testa) https://github.com/mudzy992/fkgracanica/actions/runs/41630034505 ; ❌ `41629707127` (`19bf9ed` — 1 test tvrdio staro `includeMembership` ponašanje → popravljeno); ✅ `41627914148` (`c16385f`); ❌ `41627571734` (TS2724 import `PaymentProviderId`); ✅ BE-07 audit `41583848187`/`41584048206`/`41584323691` |
 | **check:all** | `npm run check:all` → **6/6** (check-coverage, file-size, console-ban, secrets-ban, layer-deps, docs-links); u CI-ju jobovi `audit-gate` + `standards`; pre-push hook pokreće `check:all` |
@@ -335,7 +335,7 @@
 - Backlog nakon zatvaranja: **P-B08-6** (pretraga, vidljivo — nije odobreno),
   Info nalazi B-08-08…B-08-11 (prihvaćeni kao stanje).
 
-### SEGMENT BE-09 — 2026-11-03 (U TOKU — BE-09a audit završen ✅)
+### SEGMENT BE-09 — 2026-11-03 (U TOKU — BE-09a ✅ ZATVOREN, BE-09b u toku)
 
 - **Zašto**: nakon BE-08 matrica je pokazivala **59 backend fajlova bez segmenta**
   (48 u `backend/src`, 1.948 LOC) — moduli BE-02/BE-04 pregledani su tada samo
@@ -382,9 +382,9 @@
 
 ## Šta je sljedeće (tačan sljedeći korak)
 
-1. **BE-09a** — implementacija odobrenih predloga ✔ lokalno; sljedeće:
-   push + `gh run watch` + run ID → izvještaj → **BE-09b** (20 fajlova:
-   cms/news/gallery/media/upload) → zatvaranje BE-09.
+1. **BE-09b** — audit 20 fajlova (`cms/`, `news/`, `gallery/`, `media/`,
+   `upload/`, `auth.service.spec.ts`): nalazi → predlozi → odobrenje →
+   implementacija → zatvaranje BE-09.
    Backlog (ne blokira): **P-B08-6**, P-B06-1/2, P-B02-1/2/3, P-B03-1,
    B-07-10…13.
    ⚠️ Deploy: potreban `prisma migrate deploy` za `20261103120000_…`
