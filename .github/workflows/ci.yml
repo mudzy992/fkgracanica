@@ -127,6 +127,11 @@ jobs:
           exit $code
       - name: frontend build (tsc -b + vite)
         run: npm run build -w frontend
+      # CI-04/B-CI04-03: monorepo ima dvije kopije Reacta (mobile/Expo pinuje
+      # 19.2.3, frontend 19.3.1) — bez `resolve.dedupe` bundle sadrži obje i
+      # stranica padne sa "Cannot read properties of null (reading 'useEffect')".
+      - name: frontend bundle (jedna kopija Reacta)
+        run: node scripts/standards/bundle-react.mjs
       - name: frontend test (vitest)
         run: npm run test -w frontend
       - name: frontend lint (oxlint)

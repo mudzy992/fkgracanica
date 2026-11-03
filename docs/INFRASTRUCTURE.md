@@ -57,6 +57,14 @@ Backend starta kroz `backend/docker-entrypoint.sh`, koji prije `prisma migrate d
 provjeri da `DATABASE_URL` postoji i da nije build placeholder, pa ispiše **maskiran**
 host.
 
+### Frontend build iz workspace-a — React dedupe (B-CI04-03)
+
+Frontend se gradi iz root workspace-a (CI-04), a `mobile` (Expo) pinuje drugu verziju
+Reacta od frontenda. Bez `resolve.dedupe: ['react', 'react-dom']` u
+`frontend/vite.config.ts` bundle dobije **dvije** kopije Reacta i stranica padne sa
+`Cannot read properties of null (reading 'useEffect')`. Guard:
+`node scripts/standards/bundle-react.mjs` (u `check:all` i u CI-u poslije builda).
+
 ### Dijagnostika na serveru
 
 ```bash

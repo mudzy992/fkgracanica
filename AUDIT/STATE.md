@@ -55,6 +55,13 @@ package.json are not in sync", `Missing: vitest@5.1.0`, `dompurify@3.4.17` …
   `env()` (placeholder za `generate`); novi `backend/docker-entrypoint.sh` radi
   preflight (fali URL / placeholder / maskiran ispis) prije `prisma migrate deploy`;
   `docker-context` guard zabranjuje tajne u `build.args`/`ARG`.
+- **B-CI04-03 (High) — frontend crn ekran poslije popravke builda:**
+  `TypeError: Cannot read properties of null (reading 'useEffect')`. Uzrok: monorepo
+  ima dvije kopije Reacta (`mobile`/Expo pinuje 19.2.3 hoistano u root, frontend traži
+  ^19.2.7 → 19.3.1) i otkad se frontend gradi iz root workspace-a obje uđu u bundle.
+  Fix: `resolve.dedupe: ['react','react-dom']` + novi guard `bundle-react`
+  (9. `check:all` provjera, i CI korak poslije frontend builda). Dokaz: bundle prije
+  fixa sadržavao 19.2.3 i 19.3.1, poslije samo 19.3.1.
 - **PAŽNJA:** Coolify gradi sa grane **`main`** — dok fix ne dođe na `main`, deploy
   će i dalje padati. `main` nije dobio ni FE-03/FE-03b izmjene.
 

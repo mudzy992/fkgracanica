@@ -13,6 +13,7 @@
  *   5. layer-deps                — nema cross-layer importa
  *   6. docs-links                — nema mrtvih relativnih linkova u docs/ i README
  *   7. docker-context            — Docker build kontekst: COPY putanje postoje, nema stranog locka
+ *   8. bundle-react              — frontend bundle sadrži samo jednu kopiju Reacta (skip bez dist/)
  *
  * Izlaz: KOJE / GDJE / ZAŠTO / KAKO po odstupanju; exit 1 ako bilo koji check padne.
  */
@@ -32,6 +33,7 @@ const CHECKS = [
   { name: 'layer-deps', script: join(HERE, 'layer-deps.mjs') },
   { name: 'docs-links', script: join(HERE, 'docs-links.mjs') },
   { name: 'docker-context', script: join(HERE, 'docker-context.mjs') },
+  { name: 'bundle-react', script: join(HERE, 'bundle-react.mjs') },
 ];
 
 function main() {
