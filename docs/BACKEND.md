@@ -49,6 +49,23 @@ npm run prisma:generate | prisma:migrate | prisma:seed | prisma:seed:rbac
   `DATABASE_URL`, `JWT_ACCESS_SECRET`, `JWT_REFRESH_SECRET` (jasna poruka).
   Tipizirana konfiguracija: `config/configuration.ts` (ključevi: `port`,
   `databaseUrl`, `corsOrigins`, …); nova env varijabla → tamo + `.env.example`.
+- **Plaćanja / ulaznice (BE-07)**:
+  - **Iznos određuje server**: `POST /payments/checkout/membership` **ne prima**
+    iznos — čita `membership.annualPrice` (`payments/membership-price.util.ts`).
+    Cijena ulaznice se računa iz kategorija (`ticketing-orders.service.ts`).
+  - **Validacija checkout bodyja**: `payments/checkout-validate.util.ts` —
+    nepoznat `provider`, prazan `orderId`/`sessionId` ili ne-http `successUrl`
+    → **400** (ranije 500).
+  - **Webhook potpisi**: Stripe `constructEvent` (raw body iz `main.ts`),
+    PayPal `verify-webhook-signature`, Monri `sha512(key+body)` +
+    `timingSafeEqual`; `payments/mobile-return` allowlist samo
+    `fkgracanica:`/`exp:`/`exps:`.
+  - **Monri forma**: `origin` mora biti sa allowliste
+    (`payments/payment-origin.util.ts` = `CORS_ORIGINS` + `API_PUBLIC_URL`)
+    → **`CORS_ORIGINS` mora sadržavati javni domen frontenda u produkciji**.
+  - **Pristup narudžbi**: `GET /ticketing/orders/:id` — vlasnik ili
+    `ticketing.manage` (inače 404); skeniranje ulaznice je atomsko
+    (`updateMany` + `count === 1`).
 - Realtime: Socket.IO path iz `SOCKET_IO_PATH` (default `/socket.io`), sobe `match:*`, `newsletter`.
 
 ## Queue / keš (opciono, TLS)

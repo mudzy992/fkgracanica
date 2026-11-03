@@ -7,8 +7,8 @@
 | Polje | Vrijednost |
 |-------|------------|
 | **Aktivna grana** | `arena/290a6f13-fkgracanica` |
-| **Trenutna faza** | CI-01 ✔ INF-01 ✔ INF-02 ✔ BE-01…BE-06 ✔ → **BE-07 u toku (audit završen, čekaju se odluke)** |
-| **Trenutni segment** | **BE-07** (članstvo + ulaznice + plaćanja — High: novac/QR); posljednji zatvoren **BE-06** (2026-11-02) |
+| **Trenutna faza** | CI-01 ✔ INF-01 ✔ INF-02 ✔ BE-01…BE-06 ✔ → **BE-07 u toku (5/7 predloga implementirano, 2 čekaju odluku)** |
+| **Trenutni segment** | **BE-07** (članstvo + ulaznice + plaćanja — High: novac/QR); implementirani P-B07-1/3/4/5/7; čekaju **P-B07-2** (idempotencija) i **P-B07-6** (cancel/refund) |
 | **Zadnji commit** | `eeb5532` docs(audit): BE-07 audit — 3 High nalaza + predlozi [BE-07] |
 | **Zadnji CI run** | ✅ **`41583848187` success** (`eeb5532` — BE-07 audit, sva 3 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41583848187 ; docs-push istog sadržaja **`41584048206` ✅** (`1b180da`, sva 3 joba); ranije: BE-06 `41539179038` ✅, `41538504328` ✅, BE-05 `41536083397`/`41535738687` ✅ |
 | **check:all** | `npm run check:all` → **6/6** (check-coverage, file-size, console-ban, secrets-ban, layer-deps, docs-links); u CI-ju jobovi `audit-gate` + `standards`; pre-push hook pokreće `check:all` |
@@ -222,7 +222,25 @@
 - CI ✅ **`41538504328`** (iz prve); matrica 39 redova → BE-06.
 - Segment dokument: `AUDIT/segments/BE-06.md` (Status segmenta: ZATVOREN).
 
-### SEGMENT BE-07 — 2026-11-03 (U TOKU — audit završen ✅)
+### SEGMENT BE-07 — 2026-11-03 (U TOKU — audit ✅ + 5 fixeva)
+
+- **Odobrenje „nastavi dalje"** → implementirano 5 invisible predloga:
+  - `4a721c7` **P-B07-1** (klijent je mogao platiti 0,01 KM za članstvo —
+    sada cijena iz `membership.annualPrice`, `membership-price.util.ts`) +
+    **P-B07-4** (`checkout-validate.util.ts`: provider allowlist, obavezni
+    id-evi, http(s) URL → **400** mj. 500; paginacija 1…100);
+  - `f5896ee` **P-B07-5** (`payment-origin.util.ts`: allowlist origin-a za
+    Monri formu = `CORS_ORIGINS` + `API_PUBLIC_URL`; `process.env` → `ConfigService`);
+  - `209336c` **P-B07-3** (**IDOR**: narudžbu sa QR kodovima vidio svaki
+    prijavljeni korisnik → sada vlasnik ili `ticketing.manage`, inače 404) +
+    **P-B07-7** (atomski claim ulaznice `updateMany` + `count===1`).
+  - **17 novih testova** (3 nova speca + IDOR/race u `ticketing.service.spec`).
+- **Čeka odluku**: P-B07-2 (idempotencija plaćanja — A `PaymentEvent`
+  tabela / B no-op na ACTIVE; Q-14), P-B07-6 (cancel/refund po statusima,
+  vidljivo), Q-15 (`Payment` red za članstvo).
+- `docs/BACKEND.md` dopunjen sekcijom „Plaćanja / ulaznice (BE-07)".
+
+### SEGMENT BE-07 — audit (2026-11-03)
 
 - Opseg: `membership/` 9 + `ticketing/` 21 + `payments/` 25 + `finance/` 10
   = **65 fajlova, 5.454 LOC, 10 speca, 35 testova**; sva 4 javna webhook-a
@@ -251,10 +269,9 @@
 
 ## Šta je sljedeće (tačan sljedeći korak)
 
-1. **BE-07** — audit ✔; sljedeće: **odluka korisnika o P-B07-1…7** →
-   implementacija (invisible prvo: P-B07-1/3/4/5/7), pa P-B07-2 po opciji
-   A/B, pa P-B07-6 uz odobrenje. Backlog (ne blokira): P-B06-1/2,
-   P-B02-1/2/3, P-B03-1.
+1. **BE-07** — audit ✔ + P-B07-1/3/4/5/7 ✔; sljedeće: **odluka o P-B07-2**
+   (A/B) i **P-B07-6** → zatvaranje segmenta. Backlog (ne blokira):
+   P-B06-1/2, P-B02-1/2/3, P-B03-1.
 2. Zatim BE-02…08 → FE → MOB → CI-02/03/04 → E2E-01 (INF-03 paralelno kad zatreba).
 3. Svaki segment: `AUDIT/segments/<ID>.md` + matrica + zelen CI + izvještaj (standard iz CI-01/INF-01/INF-02).
 
