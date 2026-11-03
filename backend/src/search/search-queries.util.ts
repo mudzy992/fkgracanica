@@ -3,6 +3,15 @@ import type { SearchFacet } from './dto/search-query.dto';
 
 const PREVIEW_LIMIT = 10;
 
+/**
+ * BE-08/P-B08-6 (odobreno 2026-11-03): pretraga je bila case-sensitive
+ * (`contains` bez `mode`), pa „gračanica” nije nalazilo „Gračanica”.
+ */
+const ci = (value: string) => ({
+  contains: value,
+  mode: 'insensitive' as const,
+});
+
 export function buildWhere(
   type: SearchFacet,
   q: string,
@@ -19,39 +28,39 @@ export function buildWhere(
     case 'news':
       return {
         status: ContentStatus.PUBLISHED,
-        OR: [{ title: { contains: q } }, { excerpt: { contains: q } }],
+        OR: [{ title: ci(q) }, { excerpt: ci(q) }],
       };
     case 'players':
       return {
-        OR: [{ firstName: { contains: q } }, { lastName: { contains: q } }],
+        OR: [{ firstName: ci(q) }, { lastName: ci(q) }],
       };
     case 'clubs':
-      return { name: { contains: q } };
+      return { name: ci(q) };
     case 'matches':
       return {
         OR: [
-          { venue: { contains: q } },
-          { homeClub: { name: { contains: q } } },
-          { awayClub: { name: { contains: q } } },
+          { venue: ci(q) },
+          { homeClub: { name: ci(q) } },
+          { awayClub: { name: ci(q) } },
         ],
       };
     case 'galleries':
-      return { status: ContentStatus.PUBLISHED, title: { contains: q } };
+      return { status: ContentStatus.PUBLISHED, title: ci(q) };
     case 'trophies':
       return {
-        OR: [{ name: { contains: q } }, { competition: { contains: q } }],
+        OR: [{ name: ci(q) }, { competition: ci(q) }],
       };
     case 'timeline':
       return {
-        OR: [{ title: { contains: q } }, { description: { contains: q } }],
+        OR: [{ title: ci(q) }, { description: ci(q) }],
       };
     case 'hallOfFame':
       return {
         OR: [
-          { name: { contains: q } },
-          { role: { contains: q } },
-          { bio: { contains: q } },
-          { years: { contains: q } },
+          { name: ci(q) },
+          { role: ci(q) },
+          { bio: ci(q) },
+          { years: ci(q) },
         ],
       };
   }

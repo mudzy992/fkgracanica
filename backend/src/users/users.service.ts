@@ -10,6 +10,7 @@ import { AuditService } from '../audit/audit.service';
 import { CreateUserDto, UpdateUserDto } from './dto/user.dto';
 import { PaginatedQueryDto } from '../common/dto/paginated-query.dto';
 import { paginate, parsePagination } from '../common/utils/pagination.util';
+import { usersOrderBy, usersSearchWhere } from './users-query.util';
 import {
   assertEmailAvailable,
   assertRoleIdsExist,
@@ -28,18 +29,8 @@ export class UsersService {
 
   async findAll(query: PaginatedQueryDto) {
     const params = parsePagination(query);
-    const where = {
-      deletedAt: null,
-      ...(params.search
-        ? {
-            OR: [
-              { email: { contains: params.search } },
-              { firstName: { contains: params.search } },
-              { lastName: { contains: params.search } },
-            ],
-          }
-        : {}),
-    };
+    const where = { deletedAt: null, ...usersSearchWhere(params.search) };
+    const orderBy = usersOrderBy(params);
     return paginate(
       params,
       (skip, take) =>
@@ -48,7 +39,7 @@ export class UsersService {
           skip,
           take,
           select: this.userSelect(),
-          orderBy: { createdAt: 'desc' },
+          orderBy,
         }),
       () => this.prisma.user.count({ where }),
     );
