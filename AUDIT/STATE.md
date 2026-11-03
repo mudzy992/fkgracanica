@@ -7,12 +7,10 @@
 | Polje | Vrijednost |
 |-------|------------|
 | **Aktivna grana** | `arena/290a6f13-fkgracanica` |
-| **Trenutna faza** | CI-01 ✔ INF-01 ✔ INF-02 ✔ BE-01…BE-05 ✔ **BE-06 ✔** → sljedeći: **BE-07** (članstvo + ulaznice + plaćanja — novac/QR, High) |
-| **Trenutni segment** | **BE-06 zatvoren 2026-11-02** (P-B06-1/2 otvoreni); sljedeći segment **BE-07** |
-| **Zadnji commit** | `991759c` test(backend): gateway spec [BE-06] | |
-| **Zadnji CI run** | ✅ **`41538504328` success** (`90b6021`+`991759c` — sva 3 joba, iz prve) https://github.com/mudzy992/fkgracanica/actions/runs/41538504328 ; BE-05: `41536083397` ✅, `41535738687` ✅ |
-| **Zadnji commit** | `d554c9d` test(backend): unit specevi settings/audit/notifikacije [BE-03] | |
-| **Zadnji CI run** | ✅ **`41526155487` success** (`80cc782` — zatvaranje BE-02); BE-02: `41525406239` ✅; BE-01: `41514035483` ✅, `41512922531` ✅, `41508476303` ✅; INF-02: `41505739758` ✅, `41504684855` ✅ |
+| **Trenutna faza** | CI-01 ✔ INF-01 ✔ INF-02 ✔ BE-01…BE-06 ✔ → **BE-07 u toku (audit završen, čekaju se odluke)** |
+| **Trenutni segment** | **BE-07** (članstvo + ulaznice + plaćanja — High: novac/QR); posljednji zatvoren **BE-06** (2026-11-02) |
+| **Zadnji commit** | _vidi `git log -1`_ (BE-07 audit commit) |
+| **Zadnji CI run** | ✅ **`41539179038` success** (BE-06 zatvaranje, sva 3 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41539179038 ; ranije: BE-06 `41538504328` ✅, BE-05 `41536083397`/`41535738687` ✅, BE-04 `41533952042` ✅ |
 | **check:all** | `npm run check:all` → **6/6** (check-coverage, file-size, console-ban, secrets-ban, layer-deps, docs-links); u CI-ju jobovi `audit-gate` + `standards`; pre-push hook pokreće `check:all` |
 
 ## Šta je urađeno (hronološki)
@@ -224,11 +222,39 @@
 - CI ✅ **`41538504328`** (iz prve); matrica 39 redova → BE-06.
 - Segment dokument: `AUDIT/segments/BE-06.md` (Status segmenta: ZATVOREN).
 
+### SEGMENT BE-07 — 2026-11-03 (U TOKU — audit završen ✅)
+
+- Opseg: `membership/` 9 + `ticketing/` 21 + `payments/` 25 + `finance/` 10
+  = **65 fajlova, 5.454 LOC, 10 speca, 35 testova**; sva 4 javna webhook-a
+  + `mobile-return` provjereni protiv aneksa od 70 javnih ruta ✓.
+- **Nalazi: 3 High + 6 Medium + 4 Low/Info + 8 eksplicitnih ✅ provjera**:
+  - **B-07-01 (High)** klijent šalje `amount` za članstvo → Stripe/PayPal
+    naplate proizvoljan iznos (Monri već koristi `membership.annualPrice`);
+  - **B-07-02 (High)** članstvo **nije idempotentno** — `confirm-session` +
+    webhook na `ACTIVE` članstvu dodaju +365 dana svaki put (nema
+    `Payment` reda za članstvo; ulaznice i sezonske su ispravne);
+  - **B-07-03 (High)** **IDOR**: `GET /ticketing/orders/:orderId` ignoriše
+    korisnika → curenje tuđih QR kodova (ulaz bez plaćanja);
+  - Medium: bez DTO (500 mj. 400), `process.env.API_PUBLIC_URL` u
+    `monri.provider`, `monri/form?origin=` bez allowlista, cancel/refund bez
+    provjere statusa, članstvo nema `Payment` red (finansije = procjena),
+    race na skeniranju ulaznice;
+  - ✅ zdravo: Stripe potpis (raw body), PayPal verify API, Monri
+    `sha512`+`timingSafeEqual`, `mobile-return` allowlist, QR
+    `randomBytes(16)`, serverska cijena ulaznice, limit blagajne/kapacitet.
+- **Predlozi P-B07-1…7** + pitanja **Q-14** (online obnova aktivnog
+  članstva?) i **Q-15** (`Payment` red za članstvo = šema) — **čekaju
+  izričitu riječ korisnika** (segment je novac/QR → bez izmjena koda do
+  odobrenja).
+- Matrica: 65 redova → BE-07 (`pregledano`/`pokriveno testom`).
+- Segment dokument: `AUDIT/segments/BE-07.md`.
+
 ## Šta je sljedeće (tačan sljedeći korak)
 
-1. **BE-07** (članstvo + ulaznice + plaćanja — **High: novac/QR**, zavisi
-   BE-02; audit: payment webhookovi već javni iz aneksa). Backlog predloga:
-   P-B06-1, P-B06-2, P-B02-1/2/3, P-B03-1 (ne blokiraju).
+1. **BE-07** — audit ✔; sljedeće: **odluka korisnika o P-B07-1…7** →
+   implementacija (invisible prvo: P-B07-1/3/4/5/7), pa P-B07-2 po opciji
+   A/B, pa P-B07-6 uz odobrenje. Backlog (ne blokira): P-B06-1/2,
+   P-B02-1/2/3, P-B03-1.
 2. Zatim BE-02…08 → FE → MOB → CI-02/03/04 → E2E-01 (INF-03 paralelno kad zatreba).
 3. Svaki segment: `AUDIT/segments/<ID>.md` + matrica + zelen CI + izvještaj (standard iz CI-01/INF-01/INF-02).
 
@@ -247,3 +273,5 @@
 - **Q-11** ✔ ODGOVORENO (D-006/„Odobravam preporuke"): **(a)** — throttler 100/60s + auth 10/60s + trust proxy
 - **Q-12** ✔ ODGOVORENO (D-006): **(a)** — audit javnih ruta u BE-01 (71), globalni APP_GUARD u **BE-02** s testovima
 - **Q-13** ✔ ODGOVORENO (D-006): **DA** — P2002→409, P2025→404, P2006→400 (implementirano + testovi)
+- **Q-14** (BE-07, traži odgovor): prodaje li se **obnova aktivnog članstva online**? (`PAYABLE_STATUSES` uključuje `ACTIVE`; odgovor bira P-B07-2 opciju A ili B)
+- **Q-15** (BE-07, traži odgovor): uvesti `Payment` red za članstvo (tačan prihod umjesto procjene) = **šema-dodatak** uz P-B07-2 (A)?
