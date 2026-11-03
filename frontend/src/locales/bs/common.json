@@ -13,7 +13,8 @@
     "hallOfFame": "Hall of Fame",
     "museum": "Muzej",
     "login": "Prijavi se",
-    "myAccount": "Moj račun"
+    "myAccount": "Moj račun",
+    "openMenu": "Otvori meni"
   },
   "actions": {
     "readMore": "Pročitaj više",
@@ -123,7 +124,8 @@
       "comms": "Komunikacija",
       "monetization": "Monetizacija"
     },
-    "unsavedChanges": "Ima nesačuvanih izmjena. Zatvoriti bez spremanja?"
+    "unsavedChanges": "Ima nesačuvanih izmjena. Zatvoriti bez spremanja?",
+    "openMenu": "Otvori meni"
   },
   "common": {
     "loading": "Učitavanje...",

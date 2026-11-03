@@ -13,7 +13,8 @@
     "hallOfFame": "Hall of Fame",
     "museum": "Museum",
     "login": "Sign in",
-    "myAccount": "My account"
+    "myAccount": "My account",
+    "openMenu": "Open menu"
   },
   "actions": {
     "readMore": "Read more",
@@ -123,7 +124,8 @@
       "comms": "Communication",
       "monetization": "Monetization"
     },
-    "unsavedChanges": "There are unsaved changes. Close without saving?"
+    "unsavedChanges": "There are unsaved changes. Close without saving?",
+    "openMenu": "Open menu"
   },
   "common": {
     "loading": "Loading...",

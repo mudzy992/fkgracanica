@@ -25,6 +25,7 @@ function SidebarFooter({ onLogout }: { onLogout: () => void }) {
 }
 
 export function AdminLayout() {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const { user, logout } = useAuth();
   const { data: publicSettings } = usePublicSettings();
@@ -78,7 +79,12 @@ export function AdminLayout() {
           </Link>
           <div className="flex items-center gap-1">
             <NotificationBell admin />
-            <Button variant="ghost" size="icon" onClick={() => setOpen(true)}>
+            <Button
+              variant="ghost"
+              size="icon"
+              aria-label={t('admin.openMenu', 'Otvori meni')}
+              onClick={() => setOpen(true)}
+            >
               <Menu className="h-5 w-5" />
             </Button>
           </div>
@@ -86,7 +92,9 @@ export function AdminLayout() {
 
         <Sheet open={open} onOpenChange={setOpen}>
           <div className="flex h-full flex-col">
-            <SheetHeader onClose={() => setOpen(false)}>Admin</SheetHeader>
+            <SheetHeader onClose={() => setOpen(false)}>
+              {t('admin.navGroup.overview', 'Admin')}
+            </SheetHeader>
             <SheetContent className="flex min-h-0 flex-1 flex-col overflow-hidden">
               <div className="min-h-0 flex-1 overflow-y-auto">
                 <AdminSidebarNav groups={navGroups} onNavigate={() => setOpen(false)} />

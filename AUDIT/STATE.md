@@ -7,13 +7,29 @@
 | Polje | Vrijednost |
 |-------|------------|
 | **Aktivna grana** | `arena/290a6f13-fkgracanica` |
-| **Trenutna faza** | CI-01 ✔ INF-01 ✔ INF-02 ✔ BE-01…**BE-09 ✔** → FE-01 ✔ FE-02 ✔ FE-03 ✔ FE-03b ✔ → CI-04 ✔ → FE-04a ✔ **FE-04b ✔** → sljedeće: **FE-04c** (i18n admin) ili **FE-05** (interna IA) |
-| **Trenutni segment** | **FE-04b ✅ ZATVOREN** (a11y 43 aria-label, dirty-guard u formama, error feedback) ; prije: **FE-04a ✅**, **CI-04 ✅**, **FE-03b ✅**, **FE-03 ✅**, **FE-02 ✅**, **FE-01 ✅**, **BE-09c ✅** |
+| **Trenutna faza** | CI-01 ✔ INF-01 ✔ INF-02 ✔ BE-01…**BE-09 ✔** → FE-01 ✔ FE-02 ✔ FE-03 ✔ FE-03b ✔ → CI-04 ✔ → FE-04a ✔ FE-04b ✔ → **FE-05 (djelimično: a11y + IA guard; vidljive IA promjene čekaju odobrenje)** |
+| **Trenutni segment** | **FE-05 — DJELIMIČNO** (aria-label u layoutima, IA guard test; **P-FE05-3/4/5 čekaju odobrenje**) ; prije: **FE-04b ✅**, **FE-04a ✅**, **CI-04 ✅**, **FE-03b ✅**, **FE-03 ✅**, **FE-02 ✅**, **FE-01 ✅**, **BE-09c ✅** |
 | **Zadnji commit** | `fb6db21` fix(frontend): a11y labele, dirty-guard i error feedback u admin formama [FE-04b] |
 | **Zadnji CI run** | ✅ **`41728094543` success** (`fb6db21` — FE-04b forme/a11y/dirty-guard, sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41728094543 ; ✅ **`41725081358`**, **`41724729510`** (FE-04a admin liste) ; ✅ **`41719477554`**, **`41719000159`** (CI-04 React dedupe) ; ✅ **`41716321472`**, **`41715938871`** (build-arg fix + entrypoint) ; ✅ **`41713331928`**, **`41712830091`**, **`41707559600`**, **`41707129119`** (env/Docker dijagnostika) ; ✅ **`41702499943`**, **`41702051432`** (lock fix) ; ✅ **`41697059984`**, **`41696508780`** (FE-03b) ; ✅ **`41694786018`**, **`41694299634`**, **`41693656143`**, **`41671042459`** (FE-03) ; ✅ **`41668846835`**, **`41668139741`** (FE-02) ; ✅ **`41666815620`**, **`41666291342`**, **`41665768088`** (FE-01) ; ✅ **`41663810393`**, **`41663339512`**, **`41662863623`** (BE-09) ; ranije BE serija: `41662277103`, `41661451237`❌→fix, `41660810750`❌→fix, `41658424979`, `41657925166`, `41655487255`, `41654943345`, `41654422296`❌→fix, `41652033940`, `41651332872`, `41647575733`, `41646963311`, `41646330945`, `41644096377`❌/`41644777234`❌/`41645566467`❌→fix, `41640408790`, `41639946345`, `41638624709`, `41634063555`, `41630034505`, `41629707127`❌→fix, `41627914148`, `41583848187` |
 | **check:all** | `npm run check:all` → **7/7** (check-coverage, file-size, console-ban, **token-check**, secrets-ban, layer-deps, docs-links); u CI-ju jobovi `audit-gate` + `standards`; pre-push hook pokreće `check:all` |
 
 ## Šta je urađeno (hronološki)
+
+### Sesija FE-05 — 2026-11-03 (interna IA; KAPIJA 2)
+
+Korisnik: „Može kreni sa sljedećim korakom."
+
+- **B-FE05-02 (a11y):** 3 icon-only dugmeta u layoutima bez `aria-label`
+  (admin + javni hamburger, dugme pretrage) → popravljeno, `3 → 0`;
+  **mobilni meni se prije nije mogao pronaći ekranskim čitačem**.
+- **B-FE05-01 (IA):** 147 admin stranica, 20 stavki menija, **bez pretrage i breadcrumbsa**.
+  Predlozi P-FE05-3 (komandna paleta ⌘K), P-FE05-4 (breadcrumbs), P-FE05-5
+  (8 → 6 grupa u sidebaru) — **vidljive promjene, čekaju odobrenje**.
+- **B-FE05-05 (guard):** novi `router/admin-nav-ia.test.ts` — pada ako stavka menija
+  pokazuje na nepostojeću rutu ili ako admin stranica nema ulaz (siroče). Dokazano
+  pozitivnim testom. Trenutno: 0 mrtvih linkova, 0 siročića.
+- Zdravo: nav filtriran po dozvolama **i** modulima; 5 rolnih početnih stranica;
+  javni meni CMS-driven sa fallbackom; aktivna grupa se auto-otvara na mobilnom.
 
 ### Sesija FE-04b — 2026-11-03 (admin: forme i editori)
 

@@ -82,11 +82,17 @@ export function PublicLayout() {
               <PublicAuthButton />
             </div>
             <Link to="/pretraga" aria-label={t('nav.search')}>
-              <Button variant="ghost" size="icon">
+              <Button variant="ghost" size="icon" aria-label={t('nav.search')}>
                 <Search className="h-5 w-5" />
               </Button>
             </Link>
-            <Button variant="ghost" size="icon" className="lg:hidden" onClick={() => setOpen(true)}>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="lg:hidden"
+              aria-label={t('nav.openMenu', 'Otvori meni')}
+              onClick={() => setOpen(true)}
+            >
               <Menu className="h-5 w-5" />
             </Button>
           </div>
@@ -114,7 +120,12 @@ export function PublicLayout() {
         <Outlet />
       </main>
 
-      <PublicFooter clubName={clubName} crestUrl={crestUrl} footerText={footerText} navItems={navItems} />
+      <PublicFooter
+        clubName={clubName}
+        crestUrl={crestUrl}
+        footerText={footerText}
+        navItems={navItems}
+      />
     </div>
   );
 }
