@@ -48,10 +48,25 @@ export async function scanAdmission(
   }
   assertPaidTicket(ticket.status);
   if (!commit) return { kind: 'ticket' as const, ...ticket };
-  const row = await prisma.ticket.update({
-    where: { id: ticket.id },
+  // BE-07/P-B07-7: atomski „claim“ (check-then-update je puštao istu ulaznicu
+  // dva puta kroz dva skenera). `updateMany` sa uslovom statusa: tačno jedan
+  // skener dobije `count === 1`.
+  const claimed = await prisma.ticket.updateMany({
+    where: { id: ticket.id, status: TicketStatus.PAID_AT_BOX_OFFICE },
     data: { status: TicketStatus.USED },
+  });
+  if (claimed.count !== 1) {
+    const fresh = await prisma.ticket.findUnique({
+      where: { id: ticket.id },
+      include: TICKET_SCAN_INCLUDE,
+    });
+    if (fresh) assertPaidTicket(fresh.status);
+    throw new NotFoundException('Ulaznica nije pronađena');
+  }
+  const row = await prisma.ticket.findUnique({
+    where: { id: ticket.id },
     include: TICKET_SCAN_INCLUDE,
   });
+  if (!row) throw new NotFoundException('Ulaznica nije pronađena');
   return { kind: 'ticket' as const, ...row };
 }

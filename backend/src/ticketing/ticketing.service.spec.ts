@@ -4,10 +4,12 @@ import { TicketingService } from './ticketing.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { PaymentsReadinessService } from '../payments/payments-readiness.service';
 import { TicketingOrdersService } from './ticketing-orders.service';
+import type { AuthUser } from '../common/types/auth-user.type';
 
 describe('TicketingService.validateTicket', () => {
   const prismaMock = {
-    ticket: { findUnique: jest.fn(), update: jest.fn() },
+    ticket: { findUnique: jest.fn(), update: jest.fn(), updateMany: jest.fn() },
+    ticketOrder: { findUnique: jest.fn() },
     seasonPass: { findUnique: jest.fn() },
     membershipCard: { findUnique: jest.fn() },
   };
@@ -62,28 +64,40 @@ describe('TicketingService.validateTicket', () => {
     await expect(service.validateTicket('ticket_abc')).rejects.toThrow(
       BadRequestException,
     );
-    expect(prismaMock.ticket.update).not.toHaveBeenCalled();
+    expect(prismaMock.ticket.updateMany).not.toHaveBeenCalled();
   });
 
   it('marks PAID_AT_BOX_OFFICE as USED', async () => {
-    prismaMock.ticket.findUnique.mockResolvedValue(baseTicket);
-    prismaMock.ticket.update.mockResolvedValue({
-      ...baseTicket,
-      status: TicketStatus.USED,
-    });
+    prismaMock.ticket.findUnique
+      .mockResolvedValueOnce(baseTicket)
+      .mockResolvedValueOnce({ ...baseTicket, status: TicketStatus.USED });
+    prismaMock.ticket.updateMany.mockResolvedValue({ count: 1 });
 
     const result = await service.validateTicket('ticket_abc');
 
-    expect(prismaMock.ticket.update).toHaveBeenCalledWith(
-      expect.objectContaining({ data: { status: TicketStatus.USED } }),
-    );
+    // BE-07/P-B07-7: atomski claim umjesto check-then-update.
+    expect(prismaMock.ticket.updateMany).toHaveBeenCalledWith({
+      where: { id: 't1', status: TicketStatus.PAID_AT_BOX_OFFICE },
+      data: { status: TicketStatus.USED },
+    });
     expect(result.status).toBe(TicketStatus.USED);
+  });
+
+  it('second scanner loses the race (count 0) → 400, not double entry', async () => {
+    prismaMock.ticket.findUnique
+      .mockResolvedValueOnce(baseTicket)
+      .mockResolvedValueOnce({ ...baseTicket, status: TicketStatus.USED });
+    prismaMock.ticket.updateMany.mockResolvedValue({ count: 0 });
+
+    await expect(service.validateTicket('ticket_abc')).rejects.toThrow(
+      BadRequestException,
+    );
   });
 
   it('inspect does not mark ticket USED', async () => {
     prismaMock.ticket.findUnique.mockResolvedValue(baseTicket);
     const result = await service.inspectTicket('ticket_abc');
-    expect(prismaMock.ticket.update).not.toHaveBeenCalled();
+    expect(prismaMock.ticket.updateMany).not.toHaveBeenCalled();
     expect(result).toMatchObject({
       kind: 'ticket',
       status: TicketStatus.PAID_AT_BOX_OFFICE,
@@ -97,6 +111,43 @@ describe('TicketingService.validateTicket', () => {
     });
     await expect(service.validateTicket('ticket_abc')).rejects.toThrow(
       BadRequestException,
+    );
+  });
+});
+
+describe('TicketingService.findOrderById (BE-07 / P-B07-3)', () => {
+  const order = { id: 'o1', userId: 'u1', tickets: [{ qrCode: 'secret' }] };
+  const prismaMock = {
+    ticketOrder: { findUnique: jest.fn().mockResolvedValue(order) },
+  };
+  const service = new TicketingService(
+    prismaMock as unknown as PrismaService,
+    {} as PaymentsReadinessService,
+    {} as TicketingOrdersService,
+    {} as import('../jobs/jobs.module').JobsService,
+    {} as import('../notifications/notifications.service').NotificationsService,
+  );
+  const user = (id: string, permissions: string[] = []): AuthUser => ({
+    id,
+    email: `${id}@t.com`,
+    permissions,
+  });
+
+  it('owner sees own order', async () => {
+    await expect(
+      service.findOrderById('o1', user('u1')),
+    ).resolves.toMatchObject({ id: 'o1' });
+  });
+
+  it('admin with ticketing.manage sees any order', async () => {
+    await expect(
+      service.findOrderById('o1', user('admin', ['ticketing.manage'])),
+    ).resolves.toMatchObject({ id: 'o1' });
+  });
+
+  it('other signed-in user gets 404 (QR codes were leaking)', async () => {
+    await expect(service.findOrderById('o1', user('u2'))).rejects.toThrow(
+      NotFoundException,
     );
   });
 });

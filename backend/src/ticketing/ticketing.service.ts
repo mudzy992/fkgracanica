@@ -21,6 +21,7 @@ import {
   getMaxBoxOfficeTicketsPerUser,
 } from './ticketing-user-limits.util';
 import type { TicketPaymentIntent } from './ticketing-sales.util';
+import type { AuthUser } from '../common/types/auth-user.type';
 
 @Injectable()
 export class TicketingService {
@@ -145,12 +146,22 @@ export class TicketingService {
     });
   }
 
-  async findOrderById(orderId: string) {
+  /**
+   * BE-07/P-B07-3: narudžbu vidi samo vlasnik ili `ticketing.manage`.
+   * Prije je `user` bio ignorisan → bilo koji prijavljeni korisnik je mogao
+   * pročitati tuđu narudžbu **sa svim QR kodovima** (ulaz bez plaćanja).
+   * Za neovlaštene: 404 (ne otkrivamo ni postojanje narudžbe).
+   */
+  async findOrderById(orderId: string, user: AuthUser) {
     const order = await this.prisma.ticketOrder.findUnique({
       where: { id: orderId },
       include: ticketOrderInclude,
     });
     if (!order) throw new NotFoundException('Narudžba nije pronađena');
+    const canManage = (user?.permissions ?? []).includes('ticketing.manage');
+    if (order.userId !== user?.id && !canManage) {
+      throw new NotFoundException('Narudžba nije pronađena');
+    }
     return order;
   }
 }
