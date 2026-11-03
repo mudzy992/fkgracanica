@@ -110,15 +110,28 @@ export class TicketingOrdersService {
     });
   }
 
+  /**
+   * BE-07/P-B07-6: povrat je moguć samo za **plaćenu** narudžbu čije ulaznice
+   * nisu iskorištene. Prije se mogao zatražiti povrat za neplaćenu (`pending`)
+   * narudžbu — i time ugasiti ulaznice bez ikakve uplate.
+   */
   async requestRefund(orderId: string, userId: string) {
     const order = await this.prisma.ticketOrder.findFirst({
       where: { id: orderId, userId },
-      include: { tickets: true },
+      include: { tickets: true, payment: true },
     });
     if (!order) throw new NotFoundException('Narudžba nije pronađena');
+    if (order.status !== 'paid' || order.payment?.status !== 'CONFIRMED') {
+      throw new BadRequestException('Povrat je moguć samo za plaćenu narudžbu');
+    }
+    if (order.tickets.some((t) => t.status === TicketStatus.USED)) {
+      throw new BadRequestException(
+        'Ulaznice su već iskorištene — povrat nije moguć',
+      );
+    }
     await this.prisma.ticket.updateMany({
       where: { orderId },
-      data: { status: TicketStatus.CANCELLED },
+      data: { status: TicketStatus.REFUND_REQUESTED },
     });
     return this.prisma.ticketOrder.update({
       where: { id: orderId },
@@ -162,10 +175,16 @@ export class TicketingOrdersService {
     if (order.status !== 'refund_requested') {
       throw new BadRequestException('Narudžba nije u statusu za povrat');
     }
-    await this.prisma.ticketOrder.update({
-      where: { id: orderId },
-      data: { status: 'refunded' },
-    });
+    await this.prisma.$transaction([
+      this.prisma.ticket.updateMany({
+        where: { orderId },
+        data: { status: TicketStatus.CANCELLED },
+      }),
+      this.prisma.ticketOrder.update({
+        where: { id: orderId },
+        data: { status: 'refunded' },
+      }),
+    ]);
     if (order.payment) {
       await this.prisma.payment.update({
         where: { id: order.payment.id },
@@ -190,6 +209,12 @@ export class TicketingOrdersService {
     if (order.status === 'cancelled' || order.status === 'refunded') {
       throw new BadRequestException('Narudžba je već zatvorena');
     }
+    // BE-07/P-B07-6: plaćena narudžba ide kroz povrat (novac nazad + evidencija).
+    if (order.status === 'paid' || order.status === 'refund_requested') {
+      throw new BadRequestException(
+        'Plaćena narudžba se ne otkazuje — koristite povrat',
+      );
+    }
     await this.prisma.ticket.updateMany({
       where: { orderId },
       data: { status: TicketStatus.CANCELLED },
@@ -212,15 +237,33 @@ export class TicketingOrdersService {
     });
   }
 
+  /**
+   * BE-07/P-B07-6: korisnik može otkazati samo **neplaćenu** narudžbu.
+   * Plaćena ide kroz `requestRefund` (novac se vraća, evidencija ostaje tačna);
+   * prije je otkazivanje plaćene narudžbe ostavljalo payment `CONFIRMED`,
+   * a ulaznice `CANCELLED`.
+   */
   async cancelOrder(orderId: string, userId: string) {
     const order = await this.prisma.ticketOrder.findFirst({
       where: { id: orderId, userId },
+      include: { payment: true },
     });
     if (!order) throw new NotFoundException('Narudžba nije pronađena');
+    if (order.status !== 'pending' || order.payment?.status === 'CONFIRMED') {
+      throw new BadRequestException(
+        'Plaćena narudžba se ne može otkazati — zatražite povrat',
+      );
+    }
     await this.prisma.ticket.updateMany({
       where: { orderId },
       data: { status: TicketStatus.CANCELLED },
     });
+    if (order.payment) {
+      await this.prisma.payment.update({
+        where: { id: order.payment.id },
+        data: { status: PaymentStatus.CANCELLED },
+      });
+    }
     return this.prisma.ticketOrder.update({
       where: { id: orderId },
       data: { status: 'cancelled' },
