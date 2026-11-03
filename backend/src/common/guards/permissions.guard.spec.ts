@@ -137,6 +137,25 @@ describe('PermissionsGuard (BE-09 / P-B09-7)', () => {
     );
   });
 
+  it('radi i bez AuditService-a (jedinični test bez DI)', async () => {
+    const reflector = {
+      getAllAndOverride: () => ['users.read'],
+    } as unknown as Reflector;
+    const context = {
+      getHandler: () => () => undefined,
+      getClass: () => class {},
+      switchToHttp: () => ({
+        getRequest: () => ({
+          user: { id: 'u1', email: 'a@b.c', permissions: [] },
+        }),
+      }),
+    } as unknown as ExecutionContext;
+    const guard = new PermissionsGuard(reflector);
+    await expect(guard.canActivate(context)).rejects.toBeInstanceOf(
+      ForbiddenException,
+    );
+  });
+
   it('traži dozvolu i preko klase (getAllAndOverride)', async () => {
     const { guard, context } = makeGuard(
       { [PERMISSIONS_ANY_KEY]: ['rbac.read', 'rbac.update'] },

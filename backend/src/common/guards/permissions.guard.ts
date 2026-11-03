@@ -3,6 +3,7 @@ import {
   ExecutionContext,
   ForbiddenException,
   Injectable,
+  Optional,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { AuditService } from '../../audit/audit.service';
@@ -24,7 +25,9 @@ interface GuardedRequest {
 export class PermissionsGuard implements CanActivate {
   constructor(
     private readonly reflector: Reflector,
-    private readonly audit: AuditService,
+    // `@Optional()`: jedinični testovi grade guard bez AuditService-a; u
+    // aplikaciji je AuditModule `@Global`, pa je servis uvijek prisutan.
+    @Optional() private readonly audit?: AuditService,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -68,7 +71,7 @@ export class PermissionsGuard implements CanActivate {
   ): Promise<never> {
     const request = context.switchToHttp().getRequest<GuardedRequest>();
     try {
-      await this.audit.log({
+      await this.audit?.log({
         actorId: request.user?.id,
         action: 'authz.denied',
         entity: 'Route',
