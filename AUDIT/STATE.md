@@ -7,8 +7,8 @@
 | Polje | Vrijednost |
 |-------|------------|
 | **Aktivna grana** | `arena/290a6f13-fkgracanica` |
-| **Trenutna faza** | CI-01 ✔ INF-01 ✔ INF-02 ✔ BE-01…BE-07 ✔ → sljedeći: **BE-08** (showcase, SEO, pretraga, dashboard, app-releases, health, muzej, hall-of-fame, timeline, trofeji, sponzori) |
-| **Trenutni segment** | **BE-07 ZATVOREN 2026-11-03** (P-B07-1…7 + Q-15); sljedeći segment **BE-08** |
+| **Trenutna faza** | CI-01 ✔ INF-01 ✔ INF-02 ✔ BE-01…BE-07 ✔ → **BE-08 u toku (audit završen, čekaju se odluke)** |
+| **Trenutni segment** | **BE-08** (showcase/SEO/pretraga/dashboard/app-releases/health/nasljeđe) — audit ✔, 7 predloga čeka odluku; posljednji zatvoren **BE-07** |
 | **Zadnji commit** | `7b00aa9` test(finance): includeMembership + izvoz clanstva (Q-15) [BE-07] |
 | **Zadnji CI run** | ✅ **`41630034505` success** (`7b00aa9` — idempotencija + Q-15 + P-B07-6, sva 3 joba, 203 testa) https://github.com/mudzy992/fkgracanica/actions/runs/41630034505 ; ❌ `41629707127` (`19bf9ed` — 1 test tvrdio staro `includeMembership` ponašanje → popravljeno); ✅ `41627914148` (`c16385f`); ❌ `41627571734` (TS2724 import `PaymentProviderId`); ✅ BE-07 audit `41583848187`/`41584048206`/`41584323691` |
 | **check:all** | `npm run check:all` → **6/6** (check-coverage, file-size, console-ban, secrets-ban, layer-deps, docs-links); u CI-ju jobovi `audit-gate` + `standards`; pre-push hook pokreće `check:all` |
@@ -288,11 +288,32 @@
 - Matrica: 65 redova → BE-07 (`pregledano`/`pokriveno testom`).
 - Segment dokument: `AUDIT/segments/BE-07.md`.
 
+### SEGMENT BE-08 — 2026-11-03 (U TOKU — audit završen ✅)
+
+- Opseg: `showcase` 10 + `seo` 9 + `search` 5 + `dashboard` 3 +
+  `app-releases` 8 + `health` 2 + `museum` 3 + `hall-of-fame` 3 +
+  `club-timeline` 3 + `trophies` 3 + `sponsors` 3 = **52 fajla, 2.744 LOC,
+  samo 2 speca (3 testa)**; svih 13 javnih ruta provjereno protiv aneksa (70/70).
+- **Nalazi: 3 Medium + 4 Low + 5 Info + 1 ✅ blok**:
+  - **B-08-01 (Medium)** mass assignment u 5 CRUD modula (sirovi body →
+    `prisma.create/update`, `data as never`; `ids` bez validacije → 500);
+  - **B-08-02 (Medium)** APK upload do **200 MB u RAM** (`memoryStorage`);
+  - **B-08-03 (Medium)** `GET /seo/share?path=` prihvata apsolutni URL →
+    OG meta sa tuđim domenom;
+  - Low: `process.env` u `seo/` (3×) + sirovi `UPLOAD_PATH` u app-releases
+    (P2 konvencija), sitemap bez XML escape-a, pretraga case-sensitive bez
+    `MaxLength`, pokrivenost 2 speca;
+  - ✅ zdravo: sve write rute iza `*.manage`/`dashboard.read`, APK traversal
+    guard + streaming, sitemap/robots bez tajni, share resolveri samo PUBLISHED.
+- **Predlozi P-B08-1…7** čekaju izričitu riječ korisnika.
+- Matrica: 52 reda → BE-08.
+- Segment dokument: `AUDIT/segments/BE-08.md`.
+
 ## Šta je sljedeće (tačan sljedeći korak)
 
-1. **BE-08** (showcase, SEO, pretraga, dashboard, app-releases, health,
-   muzej, hall-of-fame, club-timeline, trofeji, sponzori) — audit-first.
-   Backlog (ne blokira): P-B06-1/2, P-B02-1/2/3, P-B03-1, B-07-10…13.
+1. **BE-08** — audit ✔; sljedeće: **odluka o P-B08-1…7** → implementacija
+   (invisible prvo: P-B08-1/2/3/4/5/7), pa P-B08-6 (vidljivo, pretraga) uz
+   odobrenje. Backlog (ne blokira): P-B06-1/2, P-B02-1/2/3, P-B03-1, B-07-10…13.
    ⚠️ Deploy: potreban `prisma migrate deploy` za `20261103120000_…`
    (PaymentEvent + Payment.membershipId).
 2. Zatim BE-02…08 → FE → MOB → CI-02/03/04 → E2E-01 (INF-03 paralelno kad zatreba).
