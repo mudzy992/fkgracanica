@@ -290,6 +290,8 @@ model CmsMenuItem {
   updatedAt   DateTime      @updatedAt
 
   @@index([menuId, sortOrder])
+  @@index([pageId])
+  @@index([parentId])
 }
 
 // ─── News & Comments ─────────────────────────────────────────
@@ -333,6 +335,8 @@ model News {
   @@index([publishedAt])
   @@index([scheduledAt])
   @@index([categoryId])
+  @@index([authorId])
+  @@index([galleryId])
 }
 
 model NewsMatch {
@@ -379,6 +383,7 @@ model Comment {
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([newsId])
+  @@index([userId])
 }
 
 // ─── Gallery ─────────────────────────────────────────────────
@@ -735,6 +740,8 @@ model Match {
   @@index([roundId])
   @@index([status])
   @@index([scheduledAt])
+  @@index([homeClubId])
+  @@index([awayClubId])
 }
 
 model MatchHighlight {
@@ -794,6 +801,9 @@ model MatchEvent {
   createdBy   User?          @relation("EventCreator", fields: [createdById], references: [id], onDelete: SetNull)
 
   @@index([matchId])
+  @@index([playerId])
+  @@index([relatedPlayerId])
+  @@index([createdById])
 }
 
 model MatchLineup {
@@ -824,6 +834,7 @@ model LiveComment {
   user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
 
   @@index([matchId])
+  @@index([userId])
 }
 
 model PlayerStatistics {
@@ -917,6 +928,7 @@ model Ticket {
 
   @@index([matchId])
   @@index([status])
+  @@index([orderId])
 }
 
 model TicketOrder {
@@ -989,6 +1001,7 @@ model ContactMessage {
   user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
 
   @@index([isRead])
+  @@index([userId])
 }
 
 model NewsletterSubscriber {
@@ -1085,6 +1098,7 @@ model AppRelease {
 
   @@unique([platform, versionCode])
   @@index([platform, status, versionCode])
+  @@index([createdById])
 }
 
 model SeasonPassAdmission {
