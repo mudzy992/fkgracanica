@@ -22,6 +22,17 @@
 | `browser-mock` | Izolovani API mock i axe | P-FE06-1/3; nije full-stack |
 | `e2e` | `postgres:16` + `redis:7` servisi → `prisma migrate deploy` → `prisma:seed` (RBAC + settings + admin + demo) → `npm run test:e2e` | **BE-09c/P-B09c-4**: e2e suite (8 specova) se prije nije izvršavao nigdje; sada je pokriven u CI-ju |
 
+Full-stack projekat koristi lokalni HTTP isolation-proxy: propušta samo
+`127.0.0.1` testni web origin, odbija druge origine, CONNECT, plaćanja i
+nedozvoljene API mutacije. Chromium `bypass: <-loopback>` sprečava tihi
+zaobilazak proxyja za localhost; fixture i dalje prijavljuje pokušaj zabranjene
+mutacije. Posebni unit i browser testovi provjeravaju blokade i lokalni
+Socket.IO upgrade. Statički JS se ne presreće kroz Playwright `context.route`;
+mock projekti zadržavaju svoje route mockove. Dva full-stack scenarija izvršavaju
+se **3× sekvencijalno** na izolovanim servisima, bez automatskog retryja.
+Za alternativni port postaviti `E2E_PORT` i po potrebi `E2E_PROXY_PORT`
+(podrazumijevano sljedeći broj). Ovo nije produkcijska mrežna barijera.
+
 Sve skripte su **zero-dep** (node built-ins) — ne zavise od `node_modules` osim gdje je navedeno.
 
 ## Lokalno (isti pipeline kao CI)

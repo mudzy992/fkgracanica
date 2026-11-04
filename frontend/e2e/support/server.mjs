@@ -2,6 +2,7 @@ import http from 'node:http';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createOgApp } from '../../server/og-server.mjs';
+import { createIsolationProxy } from './isolation-proxy.mjs';
 
 /** Browser testovi smiju se povezati samo s lokalnim, izolovanim backendom. */
 export function createBrowserTestServer({ backendUrl = 'http://127.0.0.1:3000', distDir } = {}) {
@@ -52,7 +53,12 @@ export function createBrowserTestServer({ backendUrl = 'http://127.0.0.1:3000', 
 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   const port = Number(process.env.E2E_PORT ?? 4173);
-  createBrowserTestServer({ backendUrl: process.env.E2E_BACKEND_URL }).listen(port, '0.0.0.0', () => {
-    console.log(`[browser-test-server] :${port}`);
+  const isolationPort = Number(process.env.E2E_PROXY_PORT ?? port + 1);
+  if (!Number.isInteger(port) || !Number.isInteger(isolationPort) || port < 1 || isolationPort < 1 ||
+    port > 65535 || isolationPort > 65535 || port === isolationPort) throw new Error('Neispravni browser test portovi');
+  const server = createBrowserTestServer({ backendUrl: process.env.E2E_BACKEND_URL });
+  createIsolationProxy({ origin: `http://127.0.0.1:${port}` }).listen(isolationPort, '127.0.0.1', () => {
+    // Playwright provjerava samo app port: ne oglašavati ga prije mrežne granice.
+    server.listen(port, '0.0.0.0', () => console.log(`[browser-test-server] :${port}`));
   });
 }
