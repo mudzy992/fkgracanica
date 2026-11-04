@@ -3,7 +3,7 @@ import { test as base, expect, type Route } from '@playwright/test';
 interface MockState { calls: string[]; unexpected: string[]; blocked: string[] }
 const user = {
   id: 'mock-user', email: 'audit@example.test', firstName: 'Test', lastName: 'User',
-  permissions: ['settings.read', 'dashboard.read', 'news.read', 'media.read', 'media.manage', 'media.upload'],
+  permissions: ['settings.read', 'dashboard.read', 'news.read', 'news.manage', 'media.read', 'media.manage', 'media.upload', 'ticketing.manage'],
 };
 
 async function respond(route: Route, state: MockState) {
@@ -35,7 +35,7 @@ async function respond(route: Route, state: MockState) {
     case 'GET /media/folders': body = [{ id: 'folder-1', name: 'Fotografije', parentId: null, _count: { assets: 0 } }]; break;
     case 'GET /media/assets': body = { data: [], meta: { total: 0, page: 1, totalPages: 1, limit: 20 } }; break;
     case 'DELETE /media/folders/folder-1': body = { ok: true }; break;
-    case 'GET /news-categories': case 'GET /news/published': case 'GET /matches': body = []; break;
+    case 'GET /news-categories': case 'GET /news': case 'GET /news/published': case 'GET /matches': body = []; break;
     case 'GET /public/app-releases/android/latest': status = 404; body = { message: 'No test release' }; break;
     case 'POST /public-analytics/visit': body = { ok: true }; break;
     default: state.unexpected.push(key); status = 501; body = { message: 'Unexpected isolated mock request' };

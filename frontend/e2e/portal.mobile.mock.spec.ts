@@ -48,6 +48,7 @@ test('uski web: admin navigacija, notifikacije i medijske mape', async ({ page, 
   await page.getByRole('button', { name: 'Otvori meni' }).click();
   const adminMenu = page.locator('dialog[data-sheet-modal][open]');
   await expectNoSeriousA11y(page, 'mobilni admin meni');
+  await adminMenu.getByRole('button', { name: 'Sadržaj' }).click();
   await adminMenu.locator('a[href="/admin/media"]').click();
   await expect(page).toHaveURL(/\/admin\/media$/);
   await expect(adminMenu).toHaveCount(0);

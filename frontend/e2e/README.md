@@ -23,3 +23,12 @@ Axe provjerava WCAG 2.0/2.1/2.2 A/AA tagove bez isključenih pravila; CI pada na
 sliku bez `alt` i potvrđuje da gate zaista nalazi problem. Ovaj ograničeni skup
 nije WCAG certifikat niti pokriva sve stranice i podatke. Trace i screenshot se
 čuvaju samo na padu u `test-results/`; CI ih čuva 7 dana kao testne artefakte.
+
+## Modalne regresije
+
+Desktop mock testovi provjeravaju stvarni browser top-layer i izolaciju pozadine
+za samostalne notifikacije, ugniježđene dijaloge i komandnu paletu; Tab, Escape,
+povrat fokusa i scroll, Ctrl/⌘K, pretragu i navigaciju. Provjeravaju i zaštitu
+nespremljene forme te `preventClose` u kategorijama vijesti. Nema izvršenog
+plaćanja ili izmjene stvarnih podataka. Ovo su reprezentativni tokovi, ne dokaz
+svakog pojedinačnog dijaloga u aplikaciji.
