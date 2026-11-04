@@ -29,6 +29,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "dompurify": "^3.4.17",
+    "express": "4.21.2",
     "framer-motion": "^12.42.0",
     "i18next": "^26.3.2",
     "lucide-react": "^1.21.0",

@@ -8,12 +8,27 @@
 |-------|------------|
 | **Aktivna grana** | `arena/290a6f13-fkgracanica` |
 | **Trenutna faza** | CI-01 ✔ INF-01 ✔ INF-02 ✔ BE-01…**BE-09 ✔** → FE-01 ✔ FE-02 ✔ FE-03 ✔ FE-03b ✔ → CI-04 ✔ → FE-04a ✔ FE-04b ✔ → FE-05 ✔ → **FE-04c ✅ ZAVRŠEN (baseline 496 → 0)** → **BE-09d ✅ ZAVRŠEN** → **FE-06 🔄 audit završen, P-FE06-1…9 odobreni, implementacija traje** ; mobile zamrznut dok se BE/FE ne zaokruže |
-| **Trenutni segment** | **FE-06 — OTVOREN:** audit Playwright/axe/bundle/coverage završen; **P-FE06-1…9 odobreni**; P-FE06-4 potvrđen u CI-ju `41811296453`, P-FE06-5 implementiran lokalno; novi P-FE06-10 čeka odobrenje. Prethodno BE-09d ✅, FE-04c ✅. Mobile odgođen do završetka BE/FE rada. |
-| **Zadnji commit** | `fix(a11y): pristupacan sheet i ugnijezdeni modal [FE-06]` (CI za ovaj commit treba potvrditi) |
-| **Zadnji CI run** | ✅ **`41811296453`** (P-FE06-4, sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41811296453 ; ✅ **`41809421999`** (FE-06 evidencija CI-ja, sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41809421999 ; ✅ **`41809144900`** (FE-06 audit, sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41809144900 ; ✅ **`41802269029`** (BE-09d run-ID dokumentacija; sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41802269029 ; ✅ **`41801892490`** (docs BE-09d zatvoren, sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41801892490 ; ✅ **`41801427757`** (BE-09d implementacija + migracije, sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41801427757 ; ✅ **`41798892782`** (BE-09d audit, sva 4 joba) ; ✅ **`41795506967`** (docs batch 7+8, sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41795506967 ; ✅ **`41795171365`** (FE-04c batch 8, sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41795171365 ; ✅ **`41794454711`** (batch 7) ; ✅ **`41792020666`** (docs run-ID) ; ✅ **`41791659204`** (FE-04c batch 5+6 + docs, sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41791659204 ; ✅ **`41791137350`** (batch 5) ; ✅ **`41788831131`**, **`41788531790`**, **`41787973999`**, **`41780305565`**, **`41780020284`**, **`41779492872`**, **`41736615770`** (batch 1–4) |
+| **Trenutni segment** | **FE-06 — OTVOREN:** audit Playwright/axe/bundle/coverage završen; **P-FE06-1…9 odobreni**; P-FE06-4 i P-FE06-5 potvrđeni u CI-ju, P-FE06-6 lokalno implementiran; novi P-FE06-10 čeka odobrenje. Prethodno BE-09d ✅, FE-04c ✅. Mobile odgođen do završetka BE/FE rada. |
+| **Zadnji commit** | `fix(seo): dodaj HTTP noindex za privatne rute [FE-06]` (CI za ovaj commit treba potvrditi) |
+| **Zadnji CI run** | ✅ **`41813051627`** (P-FE06-5, sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41813051627 ; ✅ **`41811296453`** (P-FE06-4, sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41811296453 ; ✅ **`41809421999`** (FE-06 evidencija CI-ja, sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41809421999 ; ✅ **`41809144900`** (FE-06 audit, sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41809144900 ; ✅ **`41802269029`** (BE-09d run-ID dokumentacija; sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41802269029 ; ✅ **`41801892490`** (docs BE-09d zatvoren, sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41801892490 ; ✅ **`41801427757`** (BE-09d implementacija + migracije, sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41801427757 ; ✅ **`41798892782`** (BE-09d audit, sva 4 joba) ; ✅ **`41795506967`** (docs batch 7+8, sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41795506967 ; ✅ **`41795171365`** (FE-04c batch 8, sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41795171365 ; ✅ **`41794454711`** (batch 7) ; ✅ **`41792020666`** (docs run-ID) ; ✅ **`41791659204`** (FE-04c batch 5+6 + docs, sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41791659204 ; ✅ **`41791137350`** (batch 5) ; ✅ **`41788831131`**, **`41788531790`**, **`41787973999`**, **`41780305565`**, **`41780020284`**, **`41779492872`**, **`41736615770`** (batch 1–4) |
 | **check:all** | `npm run check:all` → **9/9**: check-coverage, file-size, console-ban, token-check, secrets-ban, layer-deps, docs-links, docker-context, bundle-react; u CI-ju audit-gate + standards. |
 
 ## Šta je urađeno (hronološki)
+
+### Sesija FE-06 — 2026-11-04 (implementacija, P-FE06-6)
+
+- `og-server.mjs` vraća `X-Robots-Tag: noindex, nofollow` za `/prijava`,
+  `/admin/login` i `/placanje/monri` prije izvršavanja JS-a, uključujući query,
+  ekvivalentna velika slova/završni `/` i Mozilla/Googlebot. Druge rute ostaju
+  bez dodatnog headera. OG metadata, statika, SW cache i API-fallback testirani.
+- Osam izolovanih HTTP testova; stvarni server pokrenut s mock SEO API-jem je
+  potvrdio sva tri headera i negativni `/vijesti`. Bez produkcije/plaćanja.
+  Express 4.21.2 pinovan u root locku i frontend manifestu, usklađen s postojećim
+  Docker runnerom; čisti `npm ci` ✅ (postojeća Node engine upozorenja).
+- **Matrica:** 717/1400 auditiranih (backend 421/421, frontend 269/661,
+  mobile 1/292, infra 4/4, scripts 22/22). Nije test coverage.
+- Build ✅, Vitest **90/90** ✅, lint 0 errors, `check:all` 9/9 ✅.
+  CI za P-FE06-5 ✅ `41813051627`; P-FE06-6 CI potvrditi nakon pusha.
 
 ### Sesija FE-06 — 2026-11-04 (implementacija, P-FE06-5)
 
@@ -32,7 +47,7 @@
 - **Matrica:** 716/1399 auditiranih (backend 421/421, frontend 268/660,
   mobile 1/292, infra 4/4, scripts 22/22); nije test coverage.
 - Frontend build ✅, Vitest **82/82** ✅, lint 0 errors, `check:all` 9/9 ✅.
-  CI za P-FE06-4 ✅ `41811296453`; CI za P-FE06-5 potvrditi nakon pusha.
+  CI za P-FE06-4 ✅ `41811296453`; P-FE06-5 ✅ `41813051627` (4/4).
 
 ### Sesija FE-06 — 2026-11-04 (implementacija, P-FE06-4)
 
@@ -829,8 +844,8 @@ preporuci slažem se" → odobreni **P-B09c-1…10 + P-B09c-12**, uz P-B08-6, P-
 
 ## Šta je sljedeće (tačan sljedeći korak)
 
-1. Nastaviti odobrene **P-FE06-1…9**: poslije P4/P5 implementirati i testirati
-   P6 HTTP noindex, zatim P1/2/3 browser/axe, P7 budget
+1. Nastaviti odobrene **P-FE06-1…9**: poslije P4/P5/P6 uvesti
+   P1/2/3 browser/axe, P7 budget
    prije P8 lazy, pa P9 coverage. Manji logični commitovi; nakon svakog pusha
    sačekati stvarni CI i evidentirati ID. FE-06 ostaje otvoren do provjere svih
    kriterija i High nalaza; zatražiti odluku za novi P-FE06-10 / B-FE06-09.

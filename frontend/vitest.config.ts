@@ -6,7 +6,7 @@ import react from '@vitejs/plugin-react';
  * FE-02 — frontend test infra.
  *
  * `jsdom` okruženje (React komponente), bez Tailwind plugina (testovi ne
- * renderuju stilove). Testovi: `src/**\/*.{test,spec}.{ts,tsx}`.
+ * renderuju stilove). Testovi: `src/**\/*.{test,spec}.{ts,tsx,mjs}`.
  */
 export default defineConfig({
   plugins: [react()],
@@ -30,7 +30,7 @@ export default defineConfig({
     environment: 'jsdom',
     globals: false,
     setupFiles: ['./src/test/setup.ts'],
-    include: ['src/**/*.{test,spec}.{ts,tsx}'],
+    include: ['src/**/*.{test,spec}.{ts,tsx,mjs}'],
     restoreMocks: true,
   },
 });
