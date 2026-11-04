@@ -25,6 +25,7 @@ export default defineConfig({
     },
   },
   projects: [
+    { name: 'fullstack-desktop', testMatch: '**/*.fullstack.spec.ts', use: { viewport: { width: 1365, height: 900 } } },
     { name: 'mock-desktop', testMatch: '**/*.desktop.mock.spec.ts', use: { viewport: { width: 1365, height: 900 } } },
     { name: 'mock-mobile', testMatch: '**/*.mobile.mock.spec.ts', use: { viewport: { width: 390, height: 844 } } },
   ],

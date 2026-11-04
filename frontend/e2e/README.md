@@ -38,3 +38,33 @@ svakog pojedinačnog dijaloga u aplikaciji.
 Mock browser testovi obuhvataju odbijanje/prihvatanje odlaska kroz komandnu
 paletu, browser Back/Forward i reload, te čistu formu i uspješan mock save.
 Unit testovi dodatno pokrivaju više otvorenih formi i eksplicitni `dirty`.
+
+## Stvarni full-stack browser smoke
+
+CI job `browser-fullstack` podiže **vlastiti** prazni Postgres 16 i Redis 7,
+migrira bazu `fk_browser_test`, učitava namjenski sintetički RBAC/admin/CMS
+seed, pokreće stvarni backend i čeka da `/api/v1/health` vrati `status: ok`.
+Redis se posebno provjerava s `PING`. Produkcijski web build komunicira preko
+relativnog `/api/v1` i loopback testnog proxyja: nema mock API-ja u ovom testu.
+
+Playwright provjerava javnu naslovnu iz baze, redirect gosta, neuspjelu i
+uspjelu test prijavu, admin, reload sesije i odjavu. Browser blokira vanjske
+HTTP/WebSocket veze i sve API mutacije osim prijave/odjave/refresh i anonimne
+testne posjete, kao i sve `/payments` pozive. Ovo je jedan smoke tok, ne dokaz
+svih integracija, zasebne mobile aplikacije ili produkcijskog deploya.
+
+Nalog `browser-smoke@example.test` i lozinka/JWT se generišu za svaki job,
+maskiraju u CI logovima i važe samo u privremenoj bazi/procesu. Trace/screenshot
+se spremaju samo na padu, najviše tri dana; mogu sadržavati te **isključivo
+privremene testne** podatke i testne tokene. Backend nema produkcijske
+pristupne podatke niti se plaćanja ili slanje pošte pokreću.
+
+Za lokalnu probu koristiti samo izdvojene, prazne Postgres/Redis instance;
+seed dodatno odbija sve osim `NODE_ENV=test`, baze
+`postgresql://postgres@127.0.0.1:5432/fk_browser_test?schema=public` i naloga
+`@example.test`. Postaviti privremene `ADMIN_PASSWORD`, `JWT_ACCESS_SECRET` i
+`JWT_REFRESH_SECRET`, zatim generisati Prisma klijent, pokrenuti migracije i
+`npx ts-node prisma/seed/browser-smoke.ts` iz `backend/`, build oba workspacea,
+pokrenuti backend i `node frontend/e2e/support/wait-for-backend.mjs`, pa
+`npm run test:browser:fullstack -w frontend`. Nikad ne koristiti produkcijsku
+bazu ili stvarne kredencijale.

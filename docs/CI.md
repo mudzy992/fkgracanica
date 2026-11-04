@@ -18,6 +18,8 @@
 | `audit-gate` | `node scripts/audit/check-coverage.mjs` | matrica pokrivenosti — svaki izvorni fajl mora imati red (pravilo 4) |
 | `standards` | `node scripts/standards/check-all.mjs` | file-size, console-ban, secrets-ban, layer-deps, docs-links (+ coverage) |
 | `build-test` | `npm ci` → `prisma generate` → `prisma validate` → backend `nest build` → jest unit → backend eslint → frontend `tsc -b && vite build` → **vitest** → oxlint | build + testovi slojeva (frontend testovi od FE-02) |
+| `browser-fullstack` | zasebni Postgres + Redis, migracije i minimalni sintetički seed, backend health-wait, web build i Playwright smoke | P-FE06-2; stvarni backend, samo testni podaci; trace samo na padu |
+| `browser-mock` | Izolovani API mock i axe | P-FE06-1/3; nije full-stack |
 | `e2e` | `postgres:16` + `redis:7` servisi → `prisma migrate deploy` → `prisma:seed` (RBAC + settings + admin + demo) → `npm run test:e2e` | **BE-09c/P-B09c-4**: e2e suite (8 specova) se prije nije izvršavao nigdje; sada je pokriven u CI-ju |
 
 Sve skripte su **zero-dep** (node built-ins) — ne zavise od `node_modules` osim gdje je navedeno.
