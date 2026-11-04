@@ -1,5 +1,15 @@
 import { Navigate, Route } from 'react-router-dom';
 import { AdminLayout } from '../components/layout/AdminLayout';
+import {
+  CmsHubPage,
+  CmsPageBuilderPage,
+  NewsEditorPage,
+  GalleryEditorPage,
+  ClubHubPage,
+  SeasonHubPage,
+  MembershipAdminPage,
+  TicketingAdminPage,
+} from './lazy-admin-pages';
 import { ProtectedRoute } from '../components/common/ProtectedRoute';
 import { PermissionRoute } from '../components/common/PermissionRoute';
 import { ModuleRoute } from '../components/common/ModuleRoute';
@@ -12,27 +22,19 @@ import { PlatformStatusPage } from '../pages/admin/platform-status/PlatformStatu
 import { SettingsPage } from '../pages/admin/SettingsPage';
 import { AppReleasesAdminPage } from '../pages/admin/app-releases/AppReleasesAdminPage';
 import { UsersRolesPage } from '../pages/admin/UsersRolesPage';
-import { CmsHubPage } from '../pages/admin/cms/CmsHubPage';
-import { CmsPageBuilderPage } from '../pages/admin/cms/CmsPageBuilderPage';
 import { MediaPage } from '../pages/admin/MediaPage';
 import { AuditPage } from '../pages/admin/AuditPage';
 import { NewsAdminPage } from '../pages/admin/NewsAdminPage';
-import { NewsEditorPage } from '../pages/admin/news/NewsEditorPage';
 import { GalleryAdminPage } from '../pages/admin/GalleryAdminPage';
-import { GalleryEditorPage } from '../pages/admin/gallery/GalleryEditorPage';
 import { SponsorsAdminPage } from '../pages/admin/SponsorsAdminPage';
 import { TrophiesAdminPage } from '../pages/admin/TrophiesAdminPage';
 import { TimelineAdminPage } from '../pages/admin/TimelineAdminPage';
 import { ClubsListPage } from '../pages/admin/club-hub/ClubsListPage';
-import { ClubHubPage } from '../pages/admin/club-hub/ClubHubPage';
 import { CompetitionsAdminPage } from '../pages/admin/CompetitionsAdminPage';
 import { CalendarSeasonPage } from '../pages/admin/CalendarSeasonPage';
-import { SeasonHubPage } from '../pages/admin/competition-hub/SeasonHubPage';
 import { MatchReportPage } from '../pages/admin/MatchReportPage';
 import { CommentatorPage } from '../pages/admin/CommentatorPage';
 import { LivePendingPage } from '../pages/admin/LivePendingPage';
-import { MembershipAdminPage } from '../pages/admin/MembershipAdminPage';
-import { TicketingAdminPage } from '../pages/admin/TicketingAdminPage';
 import { FinanceAdminPage } from '../pages/admin/FinanceAdminPage';
 import { HeritageAdminPage } from '../pages/admin/HeritageAdminPage';
 import { CommsAdminPage } from '../pages/admin/CommsAdminPage';

@@ -85,3 +85,8 @@ Osam metrika poredi se s verzionisanim
 kao i nedostajući/neispravan manifest ili output. Prag se ne ažurira automatski
 i ne povećava tiho; nakon optimizacije može se sniziti uz evidentiranje.
 `--report` je samo lokalni izvještaj, nije CI gate.
+
+P-FE06-8: nakon prvog route-splitting batcha smanjen je **samo početni JS**
+baseline (raw/gzip). Ukupni baseline ostaje originalni; tolerancija i svih
+osam gate metrika nisu povećani. Per-file gzip zbir obično raste kada se bundle
+podijeli u više fajlova; taj rast je dio ukupnog budžeta, ne mrežno mjerenje.

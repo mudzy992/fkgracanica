@@ -1,6 +1,6 @@
-import { Link, Outlet } from 'react-router-dom';
+import { Link, Outlet, useLocation } from 'react-router-dom';
 import { Menu, LogOut, Search } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { Suspense, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../lib/auth';
 import { usePublicSettings, usePrivateSettings } from '../../hooks';
@@ -9,6 +9,7 @@ import { resolveAdminModuleKey } from '../../lib/admin-module-map';
 import { Button } from '../ui/button';
 import { NotificationBell } from '../notifications/NotificationBell';
 import { ErrorBoundary } from '../common/ErrorBoundary';
+import { RouteLoading } from '../common/RouteLoading';
 import { Sheet, SheetContent, SheetHeader } from '../ui/sheet';
 import { filterNavLeaves, type AdminNavLeaf } from './admin-nav-groups';
 import { AdminSidebarNav } from './AdminSidebarNav';
@@ -27,6 +28,7 @@ function SidebarFooter({ onLogout }: { onLogout: () => void }) {
 
 export function AdminLayout() {
   const { t } = useTranslation();
+  const { pathname } = useLocation();
   const [open, setOpen] = useState(false);
   const [paletteOpen, setPaletteOpen] = useState(false);
   const { user, logout } = useAuth();
@@ -133,8 +135,10 @@ export function AdminLayout() {
         <AdminCommandPalette open={paletteOpen} onOpenChange={setPaletteOpen} groups={navGroups} />
         <AdminShowcaseBanner />
         <main className="flex-1 overflow-auto p-4 md:p-6">
-          <ErrorBoundary>
-            <Outlet />
+          <ErrorBoundary resetKey={pathname}>
+            <Suspense fallback={<RouteLoading />}>
+              <Outlet />
+            </Suspense>
           </ErrorBoundary>
         </main>
       </div>

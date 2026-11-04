@@ -41,15 +41,17 @@ self.addEventListener('fetch', (event) => {
 
   if (isStatic(url)) {
     event.respondWith(
-      caches.match(event.request).then(
-        (cached) =>
-          cached ||
-          fetch(event.request).then((res) => {
+      caches.match(event.request).then((cached) => {
+        // Neuspjeli chunk (npr. 404 nakon deploya) ne smije ostati trajno u cacheu.
+        if (cached?.ok) return cached;
+        return fetch(event.request).then((res) => {
+          if (res.ok) {
             const copy = res.clone();
             void caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy));
-            return res;
-          }),
-      ),
+          }
+          return res;
+        });
+      }),
     );
   }
 });

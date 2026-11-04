@@ -5,8 +5,8 @@
   "baseline": {
     "initial": {
       "js": {
-        "raw": 2038448,
-        "gzip": 584391
+        "raw": 1482274,
+        "gzip": 430863
       },
       "css": {
         "raw": 167277,

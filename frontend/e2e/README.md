@@ -14,8 +14,9 @@ npm run test:browser:mock
 
 `build:browser` zadaje relativni `/api/v1`; testni server sluša lokalni port i
 proxy dopušta samo `http://127.0.0.1` backend. Mock fixture blokira sve vanjske
-HTTP i WebSocket zahtjeve, blokira service worker, prijavljuje neočekivan API
-poziv i `pageerror`. Podaci/nalozi su isključivo lažni i test ne izvršava
+HTTP i WebSocket zahtjeve, u pravilu blokira service worker, prijavljuje
+neočekivan API poziv i `pageerror`. Jedan namjenski izolovani test ga uključuje
+i provjerava oporavak starog 404 za chunk. Podaci/nalozi su isključivo lažni i test ne izvršava
 plaćanja. Nije potrebna produkcijska konfiguracija, baza, tajne ili mreža.
 
 Axe provjerava WCAG 2.0/2.1/2.2 A/AA tagove bez isključenih pravila; CI pada na
@@ -38,6 +39,16 @@ svakog pojedinačnog dijaloga u aplikaciji.
 Mock browser testovi obuhvataju odbijanje/prihvatanje odlaska kroz komandnu
 paletu, browser Back/Forward i reload, te čistu formu i uspješan mock save.
 Unit testovi dodatno pokrivaju više otvorenih formi i eksplicitni `dirty`.
+
+## Postepeni lazy routeovi
+
+Manifest i browser mock testovi provjeravaju osam odgođenih admin modula,
+direktni URL i internu navigaciju, auth/module/permission guardove, status
+učitavanja u desktop i uskom webu, grešku chunka i ručni reload. CMS i rich-text
+urednik se otvaraju i testno mijenjaju; test potvrđuje da dirty forma blokira
+učitavanje ciljane rute. Odobrene mutacije su samo izolovani mock pozivi.
+Service worker se u zasebnom testu stvarno aktivira i dobija namjerno zastarjeli
+404 iz lokalnog testnog cachea; nema pristupa produkcijskom cacheu.
 
 ## Stvarni full-stack browser smoke
 

@@ -24,6 +24,8 @@ export function RichTextEditor({ value, onChange, className, tall }: Props) {
   const assets = asArray<MediaAsset>(data?.data ?? data);
 
   const editor = useEditor({
+    // Suspense može odgoditi commit nakon kreiranja; instancu vežemo za mount.
+    immediatelyRender: false,
     extensions: richTextExtensions(),
     content: value || '<p></p>',
     onUpdate: ({ editor: e }) => onChange(e.getHTML()),

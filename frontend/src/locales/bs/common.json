@@ -30,6 +30,7 @@
     "create": "Kreiraj",
     "back": "Nazad",
     "retry": "Pokušaj ponovo",
+    "reloadPage": "Ponovo učitaj stranicu",
     "close": "Zatvori",
     "confirm": "Potvrdi",
     "language": "Jezik",
@@ -823,6 +824,7 @@
     }
   },
   "common": {
+    "routeLoadError": "Stranicu nije moguće učitati. Provjerite vezu i ponovo je učitajte.",
     "loading": "Učitavanje...",
     "noResults": "Nema rezultata",
     "error": "Došlo je do greške",

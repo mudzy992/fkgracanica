@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs';
 import type { Page } from '@playwright/test';
 import { test, expect } from './support/mock-fixture.ts';
 import { mockLogin } from './support/login.ts';
@@ -135,4 +136,50 @@ test('reload: odbijanje čuva nespremljenu formu, prihvatanje osvježava stranic
   expect(saved).toEqual([]);
   await page.getByRole('button', { name: 'Uredi', exact: true }).click();
   await expect(page.getByRole('dialog', { name: 'Uredi medij' }).locator('input').first()).toHaveValue('test.jpg');
+});
+
+
+test('nespremljena forma blokira lazy rutu prije učitavanja chunka', async ({ page }) => {
+  const manifest = JSON.parse(readFileSync(new URL('../dist/.vite/manifest.json', import.meta.url), 'utf8')) as Record<string, { file: string }>;
+  const target = `/${manifest['src/pages/admin/TicketingAdminPage.tsx'].file}`;
+  const requested: string[] = [];
+  page.on('request', (request) => requested.push(new URL(request.url()).pathname));
+  const saved = await mockMedia(page);
+  await page.route('**/api/v1/ticketing/admin/orders', (route) => route.fulfill({ json: [] }));
+  await page.route('**/api/v1/ticketing/config', (route) => route.fulfill({ json: {} }));
+  await mockLogin(page);
+  await page.goto('/admin/media');
+  const { form, input } = await editFilename(page, 'lazy-izmjena.jpg');
+  const prompts: string[] = [];
+  page.on('dialog', async (dialog) => {
+    prompts.push(dialog.message());
+    if (prompts.length === 1) await dialog.dismiss();
+    else await dialog.accept();
+  });
+  async function navigateToTickets() {
+    await page.keyboard.press('Control+k');
+    const palette = page.getByRole('dialog', { name: 'Pretraga admina' });
+    const search = palette.getByRole('combobox');
+    await expect(search).toBeFocused();
+    await search.fill('ulaznice');
+    const first = palette.getByRole('option').first();
+    await expect(first).toContainText('Ulaznice');
+    await expect(first).toHaveAttribute('aria-selected', 'true');
+    await search.press('Enter');
+  }
+  await navigateToTickets();
+  await expect.poll(() => prompts.length).toBe(1);
+  await expect(page).toHaveURL(/\/admin\/media$/);
+  await expect(form).toBeVisible();
+  await expect(input).toHaveValue('lazy-izmjena.jpg');
+  expect(requested).not.toContain(target);
+  const configLoaded = page.waitForResponse((response) => response.url().includes('/api/v1/ticketing/config'));
+  await navigateToTickets();
+  await expect(page).toHaveURL(/\/admin\/ticketing$/);
+  await expect(page.getByRole('heading', { name: 'Ulaznice' })).toBeVisible();
+  expect((await configLoaded).ok()).toBe(true);
+  await expect(page.getByText('Nema narudžbi.')).toBeVisible();
+  expect(requested).toContain(target);
+  expect(prompts).toHaveLength(2);
+  expect(saved).toEqual([]);
 });

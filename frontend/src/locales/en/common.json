@@ -30,6 +30,7 @@
     "create": "Create",
     "back": "Back",
     "retry": "Try again",
+    "reloadPage": "Reload page",
     "close": "Close",
     "confirm": "Confirm",
     "language": "Language",
@@ -823,6 +824,7 @@
     }
   },
   "common": {
+    "routeLoadError": "Could not load this page. Check your connection and reload it.",
     "loading": "Loading...",
     "noResults": "No results",
     "error": "Something went wrong",
