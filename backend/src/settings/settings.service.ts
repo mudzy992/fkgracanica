@@ -7,6 +7,7 @@ import { RealtimeGateway } from '../realtime/realtime.gateway';
 import { NotificationsService } from '../notifications/notifications.service';
 import { AuditService } from '../audit/audit.service';
 import { validateModuleSettingUpdates } from './module-settings.util';
+import { preparePrematchAudioUpdates } from './prematch-audio.util';
 
 @Injectable()
 export class SettingsService implements OnModuleInit {
@@ -75,7 +76,11 @@ export class SettingsService implements OnModuleInit {
       this.getPublic(),
       this.getPrivate(),
     ]);
-    const merged = await applySeoSettingDefaults(this.prisma, updates);
+    const defaults = await applySeoSettingDefaults(this.prisma, updates);
+    const merged =
+      scope === SettingScope.PUBLIC
+        ? preparePrematchAudioUpdates(defaults, pub)
+        : defaults;
     validateModuleSettingUpdates({ ...pub, ...priv, ...merged }, merged);
 
     const keys = Object.keys(merged);

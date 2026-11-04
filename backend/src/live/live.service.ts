@@ -21,6 +21,8 @@ import {
 import { LiveFanoutService } from '../notifications/live-fanout.service';
 import { requiresClubPlayer, requiresRelatedPlayer } from './live-event-rules';
 import { emitLiveClock } from './live-emit-clock';
+import { optionalYouTubeUrl } from '../common/utils/youtube-write.util';
+import { parseYouTubeId } from '../common/utils/youtube.util';
 
 @Injectable()
 export class LiveService {
@@ -87,9 +89,15 @@ export class LiveService {
   }
 
   async setLiveStream(matchId: string, url: string | null) {
+    if (url?.trim() && !parseYouTubeId(url)) {
+      const current = await this.prisma.match.findUnique({
+        where: { id: matchId },
+      });
+      if (current?.liveStreamUrl === url) return current;
+    }
     const match = await this.prisma.match.update({
       where: { id: matchId },
-      data: { liveStreamUrl: url },
+      data: { liveStreamUrl: optionalYouTubeUrl(url) },
     });
     this.realtime.emitMatchStatus(matchId, match);
     return match;

@@ -8,6 +8,7 @@ import { ContentStatus } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { NotificationsService } from '../notifications/notifications.service';
 import { slugify } from '../common/utils/slug.util';
+import * as newsVideo from './news-video.util';
 import {
   mapNewsUpdate,
   newsInclude,
@@ -23,7 +24,7 @@ export interface NewsWriteInput {
   authorId?: string;
   categoryId?: string;
   coverPath?: string;
-  videoUrl?: string;
+  videoUrl?: string | null;
   galleryId?: string;
   seoTitle?: string;
   seoDesc?: string;
@@ -83,6 +84,7 @@ export class NewsService {
   }
 
   async create(data: NewsWriteInput) {
+    data = newsVideo.prepareNewsVideoCreate(data);
     const slug = await this.uniqueSlug(
       data.slug?.trim() || slugify(data.title),
     );
@@ -112,7 +114,8 @@ export class NewsService {
   }
 
   async update(id: string, data: Record<string, unknown>) {
-    await this.findOne(id);
+    const previous = await this.findOne(id);
+    data = newsVideo.prepareNewsVideoUpdate(data, previous.videoUrl);
     const tags = data.tags as string[] | undefined;
     const relatedMatchIds = data.relatedMatchIds as string[] | undefined;
     const relatedPlayerIds = data.relatedPlayerIds as string[] | undefined;
