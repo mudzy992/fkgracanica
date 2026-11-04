@@ -5,8 +5,10 @@ import type { Match } from '../../../types';
 import { Button } from '../../../components/ui/button';
 import { Input } from '../../../components/ui/input';
 import { Dialog, DialogBody, DialogFooter, DialogHeader } from '../../../components/ui/dialog';
+import { useTranslation } from 'react-i18next';
 
 export function CommentatorStreamDialog({ match }: { match: Match }) {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const [url, setUrl] = useState(match.liveStreamUrl ?? '');
   const save = useSetLiveStream();
@@ -35,7 +37,7 @@ export function CommentatorStreamDialog({ match }: { match: Match }) {
         {linked ? 'Stream ✓' : 'Stream'}
       </Button>
       <Dialog open={open} onOpenChange={setOpen} className="max-w-md">
-        <DialogHeader onClose={() => setOpen(false)}>YouTube live stream</DialogHeader>
+        <DialogHeader onClose={() => setOpen(false)}>{t('admin.streamDialog.title')}</DialogHeader>
         <DialogBody className="space-y-2">
           <Input
             value={url}
@@ -52,7 +54,9 @@ export function CommentatorStreamDialog({ match }: { match: Match }) {
               variant="ghost"
               size="sm"
               disabled={save.isPending}
-              onClick={() => void save.mutateAsync({ matchId: match.id, url: null }).then(() => setOpen(false))}
+              onClick={() =>
+                void save.mutateAsync({ matchId: match.id, url: null }).then(() => setOpen(false))
+              }
             >
               Ukloni
             </Button>

@@ -1,6 +1,7 @@
 import type { MediaFolder } from '../../../hooks/use-media-admin';
 import { MediaFolderTree } from '../../../components/admin/MediaFolderTree';
 import { Sheet, SheetContent, SheetHeader } from '../../../components/ui/sheet';
+import { useTranslation } from 'react-i18next';
 
 interface Props {
   open: boolean;
@@ -29,6 +30,7 @@ export function MediaFolderSheet({
   onRename,
   onDelete,
 }: Props) {
+  const { t } = useTranslation();
   const handleSelect = (id?: string) => {
     onSelect(id);
     onOpenChange(false);
@@ -36,7 +38,7 @@ export function MediaFolderSheet({
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange} side="left">
-      <SheetHeader onClose={() => onOpenChange(false)}>Mape medija</SheetHeader>
+      <SheetHeader onClose={() => onOpenChange(false)}>{t('admin.mediaFolders.title')}</SheetHeader>
       <SheetContent className="min-h-0 flex-1 p-0">
         <MediaFolderTree
           folders={folders}

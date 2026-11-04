@@ -8,8 +8,10 @@ import type { CmsPage } from '../../../cms/types';
 import { CmsMenuPreviewBar } from './CmsMenuPreviewBar';
 import { CmsMenuSortableList } from './CmsMenuSortableList';
 import { menuItemToDraft, type MenuDraftItem } from './menu-utils';
+import { useTranslation } from 'react-i18next';
 
 export function CmsMenuEditor() {
+  const { t } = useTranslation();
   const { data: menu, isLoading, isError, refetch } = useCmsMenu('main');
   const { data: pagesRaw } = useCmsPages(true);
   const { data: moduleFlags } = useModuleFlags();
@@ -47,7 +49,7 @@ export function CmsMenuEditor() {
     <AdminPageShell
       isError={isError}
       onRetry={() => void refetch()}
-      title="Glavni meni"
+      title={t('admin.cmsMenu.title')}
       isLoading={isLoading}
     >
       <div className="space-y-4 p-3">

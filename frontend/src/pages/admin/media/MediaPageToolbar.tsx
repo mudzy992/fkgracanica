@@ -2,6 +2,7 @@ import { Search, X } from 'lucide-react';
 import { Button } from '../../../components/ui/button';
 import { Input } from '../../../components/ui/input';
 import type { UploadQueueState } from '../../../hooks/use-media-upload-queue';
+import { useTranslation } from 'react-i18next';
 
 interface Props {
   search: string;
@@ -58,6 +59,7 @@ export function MediaPageToolbar({
   canUpload = true,
   canManage = true,
 }: Props) {
+  const { t } = useTranslation();
   const progressPct =
     uploadProgress && uploadProgress.total > 0
       ? Math.round((uploadProgress.done / uploadProgress.total) * 100)
@@ -82,7 +84,7 @@ export function MediaPageToolbar({
           <Input
             value={search}
             onChange={(e) => onSearchChange(e.target.value)}
-            placeholder="Pretraga po nazivu, tagu ili putanji…"
+            placeholder={t('admin.mediaToolbar.searchPlaceholder')}
             className="pl-9 pr-9"
           />
           {search && (
@@ -90,7 +92,7 @@ export function MediaPageToolbar({
               type="button"
               className="absolute right-2 top-1/2 -translate-y-1/2 rounded p-1 text-text-muted hover:text-text"
               onClick={() => onSearchChange('')}
-              aria-label="Obriši pretragu"
+              aria-label={t('admin.mediaToolbar.clearSearch')}
             >
               <X className="h-4 w-4" />
             </button>
@@ -126,7 +128,27 @@ export function MediaPageToolbar({
           ) : null}
         </div>
       </div>
-      <p className="text-xs text-text-muted">{hintText({ search, onSearchChange, globalSearch, debouncedSearch, totalResults, folderId, selectedFolderName, selectionMode, selectedCount, visibleCount, onToggleSelectionMode, onSelectAllVisible, onUploadClick, uploadDisabled, uploadTitle, onFolderChipClick, uploadProgress })}</p>
+      <p className="text-xs text-text-muted">
+        {hintText({
+          search,
+          onSearchChange,
+          globalSearch,
+          debouncedSearch,
+          totalResults,
+          folderId,
+          selectedFolderName,
+          selectionMode,
+          selectedCount,
+          visibleCount,
+          onToggleSelectionMode,
+          onSelectAllVisible,
+          onUploadClick,
+          uploadDisabled,
+          uploadTitle,
+          onFolderChipClick,
+          uploadProgress,
+        })}
+      </p>
       {uploadProgress?.isRunning && uploadProgress.total > 0 && (
         <div className="space-y-1">
           <div className="h-1.5 overflow-hidden rounded-full bg-surface">

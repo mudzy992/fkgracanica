@@ -25,8 +25,10 @@ import { MediaPageAssetsSection } from './media/MediaPageAssetsSection';
 import { MediaPageFileInputs } from './media/MediaPageFileInputs';
 import { emptyMediaMessage, copyMediaOriginalUrl } from './media/media-page-helpers';
 import { Seo } from '../../components/seo/Seo';
+import { useTranslation } from 'react-i18next';
 
 export function MediaPage() {
+  const { t } = useTranslation();
   const { canUpload, canManage } = useMediaLibraryAccess();
   const uploadRef = useRef<HTMLInputElement>(null);
   const replaceRef = useRef<HTMLInputElement>(null);
@@ -115,7 +117,7 @@ export function MediaPage() {
 
   return (
     <>
-      <Seo title="Mediji" />
+      <Seo title={t('admin.media')} />
       {dialog}
       <MediaPageFileInputs
         uploadRef={uploadRef}
@@ -127,7 +129,7 @@ export function MediaPage() {
           if (replaceId) void replace.mutateAsync({ id: replaceId, file }).finally(() => setReplaceId(null));
         }}
       />
-      <AdminPageShell title="Mediji" isLoading={fl || al}>
+      <AdminPageShell title={t('admin.media')} isLoading={fl || al}>
         <MediaPageToolbar
           search={search}
           onSearchChange={(v) => { setSearch(v); setPage(1); selection.clear(); }}

@@ -3,6 +3,7 @@ import { adminLinkClass } from '../../lib/admin-styles';
 import { formatDateTime } from '../../lib/utils';
 import { AdminFormSheet } from '../../components/admin/AdminFormSheet';
 import { Button } from '../../components/ui/button';
+import { useTranslation } from 'react-i18next';
 
 interface ContactMessageSheetProps {
   message: ContactMessage | null;
@@ -19,6 +20,7 @@ export function ContactMessageSheet({
   onMarkRead,
   isMarking,
 }: ContactMessageSheetProps) {
+  const { t } = useTranslation();
   if (!message) return null;
 
   return (
@@ -37,20 +39,16 @@ export function ContactMessageSheet({
           </dd>
         </div>
         <div>
-          <dt className="text-text-muted">Datum</dt>
+          <dt className="text-text-muted">{t('admin.contactMessage.date')}</dt>
           <dd>{formatDateTime(message.createdAt)}</dd>
         </div>
         <div>
-          <dt className="mb-1 text-text-muted">Poruka</dt>
+          <dt className="mb-1 text-text-muted">{t('admin.contactMessage.message')}</dt>
           <dd className="whitespace-pre-wrap rounded-lg bg-surface p-4">{message.message}</dd>
         </div>
       </dl>
       {!message.isRead && (
-        <Button
-          className="mt-6 w-full"
-          onClick={() => onMarkRead(message.id)}
-          disabled={isMarking}
-        >
+        <Button className="mt-6 w-full" onClick={() => onMarkRead(message.id)} disabled={isMarking}>
           Označi kao pročitano
         </Button>
       )}

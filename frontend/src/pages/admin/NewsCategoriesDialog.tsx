@@ -9,6 +9,7 @@ import {
 import { Button } from '../../components/ui/button';
 import { Dialog, DialogBody, DialogFooter, DialogHeader } from '../../components/ui/dialog';
 import { Input } from '../../components/ui/input';
+import { useTranslation } from 'react-i18next';
 
 interface Props {
   open: boolean;
@@ -16,6 +17,7 @@ interface Props {
 }
 
 export function NewsCategoriesDialog({ open, onOpenChange }: Props) {
+  const { t } = useTranslation();
   const { data: raw } = useNewsCategories();
   const categories = asArray<NewsCategory>(raw);
   const create = useCreateNewsCategory();
@@ -51,7 +53,7 @@ export function NewsCategoriesDialog({ open, onOpenChange }: Props) {
           <Input
             value={name}
             onChange={(e) => setName(e.target.value)}
-            placeholder="Naziv nove kategorije"
+            placeholder={t('admin.newsCategories.newPlaceholder')}
             onKeyDown={(e) => e.key === 'Enter' && void onAdd()}
           />
           <Button onClick={() => void onAdd()} disabled={!name.trim() || create.isPending}>
@@ -61,7 +63,7 @@ export function NewsCategoriesDialog({ open, onOpenChange }: Props) {
         {error && <p className="text-sm text-danger">{error}</p>}
         <ul className="divide-y divide-slate-100 rounded-lg border border-slate-200">
           {categories.length === 0 && (
-            <li className="p-3 text-sm text-text-muted">Nema kategorija.</li>
+            <li className="p-3 text-sm text-text-muted">{t('admin.newsCategories.empty')}</li>
           )}
           {categories.map((cat) => (
             <li key={cat.id} className="flex items-center justify-between gap-2 p-3 text-sm">
@@ -69,7 +71,12 @@ export function NewsCategoriesDialog({ open, onOpenChange }: Props) {
                 <p className="font-medium">{cat.name}</p>
                 <p className="text-xs text-text-muted">{cat.slug}</p>
               </div>
-              <Button size="sm" variant="ghost" onClick={() => onDelete(cat)} disabled={remove.isPending}>
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={() => onDelete(cat)}
+                disabled={remove.isPending}
+              >
                 Obriši
               </Button>
             </li>

@@ -175,7 +175,9 @@
     },
     "formation": {
       "allAssigned": "All players are placed.",
-      "pool": "Available players (drag onto the pitch)"
+      "pool": "Available players (drag onto the pitch)",
+      "pickPosition": "Pick a position on the pitch or bench.",
+      "bench": "Bench"
     },
     "home": {
       "metaTitle": "Dashboard",
@@ -400,7 +402,8 @@
       "edit": "Edit club",
       "create": "New club",
       "stadium": "Stadium",
-      "descriptionPublic": "Club description (public)"
+      "descriptionPublic": "Club description (public)",
+      "name": "Club name *"
     },
     "calendar": {
       "seasonNotFound": "Season not found.",
@@ -556,7 +559,10 @@
       "active": "Active",
       "label": "Label",
       "path": "/path",
-      "pageOptional": "CMS page (optional)"
+      "pageOptional": "CMS page (optional)",
+      "title": "Main menu",
+      "noActiveItems": "No active items",
+      "addWidget": "Add widget"
     },
     "auditPage": {
       "metaTitle": "Audit",
@@ -709,7 +715,8 @@
     },
     "commentPanel": {
       "liveComments": "Live comments",
-      "empty": "No comments."
+      "empty": "No comments.",
+      "placeholder": "Comment for the audience..."
     },
     "matchFinished": {
       "title": "Match (finished)",
@@ -737,6 +744,80 @@
     "ticketCategories": {
       "name": "Name",
       "price": "Price"
+    },
+    "contactMessage": {
+      "date": "Date",
+      "message": "Message"
+    },
+    "newsCategories": {
+      "newPlaceholder": "New category name",
+      "empty": "No categories."
+    },
+    "newsletterPage": {
+      "searchPlaceholder": "Search email...",
+      "subscribersTitle": "Newsletter subscribers"
+    },
+    "clubStats": {
+      "empty": "No data.",
+      "title": "Player statistics"
+    },
+    "commentatorClock": {
+      "matchMinute": "Match minute",
+      "stoppage": "Stoppage time"
+    },
+    "eventLog": {
+      "title": "Event log",
+      "empty": "No events."
+    },
+    "penalties": {
+      "title": "Penalty kicks"
+    },
+    "retrospective": {
+      "title": "Match report",
+      "minute": "Event minute"
+    },
+    "streamDialog": {
+      "title": "YouTube live stream"
+    },
+    "highlights": {
+      "youtubeUrl": "YouTube URL"
+    },
+    "scoreInputs": {
+      "home": "Home goals",
+      "away": "Away goals"
+    },
+    "roundForm": {
+      "numberPlaceholder": "Round number *",
+      "namePlaceholder": "Name (optional)"
+    },
+    "mediaBulk": {
+      "moveTo": "Move to folder…"
+    },
+    "mediaFolders": {
+      "title": "Media folders"
+    },
+    "mediaToolbar": {
+      "searchPlaceholder": "Search by name, tag or path…",
+      "clearSearch": "Clear search"
+    },
+    "ticketBackground": {
+      "label": "Ticket background (backdrop)",
+      "preview": "Preview"
+    },
+    "seasonTicket": {
+      "issueTitle": "Issue season ticket (box office)",
+      "emailPlaceholder": "user email"
+    },
+    "cmsPreview": {
+      "livePreview": "Live preview",
+      "empty": "Add a widget to preview."
+    },
+    "cmsSection": {
+      "aboutPlaceholder": "Text about the club"
+    },
+    "cmsNextMatch": {
+      "titlePlaceholder": "Title (optional)",
+      "stadiumBackground": "Stadium background (parallax)"
     }
   },
   "common": {

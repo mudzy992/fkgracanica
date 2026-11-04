@@ -9,14 +9,11 @@ import { Button } from '../../components/ui/button';
 import { AdminPageShell } from '../../components/admin/AdminPageShell';
 import { HallOfFameAdminPage } from './HallOfFameAdminPage';
 import { MuseumAdminPage } from './MuseumAdminPage';
+import { useTranslation } from 'react-i18next';
 
 type Tab = 'hall-of-fame' | 'museum';
 
-function resolveTab(
-  param: string | null,
-  canHof: boolean,
-  canMuseum: boolean,
-): Tab {
+function resolveTab(param: string | null, canHof: boolean, canMuseum: boolean): Tab {
   if (param === 'museum' && canMuseum) return 'museum';
   if (param === 'hall-of-fame' && canHof) return 'hall-of-fame';
   if (canHof) return 'hall-of-fame';
@@ -24,6 +21,7 @@ function resolveTab(
 }
 
 export function HeritageAdminPage() {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const perms = user?.permissions ?? [];
   const { data: moduleFlags } = useModuleFlags();
@@ -56,9 +54,9 @@ export function HeritageAdminPage() {
 
   return (
     <>
-      <Seo title="Baština" />
+      <Seo title={t('admin.heritage')} />
       <AdminPageShell
-        title="Baština"
+        title={t('admin.heritage')}
         actions={
           tabs.length > 1 ? (
             <div className="flex flex-wrap gap-2">

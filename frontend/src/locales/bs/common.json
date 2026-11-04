@@ -175,7 +175,9 @@
     },
     "formation": {
       "allAssigned": "Svi igrači su raspoređeni.",
-      "pool": "Dostupni igrači (povuci na teren)"
+      "pool": "Dostupni igrači (povuci na teren)",
+      "pickPosition": "Odaberite poziciju na terenu ili klupi.",
+      "bench": "Klupa"
     },
     "home": {
       "metaTitle": "Kontrolna tabla",
@@ -400,7 +402,8 @@
       "edit": "Uredi klub",
       "create": "Novi klub",
       "stadium": "Stadion",
-      "descriptionPublic": "Opis kluba (javni prikaz)"
+      "descriptionPublic": "Opis kluba (javni prikaz)",
+      "name": "Naziv kluba *"
     },
     "calendar": {
       "seasonNotFound": "Sezona nije pronađena.",
@@ -556,7 +559,10 @@
       "active": "Aktivno",
       "label": "Label",
       "path": "/putanja",
-      "pageOptional": "CMS stranica (opcionalno)"
+      "pageOptional": "CMS stranica (opcionalno)",
+      "title": "Glavni meni",
+      "noActiveItems": "Nema aktivnih stavki",
+      "addWidget": "Dodaj widget"
     },
     "auditPage": {
       "metaTitle": "Audit",
@@ -709,7 +715,8 @@
     },
     "commentPanel": {
       "liveComments": "Komentari uživo",
-      "empty": "Nema komentara."
+      "empty": "Nema komentara.",
+      "placeholder": "Komentar za publiku..."
     },
     "matchFinished": {
       "title": "Utakmica (završena)",
@@ -737,6 +744,80 @@
     "ticketCategories": {
       "name": "Naziv",
       "price": "Cijena"
+    },
+    "contactMessage": {
+      "date": "Datum",
+      "message": "Poruka"
+    },
+    "newsCategories": {
+      "newPlaceholder": "Naziv nove kategorije",
+      "empty": "Nema kategorija."
+    },
+    "newsletterPage": {
+      "searchPlaceholder": "Pretraži email...",
+      "subscribersTitle": "Newsletter pretplatnici"
+    },
+    "clubStats": {
+      "empty": "Nema podataka.",
+      "title": "Statistike igrača"
+    },
+    "commentatorClock": {
+      "matchMinute": "Minuta utakmice",
+      "stoppage": "Sudijska nadoknada"
+    },
+    "eventLog": {
+      "title": "Dnevnik događaja",
+      "empty": "Nema događaja."
+    },
+    "penalties": {
+      "title": "Izvođenje penala"
+    },
+    "retrospective": {
+      "title": "Izvještaj utakmice",
+      "minute": "Minuta događaja"
+    },
+    "streamDialog": {
+      "title": "YouTube live stream"
+    },
+    "highlights": {
+      "youtubeUrl": "YouTube URL"
+    },
+    "scoreInputs": {
+      "home": "Golovi domaćih",
+      "away": "Golovi gostiju"
+    },
+    "roundForm": {
+      "numberPlaceholder": "Broj kola *",
+      "namePlaceholder": "Naziv (opcionalno)"
+    },
+    "mediaBulk": {
+      "moveTo": "Premjesti u mapu…"
+    },
+    "mediaFolders": {
+      "title": "Mape medija"
+    },
+    "mediaToolbar": {
+      "searchPlaceholder": "Pretraga po nazivu, tagu ili putanji…",
+      "clearSearch": "Obriši pretragu"
+    },
+    "ticketBackground": {
+      "label": "Pozadina ulaznice (backdrop)",
+      "preview": "Pregled"
+    },
+    "seasonTicket": {
+      "issueTitle": "Izdaj sezonsku kartu (blagajna)",
+      "emailPlaceholder": "email korisnika"
+    },
+    "cmsPreview": {
+      "livePreview": "Live preview",
+      "empty": "Dodajte widget za preview."
+    },
+    "cmsSection": {
+      "aboutPlaceholder": "Tekst o klubu"
+    },
+    "cmsNextMatch": {
+      "titlePlaceholder": "Naslov (opcionalno)",
+      "stadiumBackground": "Pozadina stadiona (parallax)"
     }
   },
   "common": {

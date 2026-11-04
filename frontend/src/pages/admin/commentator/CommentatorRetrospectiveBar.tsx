@@ -6,6 +6,7 @@ import type { Match } from '../../../types';
 import { Button } from '../../../components/ui/button';
 import { Input } from '../../../components/ui/input';
 import { Badge } from '../../../components/ui/badge';
+import { useTranslation } from 'react-i18next';
 
 interface Props {
   match: Match;
@@ -14,6 +15,7 @@ interface Props {
 }
 
 export function CommentatorRetrospectiveBar({ match, minute, onMinuteChange }: Props) {
+  const { t } = useTranslation();
   const submit = useSubmitMatchReport();
   const [error, setError] = useState('');
   const editable = canEditReport(match);
@@ -31,7 +33,9 @@ export function CommentatorRetrospectiveBar({ match, minute, onMinuteChange }: P
     <div className="rounded-xl border border-slate-200 bg-gradient-to-r from-slate-900 to-slate-800 p-3 text-white sm:p-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <p className="text-[10px] uppercase tracking-widest text-slate-400">Izvještaj utakmice</p>
+          <p className="text-[10px] uppercase tracking-widest text-slate-400">
+            {t('admin.retrospective.title')}
+          </p>
           <p className="font-display text-2xl font-bold tabular-nums">
             {match.homeScore}:{match.awayScore}
           </p>
@@ -44,7 +48,9 @@ export function CommentatorRetrospectiveBar({ match, minute, onMinuteChange }: P
       {editable && (
         <div className="mt-3 flex flex-wrap items-end gap-2 border-t border-white/10 pt-3">
           <div>
-            <label className="text-[10px] uppercase text-slate-400">Minuta događaja</label>
+            <label className="text-[10px] uppercase text-slate-400">
+              {t('admin.retrospective.minute')}
+            </label>
             <Input
               type="number"
               min={0}
@@ -55,7 +61,12 @@ export function CommentatorRetrospectiveBar({ match, minute, onMinuteChange }: P
             />
           </div>
           {match.reportStatus !== 'PENDING_APPROVAL' && (
-            <Button size="sm" className="h-8" onClick={() => void onSubmit()} disabled={submit.isPending}>
+            <Button
+              size="sm"
+              className="h-8"
+              onClick={() => void onSubmit()}
+              disabled={submit.isPending}
+            >
               Pošalji na odobrenje
             </Button>
           )}

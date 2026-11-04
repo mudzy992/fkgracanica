@@ -14,11 +14,9 @@ import { Seo } from '../../components/seo/Seo';
 import { Button } from '../../components/ui/button';
 import { AdminPageShell } from '../../components/admin/AdminPageShell';
 import { SettingsModuleSection } from './settings/SettingsModuleSection';
-import {
-  hasSettingsFieldGroup,
-  SettingsFieldGroupPanel,
-} from './settings/SettingsFieldGroupPanel';
+import { hasSettingsFieldGroup, SettingsFieldGroupPanel } from './settings/SettingsFieldGroupPanel';
 import { cn } from '../../lib/utils';
+import { useTranslation } from 'react-i18next';
 
 type Scope = 'public' | 'private';
 
@@ -28,6 +26,7 @@ const SCOPES: { key: Scope; label: string }[] = [
 ];
 
 export function SettingsPage() {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const canUpdate = hasPermission(user?.permissions, 'settings.update');
   const [scope, setScope] = useState<Scope>('public');
@@ -86,9 +85,9 @@ export function SettingsPage() {
 
   return (
     <>
-      <Seo title="Postavke" />
+      <Seo title={t('admin.settings')} />
       <AdminPageShell
-        title="Postavke"
+        title={t('admin.settings')}
         isLoading={isLoading}
         actions={
           <div className="flex flex-wrap gap-2">

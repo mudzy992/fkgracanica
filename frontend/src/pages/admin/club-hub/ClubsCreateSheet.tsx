@@ -45,13 +45,13 @@ export function ClubsCreateSheet({ open, onOpenChange, onCreated }: Props) {
         onOpenChange(o);
         if (!o) reset();
       }}
-      title="Novi klub"
+      title={t('admin.clubForm.create')}
     >
       <div className="space-y-4">
         <Input
           value={name}
           onChange={(e) => setName(e.target.value)}
-          placeholder={t('admin.rolesForm.name')}
+          placeholder={t('admin.clubForm.name')}
         />
         <Input
           value={city}

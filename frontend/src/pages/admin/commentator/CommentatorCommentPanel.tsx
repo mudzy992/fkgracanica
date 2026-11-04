@@ -42,7 +42,7 @@ export function CommentatorCommentPanel({ match, reportMode, eventMinute = 0 }: 
           <Input
             value={message}
             onChange={(e) => setMessage(e.target.value)}
-            placeholder="Komentar za publiku..."
+            placeholder={t('admin.commentPanel.placeholder')}
             onKeyDown={(e) => e.key === 'Enter' && submit()}
           />
           <Button

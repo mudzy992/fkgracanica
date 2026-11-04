@@ -4,6 +4,7 @@ import { Button } from '../../../components/ui/button';
 import { useCmsWidgets, useAddCmsSection } from '../../../hooks/use-cms-pages';
 import { asArray } from '../../../lib/as-array';
 import type { CmsWidgetMeta } from '../../../cms/types';
+import { useTranslation } from 'react-i18next';
 
 interface Props {
   pageId: string;
@@ -12,6 +13,7 @@ interface Props {
 }
 
 export function CmsWidgetPicker({ pageId, open, onOpenChange }: Props) {
+  const { t } = useTranslation();
   const { data } = useCmsWidgets();
   const widgets = asArray<CmsWidgetMeta>(data).filter((w) => w.category !== 'global');
   const add = useAddCmsSection(pageId);
@@ -27,18 +29,31 @@ export function CmsWidgetPicker({ pageId, open, onOpenChange }: Props) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange} className="max-w-lg">
-      <DialogHeader onClose={() => onOpenChange(false)}>Dodaj widget</DialogHeader>
+      <DialogHeader onClose={() => onOpenChange(false)}>
+        {t('admin.cmsMenu.addWidget')}
+      </DialogHeader>
       <DialogBody>
         <div className="mb-3 flex gap-2">
           {categories.map((c) => (
-            <Button key={c} size="sm" variant={category === c ? 'default' : 'outline'} onClick={() => setCategory(c)}>
+            <Button
+              key={c}
+              size="sm"
+              variant={category === c ? 'default' : 'outline'}
+              onClick={() => setCategory(c)}
+            >
               {c === 'all' ? 'Sve' : c === 'layout' ? 'Layout' : 'Moduli'}
             </Button>
           ))}
         </div>
         <div className="grid gap-2">
           {filtered.map((w) => (
-            <Button key={w.type} variant="outline" className="justify-start" onClick={() => void pick(w.type)} disabled={add.isPending}>
+            <Button
+              key={w.type}
+              variant="outline"
+              className="justify-start"
+              onClick={() => void pick(w.type)}
+              disabled={add.isPending}
+            >
               {w.label}
             </Button>
           ))}

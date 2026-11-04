@@ -4,6 +4,7 @@ import type { MenuDraftItem } from './menu-utils';
 import { menuHref } from './menu-utils';
 import { findBlockedMenuItems } from './menu-module-warnings';
 import { cn } from '../../../lib/utils';
+import { useTranslation } from 'react-i18next';
 
 interface Props {
   items: MenuDraftItem[];
@@ -11,6 +12,7 @@ interface Props {
 }
 
 export function CmsMenuPreviewBar({ items, moduleFlags }: Props) {
+  const { t } = useTranslation();
   const visible = items.filter((i) => i.enabled);
   const blocked = findBlockedMenuItems(items, moduleFlags);
 
@@ -22,10 +24,12 @@ export function CmsMenuPreviewBar({ items, moduleFlags }: Props) {
         </p>
         <div className="flex flex-wrap gap-2 rounded-lg bg-surface p-3">
           {visible.length === 0 ? (
-            <span className="text-sm text-text-muted">Nema aktivnih stavki</span>
+            <span className="text-sm text-text-muted">{t('admin.cmsMenu.noActiveItems')}</span>
           ) : (
             visible.map((item) => {
-              const isBlocked = blocked.some((b) => b.label === item.label && b.href === menuHref(item));
+              const isBlocked = blocked.some(
+                (b) => b.label === item.label && b.href === menuHref(item),
+              );
               return (
                 <span
                   key={item.id ?? `${item.label}-${item.path}`}

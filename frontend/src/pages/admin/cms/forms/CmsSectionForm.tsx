@@ -7,6 +7,7 @@ import { NewsFeedSectionForm } from './NewsFeedSectionForm';
 import { NextMatchSectionForm } from './NextMatchSectionForm';
 import { GenericSectionForm } from './GenericSectionForm';
 import { ClubAboutCtaSectionForm } from './ClubAboutCtaSectionForm';
+import { useTranslation } from 'react-i18next';
 
 interface Props {
   widgetType: string;
@@ -23,11 +24,23 @@ export function CmsSectionForm({ widgetType, config, onChange }: Props) {
       {widgetType === 'hero' && <HeroSectionForm config={config} onChange={onChange} />}
       {widgetType === 'news-feed' && <NewsFeedSectionForm config={config} onChange={onChange} />}
       {widgetType === 'rich-text' && <RichTextSectionForm config={config} onChange={onChange} />}
-      {widgetType === 'custom-html' && <CustomHtmlSectionForm config={config} onChange={onChange} />}
+      {widgetType === 'custom-html' && (
+        <CustomHtmlSectionForm config={config} onChange={onChange} />
+      )}
       {widgetType === 'footer-about' && <FooterAboutForm config={config} onChange={onChange} />}
       {widgetType === 'next-match' && <NextMatchSectionForm config={config} onChange={onChange} />}
-      {widgetType === 'club-about-cta' && <ClubAboutCtaSectionForm config={config} onChange={onChange} />}
-      {!['hero', 'news-feed', 'rich-text', 'footer-about', 'next-match', 'custom-html', 'club-about-cta'].includes(widgetType) && (
+      {widgetType === 'club-about-cta' && (
+        <ClubAboutCtaSectionForm config={config} onChange={onChange} />
+      )}
+      {![
+        'hero',
+        'news-feed',
+        'rich-text',
+        'footer-about',
+        'next-match',
+        'custom-html',
+        'club-about-cta',
+      ].includes(widgetType) && (
         <GenericSectionForm widgetType={widgetType} config={config} onChange={onChange} />
       )}
     </div>
@@ -35,21 +48,26 @@ export function CmsSectionForm({ widgetType, config, onChange }: Props) {
 }
 
 function CustomHtmlSectionForm({ config, onChange }: Pick<Props, 'config' | 'onChange'>) {
-  return <CustomHtmlEditor value={String(config.html ?? '')} onChange={(html) => onChange({ html })} />;
+  return (
+    <CustomHtmlEditor value={String(config.html ?? '')} onChange={(html) => onChange({ html })} />
+  );
 }
 
 function RichTextSectionForm({ config, onChange }: Pick<Props, 'config' | 'onChange'>) {
-  return <RichTextEditor value={String(config.html ?? '')} onChange={(html) => onChange({ html })} />;
+  return (
+    <RichTextEditor value={String(config.html ?? '')} onChange={(html) => onChange({ html })} />
+  );
 }
 
 function FooterAboutForm({ config, onChange }: Pick<Props, 'config' | 'onChange'>) {
+  const { t } = useTranslation();
   return (
     <textarea
       value={String(config.text ?? '')}
       onChange={(e) => onChange({ text: e.target.value })}
       rows={4}
       className="w-full rounded-lg border border-slate-200 bg-background p-2 text-sm"
-      placeholder="Tekst o klubu"
+      placeholder={t('admin.cmsSection.aboutPlaceholder')}
     />
   );
 }

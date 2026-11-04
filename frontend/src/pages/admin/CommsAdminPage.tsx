@@ -10,6 +10,7 @@ import { AdminPageShell } from '../../components/admin/AdminPageShell';
 import { ContactAdminPage } from './ContactAdminPage';
 import { NewsletterAdminPage } from './NewsletterAdminPage';
 import { EmailLogPanel } from './EmailLogPanel';
+import { useTranslation } from 'react-i18next';
 
 type Tab = 'contact' | 'newsletter' | 'email-log';
 
@@ -28,14 +29,14 @@ function resolveTab(
 }
 
 export function CommsAdminPage() {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const perms = user?.permissions ?? [];
   const { data: moduleFlags } = useModuleFlags();
   const canContact =
     hasPermission(perms, 'contact.read') && isModuleEnabled(moduleFlags, 'modules.contact');
   const canNewsletter =
-    hasPermission(perms, 'newsletter.read') &&
-    isModuleEnabled(moduleFlags, 'modules.newsletter');
+    hasPermission(perms, 'newsletter.read') && isModuleEnabled(moduleFlags, 'modules.newsletter');
   const canEmailLog = hasPermission(perms, 'settings.read');
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -62,9 +63,9 @@ export function CommsAdminPage() {
 
   return (
     <>
-      <Seo title="Komunikacija" />
+      <Seo title={t('admin.comms')} />
       <AdminPageShell
-        title="Komunikacija"
+        title={t('admin.comms')}
         actions={
           tabs.length > 1 ? (
             <div className="flex flex-wrap gap-2">

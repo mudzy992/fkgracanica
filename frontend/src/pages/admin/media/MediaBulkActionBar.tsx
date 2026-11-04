@@ -3,6 +3,7 @@ import type { MediaFolder } from '../../../hooks/use-media-admin';
 import { useDeleteMedia, useUpdateMediaAsset } from '../../../hooks/use-media-admin';
 import { asArray } from '../../../lib/as-array';
 import { Button } from '../../../components/ui/button';
+import { useTranslation } from 'react-i18next';
 
 interface Props {
   selectedIds: Set<string>;
@@ -19,6 +20,7 @@ export function MediaBulkActionBar({
   onDone,
   onConfirmDelete,
 }: Props) {
+  const { t } = useTranslation();
   const [targetFolder, setTargetFolder] = useState('');
   const [busy, setBusy] = useState(false);
   const remove = useDeleteMedia();
@@ -65,15 +67,29 @@ export function MediaBulkActionBar({
           className="min-w-0 flex-1 rounded-lg border border-slate-200 px-2 py-1.5 text-sm sm:max-w-[200px] sm:flex-none"
           disabled={busy}
         >
-          <option value="">Premjesti u mapu…</option>
+          <option value="">{t('admin.mediaBulk.moveTo')}</option>
           {folderList.map((f) => (
-            <option key={f.id} value={f.id}>{f.name}</option>
+            <option key={f.id} value={f.id}>
+              {f.name}
+            </option>
           ))}
         </select>
-        <Button type="button" size="sm" variant="outline" onClick={() => void handleMove()} disabled={busy || !targetFolder}>
+        <Button
+          type="button"
+          size="sm"
+          variant="outline"
+          onClick={() => void handleMove()}
+          disabled={busy || !targetFolder}
+        >
           Primijeni
         </Button>
-        <Button type="button" size="sm" variant="ghost" onClick={() => void handleDelete()} disabled={busy}>
+        <Button
+          type="button"
+          size="sm"
+          variant="ghost"
+          onClick={() => void handleDelete()}
+          disabled={busy}
+        >
           Obriši
         </Button>
         <Button type="button" size="sm" variant="ghost" onClick={onClear} disabled={busy}>

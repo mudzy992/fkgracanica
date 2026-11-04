@@ -142,10 +142,10 @@ export function CompetitionsAdminPage() {
                   header: 'Akcije',
                   render: (r: Competition) => (
                     <div className="flex gap-1">
-                      <Button variant="ghost" size="icon" onClick={() => openForm('competition', r, null)} aria-label="Uredi">
+                      <Button variant="ghost" size="icon" onClick={() => openForm('competition', r, null)} aria-label={t('actions.edit')}>
                         <Pencil className="h-4 w-4" />
                       </Button>
-                      <Button variant="ghost" size="icon" onClick={() => void onDeleteComp(r)} aria-label="Obriši">
+                      <Button variant="ghost" size="icon" onClick={() => void onDeleteComp(r)} aria-label={t('actions.delete')}>
                         <Trash2 className="h-4 w-4 text-danger" />
                       </Button>
                     </div>

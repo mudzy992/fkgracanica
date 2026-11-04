@@ -82,7 +82,7 @@ export function MatchHighlightsEditor({ matchId }: { matchId: string }) {
       <Input
         value={youtubeUrl}
         onChange={(e) => setYoutubeUrl(e.target.value)}
-        placeholder="YouTube URL"
+        placeholder={t('admin.highlights.youtubeUrl')}
       />
       <Input
         type="number"

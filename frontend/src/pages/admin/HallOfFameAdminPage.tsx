@@ -115,12 +115,12 @@ export function HallOfFameAdminPage({ embedded = false }: Props) {
 
   return (
     <>
-      <Seo title="Hall of Fame" />
+      <Seo title={t('admin.hallOfFame')} />
       {dialog}
       <AdminPageShell
         isError={isError}
         onRetry={() => void refetch()}
-        title="Hall of Fame"
+        title={t('admin.hallOfFame')}
         isLoading={isLoading}
         actions={createAction}
       >

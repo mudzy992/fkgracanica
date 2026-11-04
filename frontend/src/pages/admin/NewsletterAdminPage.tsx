@@ -13,12 +13,14 @@ import { AdminDataTable, AdminPageShell } from '../../components/admin/AdminPage
 import { AdminPagination } from '../../components/admin/AdminPagination';
 import { api } from '../../lib/api';
 import { NewsletterCampaignPanel } from '../../components/newsletter/NewsletterCampaignPanel';
+import { useTranslation } from 'react-i18next';
 
 interface Props {
   embedded?: boolean;
 }
 
 export function NewsletterAdminPage({ embedded = false }: Props) {
+  const { t } = useTranslation();
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
   const [tab, setTab] = useState<'list' | 'campaigns'>('list');
@@ -65,7 +67,7 @@ export function NewsletterAdminPage({ embedded = false }: Props) {
           <div className="flex flex-wrap items-center gap-2 border-b border-[var(--border-subtle)] p-4">
             <Input
               className="max-w-xs"
-              placeholder="Pretraži email..."
+              placeholder={t('admin.newsletterPage.searchPlaceholder')}
               value={search}
               onChange={(e) => {
                 setSearch(e.target.value);
@@ -142,7 +144,7 @@ export function NewsletterAdminPage({ embedded = false }: Props) {
       <AdminPageShell
         isError={isError}
         onRetry={() => void refetch()}
-        title="Newsletter pretplatnici"
+        title={t('admin.newsletterPage.subscribersTitle')}
         isLoading={isLoading}
       >
         {body}

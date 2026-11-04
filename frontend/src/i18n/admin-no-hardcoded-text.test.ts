@@ -31,7 +31,23 @@ const JSX_TEXT = />\s*([A-Za-zÀ-ž0-9][^<>{}]{2,})\s*</g;
 const SKIP_PREFIXES = ['import', '//', '*', '/*', 'export type', 'type '];
 
 /** Tehničke vrijednosti koje nisu UI tekst. */
-const ALLOWED = [/^FK Gračanica$/, /^YouTube$/, /^Newsletter$/, /^Monri$/, /^[A-Z]{1,3}$/];
+const ALLOWED = [
+  /^FK Gračanica$/,
+  /^YouTube$/,
+  /^Newsletter$/,
+  /^Monri$/,
+  /^[A-Z]{1,3}$/,
+  // URL-ovi i slug/HTML primjeri u `placeholder`-ima ne prevode se.
+  /^https?:\/\//,
+  /^url-slug$/,
+  /^<div>\.\.\.<\/div>$/,
+];
+
+/**
+ * TS deklaracije (`onConfirm: () => Promise<void>;`, `const x = (...) =>`) nisu UI
+ * tekst — u JSX-u tekst nikad ne završava sa `;`, `{` ili `=>`.
+ */
+const TS_DECL = /(=>|;|\{)\s*$/;
 
 function files(dir: string): string[] {
   return readdirSync(dir).flatMap((entry) => {
@@ -47,6 +63,7 @@ export function countOffenders(file: string): number {
   for (const line of lines) {
     const trimmed = line.trim();
     if (SKIP_PREFIXES.some((prefix) => trimmed.startsWith(prefix)) || line.includes('t(')) continue;
+    if (TS_DECL.test(trimmed) && !trimmed.includes('="')) continue;
     const values = [
       ...Array.from(line.matchAll(TEXT_PROPS), (m) => m[2]),
       ...Array.from(line.matchAll(JSX_TEXT), (m) => m[1]),
