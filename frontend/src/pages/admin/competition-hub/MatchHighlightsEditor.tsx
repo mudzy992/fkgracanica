@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useId, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '../../../components/ui/button';
 import { Input } from '../../../components/ui/input';
@@ -8,6 +8,7 @@ import {
   useDeleteMatchHighlight,
 } from '../../../hooks/use-match-highlights';
 import { getApiErrorMessage } from '../../../lib/api-error';
+import { parseYouTubeId } from '../../../lib/youtube';
 import { useConfirm } from '../../../hooks/use-confirm';
 
 export function MatchHighlightsEditor({ matchId }: { matchId: string }) {
@@ -19,6 +20,8 @@ export function MatchHighlightsEditor({ matchId }: { matchId: string }) {
   const [youtubeUrl, setYoutubeUrl] = useState('');
   const [startSeconds, setStartSeconds] = useState('');
   const [error, setError] = useState('');
+  const [invalidUrl, setInvalidUrl] = useState(false);
+  const errorId = useId();
   const { confirm, dialog } = useConfirm();
   const clips = match?.highlights ?? [];
 
@@ -41,9 +44,16 @@ export function MatchHighlightsEditor({ matchId }: { matchId: string }) {
   const add = async () => {
     try {
       setError('');
+      setInvalidUrl(false);
+      const trimmedUrl = youtubeUrl.trim();
+      if (!parseYouTubeId(trimmedUrl)) {
+        setInvalidUrl(true);
+        setError(t('video.invalidInput'));
+        return;
+      }
       await create.mutateAsync({
         title,
-        youtubeUrl,
+        youtubeUrl: trimmedUrl,
         startSeconds: startSeconds ? Number(startSeconds) : undefined,
       });
       setTitle('');
@@ -81,8 +91,13 @@ export function MatchHighlightsEditor({ matchId }: { matchId: string }) {
       />
       <Input
         value={youtubeUrl}
-        onChange={(e) => setYoutubeUrl(e.target.value)}
+        onChange={(e) => {
+          setYoutubeUrl(e.target.value);
+          if (invalidUrl) { setInvalidUrl(false); setError(''); }
+        }}
         placeholder={t('admin.highlights.youtubeUrl')}
+        aria-invalid={invalidUrl || undefined}
+        aria-describedby={invalidUrl ? errorId : undefined}
       />
       <Input
         type="number"
@@ -91,7 +106,7 @@ export function MatchHighlightsEditor({ matchId }: { matchId: string }) {
         onChange={(e) => setStartSeconds(e.target.value)}
         placeholder={t('match.highlightStart')}
       />
-      {error ? <p className="text-sm text-danger">{error}</p> : null}
+      {error ? <p id={errorId} role="alert" className="text-sm text-danger">{error}</p> : null}
       <Button
         type="button"
         size="sm"

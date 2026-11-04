@@ -1,4 +1,10 @@
 {
+  "video": {
+    "invalidInput": "Unesite ispravan YouTube link s ID-jem od 11 znakova.",
+    "unavailable": "Video nije dostupan. Provjerite YouTube link.",
+    "liveUnavailable": "Prijenos nije dostupan. Provjerite YouTube link.",
+    "audioUnavailable": "Muzika prije utakmice nije dostupna. Provjerite YouTube link."
+  },
   "nav": {
     "home": "Početna",
     "club": "O klubu",
