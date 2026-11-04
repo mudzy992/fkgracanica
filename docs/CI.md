@@ -117,6 +117,9 @@ linija, **7,64%** statements, **6,16%** funkcija i **5,79%** grana, uz isti
 obuhvat od 631 izvora; ratchet je podignut na **7,1%, 7,5%, 6,0%, 5,6%**.
 Naredni paket mjeri **9,75%** linija, **10,09%** statements, **8,74%** funkcija
 i **6,55%** grana na svih **633** izvora; ratchet **9,6%, 9,9%, 8,6%, 6,4%**.
+Naredni lokalni paket: **11,40%** linija, **11,93%** statements, **9,77%**
+funkcija i **8,12%** grana; ratchet **11,2%, 11,7%, 9,6%, 7,9%**, isti
+obuhvat 633 izvora. CI za ovaj paket čeka.
 To **nije** tvrdnja da je dostignut cilj ≥50% / poželjnih ≥70%. Pad bilo koje
 metrike ispod praga ruši CI.
 CI uspoređuje pragove i s verzijom prije pusha (ili roditeljem pri ručnom
