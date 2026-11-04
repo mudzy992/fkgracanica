@@ -34,7 +34,14 @@ Korisnik: „Možeš nastaviti dalje na FE-04c."
 - **Rezultat:** nalaza **496 → 454**, fajlova **130 → 113**; 0 kolizija ključeva
   (`admin.media`/`admin.analytics` su zauzeti kao nav-labele → `admin.mediaPicker.*`
   i `admin.visitors.*`).
-- **Otvoreno:** batch 2 (forme/tabele) i batch 3 (ostatak `pages/admin`).
+- **Batch 2** (68 nalaza): `CompetitionsAdminPage` (tabele sezona/katalog, `Da`/`Ne`,
+  `Liga`/`Ostalo`, potvrda brisanja — bez reformatiranja, ostao pod 200 linija),
+  `NewsEditorMeta`, `ClubBasicTab`, `PaymentProviderCard` (3 provajdera),
+  `HeroSectionForm`, `GenericSectionForm`.
+- **Batch 2b** (39 nalaza): `TicketingSettingsTab`, `MembershipDetailSheet`,
+  `PlayersAdminFormSheet`, `ClubsAdminFormSheet`, `CalendarSeasonPage`.
+- **Ukupno baseline: 496 → 347 nalaza, 130 → 104 fajla.**
+- **Otvoreno:** batch 3 (ostatak `pages/admin`: analytics paneli, cms editori, app-releases…).
 
 ### Sesija FE-05 — 2026-11-03 (interna IA; KAPIJA 2)
 

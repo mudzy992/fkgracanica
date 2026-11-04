@@ -14,10 +14,10 @@
 
 ### Mjerenje (heuristika: JSX tekst + tekstualni propovi sa literalom)
 
-| | Prije | Poslije batcha 1 |
-|---|---|---|
-| Nalaza | **496** | **454** |
-| Fajlova | **130** | **113** |
+| | Prije | Batch 1 | Batch 2 | Batch 2b |
+|---|---|---|---|---|
+| Nalaza | **496** | **454** | **386** | **347** |
+| Fajlova | **130** | **113** | **109** | **104** |
 
 > Napomena: heuristika namjerno ne broji literale u objektima (`label: 'Vijesti'`),
 > pa je stvarni broj veći; migrirani su i takvi literali gdje su bili u fokusu.
@@ -29,7 +29,8 @@
 | **P-FE04-9** | **Ratchet guard**: `src/i18n/admin-no-hardcoded-text.test.ts` + `admin-i18n-baseline.json` (fajl → dozvoljeni broj nalaza). Test pada ako bilo koji fajl pređe baseline ili se pojavi **nov** fajl sa hardkodiranim tekstom; dozvoljava smanjenje. Baseline se spušta komandom `UPDATE_I18N_BASELINE=1 npx vitest run src/i18n/admin-no-hardcoded-text.test.ts`. | ✅ implementirano |
 | **P-FE04-10** | **Batch 1 — shared sloj** (koristi ga cijeli admin): media picker, rich text, season picker, entity select, slug, formation pool, `ConfirmDialog`, `ErrorBoundary`, `LanguageSwitcher`. | ✅ implementirano |
 | **P-FE04-11** | **Batch 1 — 5 rolnih početnih stranica** (`AdminHome`, `ModeratorHome`, `WriterHome`, `CommentatorHome`, `CommentatorLiveHero`, `HomeKpiGrid`) + KPI labele kroz `admin.kpi.*` (fallback na postojeći config). | ✅ implementirano |
-| **P-FE04-12** | **Batch 2** — forme i tabele: `CompetitionsAdminPage`, `NewsEditorMeta`, `ClubBasicTab`, `PaymentProviderCard`, `HeroSectionForm`… | ⏳ sljedeća sesija |
+| **P-FE04-12** | **Batch 2** — forme i tabele: `CompetitionsAdminPage`, `NewsEditorMeta`, `ClubBasicTab`, `PaymentProviderCard`, `HeroSectionForm`, `GenericSectionForm`. | ✅ implementirano |
+| **P-FE04-14** | **Batch 2b** — `TicketingSettingsTab`, `MembershipDetailSheet`, `PlayersAdminFormSheet`, `ClubsAdminFormSheet`, `CalendarSeasonPage`. | ✅ implementirano |
 | **P-FE04-13** | **Batch 3+** — preostali `pages/admin/**` (po abecedi/po domenu: cms, ticketing, membership, finance…), uz spuštanje baseline-a poslije svakog batcha. | ⏳ |
 
 ## 3. Implementirano (batch 1)
@@ -55,6 +56,23 @@
 > `admin.media` i `admin.analytics` su **već zauzeti kao stringovi** (nav labele), zato su
 > nove grupe `admin.mediaPicker.*` i `admin.visitors.*` — bez toga JSON dobija konflikt.
 
+### Batch 2 (68 nalaza → −68)
+
+`CompetitionsAdminPage` (tabela sezona + katalog: kolone, empty stanja, `Da`/`Ne`, `Liga`/`Ostalo`,
+potvrda brisanja sezone — **bez** reformatiranja fajla da ostane pod 200 linija),
+`NewsEditorMeta` (11 labela meta panela), `ClubBasicTab`, `PaymentProviderCard`
+(sva 3 provajdera; `t()` u svakoj pod-komponenti), `HeroSectionForm`, `GenericSectionForm`.
+
+### Batch 2b (39 nalaza → −39)
+
+`TicketingSettingsTab` (kapacitet, popust, limiti, sezonska karta, kategorije, `Spremanje…`),
+`MembershipDetailSheet` (7 labela), `PlayersAdminFormSheet`, `ClubsAdminFormSheet`,
+`CalendarSeasonPage` (kolone + `Nazad`/`Uredi`/`Obriši` iz `actions.*`).
+
+**Nove grupe ključeva:** `admin.payments.*`, `admin.cmsWidget.*`, `admin.club.*`,
+`admin.clubForm.*`, `admin.newsForm.*`, `admin.competitionsAdmin.*`, `admin.ticketingForm.*`,
+`admin.membershipForm.*`, `admin.playerForm.*`, `admin.calendar.*`, `admin.common.*`.
+
 ## 4. Verifikacija
 
 | Provjera | Rezultat |
@@ -73,4 +91,4 @@
 - Prilikom migracije paziti na **kolizije ključeva**: `admin.cms`, `admin.media`, `admin.news`,
   `admin.gallery`, `admin.analytics`… su stringovi (nav), pa pod-namespace mora biti drugačiji.
 
-## Status segmenta: U TOKU (batch 1/3; ratchet guard aktivan)
+## Status segmenta: U TOKU (batch 2b završen; baseline 496 → 347; ratchet guard aktivan)
