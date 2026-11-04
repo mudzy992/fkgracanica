@@ -7,10 +7,10 @@
 | Polje | Vrijednost |
 |-------|------------|
 | **Aktivna grana** | `arena/290a6f13-fkgracanica` |
-| **Trenutna faza** | CI-01 ✔ INF-01 ✔ INF-02 ✔ BE-01…**BE-09 ✔** → FE-01 ✔ FE-02 ✔ FE-03 ✔ FE-03b ✔ → CI-04 ✔ → FE-04a ✔ FE-04b ✔ → FE-05 ✔ → **FE-04c (u toku, batch 1–6/7; baseline 131)** |
-| **Trenutni segment** | **FE-04c — U TOKU** (batch 1–6: baseline 496 → **131** nalaza, 130 → **62** fajla; **−74%**) ; prije: **FE-05 ✅**, **FE-04b ✅**, **FE-04a ✅**, **CI-04 ✅**, **FE-03b ✅**, **FE-03 ✅**, **FE-02 ✅**, **FE-01 ✅**, **BE-09c ✅** |
-| **Zadnji commit** | `docs(audit): FE-04c batch 5 i 6 — baseline 496→131 [FE-04c]` |
-| **Zadnji CI run** | ✅ **`41791659204`** (FE-04c batch 5+6 + docs, sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41791659204 ; ✅ **`41791137350`** (batch 5) ; ✅ **`41788831131`**, **`41788531790`**, **`41787973999`**, **`41780305565`**, **`41780020284`**, **`41779492872`**, **`41736615770`** (batch 1–4) |
+| **Trenutna faza** | CI-01 ✔ INF-01 ✔ INF-02 ✔ BE-01…**BE-09 ✔** → FE-01 ✔ FE-02 ✔ FE-03 ✔ FE-03b ✔ → CI-04 ✔ → FE-04a ✔ FE-04b ✔ → FE-05 ✔ → **FE-04c ✅ ZAVRŠEN (baseline 496 → 0)** → sljedeći kandidat: **MOB-01** |
+| **Trenutni segment** | **FE-04c — ✅ ZAVRŠEN** (batch 1–8: baseline 496 → **0** nalaza, 130 → **0** fajlova; ratchet guard ostaje aktivan) ; sljedeći kandidat **MOB-01** ; prije: **FE-05 ✅**, **FE-04b ✅**, **FE-04a ✅**, **CI-04 ✅**, **FE-03b ✅**, **FE-03 ✅**, **FE-02 ✅**, **FE-01 ✅**, **BE-09c ✅** |
+| **Zadnji commit** | `docs(audit): FE-04c batch 7 i 8 — baseline 496→0, segment zatvoren [FE-04c]` |
+| **Zadnji CI run** | ✅ **`41795171365`** (FE-04c batch 8, sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41795171365 ; ✅ **`41794454711`** (batch 7) ; ✅ **`41792020666`** (docs run-ID) ; ✅ **`41791659204`** (FE-04c batch 5+6 + docs, sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41791659204 ; ✅ **`41791137350`** (batch 5) ; ✅ **`41788831131`**, **`41788531790`**, **`41787973999`**, **`41780305565`**, **`41780020284`**, **`41779492872`**, **`41736615770`** (batch 1–4) |
 | **check:all** | `npm run check:all` → **7/7** (check-coverage, file-size, console-ban, **token-check**, secrets-ban, layer-deps, docs-links); u CI-ju jobovi `audit-gate` + `standards`; pre-push hook pokreće `check:all` |
 
 ## Šta je urađeno (hronološki)
@@ -50,9 +50,17 @@ Korisnik: „Možeš nastaviti dalje na FE-04c."
   muzej, vremenska linija, trofeji, korisnici, članstva.
 - **Batch 6** (39 nalaza): igrački panel, klub hub, kadar, CMS builder/meta, news-feed widget,
   season hub, editor galerije, grid medija, plaćanja u ticketing tabu.
-- **Ukupno baseline: 496 → 131 nalaza, 130 → 62 fajla.**
-- **Otvoreno:** batch 7 (preostalih ~131 nalaza u 62 fajla: analytics paneli, cms editori,
-  app-releases, notifications, media, settings).
+- **Batch 7** (57 nalaza): analytics (tabovi + H2H), email log, live na odobrenju, članstvo,
+  uloge, takmičenje u sezoni, sponzori, CMS stranice, komentari, kola (završena utakmica,
+  kaskadno brisanje, tabela), finansijski filteri, editor vijesti, kategorije ulaznica.
+  `MembershipAdminPage` prešao 200 linija → `membership-actions.ts`.
+- **Batch 8** (74 nalaza → **0**): komercijalni moduli (comms, hall of fame, baština, mediji,
+  postavke, ulaznice), klub hub tabovi, CMS meni/preview/widget picker/forme sekcija,
+  komentator (sat, dnevnik, penali, retrospektiva, stream), ocjene rezultata, kolo,
+  media toolbar/bulk/mape, pozadina ulaznice, narudžbe i sezonska karta.
+  Guard test pojačan: preskače TS deklaracije i tehničke vrijednosti (`https://…`, `url-slug`).
+- **Ukupno baseline: 496 → 0 nalaza, 130 → 0 fajlova** — segment zatvoren; ratchet ostaje
+  aktivan (nov fajl sa hardkodiranim tekstom ruši test).
 
 ### Sesija FE-05 — 2026-11-03 (interna IA; KAPIJA 2)
 

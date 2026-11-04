@@ -1,8 +1,8 @@
 # FE-04c — i18n admina
 
 > Migracija admina (147 stranica) sa hardkodiranog bosanskog na `t()`, u batch-evima.
-> Sesija 2026-11-03: **infrastruktura + batch 1** (shared komponente + 5 rolnih
-> početnih stranica). Segment ostaje **otvoren** dok se ne spusti cijeli baseline.
+> Sesije 2026-11-03/04: **infrastruktura + batch-evi 1–8**. Baseline spušten na **0**,
+> segment **zatvoren**; ratchet guard ostaje aktivan za buduće fajlove.
 
 ## 1. Nalazi
 
@@ -14,10 +14,10 @@
 
 ### Mjerenje (heuristika: JSX tekst + tekstualni propovi sa literalom)
 
-| | Prije | B1 | B2 | B2b | B3 | B4 | B5 | B6 |
-|---|---|---|---|---|---|---|---|---|
-| Nalaza | **496** | **454** | **386** | **347** | **284** | **244** | **170** | **131** |
-| Fajlova | **130** | **113** | **109** | **104** | **96** | **88** | **71** | **62** |
+| | Prije | B1 | B2 | B2b | B3 | B4 | B5 | B6 | B7 | **B8** |
+|---|---|---|---|---|---|---|---|---|---|---|
+| Nalaza | **496** | **454** | **386** | **347** | **284** | **244** | **170** | **131** | **74** | **0** |
+| Fajlova | **130** | **113** | **109** | **104** | **96** | **88** | **71** | **62** | **45** | **0** |
 
 > Napomena: heuristika namjerno ne broji literale u objektima (`label: 'Vijesti'`),
 > pa je stvarni broj veći; migrirani su i takvi literali gdje su bili u fokusu.
@@ -31,7 +31,7 @@
 | **P-FE04-11** | **Batch 1 — 5 rolnih početnih stranica** (`AdminHome`, `ModeratorHome`, `WriterHome`, `CommentatorHome`, `CommentatorLiveHero`, `HomeKpiGrid`) + KPI labele kroz `admin.kpi.*` (fallback na postojeći config). | ✅ implementirano |
 | **P-FE04-12** | **Batch 2** — forme i tabele: `CompetitionsAdminPage`, `NewsEditorMeta`, `ClubBasicTab`, `PaymentProviderCard`, `HeroSectionForm`, `GenericSectionForm`. | ✅ implementirano |
 | **P-FE04-14** | **Batch 2b** — `TicketingSettingsTab`, `MembershipDetailSheet`, `PlayersAdminFormSheet`, `ClubsAdminFormSheet`, `CalendarSeasonPage`. | ✅ implementirano |
-| **P-FE04-13** | **Batch 3+** — preostali `pages/admin/**` (po abecedi/po domenu: cms, ticketing, membership, finance…), uz spuštanje baseline-a poslije svakog batcha. | ⏳ |
+| **P-FE04-13** | **Batch 3–8** — preostali `pages/admin/**` (cms, ticketing, membership, finance, commentator, media, settings…), uz spuštanje baseline-a poslije svakog batcha (496 → 454 → 386 → 347 → 284 → 244 → 170 → 131 → 74 → **0**). | ✅ implementirano |
 
 ## 3. Implementirano (batch 1)
 
@@ -104,8 +104,36 @@ Stripe/PayPal/Monri uputstva), `AuditPage`, `ClubsAdminPage`, `CommentatorPage`,
 `CmsPageMetaForm` (`Uredi: {{title}}`), `NewsFeedSectionForm`, `SeasonHubPage`,
 `GalleryEditorPage` (`Fotografije ({{count}})`), `MediaAssetsGrid`, `TicketingPaymentsTab`.
 
+### Batch 7 (57 nalaza → −57)
+
+`AnalyticsPage` (+ refaktor `TABS` na `labelKey`, uklonjen dupli `useTranslation` hook),
+`EmailLogPanel`, `LivePendingPage`, `MembershipAdminPage`, `RolesAdminFormSheet`, `RolesPage`,
+`SeasonEditionFormSheet`, `SponsorsAdminFormSheet`, `AnalyticsH2hPanel`, `AppReleasesAdminPage`,
+`CmsPagesList`, `CmsPageCreateDialog`, `CommentatorCommentPanel`, `MatchFinishedReadOnly`,
+`RoundCascadeDeleteDialog`, `RoundMatchesPanel`, `FinanceFiltersForm`, `NewsEditorMain`,
+`TicketingCategoriesEditor`, `ClubsCreateSheet`.
+
+**`MembershipAdminPage` je prešao 200 linija** zbog `t()` poziva → potvrda akcija izdvojena u
+`membership-actions.ts` (10 linija); fajl ostao na 199 linija.
+
+### Batch 8 (74 nalaza → 0, segment zatvoren)
+
+Ostatak admina: `CommsAdminPage`, `CompetitionsAdminPage` (`aria-label` → `actions.*`),
+`ContactMessageSheet`, `FinanceAdminPage`, `HallOfFameAdminPage`, `HeritageAdminPage`,
+`MediaPage`, `NewsCategoriesDialog`, `NewsletterAdminPage`, `SettingsPage`, `TicketingAdminPage`,
+`ClubFormationTab`, `ClubStatsTab`, `CmsMenuEditor`, `CmsMenuPreviewBar`, `CmsPreviewPanel`,
+`CmsWidgetPicker`, `CmsSectionForm`, `NextMatchSectionForm`, `CommentatorClockBar`,
+`CommentatorEventLog`, `CommentatorPenaltiesBoard`, `CommentatorRetrospectiveBar`,
+`CommentatorStreamDialog`, `MatchHighlightsEditor`, `MatchScoreInputs`, `RoundFormSheet`,
+`MediaBulkActionBar`, `MediaFolderSheet`, `MediaPageToolbar`, `TicketingCardBackgroundField`,
+`TicketingOrdersTab`, `TicketingSeasonTab`.
+
+**Pojačana heuristika guard testa** (bez slabljenja ratcheta): preskaču se TS deklaracije
+(`onConfirm: () => Promise<void>;`) i dozvoljavaju tehničke vrijednosti (`https://…`,
+`url-slug`, `<div>...</div>`).
+
 > Napomena: heuristika ne broji JSX izraze (`{x ? 'Da' : 'Ne'}`), pa je stvarni broj
-> preostalih stringova veći od baseline-a; oni se rješavaju u prolazu kroz fajl.
+> migriranih stringova veći od baseline-a; takvi literali su rješavani u prolazu kroz fajl.
 
 ## 4. Verifikacija
 
@@ -121,8 +149,10 @@ Stripe/PayPal/Monri uputstva), `AuditPage`, `ClubsAdminPage`, `CommentatorPage`,
 
 ## 5. Otvoreno
 
-- **Batch 2/3**: 454 nalaza u 113 fajlova (stvarno više — heuristika ne broji literale u objektima).
-- Prilikom migracije paziti na **kolizije ključeva**: `admin.cms`, `admin.media`, `admin.news`,
+- **Nema preostalih nalaza** — baseline `admin-i18n-baseline.json` je `{}` (0 nalaza, 0 fajlova).
+- Heuristika ne pokriva literale u JSX izrazima i objektima (npr. `{x ? 'Da' : 'Ne'}`); oni su
+  ručno prolazeni kroz fajlove u batch-evima 2–8.
+- Prilikom budućih izmjena paziti na **kolizije ključeva**: `admin.cms`, `admin.media`, `admin.news`,
   `admin.gallery`, `admin.analytics`… su stringovi (nav), pa pod-namespace mora biti drugačiji.
 
-## Status segmenta: U TOKU (batch 6 završen; baseline 496 → 131, 130 → 62 fajla; ratchet guard aktivan)
+## Status segmenta: ✅ ZAVRŠEN (baseline 496 → 0 nalaza, 130 → 0 fajlova; ratchet guard ostaje aktivan)
