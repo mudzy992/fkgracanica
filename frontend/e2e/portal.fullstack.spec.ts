@@ -27,6 +27,7 @@ test('izolovani backend: seedovana naslovna, zaštita, prijava i odjava', async 
   expect((await login).ok()).toBe(true);
   await expect(page).toHaveURL(/\/admin$/);
   await expect(page.getByRole('heading', { name: 'Kontrolna tabla' })).toBeVisible();
+  await expect.poll(() => page.evaluate(() => Boolean(localStorage.getItem('fk_access_token')))).toBe(true);
 
   const me = page.waitForResponse((response) => new URL(response.url()).pathname === '/api/v1/auth/me');
   await page.reload();

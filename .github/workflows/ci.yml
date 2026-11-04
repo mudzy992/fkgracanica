@@ -13,6 +13,7 @@ on:
 
 permissions:
   contents: read
+  actions: read # privremeno: dijagnostika neuspjelog full-stack runa
 
 concurrency:
   group: ci-${{ github.ref }}
@@ -290,6 +291,40 @@ jobs:
       E2E_BACKEND_URL: http://127.0.0.1:3000
     steps:
       - uses: actions/checkout@v4
+      - name: Dijagnostika prethodnog full-stack pada
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh run download 41824442277 --name browser-fullstack-failure --dir "$RUNNER_TEMP/old-fullstack"
+          python3 - <<'PYEOF'
+          from pathlib import Path
+          from urllib.parse import urlsplit
+          from zipfile import ZipFile
+          import json, os, re
+          lines = []
+          root = Path(os.environ['RUNNER_TEMP'], 'old-fullstack')
+          for path in root.rglob('error-context.md'):
+              for line in path.read_text(errors='replace').splitlines():
+                  if re.search(r'heading|alert|Page URL', line, re.I): lines.append('DOM ' + line[:180])
+          for path in root.rglob('trace.zip'):
+              with ZipFile(path) as trace:
+                  for name in trace.namelist():
+                      if name.endswith('.network'):
+                          for raw in trace.read(name).decode().splitlines():
+                              event = json.loads(raw).get('snapshot', {})
+                              req, res = event.get('request', {}), event.get('response', {})
+                              url = urlsplit(req.get('url', ''))
+                              if url.path.startswith('/api/v1/auth/'):
+                                  lines.append(f"AUTH {req.get('method')} {url.path} status={res.get('status')}")
+                      elif name == 'test.trace':
+                          for raw in trace.read(name).decode().splitlines():
+                              event = json.loads(raw)
+                              if event.get('type') == 'before' and ('reload' in event.get('apiName', '') or 'waitForResponse' in event.get('apiName', '')):
+                                  lines.append('STEP ' + event.get('apiName', '') + ' time=' + str(event.get('startTime')))
+          text = ' | '.join(lines)[:2800].replace('%', '%25').replace('\r', '%0D').replace('\n', '%0A')
+          print('::notice title=Prethodni full-stack pad::' + (text or 'Nema dijagnostičkih događaja'))
+          PYEOF
       - uses: actions/setup-node@v4
         with:
           node-version: 22
