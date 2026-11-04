@@ -112,7 +112,7 @@ export function PublicUserMenu({ onNavigate, mobile }: Props) {
         className="h-9 w-9 rounded-full p-0"
         aria-expanded={open}
         aria-haspopup="menu"
-        aria-label={t('nav.myAccount')}
+        aria-label={`${t('nav.myAccount')}: ${userInitials(user)}`}
         onClick={() => setOpen((v) => !v)}
       >
         <span className="text-xs font-semibold">{userInitials(user)}</span>

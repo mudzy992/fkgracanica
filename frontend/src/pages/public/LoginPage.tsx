@@ -19,9 +19,19 @@ const schema = z.object({
 
 type FormData = z.infer<typeof schema>;
 
-function resolveRedirect(pathname: string | undefined, staff: boolean): string {
+type RedirectLocation = { pathname?: string; search?: string };
+
+function resolveRedirect(from: RedirectLocation | undefined, staff: boolean): string {
+  const pathname = from?.pathname;
   if (pathname && !pathname.startsWith('/prijava') && pathname !== '/admin/login') {
-    if (staff || !pathname.startsWith('/admin')) return pathname;
+    if (staff || !pathname.startsWith('/admin')) {
+      // Only payment returns need their provider/session parameters after signing in.
+      const search = from?.search?.startsWith('?') ? from.search : '';
+      const params = new URLSearchParams(search);
+      if ((pathname === '/ulaznice' || pathname === '/clanstvo') && params.get('paid') === '1'
+        && (params.get('session_id') || params.get('token'))) return `${pathname}${search}`;
+      return pathname;
+    }
   }
   return staff ? '/admin' : '/clanstvo';
 }
@@ -41,7 +51,7 @@ export function LoginPage() {
   if (isLoading) return <Skeleton className="mx-auto mt-24 h-64 max-w-md" />;
 
   if (isAuthenticated && user) {
-    const from = (location.state as { from?: { pathname: string } })?.from?.pathname;
+    const from = (location.state as { from?: RedirectLocation })?.from;
     return <Navigate to={resolveRedirect(from, hasStaffAccess(user.permissions))} replace />;
   }
 
@@ -49,7 +59,7 @@ export function LoginPage() {
     setError('');
     try {
       const loggedIn = await login(data.email, data.password);
-      const from = (location.state as { from?: { pathname: string } })?.from?.pathname;
+      const from = (location.state as { from?: RedirectLocation })?.from;
       navigate(resolveRedirect(from, hasStaffAccess(loggedIn.permissions)), {
         replace: true,
       });

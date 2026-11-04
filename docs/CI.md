@@ -115,6 +115,8 @@ statements **4,91% (439/8926)**, funkcija **4,10% (139/3390)**, grana
 4,0%, 3,6%**. Nakon prvog paketa dodatnih testova lokalno mjerenje je **7,28%**
 linija, **7,64%** statements, **6,16%** funkcija i **5,79%** grana, uz isti
 obuhvat od 631 izvora; ratchet je podignut na **7,1%, 7,5%, 6,0%, 5,6%**.
+Naredni paket mjeri **9,75%** linija, **10,09%** statements, **8,74%** funkcija
+i **6,55%** grana na svih **633** izvora; ratchet **9,6%, 9,9%, 8,6%, 6,4%**.
 To **nije** tvrdnja da je dostignut cilj ≥50% / poželjnih ≥70%. Pad bilo koje
 metrike ispod praga ruši CI.
 CI uspoređuje pragove i s verzijom prije pusha (ili roditeljem pri ručnom

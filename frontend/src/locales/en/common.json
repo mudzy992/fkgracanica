@@ -875,6 +875,13 @@
     "phone": "Phone",
     "address": "Address"
   },
+  "paymentReturn": {
+    "pending": "The payment status is not confirmed yet. Check its status before making another purchase.",
+    "error": "The payment status cannot be confirmed right now. If you were charged, do not make another purchase; contact support.",
+    "retryInfo": "Resubmitting may complete a previously approved payment; it does not start a new purchase.",
+    "retry": "Resubmit the existing payment confirmation",
+    "signIn": "Sign in to confirm your existing payment."
+  },
   "pages": {
     "notFound": "Page not found.",
     "gallery": {

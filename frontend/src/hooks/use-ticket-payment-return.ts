@@ -10,9 +10,10 @@ interface Options {
   sessionId: string | null;
   provider?: PaymentProviderId;
   enabled: boolean;
+  userId: string | null;
 }
 
-export function useTicketPaymentReturn({ paid, sessionId, provider, enabled }: Options) {
+export function useTicketPaymentReturn({ paid, sessionId, provider, enabled, userId }: Options) {
   const { mutateAsync } = useConfirmTicketSession();
   const confirm = useCallback(
     (id: string) =>
@@ -25,6 +26,8 @@ export function useTicketPaymentReturn({ paid, sessionId, provider, enabled }: O
     kind: 'tickets',
     paid,
     sessionId,
+    userId,
+    provider,
     enabled,
     invalidateKey: TICKET_ORDERS_KEY,
     isActivated,

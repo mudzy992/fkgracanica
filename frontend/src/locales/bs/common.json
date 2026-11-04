@@ -875,6 +875,13 @@
     "phone": "Telefon",
     "address": "Adresa"
   },
+  "paymentReturn": {
+    "pending": "Status uplate još nije potvrđen. Provjerite stanje prije nove kupovine.",
+    "error": "Status uplate trenutno nije moguće potvrditi. Ako ste zaduženi, ne pokrećite novu kupovinu; obratite se podršci.",
+    "retryInfo": "Ponovna potvrda može dovršiti već odobrenu uplatu; ne pokreće novu kupovinu.",
+    "retry": "Ponovo potvrdi postojeću uplatu",
+    "signIn": "Prijavite se kako biste potvrdili postojeću uplatu."
+  },
   "pages": {
     "notFound": "Stranica nije pronađena.",
     "gallery": {

@@ -9,10 +9,12 @@ import { parsePaymentProvider } from '../../lib/payment-providers';
 import { MyTicketsPanel } from '../../components/ticketing/MyTicketsPanel';
 import { TicketsReserveForm } from '../../components/ticketing/TicketsReserveForm';
 import { SeasonPassPanel } from '../../components/ticketing/SeasonPassPanel';
+import { PaymentReturnNotice } from '../../components/payments/PaymentReturnNotice';
 import { FormShell } from '../../components/public/forms/FormShell';
 import { PageHeroHeader } from '../../components/public/shell/PageHeroHeader';
 import { Seo } from '../../components/seo/Seo';
 import { Button } from '../../components/ui/button';
+import { buttonVariants } from '../../components/ui/button-variants';
 import { Skeleton } from '../../components/ui/skeleton';
 import { useTranslation } from 'react-i18next';
 
@@ -36,16 +38,19 @@ export function TicketsPage() {
     paid: paidReturn && !isSeason,
     sessionId,
     provider,
+    userId: user?.id ?? null,
     enabled: isAuthenticated && !isLoading && !isSeason,
   });
   const seasonReturn = useSeasonPassPaymentReturn({
     paid: paidReturn && isSeason,
     sessionId,
     provider,
+    userId: user?.id ?? null,
     enabled: isAuthenticated && !isLoading && isSeason,
   });
   const confirming = ticketReturn.confirming || seasonReturn.confirming;
-  const activated = isSeason ? seasonReturn.activated : ticketReturn.activated;
+  const paymentReturn = isSeason ? seasonReturn : ticketReturn;
+  const activated = paymentReturn.activated;
   useClearPaymentParams(!confirming && (activated || !paidReturn || !sessionId));
 
   if (isLoading || confirming) return <Skeleton className="mx-auto mt-12 h-64 max-w-xl" />;
@@ -65,11 +70,14 @@ export function TicketsPage() {
         description={t('pages.tickets.formDesc')}
         layout={isAuthenticated ? 'full' : 'split'}
       >
+        {isAuthenticated && <PaymentReturnNotice status={paymentReturn.status} onRetry={paymentReturn.retry} />}
         {!isAuthenticated ? (
           <div className="space-y-3">
-            <p className="text-text-muted">{t('pages.tickets.guestInfo')}</p>
-            <Link to="/prijava" state={{ from: location }}>
-              <Button className="w-full">{t('pages.tickets.signIn')}</Button>
+            <p className="text-text-muted">
+              {paidReturn && sessionId ? t('paymentReturn.signIn') : t('pages.tickets.guestInfo')}
+            </p>
+            <Link to="/prijava" state={{ from: location }} className={`${buttonVariants()} w-full`}>
+              {t('pages.tickets.signIn')}
             </Link>
           </div>
         ) : !config?.modulesTicketing ? (

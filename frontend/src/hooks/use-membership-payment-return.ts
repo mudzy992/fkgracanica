@@ -10,9 +10,10 @@ interface Options {
   sessionId: string | null;
   provider?: PaymentProviderId;
   enabled: boolean;
+  userId: string | null;
 }
 
-export function useMembershipPaymentReturn({ paid, sessionId, provider, enabled }: Options) {
+export function useMembershipPaymentReturn({ paid, sessionId, provider, enabled, userId }: Options) {
   const { mutateAsync } = useConfirmMembershipSession();
   const confirm = useCallback(
     (id: string) =>
@@ -25,6 +26,8 @@ export function useMembershipPaymentReturn({ paid, sessionId, provider, enabled 
     kind: 'membership',
     paid,
     sessionId,
+    userId,
+    provider,
     enabled,
     invalidateKey: MEMBERSHIP_ME_KEY,
     isActivated,
