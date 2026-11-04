@@ -86,8 +86,35 @@ istoj migraciji kao backfill) je brža ali nepovratna u istom deployu.
   postoji rizik paralelnog `migrate deploy`; za ovaj segment dovoljno je da redeploy ide
   sa **jednom** replikom.
 
-## 7. Izmjene
+## 7. Implementacija (odobreno 2026-11-04)
 
-_Nema još — segment je u fazi audita; implementacija počinje nakon odobrenja._
+Korisnik: **„Imaš moje odobrenje za P-B09d-1,2,3,5,6, a što se tiče 4 za DROP ja sam upravo
+uradio Backup baze prije bilo koje izmjene."** → odobreno **P-B09d-1…6**, backup potvrđen.
+
+| Predlog | Šta je urađeno | Fajlovi |
+|---------|----------------|---------|
+| **P-B09d-1** | Backfill migracija: `INSERT … "Round"` za svaki `(seasonId, round)` bez `roundId` (ime `N. kolo`, `gen_random` id preko `md5(...)`), pa `UPDATE "Match" SET "roundId"` po `(seasonId, round)`. Idempotentno (`WHERE NOT EXISTS` + `roundId IS NULL`). | `backend/prisma/migrations/20261104120000_be09d_backfill_match_round/migration.sql` |
+| **P-B09d-2** | Guard u istoj migraciji: `DO $$ … RAISE EXCEPTION 'BE-09d: % utakmica jos nema roundId poslije backfilla…'` — deploy pada ako ostane siročić. | isto |
+| **P-B09d-3** | Skalarni `round` se više ne piše: `resolveMatchRoundFields` vraća samo `{ roundId }`; `roundToMatchUpdateInput` radi `roundRel: connect/disconnect`; `rounds.service.update` **ne** propagira broj u utakmice; seed demo koristi `roundId` u `findFirst` i create. Uklonjen i `syncLegacyRounds` (čitao je kolonu) — više nema šta da mapira. | `matches/match-round.util.ts`, `rounds/rounds.service.ts`, `prisma/seed/demo/matches.ts` |
+| **P-B09d-4** | `DROP COLUMN "round"` u odvojenoj migraciji (poslije backfilla, redoslijed po timestampu); `schema.prisma` bez `Match.round`. **Backup baze urađen prije izmjene.** | `backend/prisma/migrations/20261104120100_be09d_drop_match_round/migration.sql`, `schema.prisma` |
+| **P-B09d-5** | API kompatibilnost: `withSeasonAlias` dodaje izvedeno `round: roundRel?.number ?? null` (deprecated); `live.listPendingApproval` sada uključuje `roundRel` da polje ne bude `null`; `docs/BACKEND.md` dokumentuje pravilo. | `matches/match-edition.util.ts`, `live/live.service.ts`, `docs/BACKEND.md` |
+| **P-B09d-6** | Uklonjeni fallbacki: web `round-utils`, `league-position.util`, `ticket-match-meta`, `CommentatorDeskHeader`; mobilni `map-league-lists`; tipovi nose `@deprecated` komentar. `round.util.ts` bez skalara; testovi prepravljeni + **novi** `match-edition.util.spec.ts` (3 testa za izvedeno polje). | vidi `git show --stat 2b3a7d7` |
+
+### Verifikacija (lokalno + CI)
+
+| Provjera | Rezultat |
+|---|---|
+| `prisma migrate deploy` (CI `e2e` job, `postgres:16`) | ✅ obje migracije primijenjene, seed prošao |
+| Backend build + unit testovi (CI `build + test`) | ✅ (`prisma generate` + `tsc`) |
+| `round.util.spec.ts` / `match-edition.util.spec.ts` | ✅ 4 testa |
+| Frontend `tsc -b`, `vitest` | ✅ 69/69, čisto |
+| Frontend `eslint` / `vite build` | ✅ 0 errors / 30 warnings, build 1.44 s |
+| `check:all` | ✅ 9/9 |
+| Mobilni `tsc --noEmit` | ⚠️ preostale **prethodne** greške (`StyleSheet.absoluteFillObject`, RN tipovi) — nisu iz ovog segmenta; `map-league-lists.ts` čist |
+
+> Lokalno `prisma generate` nije moguć (sandbox blokira `binaries.prisma.sh`), pa je backend
+> tipizacija verifikovana u CI-ju — zelen run je dokaz.
+
+## Status segmenta: ZATVOREN (P-B09d-1…6 implementirano, CI zelen)
 
 ## Status segmenta: U TOKU (audit ✔, čeka odobrenje korisnika za P-B09d-1…6)

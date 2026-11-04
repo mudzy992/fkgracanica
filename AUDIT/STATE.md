@@ -7,10 +7,10 @@
 | Polje | Vrijednost |
 |-------|------------|
 | **Aktivna grana** | `arena/290a6f13-fkgracanica` |
-| **Trenutna faza** | CI-01 ✔ INF-01 ✔ INF-02 ✔ BE-01…**BE-09 ✔** → FE-01 ✔ FE-02 ✔ FE-03 ✔ FE-03b ✔ → CI-04 ✔ → FE-04a ✔ FE-04b ✔ → FE-05 ✔ → **FE-04c ✅ ZAVRŠEN (baseline 496 → 0)** → **BE-09d (P-B09c-11) 🔄 audit ✔, čeka odobrenje** ; MOB-01 odgođen dok se BE/FE ne zaokruže |
-| **Trenutni segment** | **BE-09d — U TOKU (audit ✔, čeka odobrenje P-B09d-1…6)** — uklanjanje legacy `Match.round` (backlog P-B09c-11) ; prethodno **FE-04c ✅ ZAVRŠEN** (batch 1–8: baseline 496 → **0** nalaza, 130 → **0** fajlova; ratchet guard ostaje aktivan) ; sljedeći kandidat **MOB-01** ; prije: **FE-05 ✅**, **FE-04b ✅**, **FE-04a ✅**, **CI-04 ✅**, **FE-03b ✅**, **FE-03 ✅**, **FE-02 ✅**, **FE-01 ✅**, **BE-09c ✅** |
-| **Zadnji commit** | `docs(audit): BE-09d audit — uklanjanje legacy Match.round (P-B09c-11) [BE-09d]` |
-| **Zadnji CI run** | ✅ **`41798892782`** (BE-09d audit, sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41798892782 ; ✅ **`41795506967`** (docs batch 7+8, sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41795506967 ; ✅ **`41795171365`** (FE-04c batch 8, sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41795171365 ; ✅ **`41794454711`** (batch 7) ; ✅ **`41792020666`** (docs run-ID) ; ✅ **`41791659204`** (FE-04c batch 5+6 + docs, sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41791659204 ; ✅ **`41791137350`** (batch 5) ; ✅ **`41788831131`**, **`41788531790`**, **`41787973999`**, **`41780305565`**, **`41780020284`**, **`41779492872`**, **`41736615770`** (batch 1–4) |
+| **Trenutna faza** | CI-01 ✔ INF-01 ✔ INF-02 ✔ BE-01…**BE-09 ✔** → FE-01 ✔ FE-02 ✔ FE-03 ✔ FE-03b ✔ → CI-04 ✔ → FE-04a ✔ FE-04b ✔ → FE-05 ✔ → **FE-04c ✅ ZAVRŠEN (baseline 496 → 0)** → **BE-09d ✅ ZAVRŠEN (P-B09c-11: legacy `Match.round` uklonjen)** ; MOB-01 odgođen dok se BE/FE ne zaokruže |
+| **Trenutni segment** | **BE-09d — ✅ ZAVRŠEN** (P-B09c-11: backfill + DROP `Match.round`, `round` u API-ju izveden iz `roundRel`) ; sljedeći kandidat: **FE-06** (E2E + axe + bundle budget) ; prethodno **FE-04c ✅ ZAVRŠEN** (batch 1–8: baseline 496 → **0** nalaza, 130 → **0** fajlova; ratchet guard ostaje aktivan) ; sljedeći kandidat **MOB-01** ; prije: **FE-05 ✅**, **FE-04b ✅**, **FE-04a ✅**, **CI-04 ✅**, **FE-03b ✅**, **FE-03 ✅**, **FE-02 ✅**, **FE-01 ✅**, **BE-09c ✅** |
+| **Zadnji commit** | `docs(audit): BE-09d zatvoren — P-B09d-1…6 implementirano [BE-09d]` |
+| **Zadnji CI run** | ✅ **`41801427757`** (BE-09d implementacija + migracije, sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41801427757 ; ✅ **`41798892782`** (BE-09d audit, sva 4 joba) ; ✅ **`41795506967`** (docs batch 7+8, sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41795506967 ; ✅ **`41795171365`** (FE-04c batch 8, sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41795171365 ; ✅ **`41794454711`** (batch 7) ; ✅ **`41792020666`** (docs run-ID) ; ✅ **`41791659204`** (FE-04c batch 5+6 + docs, sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41791659204 ; ✅ **`41791137350`** (batch 5) ; ✅ **`41788831131`**, **`41788531790`**, **`41787973999`**, **`41780305565`**, **`41780020284`**, **`41779492872`**, **`41736615770`** (batch 1–4) |
 | **check:all** | `npm run check:all` → **7/7** (check-coverage, file-size, console-ban, **token-check**, secrets-ban, layer-deps, docs-links); u CI-ju jobovi `audit-gate` + `standards`; pre-push hook pokreće `check:all` |
 
 ## Šta je urađeno (hronološki)
@@ -28,9 +28,15 @@ live dakle redeploy. Mobile ne radimo dok maksimalno ne usavršimo backend i fro
   gubi kolo (Medium), B-09d-03 `round` je u API-ju koji objavljena Android aplikacija koristi
   (Medium), B-09d-04 mrtvi fallbacki + spec (Low), B-09d-05 `DROP COLUMN` nepovratan i
   automatski pri startu kontejnera (High), B-09d-06 zdravo (unique kola, idempotentan sync).
-- **Predlozi P-B09d-1…6:** backfill migracija → guard u migraciji → prestanak pisanja skalara →
-  DROP u odvojenoj migraciji (uz backup) → `round` u API-ju **izvedeno** iz `roundRel` →
-  čišćenje fallbacka na webu/mobilnom + testovi. **Čeka odobrenje.**
+- **Odobreno 2026-11-04** (P-B09d-1,2,3,5,6 + DROP uz backup koji je korisnik uradio) → **implementirano**
+  u commitu `2b3a7d7`: dvije migracije (`20261104120000_be09d_backfill_match_round` sa guard-om,
+  `20261104120100_be09d_drop_match_round` sa DROP-om), `schema.prisma` bez `Match.round`,
+  `match-round.util.ts` vraća samo `roundId` (`roundRel: connect/disconnect`), `rounds.service`
+  više ne propagira broj kola u utakmice i `syncLegacyRounds` je uklonjen, seed koristi `roundId`,
+  `withSeasonAlias` dodaje **izvedeno** `round` (deprecated) i `live.listPendingApproval` uključuje
+  `roundRel`, uklonjeni fallbacki na webu (4 fajla) i mobilnom (1 fajl), tipovi sa `@deprecated`.
+  Novi test `match-edition.util.spec.ts` (3), prepravljen `round.util.spec.ts`. `docs/BACKEND.md` dokumentuje pravilo.
+- **CI:** ✅ `41801427757` (migracije primijenjene u `e2e` jobu na `postgres:16`; build+test zelen).
 
 ### Sesija FE-04c — 2026-11-03 (i18n admina — batch 1)
 
