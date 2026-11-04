@@ -137,6 +137,34 @@ jobs:
       - name: frontend lint (oxlint)
         run: npm run lint -w frontend
 
+  # P-FE06-1/3: izolovani browser mockovi i axe nisu full-stack E2E.
+  browser-mock:
+    name: browser mock + axe (web)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: npm ci
+        run: npm ci
+      - name: Install Chromium and system dependencies
+        working-directory: frontend
+        run: npx playwright install --with-deps chromium
+      - name: Build web sa relativnim testnim API putem
+        run: npm run build:browser -w frontend
+      - name: Izolovani mock browser i axe gate
+        run: npm run test:browser:mock -w frontend
+      - name: Browser trace na padu (samo testni podaci)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: browser-mock-failure
+          path: frontend/test-results/
+          if-no-files-found: ignore
+          retention-days: 7
+
   # BE-09c/P-B09c-4: e2e suite se prije NIJE izvršavao nigdje (8 specova / 729
   # LOC). Job diže Postgres + Redis, primijeni sve migracije, seeduje RBAC +
   # settings + admin (+ demo sadržaj koji e2e specovi koriste) i pokrene

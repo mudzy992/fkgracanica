@@ -7,7 +7,7 @@ describe('Button (FE-02)', () => {
   it('renderuje labelu i podrazumijevanu varijantu', () => {
     render(<Button>Sačuvaj</Button>);
     const el = screen.getByRole('button', { name: 'Sačuvaj' });
-    expect(el).toHaveClass('bg-primary');
+    expect(el).toHaveClass('bg-primary', 'hover:text-background');
     expect(el).toBeEnabled();
   });
 
