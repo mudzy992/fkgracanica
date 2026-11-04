@@ -32,8 +32,14 @@ async function editFilename(page: Page, value: string) {
 async function navigatePaletteToNews(page: Page) {
   await page.keyboard.press('Control+k');
   const palette = page.getByRole('dialog', { name: 'Pretraga admina' });
-  await palette.getByRole('combobox').fill('vijesti');
-  await page.keyboard.press('Enter');
+  const input = palette.getByRole('combobox');
+  await expect(input).toBeFocused();
+  await input.fill('vijesti');
+  await expect(input).toHaveValue('vijesti');
+  const first = palette.getByRole('option').first();
+  await expect(first).toContainText('Vijesti');
+  await expect(first).toHaveAttribute('aria-selected', 'true');
+  await input.press('Enter');
 }
 
 test('paleta: odbijanje čuva formu, prihvatanje napušta bez izmjene servera', async ({ page }) => {

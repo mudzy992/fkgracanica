@@ -13,7 +13,6 @@ on:
 
 permissions:
   contents: read
-  actions: read # privremeno: dijagnostika mock artefakta runa 41821836827
 
 concurrency:
   group: ci-${{ github.ref }}
@@ -144,26 +143,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Dijagnostika prethodnog mock pada
-        continue-on-error: true
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          gh run download 41821836827 --name browser-mock-failure --dir "$RUNNER_TEMP/old-mock"
-          python3 - <<'PYEOF'
-          from pathlib import Path
-          from zipfile import ZipFile
-          import json, os, re
-          for path in Path(os.environ['RUNNER_TEMP'], 'old-mock').rglob('trace.zip'):
-              with ZipFile(path) as trace:
-                  for line in trace.read('test.trace').decode().splitlines():
-                      event = json.loads(line)
-                      if event.get('type') != 'error':
-                          continue
-                      text = path.parent.name + ' :: ' + event.get('message', '') + ' :: ' + str(event.get('stack', []))
-                      text = re.sub(r'\x1b\[[0-9;]*m', '', text).replace('%', '%25').replace('\r', '%0D').replace('\n', '%0A')
-                      print('::notice title=Prethodni mock pad::' + text[:3000])
-          PYEOF
       - uses: actions/setup-node@v4
         with:
           node-version: 22
