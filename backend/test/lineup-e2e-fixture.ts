@@ -1,11 +1,13 @@
 import { randomUUID } from 'node:crypto';
-import type { INestApplication } from '@nestjs/common';
+import { ValidationPipe, type INestApplication } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Test } from '@nestjs/testing';
 import type { App } from 'supertest/types';
 import { PermissionsGuard } from '../src/common/guards/permissions.guard';
 import { MatchesController } from '../src/matches/matches.controller';
 import { MatchesService } from '../src/matches/matches.service';
+import { MatchHighlightsController } from '../src/matches/match-highlights.controller';
+import { MatchHighlightsService } from '../src/matches/match-highlights.service';
 import { PrismaService } from '../src/prisma/prisma.service';
 import { StatisticsService } from '../src/statistics/statistics.service';
 
@@ -22,14 +24,17 @@ export function isolatedDatabaseUrl() {
 }
 
 /** Minimalni API s isključenim guardom: provjerava postavu, ne autentikaciju. */
-export async function createLineupFixture() {
+export async function createLineupFixture(
+  options: { validateRequests?: boolean } = {},
+) {
   const prisma = new PrismaService(
     new ConfigService({ databaseUrl: isolatedDatabaseUrl() }),
   );
   const fixture = await Test.createTestingModule({
-    controllers: [MatchesController],
+    controllers: [MatchesController, MatchHighlightsController],
     providers: [
       MatchesService,
+      MatchHighlightsService,
       { provide: PrismaService, useValue: prisma },
       { provide: StatisticsService, useValue: {} },
     ],
@@ -39,6 +44,16 @@ export async function createLineupFixture() {
     .compile();
   const app: INestApplication<App> = fixture.createNestApplication();
   app.setGlobalPrefix('api/v1');
+  if (options.validateRequests) {
+    app.useGlobalPipes(
+      new ValidationPipe({
+        whitelist: true,
+        transform: true,
+        forbidNonWhitelisted: true,
+        transformOptions: { enableImplicitConversion: true },
+      }),
+    );
+  }
   await app.init();
   const service = fixture.get(MatchesService);
 

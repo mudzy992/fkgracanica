@@ -44,7 +44,7 @@ export class MatchHighlightsService {
       where: { id, matchId },
     });
     if (!row) throw new NotFoundException('Klip nije pronađen');
-    if (dto.youtubeUrl) this.assertYoutube(dto.youtubeUrl);
+    if (dto.youtubeUrl != null) this.assertYoutube(dto.youtubeUrl);
     return this.prisma.matchHighlight.update({
       where: { id },
       data: {
