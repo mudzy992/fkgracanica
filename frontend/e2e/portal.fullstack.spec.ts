@@ -1,6 +1,13 @@
+import type { Request } from '@playwright/test';
 import { test, expect } from './support/fullstack-fixture.ts';
 
 test('izolovani backend: seedovana naslovna, zaštita, prijava i odjava', async ({ page }) => {
+  const pendingApi = new Set<Request>();
+  page.on('request', (request) => {
+    if (new URL(request.url()).pathname.startsWith('/api/v1/')) pendingApi.add(request);
+  });
+  page.on('requestfinished', (request) => pendingApi.delete(request));
+  page.on('requestfailed', (request) => pendingApi.delete(request));
   const email = process.env.ADMIN_EMAIL;
   const password = process.env.ADMIN_PASSWORD;
   if (!email?.endsWith('@example.test') || !password || password.length < 16) {
@@ -23,10 +30,13 @@ test('izolovani backend: seedovana naslovna, zaštita, prijava i odjava', async 
 
   await page.getByLabel('Lozinka', { exact: true }).fill(password);
   const login = page.waitForResponse((response) => new URL(response.url()).pathname === '/api/v1/auth/login');
+  const dashboard = page.waitForResponse((response) => new URL(response.url()).pathname === '/api/v1/dashboard/kpis');
   await page.getByRole('button', { name: 'Prijavi se' }).click();
   expect((await login).ok()).toBe(true);
   await expect(page).toHaveURL(/\/admin$/);
   await expect(page.getByRole('heading', { name: 'Kontrolna tabla' })).toBeVisible();
+  expect((await dashboard).ok()).toBe(true);
+  await expect.poll(() => pendingApi.size, { message: 'Admin API pozivi moraju završiti prije reload-a' }).toBe(0);
   await expect.poll(() => page.evaluate(() => Boolean(localStorage.getItem('fk_access_token')))).toBe(true);
 
   const me = page.waitForResponse((response) => new URL(response.url()).pathname === '/api/v1/auth/me');

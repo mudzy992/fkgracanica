@@ -48,7 +48,7 @@ Redis se posebno provjerava s `PING`. Produkcijski web build komunicira preko
 relativnog `/api/v1` i loopback testnog proxyja: nema mock API-ja u ovom testu.
 
 Playwright provjerava javnu naslovnu iz baze, redirect gosta, neuspjelu i
-uspjelu test prijavu, admin, reload sesije i odjavu. Browser blokira vanjske
+uspjelu test prijavu, dovršen admin API, reload sesije i odjavu. Browser blokira vanjske
 HTTP/WebSocket veze i sve API mutacije osim prijave/odjave/refresh i anonimne
 testne posjete, kao i sve `/payments` pozive. Ovo je jedan smoke tok, ne dokaz
 svih integracija, zasebne mobile aplikacije ili produkcijskog deploya.
