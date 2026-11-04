@@ -46,6 +46,12 @@ npm run prisma:generate | prisma:migrate | prisma:seed | prisma:seed:rbac
   PUBLISHED/404; `PermissionsGuard` + `@RequirePermissions`
   ostaju lokalni po ruti (audit: 0 violacija). WS autentikacija = vlastiti
   handshake realtime gatewaya (token ili public klijent).
+- **Kola / utakmice (BE-09d):** broj kola je **samo** `Round.number` (`Match.roundId` → `Round`).
+  Legacy kolona `Match.round` je uklonjena migracijama `20261104120000_be09d_backfill_match_round`
+  (backfill + guard) i `20261104120100_be09d_drop_match_round` (DROP, **nepovratno** — backup
+  prije deploya). U JSON-u utakmice polje `round` **ostaje** kao izvedeno i **deprecated**
+  (`roundRel.number ?? null`) dok se objavljene mobilne verzije ne oslone na `roundRel`.
+  `Match.round` **ne** pisati u kod/seed — koristi `roundId`/`roundRel`.
 - **Error ugovor** (globalni `common/filters/http-exception.filter.ts`, BE-01):
   `{ statusCode, message, timestamp, path }` — FE i MOB čitaju `message`;
   Prisma greške: `P2002→409`, `P2025→404`, `P2006→400`, ostalo → 500.

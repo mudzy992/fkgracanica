@@ -99,7 +99,12 @@ export class LiveService {
     return this.prisma.match
       .findMany({
         where: { reportStatus: MatchReportStatus.PENDING_APPROVAL },
-        include: { homeClub: true, awayClub: true, ...matchEditionInclude },
+        include: {
+          homeClub: true,
+          awayClub: true,
+          roundRel: { select: { id: true, number: true, name: true } },
+          ...matchEditionInclude,
+        },
         orderBy: { updatedAt: 'desc' },
       })
       .then((rows) => rows.map(withSeasonAlias));

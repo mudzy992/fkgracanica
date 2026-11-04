@@ -703,7 +703,6 @@ model Match {
   awayClubId      String
   homeScore       Int               @default(0)
   awayScore       Int               @default(0)
-  round           Int?
   roundId         String?
   scheduledAt     DateTime
   venue           String?

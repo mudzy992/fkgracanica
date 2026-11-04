@@ -23,7 +23,6 @@ export class RoundsService {
   constructor(private readonly prisma: PrismaService) {}
 
   async findBySeason(seasonId: string) {
-    await this.syncLegacyRounds(seasonId);
     return this.prisma.round
       .findMany({
         where: { seasonCompetitionId: seasonId },
@@ -75,12 +74,6 @@ export class RoundsService {
               : null,
       },
     });
-    if (data.number != null) {
-      await this.prisma.match.updateMany({
-        where: { roundId: id },
-        data: { round: data.number },
-      });
-    }
     return round;
   }
 
@@ -101,38 +94,6 @@ export class RoundsService {
       );
     }
     return cascadeDeleteRound(this.prisma, id, round.seasonCompetitionId);
-  }
-
-  /** Links legacy `Match.round` integers to Round rows (idempotent). */
-  async syncLegacyRounds(seasonId: string) {
-    const legacy = await this.prisma.match.findMany({
-      where: {
-        seasonCompetitionId: seasonId,
-        round: { not: null },
-        roundId: null,
-      },
-      select: { id: true, round: true },
-    });
-    if (!legacy.length) return;
-
-    const numbers = [...new Set(legacy.map((m) => m.round!))];
-    for (const number of numbers) {
-      const round = await this.prisma.round.upsert({
-        where: {
-          seasonCompetitionId_number: { seasonCompetitionId: seasonId, number },
-        },
-        create: {
-          seasonCompetitionId: seasonId,
-          number,
-          name: roundDefaultName(number),
-        },
-        update: {},
-      });
-      await this.prisma.match.updateMany({
-        where: { seasonCompetitionId: seasonId, round: number, roundId: null },
-        data: { roundId: round.id },
-      });
-    }
   }
 
   private validateNumber(number: number) {

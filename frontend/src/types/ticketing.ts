@@ -1,18 +1,9 @@
 export type TicketPaymentIntent = 'box_office' | 'online';
 
 export type TicketStatus =
-  | 'RESERVED'
-  | 'PAID_AT_BOX_OFFICE'
-  | 'USED'
-  | 'CANCELLED'
-  | 'REFUND_REQUESTED';
+  'RESERVED' | 'PAID_AT_BOX_OFFICE' | 'USED' | 'CANCELLED' | 'REFUND_REQUESTED';
 
-export type OrderStatus =
-  | 'pending'
-  | 'paid'
-  | 'cancelled'
-  | 'refund_requested'
-  | 'refunded';
+export type OrderStatus = 'pending' | 'paid' | 'cancelled' | 'refund_requested' | 'refunded';
 
 export interface TicketMatchClub {
   id?: string;
@@ -23,6 +14,7 @@ export interface TicketMatchClub {
 export interface TicketMatch {
   id: string;
   scheduledAt?: string;
+  /** @deprecated BE-09d: izvedeno iz `roundRel.number` na backendu; koristi `roundRel`. */
   round?: number | null;
   roundRel?: { id?: string; number?: number; name?: string | null } | null;
   season?: { name?: string; competition?: { name?: string } } | null;

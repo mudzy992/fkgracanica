@@ -7,7 +7,7 @@ import { matchStatusLabel, matchStatusTone } from '../../../lib/match-status-lab
 import type { Match } from '../../../types';
 
 function matchMeta(match: Match): string {
-  const round = match.roundRel?.name ?? (match.round != null ? `Kolo ${match.round}` : null);
+  const round = match.roundRel?.name ?? null;
   return [match.season?.competition?.name, round, match.venue].filter(Boolean).join(' · ');
 }
 
@@ -54,7 +54,9 @@ export function CommentatorDeskHeader({
           {match.homeScore}:{match.awayScore}
         </p>
         <div className="flex min-w-0 flex-1 items-center justify-end gap-2">
-          <p className="truncate text-right text-sm font-semibold">{match.awayClub?.name ?? 'Gost'}</p>
+          <p className="truncate text-right text-sm font-semibold">
+            {match.awayClub?.name ?? 'Gost'}
+          </p>
           <ClubCrest club={match.awayClub} size="sm" />
         </div>
       </div>

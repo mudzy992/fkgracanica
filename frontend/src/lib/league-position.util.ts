@@ -16,12 +16,12 @@ export function computePositionChanges(
 }
 
 export function maxFinishedRound(
-  matches: { status: string; round?: number | null; roundRel?: { number: number } | null }[],
+  matches: { status: string; roundRel?: { number: number } | null }[],
 ): number {
   let max = 0;
   for (const m of matches) {
     if (m.status !== 'FINISHED') continue;
-    const n = m.roundRel?.number ?? m.round ?? 0;
+    const n = m.roundRel?.number ?? 0;
     if (n > max) max = n;
   }
   return max;
