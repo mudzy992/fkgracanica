@@ -59,3 +59,8 @@ a `aria-label` je u tri granična fajla (`CompetitionsAdminPage`, `CmsMenuSortab
 - **FE-05** — interna IA (KAPIJA 2: navigacija/hubovi) prije MOB segmenata.
 
 ## Status segmenta: ZATVOREN (FE-04b)
+
+
+**Naknadna dopuna FE-06 / P-FE06-12:** zaštita je proširena na SPA navigaciju;
+snapshot sada uključuje file, rich-text i označene kontrole. Pojedinosti i
+ograničenja su u [FE-06](FE-06.md); raniji opis file izuzetka je historijski.

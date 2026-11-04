@@ -32,3 +32,9 @@ povrat fokusa i scroll, Ctrl/⌘K, pretragu i navigaciju. Provjeravaju i zaštit
 nespremljene forme te `preventClose` u kategorijama vijesti. Nema izvršenog
 plaćanja ili izmjene stvarnih podataka. Ovo su reprezentativni tokovi, ne dokaz
 svakog pojedinačnog dijaloga u aplikaciji.
+
+## Nespremljene admin forme
+
+Mock browser testovi obuhvataju odbijanje/prihvatanje odlaska kroz komandnu
+paletu, browser Back/Forward i reload, te čistu formu i uspješan mock save.
+Unit testovi dodatno pokrivaju više otvorenih formi i eksplicitni `dirty`.

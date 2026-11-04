@@ -75,6 +75,7 @@ export function MatchLineupSheet({ matchId, open, onOpenChange }: Props) {
       onOpenChange={onOpenChange}
       title={`Postava: ${match?.homeClub?.name ?? '?'} vs ${match?.awayClub?.name ?? '?'}`}
     >
+      <input type="hidden" value={JSON.stringify([homeSlots, awaySlots])} readOnly />
       {loading ? (
         <Skeleton className="h-96 w-full" />
       ) : (
@@ -100,15 +101,17 @@ export function MatchLineupSheet({ matchId, open, onOpenChange }: Props) {
               </button>
             ))}
           </div>
-          <FormationPitch
-            slots={slots}
-            players={players}
-            onSlotChange={(index, playerId) =>
-              setSlots((prev) => prev.map((slot, i) => (i === index ? { ...slot, playerId } : slot)))
-            }
-          />
+          <div data-dirty-ignore>
+            <FormationPitch
+              slots={slots}
+              players={players}
+              onSlotChange={(index, playerId) =>
+                setSlots((prev) => prev.map((slot, i) => (i === index ? { ...slot, playerId } : slot)))
+              }
+            />
+          </div>
           <div className="flex flex-wrap gap-2">
-            <Button type="button" variant="outline" size="sm" onClick={() => loadFromSquad(side)}>
+            <Button type="button" variant="outline" size="sm" data-dirty-change onClick={() => loadFromSquad(side)}>
               Učitaj klupsku postavu ({side === 'home' ? 'domaći' : 'gosti'})
             </Button>
             <Button className="flex-1 sm:flex-none" onClick={() => void onSave()} disabled={save.isPending}>

@@ -140,6 +140,7 @@ export function UserAdminFormSheet({ open, onOpenChange, user, canCreate, canUpd
               <button
                 key={r.id}
                 type="button"
+                aria-pressed={roleIds.includes(r.id)}
                 onClick={() => toggleRole(r.id)}
                 className={`rounded-lg border px-2 py-1 text-xs ${
                   roleIds.includes(r.id)

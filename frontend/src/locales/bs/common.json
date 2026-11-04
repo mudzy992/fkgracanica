@@ -129,6 +129,7 @@
       "monetization": "Monetizacija"
     },
     "unsavedChanges": "Ima nesačuvanih izmjena. Zatvoriti bez spremanja?",
+    "unsavedNavigation": "Ima nesačuvanih izmjena. Napustiti stranicu bez spremanja?",
     "openMenu": "Otvori meni",
     "breadcrumb": "Putanja",
     "cmdkTitle": "Pretraga admina",

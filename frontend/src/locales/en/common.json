@@ -129,6 +129,7 @@
       "monetization": "Monetization"
     },
     "unsavedChanges": "There are unsaved changes. Close without saving?",
+    "unsavedNavigation": "There are unsaved changes. Leave the page without saving?",
     "openMenu": "Open menu",
     "breadcrumb": "Breadcrumb",
     "cmdkTitle": "Admin search",
