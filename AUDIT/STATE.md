@@ -40,8 +40,13 @@ Korisnik: „Možeš nastaviti dalje na FE-04c."
   `HeroSectionForm`, `GenericSectionForm`.
 - **Batch 2b** (39 nalaza): `TicketingSettingsTab`, `MembershipDetailSheet`,
   `PlayersAdminFormSheet`, `ClubsAdminFormSheet`, `CalendarSeasonPage`.
-- **Ukupno baseline: 496 → 347 nalaza, 130 → 104 fajla.**
-- **Otvoreno:** batch 3 (ostatak `pages/admin`: analytics paneli, cms editori, app-releases…).
+- **Batch 3** (63 nalaza): analytics posjetioci, trofeji, app-releases, stadion, forma utakmice,
+  medij, sponzori, narudžba, vremenska linija, komentator board. `MatchFormSheet` je zbog
+  dužih `t()` poziva prešao 200 linija → izdvojen `MatchLiveLockedNote.tsx` (196 linija).
+- **Batch 4** (40 nalaza): forma takmičenja/sezone, lista vijesti (potvrda sa `{{title}}`),
+  igrači, korisnici, klubovi, kola (`{{count}} utakm.`), finansije (tabele + KPI).
+- **Ukupno baseline: 496 → 244 nalaza, 130 → 88 fajlova.**
+- **Otvoreno:** batch 5 (cms editori, membership, ticketing, audit, media, notifications).
 
 ### Sesija FE-05 — 2026-11-03 (interna IA; KAPIJA 2)
 

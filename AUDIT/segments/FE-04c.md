@@ -14,10 +14,10 @@
 
 ### Mjerenje (heuristika: JSX tekst + tekstualni propovi sa literalom)
 
-| | Prije | Batch 1 | Batch 2 | Batch 2b |
-|---|---|---|---|---|
-| Nalaza | **496** | **454** | **386** | **347** |
-| Fajlova | **130** | **113** | **109** | **104** |
+| | Prije | B1 | B2 | B2b | B3 | B4 |
+|---|---|---|---|---|---|---|
+| Nalaza | **496** | **454** | **386** | **347** | **284** | **244** |
+| Fajlova | **130** | **113** | **109** | **104** | **96** | **88** |
 
 > Napomena: heuristika namjerno ne broji literale u objektima (`label: 'Vijesti'`),
 > pa je stvarni broj veći; migrirani su i takvi literali gdje su bili u fokusu.
@@ -73,6 +73,23 @@ potvrda brisanja sezone — **bez** reformatiranja fajla da ostane pod 200 linij
 `admin.clubForm.*`, `admin.newsForm.*`, `admin.competitionsAdmin.*`, `admin.ticketingForm.*`,
 `admin.membershipForm.*`, `admin.playerForm.*`, `admin.calendar.*`, `admin.common.*`.
 
+### Batch 3 (63 nalaza → −63)
+
+`AnalyticsVisitorsPanel` (trend/tabela/geo), `TrophiesAdminFormSheet`, `AppReleaseCreateForm`,
+`ClubStadiumTab`, `MatchFormSheet`, `MediaAssetFormSheet`, `SponsorsAdminPage`,
+`TicketingOrderSheet`, `TimelineAdminPage`, `CommentatorTeamBoard`
+(uz preimenovanje `map((t) => …)` → `map((type) => …)` da ne zasjeni `t()`).
+
+**`MatchFormSheet` je bio na 201 liniji** zbog dužih `t()` poziva → izdvojen je
+`MatchLiveLockedNote.tsx` (banner „LIVE zaključano", 15 linija) i fajl je spao na 196.
+
+### Batch 4 (40 nalaza → −40)
+
+`CompetitionsAdminFormSheet` (4 naslova forme + polja sezone), `NewsAdminPage`
+(empty kategorija, potvrda brisanja sa `{{title}}`), `PlayersAdminPage`, `UsersPage`,
+`ClubsListPage`, `SeasonRoundsPanel` (`{{count}} utakm.`), `FinanceBuckets`, `FinanceKpiGrid`
+(`{{count}} transakcija`).
+
 ## 4. Verifikacija
 
 | Provjera | Rezultat |
@@ -91,4 +108,4 @@ potvrda brisanja sezone — **bez** reformatiranja fajla da ostane pod 200 linij
 - Prilikom migracije paziti na **kolizije ključeva**: `admin.cms`, `admin.media`, `admin.news`,
   `admin.gallery`, `admin.analytics`… su stringovi (nav), pa pod-namespace mora biti drugačiji.
 
-## Status segmenta: U TOKU (batch 2b završen; baseline 496 → 347; ratchet guard aktivan)
+## Status segmenta: U TOKU (batch 4 završen; baseline 496 → 244, 130 → 88 fajlova; ratchet guard aktivan)
