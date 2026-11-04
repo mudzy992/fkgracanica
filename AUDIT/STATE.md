@@ -7,10 +7,10 @@
 | Polje | Vrijednost |
 |-------|------------|
 | **Aktivna grana** | `arena/290a6f13-fkgracanica` |
-| **Trenutna faza** | CI-01 ✔ INF-01 ✔ INF-02 ✔ BE-01…**BE-09 ✔** → FE-01 ✔ FE-02 ✔ FE-03 ✔ FE-03b ✔ → CI-04 ✔ → FE-04a ✔ FE-04b ✔ → FE-05 ✔ → **FE-04c (u toku, batch 1–4/≈6; baseline 244)** |
-| **Trenutni segment** | **FE-04c — U TOKU** (batch 1–4: baseline 496 → **244** nalaza, 130 → **88** fajlova) ; prije: **FE-05 ✅**, **FE-04b ✅**, **FE-04a ✅**, **CI-04 ✅**, **FE-03b ✅**, **FE-03 ✅**, **FE-02 ✅**, **FE-01 ✅**, **BE-09c ✅** |
-| **Zadnji commit** | `docs(audit): FE-04c batch 3 i 4 — baseline 496→244 [FE-04c]` |
-| **Zadnji CI run** | ✅ **`41788531790`** (FE-04c batch 3+4 + docs, sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41788531790 ; ✅ **`41787973999`** (batch 3) ; ✅ **`41780305565`**, **`41780020284`**, **`41779492872`**, **`41736615770`** (batch 1/2) |
+| **Trenutna faza** | CI-01 ✔ INF-01 ✔ INF-02 ✔ BE-01…**BE-09 ✔** → FE-01 ✔ FE-02 ✔ FE-03 ✔ FE-03b ✔ → CI-04 ✔ → FE-04a ✔ FE-04b ✔ → FE-05 ✔ → **FE-04c (u toku, batch 1–6/7; baseline 131)** |
+| **Trenutni segment** | **FE-04c — U TOKU** (batch 1–6: baseline 496 → **131** nalaza, 130 → **62** fajla; **−74%**) ; prije: **FE-05 ✅**, **FE-04b ✅**, **FE-04a ✅**, **CI-04 ✅**, **FE-03b ✅**, **FE-03 ✅**, **FE-02 ✅**, **FE-01 ✅**, **BE-09c ✅** |
+| **Zadnji commit** | `docs(audit): FE-04c batch 5 i 6 — baseline 496→131 [FE-04c]` |
+| **Zadnji CI run** | ✅ **`41791659204`** (FE-04c batch 5+6 + docs, sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41791659204 ; ✅ **`41791137350`** (batch 5) ; ✅ **`41788831131`**, **`41788531790`**, **`41787973999`**, **`41780305565`**, **`41780020284`**, **`41779492872`**, **`41736615770`** (batch 1–4) |
 | **check:all** | `npm run check:all` → **7/7** (check-coverage, file-size, console-ban, **token-check**, secrets-ban, layer-deps, docs-links); u CI-ju jobovi `audit-gate` + `standards`; pre-push hook pokreće `check:all` |
 
 ## Šta je urađeno (hronološki)
