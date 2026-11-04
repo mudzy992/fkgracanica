@@ -383,7 +383,10 @@
       "shirt": "Shirt number",
       "photo": "Photo",
       "bio": "Bio (optional)",
-      "active": "Active in squad"
+      "active": "Active in squad",
+      "position": "Position",
+      "shirtNumber": "Number",
+      "inactive": "Inactive"
     },
     "clubForm": {
       "edit": "Edit club",
@@ -462,7 +465,8 @@
       "title": "Order #{{id}}",
       "user": "User",
       "amount": "Amount",
-      "payment": "Payment"
+      "payment": "Payment",
+      "paymentMethod": "Method"
     },
     "commentatorBoard": {
       "player": "Player",
@@ -471,6 +475,55 @@
       "substitution": "Substitution",
       "out": "Out",
       "in": "In"
+    },
+    "competitionForm": {
+      "edit": "Edit competition",
+      "create": "New competition",
+      "editSeason": "Edit season",
+      "newSeason": "New season",
+      "nameRequired": "Name *",
+      "league": "League competition",
+      "leagueHint": "Shown on /liga and the home page table.",
+      "yearStart": "Start year",
+      "yearEnd": "End year",
+      "activeSeason": "Active season"
+    },
+    "newsAdmin": {
+      "allCategories": "All categories",
+      "categories": "Categories",
+      "deleteTitle": "Delete news",
+      "deleteConfirm": "Delete “{{title}}”?"
+    },
+    "clubsList": {
+      "type": "Type",
+      "opponent": "Opponent",
+      "manage": "Manage"
+    },
+    "usersAdmin": {
+      "search": "Search…"
+    },
+    "financeBuckets": {
+      "count": "Count",
+      "empty": "No data in this period",
+      "byProvider": "By payment method",
+      "byStatus": "By status"
+    },
+    "financeKpi": {
+      "tickets": "Tickets",
+      "transactions": "{{count}} transactions",
+      "seasonPasses": "Season passes",
+      "cards": "{{count}} cards",
+      "memberships": "Memberships (estimate)",
+      "activeMembers": "{{count}} active members",
+      "totalHint": "Tickets + season passes + membership estimate",
+      "period": "Period",
+      "periodHint": "By payment/activation date"
+    },
+    "roundsPanel": {
+      "rounds": "Rounds",
+      "round": "Round",
+      "empty": "Add the first round.",
+      "matches": "{{count}} matches"
     }
   },
   "common": {

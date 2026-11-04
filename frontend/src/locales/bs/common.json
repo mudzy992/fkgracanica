@@ -383,7 +383,10 @@
       "shirt": "Broj dresa",
       "photo": "Fotografija",
       "bio": "Bio (opcionalno)",
-      "active": "Aktivan u kadru"
+      "active": "Aktivan u kadru",
+      "position": "Pozicija",
+      "shirtNumber": "Broj",
+      "inactive": "Neaktivan"
     },
     "clubForm": {
       "edit": "Uredi klub",
@@ -462,7 +465,8 @@
       "title": "Narudžba #{{id}}",
       "user": "Korisnik",
       "amount": "Iznos",
-      "payment": "Plaćanje"
+      "payment": "Plaćanje",
+      "paymentMethod": "Način"
     },
     "commentatorBoard": {
       "player": "Igrač",
@@ -471,6 +475,55 @@
       "substitution": "Izmjena",
       "out": "Izlazi",
       "in": "Ulazi"
+    },
+    "competitionForm": {
+      "edit": "Uredi takmičenje",
+      "create": "Novo takmičenje",
+      "editSeason": "Uredi sezonu",
+      "newSeason": "Nova sezona",
+      "nameRequired": "Naziv *",
+      "league": "Ligaško takmičenje",
+      "leagueHint": "Prikazuje se na /liga i tabeli na naslovnoj.",
+      "yearStart": "Godina početka",
+      "yearEnd": "Godina kraja",
+      "activeSeason": "Aktivna sezona"
+    },
+    "newsAdmin": {
+      "allCategories": "Sve kategorije",
+      "categories": "Kategorije",
+      "deleteTitle": "Obriši vijest",
+      "deleteConfirm": "Obrisati „{{title}}“?"
+    },
+    "clubsList": {
+      "type": "Tip",
+      "opponent": "Protivnik",
+      "manage": "Upravljaj"
+    },
+    "usersAdmin": {
+      "search": "Pretraži…"
+    },
+    "financeBuckets": {
+      "count": "Broj",
+      "empty": "Nema podataka u ovom periodu",
+      "byProvider": "Po načinu plaćanja",
+      "byStatus": "Po statusu"
+    },
+    "financeKpi": {
+      "tickets": "Ulaznice",
+      "transactions": "{{count}} transakcija",
+      "seasonPasses": "Sezonske karte",
+      "cards": "{{count}} karata",
+      "memberships": "Članarine (procjena)",
+      "activeMembers": "{{count}} aktivnih članova",
+      "totalHint": "Ulaznice + sezona + procjena članarina",
+      "period": "Period",
+      "periodHint": "Po datumu kreiranja uplate / aktivacije"
+    },
+    "roundsPanel": {
+      "rounds": "Kola",
+      "round": "Kolo",
+      "empty": "Dodajte prvo kolo.",
+      "matches": "{{count}} utakm."
     }
   },
   "common": {

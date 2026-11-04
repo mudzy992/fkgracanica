@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Plus, Pencil, Trash2 } from 'lucide-react';
 import { useUsers } from '../../hooks';
 import { useDeleteUser } from '../../hooks/use-users-admin';
@@ -28,6 +29,7 @@ type UserRow = {
 };
 
 export function UsersPage({ embedded = false }: Props) {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const perms = user?.permissions ?? [];
   const canCreate = hasPermission(perms, 'users.create');
@@ -79,7 +81,7 @@ export function UsersPage({ embedded = false }: Props) {
       <div className={`border-b border-slate-200 p-4 ${embedded && createAction ? 'pt-0' : ''}`}>
         <Input
           className="max-w-xs"
-          placeholder="Pretraži..."
+          placeholder={t('admin.usersAdmin.search')}
           value={search}
           onChange={(e) => {
             setSearch(e.target.value);
@@ -125,7 +127,7 @@ export function UsersPage({ embedded = false }: Props) {
                       setSheetOpen(true);
                     }}
 
-                    aria-label="Uredi"
+                    aria-label={t('actions.edit')}
                   >
                     <Pencil className="h-4 w-4" />
                   </Button>
@@ -135,7 +137,7 @@ export function UsersPage({ embedded = false }: Props) {
                     variant="ghost"
                     size="icon"
                     onClick={() => void onDelete(r)}
-                    aria-label="Obriši"
+                    aria-label={t('actions.delete')}
                   >
                     <Trash2 className="h-4 w-4 text-danger" />
                   </Button>
@@ -167,12 +169,12 @@ export function UsersPage({ embedded = false }: Props) {
 
   return (
     <>
-      <Seo title="Korisnici" />
+      <Seo title={t('admin.users')} />
       {dialog}
       <AdminPageShell
         isError={isError}
         onRetry={() => void refetch()}
-        title="Korisnici"
+        title={t('admin.users')}
         isLoading={isLoading}
         actions={createAction}
       >

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Pencil, Plus, Trash2 } from 'lucide-react';
 import { usePlayers } from '../../hooks';
 import { useDeletePlayer } from '../../hooks/use-competition-admin';
@@ -14,6 +15,7 @@ import { PlayersAdminFormSheet } from './PlayersAdminFormSheet';
 import type { Player } from '../../types';
 
 export function PlayersAdminPage() {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const canManage = hasPermission(user?.permissions, 'players.manage');
   const { data, isLoading, isError, refetch } = usePlayers();
@@ -34,12 +36,12 @@ export function PlayersAdminPage() {
 
   return (
     <>
-      <Seo title="Igrači" />
+      <Seo title={t('admin.players')} />
       {dialog}
       <AdminPageShell
         isError={isError}
         onRetry={() => void refetch()}
-        title="Igrači"
+        title={t('admin.players')}
         isLoading={isLoading}
         actions={
           canManage ? (
@@ -61,20 +63,28 @@ export function PlayersAdminPage() {
           columns={[
             {
               key: 'name',
-              header: 'Ime',
+              header: t('admin.playerForm.firstName').replace(' *', ''),
               render: (r) => (
                 <span className="flex items-center gap-2">
                   {r.firstName} {r.lastName}
-                  {!r.isActive && <Badge variant="muted">Neaktivan</Badge>}
+                  {!r.isActive && <Badge variant="muted">{t('admin.playerForm.inactive')}</Badge>}
                 </span>
               ),
             },
-            { key: 'position', header: 'Pozicija', render: (r) => playerPositionLabel(r.position) },
-            { key: 'number', header: 'Broj', render: (r) => r.number ?? '—' },
-            { key: 'club', header: 'Klub', render: (r) => r.club?.name ?? '—' },
+            {
+              key: 'position',
+              header: t('admin.playerForm.position'),
+              render: (r) => playerPositionLabel(r.position),
+            },
+            {
+              key: 'number',
+              header: t('admin.playerForm.shirtNumber'),
+              render: (r) => r.number ?? '—',
+            },
+            { key: 'club', header: t('admin.playerForm.club'), render: (r) => r.club?.name ?? '—' },
             {
               key: 'actions',
-              header: 'Akcije',
+              header: t('admin.common.actions'),
               render: (r) =>
                 canManage ? (
                   <div className="flex gap-1">
@@ -86,7 +96,7 @@ export function PlayersAdminPage() {
                         setOpen(true);
                       }}
 
-                      aria-label="Uredi"
+                      aria-label={t('actions.edit')}
                     >
                       <Pencil className="h-4 w-4" />
                     </Button>
@@ -94,7 +104,7 @@ export function PlayersAdminPage() {
                       variant="ghost"
                       size="icon"
                       onClick={() => void onDelete(r)}
-                      aria-label="Obriši"
+                      aria-label={t('actions.delete')}
                     >
                       <Trash2 className="h-4 w-4 text-danger" />
                     </Button>

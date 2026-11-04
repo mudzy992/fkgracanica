@@ -1,4 +1,5 @@
 import type { FinanceSummary } from '../../../hooks/use-finance-summary';
+import { useTranslation } from 'react-i18next';
 import { formatDay, formatKm } from './finance-labels';
 
 function Stat({ label, hint, value }: { label: string; hint: string; value: string }) {
@@ -12,32 +13,33 @@ function Stat({ label, hint, value }: { label: string; hint: string; value: stri
 }
 
 export function FinanceKpiGrid({ data }: { data: FinanceSummary }) {
+  const { t } = useTranslation();
   return (
     <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
       <Stat
-        label="Ulaznice"
+        label={t('admin.financeKpi.tickets')}
         value={formatKm(data.tickets.sum)}
-        hint={`${data.tickets.count} transakcija`}
+        hint={t('admin.financeKpi.transactions', { count: data.tickets.count })}
       />
       <Stat
-        label="Sezonske karte"
+        label={t('admin.financeKpi.seasonPasses')}
         value={formatKm(data.seasonPass.sum)}
-        hint={`${data.seasonPass.count} karata`}
+        hint={t('admin.financeKpi.cards', { count: data.seasonPass.count })}
       />
       <Stat
-        label="Članarine (procjena)"
+        label={t('admin.financeKpi.memberships')}
         value={formatKm(data.membership.sum)}
-        hint={`${data.membership.count} aktivnih članova`}
+        hint={t('admin.financeKpi.activeMembers', { count: data.membership.count })}
       />
       <Stat
-        label="Ukupno"
+        label={t('admin.visitors.total')}
         value={formatKm(data.totalSum)}
-        hint="Ulaznice + sezona + procjena članarina"
+        hint={t('admin.financeKpi.totalHint')}
       />
       <Stat
-        label="Period"
+        label={t('admin.financeKpi.period')}
         value={`${formatDay(data.from)} – ${formatDay(data.to)}`}
-        hint="Po datumu kreiranja uplate / aktivacije"
+        hint={t('admin.financeKpi.periodHint')}
       />
     </div>
   );

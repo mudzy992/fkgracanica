@@ -1,8 +1,6 @@
 import { useEffect, useState } from 'react';
-import {
-  useCreateCompetition,
-  useUpdateCompetition,
-} from '../../hooks/use-competition-admin';
+import { useTranslation } from 'react-i18next';
+import { useCreateCompetition, useUpdateCompetition } from '../../hooks/use-competition-admin';
 import { useCreateSeason, useUpdateSeason } from '../../hooks/use-season-admin';
 import { AdminFormSheet } from '../../components/admin/AdminFormSheet';
 import { Button } from '../../components/ui/button';
@@ -41,6 +39,7 @@ export function CompetitionsAdminFormSheet({
   editCompetition,
   editSeason,
 }: Props) {
+  const { t } = useTranslation();
   const createComp = useCreateCompetition();
   const updateComp = useUpdateCompetition();
   const createSeason = useCreateSeason();
@@ -73,7 +72,8 @@ export function CompetitionsAdminFormSheet({
     try {
       setError('');
       if (mode === 'competition') {
-        if (editCompetition) await updateComp.mutateAsync({ id: editCompetition.id, name, isLeague });
+        if (editCompetition)
+          await updateComp.mutateAsync({ id: editCompetition.id, name, isLeague });
         else await createComp.mutateAsync({ name, isLeague });
       } else if (mode === 'season') {
         const body = { name, yearStart, yearEnd, isActive };
@@ -89,37 +89,54 @@ export function CompetitionsAdminFormSheet({
   const title =
     mode === 'competition'
       ? editCompetition
-        ? 'Uredi takmičenje'
-        : 'Novo takmičenje'
+        ? t('admin.competitionForm.edit')
+        : t('admin.competitionForm.create')
       : editSeason
-        ? 'Uredi sezonu'
-        : 'Nova sezona';
+        ? t('admin.competitionForm.editSeason')
+        : t('admin.competitionForm.newSeason');
 
   return (
     <AdminFormSheet open={open} onOpenChange={onOpenChange} title={title}>
       <div className="space-y-4">
-        <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Naziv *" />
+        <Input
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          placeholder={t('admin.competitionForm.nameRequired')}
+        />
         {mode === 'competition' && (
           <div className="flex items-center justify-between gap-3">
             <div>
-              <span className="text-sm font-medium">Ligaško takmičenje</span>
-              <p className="text-xs text-text-muted">Prikazuje se na /liga i tabeli na naslovnoj.</p>
+              <span className="text-sm font-medium">{t('admin.competitionForm.league')}</span>
+              <p className="text-xs text-text-muted">{t('admin.competitionForm.leagueHint')}</p>
             </div>
             <Switch checked={isLeague} onCheckedChange={setIsLeague} />
           </div>
         )}
         {mode === 'season' && (
           <>
-            <Input type="number" value={yearStart} onChange={(e) => setYearStart(Number(e.target.value))} placeholder="Godina početka" />
-            <Input type="number" value={yearEnd} onChange={(e) => setYearEnd(Number(e.target.value))} placeholder="Godina kraja" />
+            <Input
+              type="number"
+              value={yearStart}
+              onChange={(e) => setYearStart(Number(e.target.value))}
+              placeholder={t('admin.competitionForm.yearStart')}
+            />
+            <Input
+              type="number"
+              value={yearEnd}
+              onChange={(e) => setYearEnd(Number(e.target.value))}
+              placeholder={t('admin.competitionForm.yearEnd')}
+            />
             <div className="flex items-center justify-between gap-3">
-              <span className="text-sm font-medium">Aktivna sezona</span>
+              <span className="text-sm font-medium">{t('admin.competitionForm.activeSeason')}</span>
               <Switch checked={isActive} onCheckedChange={setIsActive} />
             </div>
           </>
         )}
         {error && <p className="text-sm text-danger">{error}</p>}
-        <Button onClick={() => void save()} disabled={!name || createComp.isPending || createSeason.isPending}>
+        <Button
+          onClick={() => void save()}
+          disabled={!name || createComp.isPending || createSeason.isPending}
+        >
           {editCompetition || editSeason ? 'Spremi' : 'Kreiraj'}
         </Button>
       </div>

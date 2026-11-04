@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Pencil, Plus, Trash2 } from 'lucide-react';
 import { api } from '../../../lib/api';
 import { useDeleteRound, useRounds, type RoundDeleteImpact } from '../../../hooks/use-rounds';
@@ -18,6 +19,7 @@ interface Props {
 }
 
 export function SeasonRoundsPanel({ seasonId, selectedRoundId, onSelectRound, canManage }: Props) {
+  const { t } = useTranslation();
   const { data: rounds, isLoading } = useRounds(seasonId);
   const remove = useDeleteRound();
   const { confirm, dialog } = useConfirm();
@@ -86,7 +88,7 @@ export function SeasonRoundsPanel({ seasonId, selectedRoundId, onSelectRound, ca
         onConfirm={() => void onCascadeConfirm()}
       />
       <div className="flex items-center justify-between border-b border-slate-200 px-4 py-3">
-        <h3 className="text-sm font-semibold">Kola</h3>
+        <h3 className="text-sm font-semibold">{t('admin.roundsPanel.rounds')}</h3>
         {canManage && (
           <Button
             size="sm"
@@ -97,14 +99,14 @@ export function SeasonRoundsPanel({ seasonId, selectedRoundId, onSelectRound, ca
             }}
           >
             <Plus className="mr-1 h-4 w-4" />
-            Kolo
+            {t('admin.roundsPanel.round')}
           </Button>
         )}
       </div>
       <div className="divide-y divide-slate-100">
-        {isLoading && <p className="p-4 text-sm text-text-muted">Učitavanje...</p>}
+        {isLoading && <p className="p-4 text-sm text-text-muted">{t('admin.common.loading')}</p>}
         {!isLoading && !(rounds ?? []).length && (
-          <p className="p-4 text-sm text-text-muted">Dodajte prvo kolo.</p>
+          <p className="p-4 text-sm text-text-muted">{t('admin.roundsPanel.empty')}</p>
         )}
         {(rounds ?? []).map((round) => (
           <button
@@ -117,7 +119,9 @@ export function SeasonRoundsPanel({ seasonId, selectedRoundId, onSelectRound, ca
             )}
           >
             <span className="font-medium">{roundLabel(round)}</span>
-            <span className="text-text-muted">{round._count?.matches ?? 0} utakm.</span>
+            <span className="text-text-muted">
+              {t('admin.roundsPanel.matches', { count: round._count?.matches ?? 0 })}
+            </span>
             {canManage && (
               <span className="flex gap-1" onClick={(e) => e.stopPropagation()} role="presentation">
                 <Button
@@ -127,7 +131,7 @@ export function SeasonRoundsPanel({ seasonId, selectedRoundId, onSelectRound, ca
                     setEdit(round);
                     setOpen(true);
                   }}
-                  aria-label="Uredi"
+                  aria-label={t('actions.edit')}
                 >
                   <Pencil className="h-3.5 w-3.5" />
                 </Button>
@@ -135,7 +139,7 @@ export function SeasonRoundsPanel({ seasonId, selectedRoundId, onSelectRound, ca
                   variant="ghost"
                   size="icon"
                   onClick={(e) => void onDelete(round, e)}
-                  aria-label="Obriši"
+                  aria-label={t('actions.delete')}
                 >
                   <Trash2 className="h-3.5 w-3.5 text-danger" />
                 </Button>

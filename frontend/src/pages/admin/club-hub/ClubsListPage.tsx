@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
 import { adminLinkClass } from '../../../lib/admin-styles';
 import { Plus, Trash2 } from 'lucide-react';
@@ -17,6 +18,7 @@ import type { Club } from '../../../types';
 type ClubRow = Club & { _count?: { players: number } };
 
 export function ClubsListPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { user } = useAuth();
   const canManage = hasPermission(user?.permissions, 'clubs.manage');
@@ -37,12 +39,12 @@ export function ClubsListPage() {
 
   return (
     <>
-      <Seo title="Klub & kadar" />
+      <Seo title={t('admin.clubSquad')} />
       {dialog}
       <AdminPageShell
         isError={isError}
         onRetry={() => void refetch()}
-        title="Klub & kadar"
+        title={t('admin.clubSquad')}
         isLoading={isLoading}
         actions={
           canManage ? (
@@ -69,22 +71,22 @@ export function ClubsListPage() {
             { key: 'players', header: 'Igrači', render: (r) => r._count?.players ?? 0 },
             {
               key: 'own',
-              header: 'Tip',
+              header: t('admin.clubsList.type'),
               render: (r) =>
                 r.isOwnClub ? (
-                  <Badge variant="success">Naš klub</Badge>
+                  <Badge variant="success">{t('admin.club.ownClub')}</Badge>
                 ) : (
-                  <Badge variant="muted">Protivnik</Badge>
+                  <Badge variant="muted">{t('admin.clubsList.opponent')}</Badge>
                 ),
             },
             {
               key: 'actions',
-              header: 'Akcije',
+              header: t('admin.common.actions'),
               render: (r) => (
                 <div className="flex gap-1">
                   <Link to={`/admin/clubs/${r.id}`}>
                     <Button variant="ghost" size="sm">
-                      Upravljaj
+                      {t('admin.clubsList.manage')}
                     </Button>
                   </Link>
                   {canManage && !r.isOwnClub && (
@@ -92,7 +94,7 @@ export function ClubsListPage() {
                       variant="ghost"
                       size="icon"
                       onClick={() => void onDelete(r)}
-                      aria-label="Obriši"
+                      aria-label={t('actions.delete')}
                     >
                       <Trash2 className="h-4 w-4 text-danger" />
                     </Button>

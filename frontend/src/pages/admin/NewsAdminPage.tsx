@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { asArray } from '../../lib/as-array';
 import { useNewsList } from '../../hooks';
@@ -27,6 +28,7 @@ function statusVariant(status: ContentStatus): 'default' | 'success' | 'muted' {
 }
 
 export function NewsAdminPage() {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const perms = user?.permissions ?? [];
   const canSubmit = hasPermission(perms, 'news.submit');
@@ -56,11 +58,11 @@ export function NewsAdminPage() {
 
   return (
     <>
-      <Seo title="Vijesti" />
+      <Seo title={t('admin.news')} />
       <AdminPageShell
         isError={isError}
         onRetry={() => void refetch()}
-        title="Vijesti"
+        title={t('admin.news')}
         isLoading={isLoading}
         actions={
           <div className="flex flex-wrap items-center gap-2">
@@ -69,7 +71,7 @@ export function NewsAdminPage() {
               value={categoryId}
               onChange={(e) => setCategoryId(e.target.value)}
             >
-              <option value="">Sve kategorije</option>
+              <option value="">{t('admin.newsAdmin.allCategories')}</option>
               {categories.map((c) => (
                 <option key={c.id} value={c.id}>
                   {c.name}
@@ -78,11 +80,11 @@ export function NewsAdminPage() {
             </select>
             {canManage && (
               <Button variant="outline" onClick={() => setCategoriesOpen(true)}>
-                Kategorije
+                {t('admin.newsAdmin.categories')}
               </Button>
             )}
             <Link to="/admin/news/new">
-              <Button>Nova vijest</Button>
+              <Button>{t('admin.content.newNews')}</Button>
             </Link>
           </div>
         }
@@ -167,9 +169,11 @@ export function NewsAdminPage() {
       <ConfirmDialog
         open={!!deleteTarget}
         onOpenChange={(o) => !o && setDeleteTarget(null)}
-        title="Obriši vijest"
-        description={deleteTarget ? `Obrisati "${deleteTarget.title}"?` : ''}
-        confirmLabel="Obriši"
+        title={t('admin.newsAdmin.deleteTitle')}
+        description={
+          deleteTarget ? t('admin.newsAdmin.deleteConfirm', { title: deleteTarget.title }) : ''
+        }
+        confirmLabel={t('actions.delete')}
         variant="danger"
         isPending={deleteNews.isPending}
         onConfirm={() => {
