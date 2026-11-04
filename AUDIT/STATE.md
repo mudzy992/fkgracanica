@@ -45,8 +45,14 @@ Korisnik: „Možeš nastaviti dalje na FE-04c."
   dužih `t()` poziva prešao 200 linija → izdvojen `MatchLiveLockedNote.tsx` (196 linija).
 - **Batch 4** (40 nalaza): forma takmičenja/sezone, lista vijesti (potvrda sa `{{title}}`),
   igrači, korisnici, klubovi, kola (`{{count}} utakm.`), finansije (tabele + KPI).
-- **Ukupno baseline: 496 → 244 nalaza, 130 → 88 fajlova.**
-- **Otvoreno:** batch 5 (cms editori, membership, ticketing, audit, media, notifications).
+- **Batch 5** (74 nalaza): izvještaj utakmice, timski panel, CMS meni (sortabilna lista),
+  `PaymentProviderHints` (dugački dev tekstovi u ključeve), audit, galerija, Hall of Fame,
+  muzej, vremenska linija, trofeji, korisnici, članstva.
+- **Batch 6** (39 nalaza): igrački panel, klub hub, kadar, CMS builder/meta, news-feed widget,
+  season hub, editor galerije, grid medija, plaćanja u ticketing tabu.
+- **Ukupno baseline: 496 → 131 nalaza, 130 → 62 fajla.**
+- **Otvoreno:** batch 7 (preostalih ~131 nalaza u 62 fajla: analytics paneli, cms editori,
+  app-releases, notifications, media, settings).
 
 ### Sesija FE-05 — 2026-11-03 (interna IA; KAPIJA 2)
 

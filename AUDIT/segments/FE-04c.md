@@ -14,10 +14,10 @@
 
 ### Mjerenje (heuristika: JSX tekst + tekstualni propovi sa literalom)
 
-| | Prije | B1 | B2 | B2b | B3 | B4 |
-|---|---|---|---|---|---|---|
-| Nalaza | **496** | **454** | **386** | **347** | **284** | **244** |
-| Fajlova | **130** | **113** | **109** | **104** | **96** | **88** |
+| | Prije | B1 | B2 | B2b | B3 | B4 | B5 | B6 |
+|---|---|---|---|---|---|---|---|---|
+| Nalaza | **496** | **454** | **386** | **347** | **284** | **244** | **170** | **131** |
+| Fajlova | **130** | **113** | **109** | **104** | **96** | **88** | **71** | **62** |
 
 > Napomena: heuristika namjerno ne broji literale u objektima (`label: 'Vijesti'`),
 > pa je stvarni broj veći; migrirani su i takvi literali gdje su bili u fokusu.
@@ -90,6 +90,23 @@ potvrda brisanja sezone — **bez** reformatiranja fajla da ostane pod 200 linij
 `ClubsListPage`, `SeasonRoundsPanel` (`{{count}} utakm.`), `FinanceBuckets`, `FinanceKpiGrid`
 (`{{count}} transakcija`).
 
+### Batch 5 (74 nalaza → −74)
+
+`MatchReportPage`, `AnalyticsTeamPanel`, `CmsMenuSortableList` (sortabilna lista menija),
+`PaymentProviderHints` (**dugački developerski tekstovi prebačeni u ključeve** —
+Stripe/PayPal/Monri uputstva), `AuditPage`, `ClubsAdminPage`, `CommentatorPage`,
+`ContactAdminPage`, `GalleryAdminPage`, `GalleryAdminPhotos`, `HallOfFame*`, `Museum*`,
+`TimelineAdminFormSheet`, `TrophiesAdminPage`, `UserAdminFormSheet`, `MembershipAdminFormSheet`.
+
+### Batch 6 (39 nalaza → −39)
+
+`AnalyticsPlayerPanel`, `ClubHubPage`, `ClubPlayersTab`, `CmsPageBuilderPage`,
+`CmsPageMetaForm` (`Uredi: {{title}}`), `NewsFeedSectionForm`, `SeasonHubPage`,
+`GalleryEditorPage` (`Fotografije ({{count}})`), `MediaAssetsGrid`, `TicketingPaymentsTab`.
+
+> Napomena: heuristika ne broji JSX izraze (`{x ? 'Da' : 'Ne'}`), pa je stvarni broj
+> preostalih stringova veći od baseline-a; oni se rješavaju u prolazu kroz fajl.
+
 ## 4. Verifikacija
 
 | Provjera | Rezultat |
@@ -108,4 +125,4 @@ potvrda brisanja sezone — **bez** reformatiranja fajla da ostane pod 200 linij
 - Prilikom migracije paziti na **kolizije ključeva**: `admin.cms`, `admin.media`, `admin.news`,
   `admin.gallery`, `admin.analytics`… su stringovi (nav), pa pod-namespace mora biti drugačiji.
 
-## Status segmenta: U TOKU (batch 4 završen; baseline 496 → 244, 130 → 88 fajlova; ratchet guard aktivan)
+## Status segmenta: U TOKU (batch 6 završen; baseline 496 → 131, 130 → 62 fajla; ratchet guard aktivan)
