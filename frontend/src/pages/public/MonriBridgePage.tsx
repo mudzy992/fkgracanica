@@ -60,7 +60,7 @@ export function MonriBridgePage() {
         {seo}
         <p>{error}</p>
         <Link
-          className="mt-4 inline-block text-primary"
+          className="mt-4 inline-block text-primary-light"
           to={sid.startsWith('m-') ? '/clanstvo' : '/ulaznice'}
         >
           {t('pages.monri.back')}

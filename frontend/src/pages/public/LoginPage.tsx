@@ -63,18 +63,20 @@ export function LoginPage() {
       <Seo title={t('login.title')} noindex />
       <Card className="w-full max-w-md">
         <CardContent className="p-8">
-          <h1 className="mb-2 text-2xl font-bold text-primary">{t('login.title')}</h1>
+          <h1 className="mb-2 text-2xl font-bold text-primary-light">{t('login.title')}</h1>
           <p className="mb-6 text-sm text-text-muted">{t('login.subtitle')}</p>
           <form onSubmit={(e) => void handleSubmit(onSubmit)(e)} className="space-y-4">
-            <Input type="email" placeholder={t('common.email')} {...register('email')} />
-            <Input type="password" placeholder={t('common.password')} {...register('password')} />
-            {error && <p className="text-sm text-danger">{error}</p>}
+            <label className="sr-only" htmlFor="login-email">{t('common.email')}</label>
+            <Input id="login-email" type="email" autoComplete="email" placeholder={t('common.email')} {...register('email')} />
+            <label className="sr-only" htmlFor="login-password">{t('common.password')}</label>
+            <Input id="login-password" type="password" autoComplete="current-password" placeholder={t('common.password')} {...register('password')} />
+            {error && <p role="alert" className="text-sm text-danger">{error}</p>}
             <Button type="submit" className="w-full" disabled={isSubmitting}>
               {t('nav.login')}
             </Button>
           </form>
           <p className="mt-6 text-center text-sm text-text-muted">
-            <Link to="/" className="text-primary hover:underline">
+            <Link to="/" className="text-primary-light hover:underline">
               {t('actions.back')}
             </Link>
           </p>

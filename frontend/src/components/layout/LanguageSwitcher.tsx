@@ -17,7 +17,7 @@ export function LanguageSwitcher({ className }: { className?: string }) {
         type="button"
         onClick={() => setLang(current === 'bs' ? 'en' : 'bs')}
         className="rounded-lg px-2 py-1 text-xs font-semibold uppercase tracking-wide text-text-muted hover:bg-surface hover:text-text"
-        aria-label={t('actions.language')}
+        aria-label={`${t('actions.language')}: ${current === 'bs' ? 'EN' : 'BS'}`}
       >
         {current === 'bs' ? 'EN' : 'BS'}
       </button>

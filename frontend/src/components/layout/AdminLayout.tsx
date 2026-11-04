@@ -54,7 +54,7 @@ export function AdminLayout() {
         <div className="flex min-h-0 flex-1 flex-col p-4">
           <div className="mb-4 flex shrink-0 items-center justify-between gap-2">
             <div>
-              <Link to="/admin" className="text-lg font-bold text-primary">
+              <Link to="/admin" className="text-lg font-bold text-primary-light">
                 FK Admin
               </Link>
               {user && (
@@ -69,13 +69,13 @@ export function AdminLayout() {
             type="button"
             onClick={() => setPaletteOpen(true)}
             className="mb-3 flex shrink-0 items-center gap-2 rounded-lg border border-[var(--border-subtle)] px-2.5 py-2 text-left text-sm text-text-muted transition-colors hover:bg-surface"
-            aria-label={t('admin.cmdkTitle', 'Pretraga admina')}
+            aria-keyshortcuts="Control+K Meta+K"
           >
             <Search aria-hidden className="h-4 w-4 shrink-0" />
             <span className="min-w-0 flex-1 truncate">
               {t('admin.cmdkPlaceholder', 'Traži stranicu ili akciju…')}
             </span>
-            <kbd className="shrink-0 rounded border border-[var(--border-subtle)] px-1 py-0.5 text-[10px]">
+            <kbd aria-hidden className="shrink-0 rounded border border-[var(--border-subtle)] px-1 py-0.5 text-[10px]">
               ⌘K
             </kbd>
           </button>
@@ -90,7 +90,7 @@ export function AdminLayout() {
 
       <div className="flex min-w-0 flex-1 flex-col">
         <header className="flex h-14 shrink-0 items-center justify-between border-b border-[var(--border-subtle)] bg-background px-4 lg:hidden">
-          <Link to="/admin" className="font-bold text-primary">
+          <Link to="/admin" className="font-bold text-primary-light">
             FK Admin
           </Link>
           <div className="flex items-center gap-1">

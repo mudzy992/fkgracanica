@@ -11,9 +11,22 @@ import react from '@vitejs/plugin-react';
 export default defineConfig({
   plugins: [react()],
   resolve: {
+    // Usklađeno s Vite buildom: monorepo ima više kopija Reacta.
+    dedupe: ['react', 'react-dom'],
     alias: { '@': path.resolve(__dirname, './src') },
   },
   test: {
+    deps: {
+      optimizer: {
+        client: {
+          enabled: true,
+          include: [
+            'react', 'react-dom', 'react-dom/client', 'react/jsx-runtime',
+            '@testing-library/react', 'react-router-dom', 'react-hook-form', 'react-i18next',
+          ],
+        },
+      },
+    },
     environment: 'jsdom',
     globals: false,
     setupFiles: ['./src/test/setup.ts'],
