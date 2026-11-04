@@ -8,12 +8,75 @@
 |-------|------------|
 | **Aktivna grana** | `arena/290a6f13-fkgracanica` |
 | **Trenutna faza** | CI-01 ✔ INF-01 ✔ INF-02 ✔ BE-01…**BE-09 ✔** → FE-01 ✔ FE-02 ✔ FE-03 ✔ FE-03b ✔ → CI-04 ✔ → FE-04a ✔ FE-04b ✔ → FE-05 ✔ → **FE-04c ✅ ZAVRŠEN (baseline 496 → 0)** → **BE-09d ✅ ZAVRŠEN** → **FE-06 🔄 audit završen, P-FE06-1…9 odobreni, implementacija traje** ; mobile zamrznut dok se BE/FE ne zaokruže |
-| **Trenutni segment** | **FE-06 — OTVOREN:** audit Playwright/axe/bundle/coverage završen; **P-FE06-1…9 odobreni**; P-FE06-1/3/4/5/6 potvrđeni u CI-ju; P-FE06-10/11 potvrđeni u CI-ju; P-FE06-12 potvrđen u CI-ju; P-FE06-2 i stabilizacija mock testa potvrđeni; P-FE06-7 i stabilizacija full-stack reloada potvrđeni u CI-ju; P-FE06-8 potvrđen u CI-ju; P-FE06-9 baseline/ratchet potvrđen u CI-ju; coverage ≥50% ostaje otvoren i nastavlja se povećavati testovima; P-FE06-13 i prvi coverage batch potvrđeni u CI-ju; ≥50% ostaje otvoren; **P-FE06-14/15 odobreni i potvrđeni u CI-ju**; B-FE06-18/19: P-FE06-16/17 odobreni, implementirani i lokalno testirani, commitani, nisu pushani; novi **B-FE06-20**: korisnik je odobrio P-FE06-18, API + UI zaštitu bez automatskog brisanja; lokalno implementirano; Q-FE06-19: korisnik je odobrio očuvanje zabrane za završene utakmice. Korisnik je potvrdio svjež backup i provjerenu mogućnost vraćanja. Prethodno BE-09d ✅, FE-04c ✅. Mobile odgođen do završetka BE/FE rada. |
-| **Zadnji commit** | `1ee9290` — frontend prikaz i zaštita postava; `216fcd6` — backend; push i CI čekaju. |
-| **Zadnji CI run** | ✅ **`41852544677`** (`37bf56b`, 6/6; full-stack 3×) https://github.com/mudzy992/fkgracanica/actions/runs/41852544677 ; ✅ **`41851752883`** (`abc1271`, 6/6; full-stack smoke + granica 3×) https://github.com/mudzy992/fkgracanica/actions/runs/41851752883 ; ✅ **`41848830405`** (`db7d311`, 6/6; dijagnostički run) https://github.com/mudzy992/fkgracanica/actions/runs/41848830405 ; ❌ **`41847919388`** (`c9b8250`, 5/6; full-stack reload timeout, dijagnostika traje) https://github.com/mudzy992/fkgracanica/actions/runs/41847919388 ; ✅ **`41847049965`** (`0a0d371`, svih 6 jobova) https://github.com/mudzy992/fkgracanica/actions/runs/41847049965 ; ✅ **`41844998013`** (`f4c87ad`, svih 6 jobova) https://github.com/mudzy992/fkgracanica/actions/runs/41844998013 ; ✅ **`41838037458`** (`0f7aac6`, svih 6 jobova) https://github.com/mudzy992/fkgracanica/actions/runs/41838037458 ; ✅ **`41836863290`** (`8f8cec9`, svih 6 jobova) https://github.com/mudzy992/fkgracanica/actions/runs/41836863290 ; ✅ **`41834394696`** (`00988c2`, svih 6 jobova) https://github.com/mudzy992/fkgracanica/actions/runs/41834394696 ; ✅ **`41831371015`** (`80ea031`, svih 6 jobova) https://github.com/mudzy992/fkgracanica/actions/runs/41831371015 ; ✅ **`41827148252`** (`0a26716`, svih 6 jobova) https://github.com/mudzy992/fkgracanica/actions/runs/41827148252 ; ✅ **`41826599244`** (`a75a0fd`, svih 6 jobova) https://github.com/mudzy992/fkgracanica/actions/runs/41826599244 ; ✅ **`41825652861`** (`3b7304a`, svih 6 jobova) https://github.com/mudzy992/fkgracanica/actions/runs/41825652861 ; ✅ **`41825053494`** (`68f68a3`, svih 6 jobova; dijagnostika povremenog pada traje) https://github.com/mudzy992/fkgracanica/actions/runs/41825053494 ; ❌ **`41824442277`** (`b81a25b`, budget gate ✅, full-stack smoke timeout ❌) https://github.com/mudzy992/fkgracanica/actions/runs/41824442277 ; ✅ **`41823260648`** (`3bb0dab`, svih 6 jobova) https://github.com/mudzy992/fkgracanica/actions/runs/41823260648 ; ✅ **`41822464236`** (`7d33d3b`, svih 6 jobova uključujući stvarni full-stack) https://github.com/mudzy992/fkgracanica/actions/runs/41822464236 ; ❌ **`41821836827`** (`897f253`: full-stack job ✅, mock job ❌; ostali ✅; kasnije stabilizovano) https://github.com/mudzy992/fkgracanica/actions/runs/41821836827 ; ✅ **`41820317341`** (P-FE06-12, svih 5 jobova) https://github.com/mudzy992/fkgracanica/actions/runs/41820317341 ; ✅ **`41817896650`** (P-FE06-10/11, svih 5 jobova) https://github.com/mudzy992/fkgracanica/actions/runs/41817896650 ; ✅ **`41816371035`** (docs potvrda, svih 5 jobova) https://github.com/mudzy992/fkgracanica/actions/runs/41816371035 ; ✅ **`41815794845`** (P-FE06-1/3, svih 5 jobova uključujući browser mock+axe) https://github.com/mudzy992/fkgracanica/actions/runs/41815794845 ; ✅ **`41814125171`** (P-FE06-6, sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41814125171 ; ✅ **`41813051627`** (P-FE06-5, sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41813051627 ; ✅ **`41811296453`** (P-FE06-4, sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41811296453 ; ✅ **`41809421999`** (FE-06 evidencija CI-ja, sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41809421999 ; ✅ **`41809144900`** (FE-06 audit, sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41809144900 ; ✅ **`41802269029`** (BE-09d run-ID dokumentacija; sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41802269029 ; ✅ **`41801892490`** (docs BE-09d zatvoren, sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41801892490 ; ✅ **`41801427757`** (BE-09d implementacija + migracije, sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41801427757 ; ✅ **`41798892782`** (BE-09d audit, sva 4 joba) ; ✅ **`41795506967`** (docs batch 7+8, sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41795506967 ; ✅ **`41795171365`** (FE-04c batch 8, sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41795171365 ; ✅ **`41794454711`** (batch 7) ; ✅ **`41792020666`** (docs run-ID) ; ✅ **`41791659204`** (FE-04c batch 5+6 + docs, sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41791659204 ; ✅ **`41791137350`** (batch 5) ; ✅ **`41788831131`**, **`41788531790`**, **`41787973999`**, **`41780305565`**, **`41780020284`**, **`41779492872`**, **`41736615770`** (batch 1–4) |
+| **Trenutni segment** | **FE-06 — OTVOREN:** audit Playwright/axe/bundle/coverage završen; **P-FE06-1…9 odobreni**; P-FE06-1/3/4/5/6 potvrđeni u CI-ju; P-FE06-10/11 potvrđeni u CI-ju; P-FE06-12 potvrđen u CI-ju; P-FE06-2 i stabilizacija mock testa potvrđeni; P-FE06-7 i stabilizacija full-stack reloada potvrđeni u CI-ju; P-FE06-8 potvrđen u CI-ju; P-FE06-9 baseline/ratchet potvrđen u CI-ju; coverage ≥50% ostaje otvoren i nastavlja se povećavati testovima; P-FE06-13 i prvi coverage batch potvrđeni u CI-ju; ≥50% ostaje otvoren; **P-FE06-14/15 odobreni i potvrđeni u CI-ju**; B-FE06-18/19: P-FE06-16/17 odobreni, implementirani i lokalno testirani, pushani i potvrđeni u CI-ju `41886231888`; novi **B-FE06-20**: korisnik je odobrio P-FE06-18, API + UI zaštitu bez automatskog brisanja; potvrđeno CI-jem `41886231888`; Q-FE06-19: korisnik je odobrio očuvanje zabrane za završene utakmice. **B-FE06-22**: korisnik je odobrio P-FE06-19: potpuna BE/FE zaštita YouTube linkova i regresije, bez izmjene starih podataka; implementirano lokalno, CI čeka. Dodatni B-FE06-23/24 (§25–26) zahtijevaju odluku o dodatnim API-jima i rich-text iframeovima. Korisnik je potvrdio svjež backup i provjerenu mogućnost vraćanja. Prethodno BE-09d ✅, FE-04c ✅. Mobile odgođen do završetka BE/FE rada. |
+| **Zadnji kod commitovi** | `689fc59` — BE YouTube highlight zaštita; `a3e8c1a` — FE YouTube prikaz/editor. Audit evidencija slijedi. |
+| **Zadnji CI run** | ✅ **`41886231888`** (`de1f4a5`, svih 6 jobova): https://github.com/mudzy992/fkgracanica/actions/runs/41886231888 ; ✅ **`41852544677`** (`37bf56b`, 6/6; full-stack 3×) https://github.com/mudzy992/fkgracanica/actions/runs/41852544677 ; ✅ **`41851752883`** (`abc1271`, 6/6; full-stack smoke + granica 3×) https://github.com/mudzy992/fkgracanica/actions/runs/41851752883 ; ✅ **`41848830405`** (`db7d311`, 6/6; dijagnostički run) https://github.com/mudzy992/fkgracanica/actions/runs/41848830405 ; ❌ **`41847919388`** (`c9b8250`, 5/6; full-stack reload timeout, dijagnostika traje) https://github.com/mudzy992/fkgracanica/actions/runs/41847919388 ; ✅ **`41847049965`** (`0a0d371`, svih 6 jobova) https://github.com/mudzy992/fkgracanica/actions/runs/41847049965 ; ✅ **`41844998013`** (`f4c87ad`, svih 6 jobova) https://github.com/mudzy992/fkgracanica/actions/runs/41844998013 ; ✅ **`41838037458`** (`0f7aac6`, svih 6 jobova) https://github.com/mudzy992/fkgracanica/actions/runs/41838037458 ; ✅ **`41836863290`** (`8f8cec9`, svih 6 jobova) https://github.com/mudzy992/fkgracanica/actions/runs/41836863290 ; ✅ **`41834394696`** (`00988c2`, svih 6 jobova) https://github.com/mudzy992/fkgracanica/actions/runs/41834394696 ; ✅ **`41831371015`** (`80ea031`, svih 6 jobova) https://github.com/mudzy992/fkgracanica/actions/runs/41831371015 ; ✅ **`41827148252`** (`0a26716`, svih 6 jobova) https://github.com/mudzy992/fkgracanica/actions/runs/41827148252 ; ✅ **`41826599244`** (`a75a0fd`, svih 6 jobova) https://github.com/mudzy992/fkgracanica/actions/runs/41826599244 ; ✅ **`41825652861`** (`3b7304a`, svih 6 jobova) https://github.com/mudzy992/fkgracanica/actions/runs/41825652861 ; ✅ **`41825053494`** (`68f68a3`, svih 6 jobova; dijagnostika povremenog pada traje) https://github.com/mudzy992/fkgracanica/actions/runs/41825053494 ; ❌ **`41824442277`** (`b81a25b`, budget gate ✅, full-stack smoke timeout ❌) https://github.com/mudzy992/fkgracanica/actions/runs/41824442277 ; ✅ **`41823260648`** (`3bb0dab`, svih 6 jobova) https://github.com/mudzy992/fkgracanica/actions/runs/41823260648 ; ✅ **`41822464236`** (`7d33d3b`, svih 6 jobova uključujući stvarni full-stack) https://github.com/mudzy992/fkgracanica/actions/runs/41822464236 ; ❌ **`41821836827`** (`897f253`: full-stack job ✅, mock job ❌; ostali ✅; kasnije stabilizovano) https://github.com/mudzy992/fkgracanica/actions/runs/41821836827 ; ✅ **`41820317341`** (P-FE06-12, svih 5 jobova) https://github.com/mudzy992/fkgracanica/actions/runs/41820317341 ; ✅ **`41817896650`** (P-FE06-10/11, svih 5 jobova) https://github.com/mudzy992/fkgracanica/actions/runs/41817896650 ; ✅ **`41816371035`** (docs potvrda, svih 5 jobova) https://github.com/mudzy992/fkgracanica/actions/runs/41816371035 ; ✅ **`41815794845`** (P-FE06-1/3, svih 5 jobova uključujući browser mock+axe) https://github.com/mudzy992/fkgracanica/actions/runs/41815794845 ; ✅ **`41814125171`** (P-FE06-6, sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41814125171 ; ✅ **`41813051627`** (P-FE06-5, sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41813051627 ; ✅ **`41811296453`** (P-FE06-4, sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41811296453 ; ✅ **`41809421999`** (FE-06 evidencija CI-ja, sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41809421999 ; ✅ **`41809144900`** (FE-06 audit, sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41809144900 ; ✅ **`41802269029`** (BE-09d run-ID dokumentacija; sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41802269029 ; ✅ **`41801892490`** (docs BE-09d zatvoren, sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41801892490 ; ✅ **`41801427757`** (BE-09d implementacija + migracije, sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41801427757 ; ✅ **`41798892782`** (BE-09d audit, sva 4 joba) ; ✅ **`41795506967`** (docs batch 7+8, sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41795506967 ; ✅ **`41795171365`** (FE-04c batch 8, sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41795171365 ; ✅ **`41794454711`** (batch 7) ; ✅ **`41792020666`** (docs run-ID) ; ✅ **`41791659204`** (FE-04c batch 5+6 + docs, sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41791659204 ; ✅ **`41791137350`** (batch 5) ; ✅ **`41788831131`**, **`41788531790`**, **`41787973999`**, **`41780305565`**, **`41780020284`**, **`41779492872`**, **`41736615770`** (batch 1–4) |
 | **check:all** | `npm run check:all` → **9/9**: check-coverage, file-size, console-ban, token-check, secrets-ban, layer-deps, docs-links, docker-context, bundle-react; u CI-ju audit-gate + standards. |
 
 ## Šta je urađeno (hronološki)
+
+### Sesija FE-06 — 2026-11-04 (P19 lokalno; novi nalazi)
+
+- P-FE06-19 implementiran za highlight API/editor, usklađen parser i siguran
+  kanonski `VideoEmbed`, BS/EN fallback i neispravni live/audio prikaz; bez
+  migracije i bez izmjene/brisanja spremljenih podataka. Lokalno backend unit
+  **445/445**, izolovani PG highlight **3/3** + postave **8/8** (migracijski
+  SQL primijenjen ručno, bez tvrdnje o lokalnom `migrate deploy`), browser mock
+  **55/55** na konačnom kodu, backend lint 0 grešaka/6 postojećih upozorenja,
+  frontend lint 0/30; build, budget i check:all **9/9** prolaze.
+- Puni V8 na konačnom kodu: **275/275** testova, 633 izvora/87 izvršenih;
+  linije **14,51%**, statements **15,24%**, funkcije **12,26%**, grane
+  **11,88%**; pragovi podignuti na **14,4 / 15,1 / 12,1 / 11,7%**, ne sniženi. Cilj ≥50% ostaje otvoren.
+- Otkriveni dodatni ulazi za live stream, vijest i pre-match audio prihvataju
+  neispravne linkove (mock-only, bez baze/mreže); P19 samo sigurno prikazuje
+  njihove vrijednosti: **B-FE06-23 / P-FE06-20** §25. Rich-content sanitizer
+  dopušta putanju koja se u izolovanom browseru normalizuje u YouTube redirect,
+  ali zahtjev je blokiran prije mreže, a daljnji redirect/eksploatacija i
+  produkcijska pojava nisu dokazani: **B-FE06-24 / P-FE06-21** §26. Za dodatne
+  API/vidljive promjene potrebna je zasebna odluka Q-FE06-21/22.
+- P19 commitovi `689fc59` i `a3e8c1a` se pripremaju za push; posljednji stvarno potvrđeni CI ostaje
+  **41886231888** za prethodni `de1f4a5`. Produkcija nije dirana.
+
+### Sesija FE-06 — 2026-11-04 (odobrenje P-FE06-19)
+
+- Korisnik je izabrao **potpunu BE + FE zaštitu**: precizne YouTube domene,
+  validan 11-znakovni ID, siguran iframe, podrška za watch/embed/kratki URL te
+  backend live/shorts; stari podaci se ne mijenjaju niti brišu, neispravni
+  linkovi imaju objašnjenje. Odobrene su API/vidljive promjene i regresije.
+- Nakon odgovora je snapshot vratio Git HEAD na početni `b7f1d3d`; provjereno je
+  da aktivna remote grana i dalje pokazuje na `de1f4a5`, pa je primijenjen
+  prethodno odobren `git reset --mixed FETCH_HEAD` bez promjene radnih datoteka.
+  Sačuvane su tri lokalne audit izmjene; dependencies/tmp nisu opstali.
+
+### Sesija FE-06 — 2026-11-04 (B-FE06-22: odluka potrebna)
+
+- Izolovana proba bez mreže: backend highlight validacija prihvata
+  `youtube.com.example.invalid` (mock create, bez upisa), frontend ga odbija
+  ali prihvata `notyoutube.com`. Manipulisani `v` s `../` mijenja normalizovanu
+  iframe putanju u `www.youtube.com/redirect` i query. Nije dokazan vanjski
+  redirect, eksploatacija ni produkcijska pojava. Backend highlight write je
+  zaštićen `matches.manage`; FE i BE se razlikuju i za live/shorts URL.
+- **P-FE06-19:** preporuka je uskladiti domene/11-znakovni ID u BE/FE,
+  osigurati iframe, podržati legitimne oblike i bez brisanja objasniti
+  neispravne stare linkove; potrebna dozvola za API i vidljivi prikaz. Ne
+  mijenjati produkciju niti stare podatke. Opcije i dokaz u FE-06 §24.
+- Posljednji CI `41886231888 ✅ 6/6` za `de1f4a5`; audit dokumenti s potvrdom
+  i novim nalazom su trenutno lokalne, necommitane izmjene. ≥50% FE coverage i
+  FE-06 ostaju otvoreni; mobile zamrznut.
+
+### Sesija FE-06 — 2026-11-04 (CI potvrda P16–18)
+
+- Stvarni CI **41886231888 ✅ 6/6**, commit `de1f4a5`:
+  https://github.com/mudzy992/fkgracanica/actions/runs/41886231888.
+  Backend E2E stvarno je primijenio Prisma migracije na svježu CI testnu bazu;
+  mock browser i full-stack smoke + izolacija (3 ponavljanja) prošli su. CI
+  artefakt `frontend-coverage` **13351906591**. Produkcijska migracija/redeploy
+  iz sandboxa nisu rađeni. B-FE06-18/19/20/21 lokalno i CI potvrđeni, ali
+  FE-06 i ≥50% coverage ostaju otvoreni.
+
+### Sesija FE-06 — 2026-11-04 (push i CI u toku)
+
+- Push na aktivnu granu `de1f4a5` (uključuje `7c55fc9`, `216fcd6`, `1ee9290`); stvarni CI **41886231888** je naknadno potvrđen ✅ 6/6.
 
 ### Sesija FE-06 — 2026-11-04 (priprema commitova)
 
@@ -1219,7 +1282,7 @@ preporuci slažem se" → odobreni **P-B09c-1…10 + P-B09c-12**, uz P-B08-6, P-
 
 ## Šta je sljedeće (tačan sljedeći korak)
 
-1. **Pushati provjerene commitove P-FE06-16/17/18** na aktivnu granu i pratiti stvarni CI; zadržan je read-only status završenih utakmica uz uputu na ručni pregled (Q-FE06-19). P16–18 su lokalno implementirani/testirani i commitani (`216fcd6`, `1ee9290`); nema pusha/CI-ja; korisnik je potvrdio backup. Posljednji CI ✅ `41852544677`. P-FE06-14/15 potvrđeni su CI-jem `41844998013`; zatim nastaviti stvarno povećanje coveragea.
+1. **Završiti provjere i CI odobrenog P-FE06-19**, tražiti Q-FE06-21/22 za nova mjesta upisa i rich-content iframeove (§25–26), pa nastaviti stvarno povećanje frontend coveragea (P-FE06-9; ≥50% još nije postignuto), uz risk-based regresije i ratchet bez snižavanja; P-FE06-16/17/18 su potvrđeni u CI-ju `41886231888`; zadržan je read-only status završenih utakmica uz uputu na ručni pregled (Q-FE06-19). P16–18 su commitani (`216fcd6`, `1ee9290`), pushani i potvrđeni u CI-ju `41886231888`; korisnik je potvrdio backup. Posljednji CI ✅ `41886231888`. P-FE06-14/15 potvrđeni su CI-jem `41844998013`; zatim nastaviti stvarno povećanje coveragea.
    Potpuni modalni popravci **P-FE06-10/11** potvrđeni su u CI-ju.
    **P-FE06-12 / B-FE06-11** je odobren, implementiran i potvrđen u CI-ju.
    P7 budget, stabilizacija full-stack smoke reloada i P8 route-level lazy
@@ -1238,6 +1301,9 @@ preporuci slažem se" → odobreni **P-B09c-1…10 + P-B09c-12**, uz P-B08-6, P-
 ## Otvorena pitanja za korisnika (BLOKATORI)
 
 - **Q-FE06-18** ✔ Odobrena nedestruktivna API + UI zaštita i regresije; lokalno implementirano (FE-06 §22).
+- **Q-FE06-21** ⏳ P-FE06-20: proširiti zaštitu na API-je/editore streama, vijesti i audio postavke uz očuvanje legacy vrijednosti? (FE-06 §25).
+- **Q-FE06-22** ⏳ P-FE06-21: osigurati rich-content YouTube iframe uz očuvanje Vimeo/nocookie/playlista? (FE-06 §26).
+- **Q-FE06-20** ✔ Odobrena potpuna BE/FE YouTube zaštita, neispravni stari linkovi uz objašnjenje, bez automatskog brisanja (FE-06 §24).
 - **Q-FE06-19** ✔ Korisnik je odobrio zadržavanje read-only završene utakmice, uputu na ručni pregled i zasebnu odluku; bez automatskog brisanja (FE-06 §23).
 - **Q-FE06-16/17** ✔ Odobren potpuni popravak s aditivnom migracijom/backfillom; korisnik potvrdio svjež backup i provjerenu mogućnost vraćanja. Implementacija u toku.
 - **Q-FE06-14** ✔ Korisnik odobrio preporučeni potpuni popravak povrata plaćanja.
