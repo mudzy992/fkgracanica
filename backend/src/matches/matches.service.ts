@@ -15,6 +15,10 @@ import {
 } from './match-round.util';
 import { assertSingleScheduledHomeMatch } from './match-scheduling.util';
 import { validateMatchLineup, type LineupSlotInput } from './match-lineup.util';
+import {
+  assertLineupMatchesClubs,
+  lockMatchForLineup,
+} from './match-lineup-conflict.util';
 import { resolveEffectiveMatchLineup } from './match-squad-lineup.util';
 import {
   assertManualFinish,
@@ -74,14 +78,17 @@ export class MatchesService {
       include: { ...matchInclude, ...matchDetailInclude },
     });
     if (!match) throw new NotFoundException('Utakmica nije pronađena');
+    // Zaštita i za redove kreirane starim klijentom nakon backfilla.
+    const lineupConfigured = match.lineupConfigured || match.lineup.length > 0;
     match.lineup = (await resolveEffectiveMatchLineup(
       this.prisma,
       match.id,
       match.homeClubId,
       match.awayClubId,
       match.lineup,
+      lineupConfigured,
     )) as typeof match.lineup;
-    return withSeasonAlias(match);
+    return withSeasonAlias({ ...match, lineupConfigured });
   }
 
   async create(data: MatchInput) {
@@ -128,74 +135,92 @@ export class MatchesService {
 
   async update(id: string, data: Partial<MatchInput>) {
     assertManualMatchStatus(data.status);
-    const existing = await this.prisma.match.findUnique({ where: { id } });
-    if (!existing) throw new NotFoundException('Utakmica nije pronađena');
-    if (existing.status === MatchStatus.FINISHED) {
-      throw new BadRequestException('Završena utakmica se ne može uređivati.');
-    }
-    if (
-      (existing.status === MatchStatus.LIVE ||
-        existing.status === MatchStatus.HALFTIME) &&
-      data.status !== undefined &&
-      data.status !== existing.status
-    ) {
-      throw new BadRequestException(
-        'Status LIVE/HALFTIME mijenja se isključivo preko Live komentatora.',
-      );
-    }
-    assertManualFinish({
-      nextStatus: data.status,
-      existingStatus: existing.status,
-      scheduledAt: data.scheduledAt ?? existing.scheduledAt,
-      homeScore: data.homeScore,
-      awayScore: data.awayScore,
-    });
-
-    const homeClubId = data.homeClubId ?? existing.homeClubId;
-    const awayClubId = data.awayClubId ?? existing.awayClubId;
-    assertDistinctClubs(homeClubId, awayClubId);
-
-    const round =
-      data.roundId !== undefined
-        ? await resolveMatchRoundFields(this.prisma, data.roundId)
-        : {};
-    if (isResolvedRound(round) && round.roundId) {
-      const r = await this.prisma.round.findUnique({
-        where: { id: round.roundId },
-      });
-      const seasonId = data.seasonId ?? existing.seasonCompetitionId;
-      if (r && r.seasonCompetitionId !== seasonId) {
-        throw new BadRequestException('Kolo ne pripada sezoni utakmice.');
+    const updated = await this.prisma.$transaction(async (tx) => {
+      // Provjeri aktuelno stanje tek nakon zaključavanja: završetak i promjena
+      // klubova ne smiju proći na osnovu zastarjelog čitanja.
+      const existing = await lockMatchForLineup(tx, id);
+      if (existing.status === MatchStatus.FINISHED) {
+        throw new BadRequestException(
+          'Završena utakmica se ne može uređivati.',
+        );
       }
-    }
+      if (
+        (existing.status === MatchStatus.LIVE ||
+          existing.status === MatchStatus.HALFTIME) &&
+        data.status !== undefined &&
+        data.status !== existing.status
+      ) {
+        throw new BadRequestException(
+          'Status LIVE/HALFTIME mijenja se isključivo preko Live komentatora.',
+        );
+      }
+      assertManualFinish({
+        nextStatus: data.status,
+        existingStatus: existing.status,
+        scheduledAt: data.scheduledAt ?? existing.scheduledAt,
+        homeScore: data.homeScore,
+        awayScore: data.awayScore,
+      });
 
-    const patch: Prisma.MatchUpdateInput = {
-      ...(data.seasonId ? { edition: { connect: { id: data.seasonId } } } : {}),
-      ...(data.homeClubId
-        ? { homeClub: { connect: { id: data.homeClubId } } }
-        : {}),
-      ...(data.awayClubId
-        ? { awayClub: { connect: { id: data.awayClubId } } }
-        : {}),
-      ...(data.venue !== undefined ? { venue: data.venue } : {}),
-      ...(data.scheduledAt ? { scheduledAt: new Date(data.scheduledAt) } : {}),
-      ...(data.status ? { status: data.status } : {}),
-      ...(data.status === MatchStatus.FINISHED && existing.minute === 0
-        ? { minute: 90 }
-        : {}),
-      ...(data.homeScore !== undefined ? { homeScore: data.homeScore } : {}),
-      ...(data.awayScore !== undefined ? { awayScore: data.awayScore } : {}),
-      ...roundToMatchUpdateInput(round),
-    };
+      const homeClubId = data.homeClubId ?? existing.homeClubId;
+      const awayClubId = data.awayClubId ?? existing.awayClubId;
+      assertDistinctClubs(homeClubId, awayClubId);
 
-    const nextStatus = data.status ?? existing.status;
-    if (nextStatus === MatchStatus.SCHEDULED) {
-      await assertSingleScheduledHomeMatch(this.prisma, homeClubId, id);
-    }
+      const round =
+        data.roundId !== undefined
+          ? await resolveMatchRoundFields(tx, data.roundId)
+          : {};
+      if (isResolvedRound(round) && round.roundId) {
+        const r = await tx.round.findUnique({
+          where: { id: round.roundId },
+        });
+        const seasonId = data.seasonId ?? existing.seasonCompetitionId;
+        if (r && r.seasonCompetitionId !== seasonId) {
+          throw new BadRequestException('Kolo ne pripada sezoni utakmice.');
+        }
+      }
 
-    return this.prisma.match
-      .update({ where: { id }, data: patch, include: matchInclude })
-      .then(withSeasonAlias);
+      const patch: Prisma.MatchUpdateInput = {
+        ...(data.seasonId
+          ? { edition: { connect: { id: data.seasonId } } }
+          : {}),
+        ...(data.homeClubId
+          ? { homeClub: { connect: { id: data.homeClubId } } }
+          : {}),
+        ...(data.awayClubId
+          ? { awayClub: { connect: { id: data.awayClubId } } }
+          : {}),
+        ...(data.venue !== undefined ? { venue: data.venue } : {}),
+        ...(data.scheduledAt
+          ? { scheduledAt: new Date(data.scheduledAt) }
+          : {}),
+        ...(data.status ? { status: data.status } : {}),
+        ...(data.status === MatchStatus.FINISHED && existing.minute === 0
+          ? { minute: 90 }
+          : {}),
+        ...(data.homeScore !== undefined ? { homeScore: data.homeScore } : {}),
+        ...(data.awayScore !== undefined ? { awayScore: data.awayScore } : {}),
+        ...roundToMatchUpdateInput(round),
+      };
+
+      const nextStatus = data.status ?? existing.status;
+      if (nextStatus === MatchStatus.SCHEDULED) {
+        await assertSingleScheduledHomeMatch(tx, homeClubId, id);
+      }
+
+      if (
+        homeClubId !== existing.homeClubId ||
+        awayClubId !== existing.awayClubId
+      ) {
+        await assertLineupMatchesClubs(tx, id, [homeClubId, awayClubId]);
+      }
+      return tx.match.update({
+        where: { id },
+        data: patch,
+        include: matchInclude,
+      });
+    });
+    return withSeasonAlias(updated);
   }
 
   async remove(id: string) {
@@ -211,23 +236,31 @@ export class MatchesService {
   }
 
   async setLineup(matchId: string, slots: LineupSlotInput[]) {
-    const match = await this.prisma.match.findUnique({
-      where: { id: matchId },
-    });
-    if (!match) throw new NotFoundException('Utakmica nije pronađena');
-    if (match.status === MatchStatus.FINISHED && !isRetrospectiveMatch(match)) {
-      throw new BadRequestException(
-        'Postava završene utakmice se ne može mijenjati.',
-      );
-    }
-    await validateMatchLineup(this.prisma, matchId, slots);
     return this.prisma.$transaction(async (tx) => {
+      const match = await lockMatchForLineup(tx, matchId);
+      if (
+        match.status === MatchStatus.FINISHED &&
+        !isRetrospectiveMatch(match)
+      ) {
+        throw new BadRequestException(
+          'Postava završene utakmice se ne može mijenjati.',
+        );
+      }
+      await assertLineupMatchesClubs(tx, matchId, [
+        match.homeClubId,
+        match.awayClubId,
+      ]);
+      await validateMatchLineup(tx, matchId, slots);
       await tx.matchLineup.deleteMany({ where: { matchId } });
       if (slots.length) {
         await tx.matchLineup.createMany({
           data: slots.map((s) => ({ ...s, matchId })),
         });
       }
+      await tx.match.update({
+        where: { id: matchId },
+        data: { lineupConfigured: true },
+      });
       return tx.matchLineup.findMany({
         where: { matchId },
         include: { player: true, club: true },

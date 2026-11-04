@@ -5,7 +5,7 @@ import type { PrismaService } from '../prisma/prisma.service';
 export type ResolvedRound = { roundId: string | null };
 
 export async function resolveMatchRoundFields(
-  prisma: PrismaService,
+  prisma: Pick<PrismaService, 'round'>,
   roundId?: string | null,
 ): Promise<ResolvedRound | Record<string, never>> {
   if (roundId === undefined) return {};

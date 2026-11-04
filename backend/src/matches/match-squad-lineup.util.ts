@@ -1,5 +1,8 @@
 import type { Player } from '@prisma/client';
-import { MATCH_FORMATION_SLOTS } from './match-formation-slots.util';
+import {
+  MATCH_FORMATION_SLOTS,
+  squadStartersByFormationIndex,
+} from './match-formation-slots.util';
 
 type LineupRow = {
   id: string;
@@ -22,16 +25,30 @@ type SquadRow = {
   player?: Player | null;
 };
 
-function adminSlotIndex(x: number, y: number) {
-  return MATCH_FORMATION_SLOTS.findIndex(
-    (s) => s.positionX === x && s.positionY === y,
-  );
-}
-
-function squadStarters(squadSlots: SquadRow[]) {
-  return squadSlots
-    .filter((s) => !s.isBench && s.playerId)
+function hasCompleteSquadLayout(squad: SquadRow[]): boolean {
+  const starters = squad
+    .filter(
+      (s) =>
+        !s.isBench &&
+        Number.isInteger(s.slotIndex) &&
+        s.slotIndex >= 0 &&
+        s.slotIndex < 11,
+    )
     .sort((a, b) => a.slotIndex - b.slotIndex);
+  return (
+    starters.length === 11 &&
+    starters.every(
+      (s, i) =>
+        s.slotIndex === i &&
+        Number.isFinite(s.positionX) &&
+        Number.isFinite(s.positionY) &&
+        s.positionX >= 0 &&
+        s.positionX <= 100 &&
+        s.positionY >= 0 &&
+        s.positionY <= 100,
+    ) &&
+    new Set(starters.map((s) => `${s.positionX}:${s.positionY}`)).size === 11
+  );
 }
 
 export function mergeClubLineupWithSquad(
@@ -40,38 +57,27 @@ export function mergeClubLineupWithSquad(
   clubId: string,
   matchId: string,
 ): LineupRow[] {
-  const savedByIndex = new Map<number, LineupRow>();
-  const savedByPlayer = new Map(existing.map((r) => [r.playerId, r]));
-  for (const row of existing) {
-    if (row.positionX == null || row.positionY == null) continue;
-    const idx = adminSlotIndex(row.positionX, row.positionY);
-    if (idx >= 0) savedByIndex.set(idx, row);
-  }
-
-  const usedPlayers = new Set<string>();
-  const starters = squadStarters(squadSlots);
-  const merged: LineupRow[] = [];
-
-  starters.forEach((squadSlot, i) => {
-    const saved =
-      savedByIndex.get(i) ?? savedByPlayer.get(squadSlot.playerId ?? '');
-    const playerId = saved?.playerId ?? squadSlot.playerId;
-    if (!playerId || usedPlayers.has(playerId)) return;
-    usedPlayers.add(playerId);
-
-    merged.push({
-      id: saved?.id ?? `squad-default-${clubId}-${squadSlot.slotIndex}`,
+  // Spremljeni redovi nikad se ne filtriraju prema trenutnoj klupskoj postavi.
+  if (existing.length) return existing;
+  const useSquadLayout = hasCompleteSquadLayout(squadSlots);
+  const used = new Set<string>();
+  const result: LineupRow[] = [];
+  for (const slot of squadStartersByFormationIndex(squadSlots)) {
+    if (!slot.playerId || used.has(slot.playerId)) continue;
+    used.add(slot.playerId);
+    const position = MATCH_FORMATION_SLOTS[slot.slotIndex];
+    result.push({
+      id: `squad-default-${clubId}-${slot.slotIndex}`,
       matchId,
       clubId,
-      playerId,
-      positionX: squadSlot.positionX,
-      positionY: squadSlot.positionY,
+      playerId: slot.playerId,
+      positionX: useSquadLayout ? slot.positionY : position.positionX,
+      positionY: useSquadLayout ? 100 - slot.positionX : position.positionY,
       isStarter: true,
-      player: saved?.player ?? squadSlot.player ?? null,
+      player: slot.player ?? null,
     });
-  });
-
-  return merged;
+  }
+  return result;
 }
 
 export async function resolveEffectiveMatchLineup(
@@ -82,7 +88,10 @@ export async function resolveEffectiveMatchLineup(
   homeClubId: string,
   awayClubId: string,
   saved: LineupRow[],
+  lineupConfigured = false,
 ) {
+  // Flag se odnosi na obje strane; prazna spremljena postava je autoritativna.
+  if (lineupConfigured || saved.length) return saved;
   const [homeSquad, awaySquad] = await Promise.all([
     prisma.clubSquadSlot.findMany({
       where: { clubId: homeClubId },
@@ -96,11 +105,13 @@ export async function resolveEffectiveMatchLineup(
     }),
   ]);
 
-  const homeSaved = saved.filter((r) => r.clubId === homeClubId);
-  const awaySaved = saved.filter((r) => r.clubId === awayClubId);
-
+  const used = new Set<string>();
   return [
-    ...mergeClubLineupWithSquad(homeSaved, homeSquad, homeClubId, matchId),
-    ...mergeClubLineupWithSquad(awaySaved, awaySquad, awayClubId, matchId),
-  ];
+    ...mergeClubLineupWithSquad([], homeSquad, homeClubId, matchId),
+    ...mergeClubLineupWithSquad([], awaySquad, awayClubId, matchId),
+  ].filter((row) => {
+    if (used.has(row.playerId)) return false;
+    used.add(row.playerId);
+    return true;
+  });
 }

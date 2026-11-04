@@ -3,7 +3,7 @@ import { MatchStatus } from '@prisma/client';
 import type { PrismaService } from '../prisma/prisma.service';
 
 export async function assertSingleScheduledHomeMatch(
-  prisma: PrismaService,
+  prisma: Pick<PrismaService, 'club' | 'match'>,
   homeClubId: string,
   excludeMatchId?: string,
 ) {

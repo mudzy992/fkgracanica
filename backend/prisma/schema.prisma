@@ -728,6 +728,7 @@ model Match {
   awayClub        Club              @relation("AwayClub", fields: [awayClubId], references: [id])
   events          MatchEvent[]
   lineup          MatchLineup[]
+  lineupConfigured Boolean          @default(false)
   liveComments    LiveComment[]
   tickets         Ticket[]
   teamStats       TeamStatistics[]
