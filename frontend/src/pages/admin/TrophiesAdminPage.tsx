@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Pencil, Plus, Star, Trash2 } from 'lucide-react';
 import { useTrophies } from '../../hooks';
 import { useDeleteTrophy } from '../../hooks/use-content-admin';
@@ -13,6 +14,7 @@ import { TrophiesAdminFormSheet } from './TrophiesAdminFormSheet';
 import type { Trophy } from '../../types';
 
 export function TrophiesAdminPage() {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const canManage = hasPermission(user?.permissions, 'trophies.manage');
   const { data, isLoading, isError, refetch } = useTrophies();
@@ -33,12 +35,12 @@ export function TrophiesAdminPage() {
 
   return (
     <>
-      <Seo title="Trofeji" />
+      <Seo title={t('admin.trophies')} />
       {dialog}
       <AdminPageShell
         isError={isError}
         onRetry={() => void refetch()}
-        title="Trofeji"
+        title={t('admin.trophies')}
         isLoading={isLoading}
         actions={
           canManage ? (
@@ -88,7 +90,7 @@ export function TrophiesAdminPage() {
                         setOpen(true);
                       }}
 
-                      aria-label="Uredi"
+                      aria-label={t('actions.edit')}
                     >
                       <Pencil className="h-4 w-4" />
                     </Button>
@@ -96,7 +98,7 @@ export function TrophiesAdminPage() {
                       variant="ghost"
                       size="icon"
                       onClick={() => void onDelete(r)}
-                      aria-label="Obriši"
+                      aria-label={t('actions.delete')}
                     >
                       <Trash2 className="h-4 w-4 text-danger" />
                     </Button>

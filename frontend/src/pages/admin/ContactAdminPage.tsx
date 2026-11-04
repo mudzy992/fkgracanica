@@ -1,4 +1,5 @@
 import { useState, type MouseEvent } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Trash2 } from 'lucide-react';
 import {
   useContactMessages,
@@ -22,6 +23,7 @@ interface Props {
 }
 
 export function ContactAdminPage({ embedded = false }: Props) {
+  const { t } = useTranslation();
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
   const [unreadOnly, setUnreadOnly] = useState(false);
@@ -74,7 +76,7 @@ export function ContactAdminPage({ embedded = false }: Props) {
       <div className="flex flex-wrap gap-3 border-b border-[var(--border-subtle)] p-4">
         <Input
           className="max-w-xs"
-          placeholder="Pretraži..."
+          placeholder={t('admin.usersAdmin.search')}
           value={search}
           onChange={(e) => {
             setSearch(e.target.value);
@@ -118,7 +120,7 @@ export function ContactAdminPage({ embedded = false }: Props) {
                 variant="ghost"
                 size="icon"
                 onClick={(e) => void onDelete(r, e)}
-                aria-label="Obriši"
+                aria-label={t('actions.delete')}
               >
                 <Trash2 className="h-4 w-4 text-danger" />
               </Button>
@@ -152,12 +154,12 @@ export function ContactAdminPage({ embedded = false }: Props) {
 
   return (
     <>
-      <Seo title="Kontakt" />
+      <Seo title={t('admin.contact')} />
       {dialog}
       <AdminPageShell
         isError={isError}
         onRetry={() => void refetch()}
-        title="Kontakt poruke"
+        title={t('admin.contactPage.title')}
         isLoading={isLoading}
         actions={markAllAction}
       >

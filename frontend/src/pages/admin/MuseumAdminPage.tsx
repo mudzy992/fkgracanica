@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Pencil, Plus, Trash2 } from 'lucide-react';
 import { useMuseum } from '../../hooks';
 import { useDeleteMuseumItem } from '../../hooks/use-heritage-admin';
@@ -17,6 +18,7 @@ interface Props {
 }
 
 export function MuseumAdminPage({ embedded = false }: Props) {
+  const { t } = useTranslation();
   const { data, isLoading, isError, refetch } = useMuseum();
   const remove = useDeleteMuseumItem();
   const { confirm, dialog } = useConfirm();
@@ -77,7 +79,7 @@ export function MuseumAdminPage({ embedded = false }: Props) {
                     setOpen(true);
                   }}
 
-                  aria-label="Uredi"
+                  aria-label={t('actions.edit')}
                 >
                   <Pencil className="h-4 w-4" />
                 </Button>
@@ -85,7 +87,7 @@ export function MuseumAdminPage({ embedded = false }: Props) {
                   variant="ghost"
                   size="icon"
                   onClick={() => void onDelete(r)}
-                  aria-label="Obriši"
+                  aria-label={t('actions.delete')}
                 >
                   <Trash2 className="h-4 w-4 text-danger" />
                 </Button>
@@ -120,12 +122,12 @@ export function MuseumAdminPage({ embedded = false }: Props) {
 
   return (
     <>
-      <Seo title="Muzej" />
+      <Seo title={t('admin.museum')} />
       {dialog}
       <AdminPageShell
         isError={isError}
         onRetry={() => void refetch()}
-        title="Muzej"
+        title={t('admin.museum')}
         isLoading={isLoading}
         actions={createAction}
       >

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Pencil, Plus, Trash2 } from 'lucide-react';
 import { useClubs } from '../../hooks';
 import { useDeleteClub } from '../../hooks/use-competition-admin';
@@ -15,6 +16,7 @@ import { ClubsAdminFormSheet } from './ClubsAdminFormSheet';
 import type { Club } from '../../types';
 
 export function ClubsAdminPage() {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const canManage = hasPermission(user?.permissions, 'clubs.manage');
   const { data, isLoading, isError, refetch } = useClubs();
@@ -35,12 +37,12 @@ export function ClubsAdminPage() {
 
   return (
     <>
-      <Seo title="Klubovi" />
+      <Seo title={t('admin.clubsList.title')} />
       {dialog}
       <AdminPageShell
         isError={isError}
         onRetry={() => void refetch()}
-        title="Klubovi"
+        title={t('admin.clubsList.title')}
         isLoading={isLoading}
         actions={
           canManage ? (
@@ -99,7 +101,7 @@ export function ClubsAdminPage() {
                         setOpen(true);
                       }}
 
-                      aria-label="Uredi"
+                      aria-label={t('actions.edit')}
                     >
                       <Pencil className="h-4 w-4" />
                     </Button>
@@ -107,7 +109,7 @@ export function ClubsAdminPage() {
                       variant="ghost"
                       size="icon"
                       onClick={() => void onDelete(r)}
-                      aria-label="Obriši"
+                      aria-label={t('actions.delete')}
                     >
                       <Trash2 className="h-4 w-4 text-danger" />
                     </Button>

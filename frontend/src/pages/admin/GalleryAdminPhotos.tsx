@@ -1,4 +1,5 @@
 import { ArrowDown, ArrowUp, Trash2 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { useRemoveGalleryPhoto, useReorderGalleryPhotos } from '../../hooks/use-content-admin';
 import { mediaUrl } from '../../lib/media';
 import { Button } from '../../components/ui/button';
@@ -10,6 +11,7 @@ interface Props {
 }
 
 export function GalleryAdminPhotos({ galleryId, photos }: Props) {
+  const { t } = useTranslation();
   const removePhoto = useRemoveGalleryPhoto();
   const reorder = useReorderGalleryPhotos();
 
@@ -22,7 +24,7 @@ export function GalleryAdminPhotos({ galleryId, photos }: Props) {
   };
 
   if (!photos.length) {
-    return <p className="text-sm text-text-muted">Još nema fotografija. Dodajte slike ili mapu.</p>;
+    return <p className="text-sm text-text-muted">{t('admin.galleryPhotos.empty')}</p>;
   }
 
   return (
@@ -46,7 +48,7 @@ export function GalleryAdminPhotos({ galleryId, photos }: Props) {
               size="icon"
               disabled={index === 0}
               onClick={() => move(index, -1)}
-              aria-label="Pomjeri gore"
+              aria-label={t('admin.common.moveUp')}
             >
               <ArrowUp className="h-4 w-4" />
             </Button>
@@ -56,7 +58,7 @@ export function GalleryAdminPhotos({ galleryId, photos }: Props) {
               disabled={index === photos.length - 1}
               onClick={() => move(index, 1)}
 
-              aria-label="Pomjeri dolje"
+              aria-label={t('admin.common.moveDown')}
             >
               <ArrowDown className="h-4 w-4" />
             </Button>
@@ -65,7 +67,7 @@ export function GalleryAdminPhotos({ galleryId, photos }: Props) {
               size="icon"
               onClick={() => void removePhoto.mutateAsync({ galleryId, photoId: p.id })}
 
-              aria-label="Obriši"
+              aria-label={t('actions.delete')}
             >
               <Trash2 className="h-4 w-4 text-danger" />
             </Button>

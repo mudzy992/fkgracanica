@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Pencil, Plus, Trash2 } from 'lucide-react';
 import { useHallOfFame } from '../../hooks';
 import { useDeleteHallOfFame } from '../../hooks/use-heritage-admin';
@@ -14,6 +15,7 @@ interface Props {
 }
 
 export function HallOfFameAdminPage({ embedded = false }: Props) {
+  const { t } = useTranslation();
   const { data, isLoading, isError, refetch } = useHallOfFame();
   const remove = useDeleteHallOfFame();
   const { confirm, dialog } = useConfirm();
@@ -70,7 +72,7 @@ export function HallOfFameAdminPage({ embedded = false }: Props) {
                     setOpen(true);
                   }}
 
-                  aria-label="Uredi"
+                  aria-label={t('actions.edit')}
                 >
                   <Pencil className="h-4 w-4" />
                 </Button>
@@ -78,7 +80,7 @@ export function HallOfFameAdminPage({ embedded = false }: Props) {
                   variant="ghost"
                   size="icon"
                   onClick={() => void onDelete(r)}
-                  aria-label="Obriši"
+                  aria-label={t('actions.delete')}
                 >
                   <Trash2 className="h-4 w-4 text-danger" />
                 </Button>

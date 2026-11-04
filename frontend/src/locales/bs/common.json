@@ -146,7 +146,8 @@
       "saving": "Spremanje…",
       "saveFailed": "Spremanje nije uspjelo. Pokušajte ponovo.",
       "moveUp": "Pomjeri gore",
-      "moveDown": "Pomjeri dolje"
+      "moveDown": "Pomjeri dolje",
+      "saveFailedShort": "Spremanje nije uspjelo."
     },
     "mediaPicker": {
       "pick": "Odabir medija",
@@ -371,7 +372,11 @@
       "start": "Početak",
       "end": "Istek",
       "created": "Kreirano",
-      "club": "Klub"
+      "club": "Klub",
+      "newMember": "Novi član",
+      "userEmail": "Email korisnika",
+      "emailPlaceholder": "korisnik@email.ba",
+      "accountRequired": "Korisnik mora imati registrirani račun."
     },
     "playerForm": {
       "edit": "Uredi igrača",
@@ -497,7 +502,8 @@
     "clubsList": {
       "type": "Tip",
       "opponent": "Protivnik",
-      "manage": "Upravljaj"
+      "manage": "Upravljaj",
+      "title": "Klubovi"
     },
     "usersAdmin": {
       "search": "Pretraži…"
@@ -524,6 +530,82 @@
       "round": "Kolo",
       "empty": "Dodajte prvo kolo.",
       "matches": "{{count}} utakm."
+    },
+    "matchReport": {
+      "title": "Izvještaj utakmice",
+      "notFound": "Utakmica nije pronađena.",
+      "approvedLocked": "Izvještaj je odobren i više se ne može uređivati."
+    },
+    "teamPanel": {
+      "played": "Odigrano",
+      "goals": "Golovi",
+      "winPercent": "Pobjede %",
+      "form": "Forma:",
+      "recent": "Zadnje utakmice"
+    },
+    "cmsMenu": {
+      "custom": "Prilagođena",
+      "active": "Aktivno",
+      "label": "Label",
+      "path": "/putanja",
+      "pageOptional": "CMS stranica (opcionalno)"
+    },
+    "auditPage": {
+      "metaTitle": "Audit",
+      "title": "Audit log",
+      "action": "Akcija",
+      "entity": "Entitet"
+    },
+    "commentatorPage": {
+      "title": "Komentator",
+      "panel": "Komentator panel",
+      "publicLive": "Javni live prikaz"
+    },
+    "contactPage": {
+      "title": "Kontakt poruke"
+    },
+    "galleryPhotos": {
+      "empty": "Još nema fotografija. Dodajte slike ili mapu."
+    },
+    "hofForm": {
+      "edit": "Uredi unos",
+      "create": "Novi unos",
+      "name": "Ime *",
+      "role": "Uloga *",
+      "years": "Godine (npr. 1998–2010)",
+      "bio": "Biografija"
+    },
+    "museumForm": {
+      "edit": "Uredi predmet",
+      "create": "Novi predmet",
+      "title": "Naslov *"
+    },
+    "timelineForm": {
+      "edit": "Uredi događaj",
+      "create": "Novi događaj",
+      "year": "Godina *",
+      "image": "Slika"
+    },
+    "userForm": {
+      "edit": "Uredi korisnika",
+      "create": "Novi korisnik",
+      "newPassword": "Nova lozinka (opcionalno)",
+      "password": "Lozinka",
+      "firstName": "Ime",
+      "lastName": "Prezime",
+      "active": "Aktivan",
+      "roles": "Uloge"
+    },
+    "providerHints": {
+      "stripeTitle": "Stripe test (demo)",
+      "stripeBody": "U Stripe Dashboardu uključite Test mode i unesite pk_test i sk_test ključeve. Test kartica:",
+      "stripeWebhook": "Webhook lokalno: stripe listen --forward-to localhost:3000/payments/webhooks/stripe",
+      "paypalTitle": "PayPal sandbox",
+      "paypalBody": "developer.paypal.com → App → Client ID i Secret. Mode: sandbox. Charge ide u EUR (isti broj kao KM na narudžbi). Webhook ID obavezan za server callback; povratak na portal radi i bez njega.",
+      "paypalWebhook": "Webhook: POST /payments/webhooks/paypal",
+      "monriTitle": "Monri test",
+      "monriBody": "Test IPG: ipgtest.monri.com/v2/form. Live: ipg.monri.com. Merchant key + authenticity token. Mode: test. Valuta BAM, iznos u feningima. Bridge: /placanje/monri.",
+      "monriWebhook": "Callback: POST /payments/webhooks/monri"
     }
   },
   "common": {

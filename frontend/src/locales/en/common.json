@@ -146,7 +146,8 @@
       "saving": "Saving…",
       "saveFailed": "Saving failed. Please try again.",
       "moveUp": "Move up",
-      "moveDown": "Move down"
+      "moveDown": "Move down",
+      "saveFailedShort": "Saving failed."
     },
     "mediaPicker": {
       "pick": "Select media",
@@ -371,7 +372,11 @@
       "start": "Start",
       "end": "Expiry",
       "created": "Created",
-      "club": "Club"
+      "club": "Club",
+      "newMember": "New member",
+      "userEmail": "User email",
+      "emailPlaceholder": "user@email.ba",
+      "accountRequired": "The user must have a registered account."
     },
     "playerForm": {
       "edit": "Edit player",
@@ -497,7 +502,8 @@
     "clubsList": {
       "type": "Type",
       "opponent": "Opponent",
-      "manage": "Manage"
+      "manage": "Manage",
+      "title": "Clubs"
     },
     "usersAdmin": {
       "search": "Search…"
@@ -524,6 +530,82 @@
       "round": "Round",
       "empty": "Add the first round.",
       "matches": "{{count}} matches"
+    },
+    "matchReport": {
+      "title": "Match report",
+      "notFound": "Match not found.",
+      "approvedLocked": "The report is approved and can no longer be edited."
+    },
+    "teamPanel": {
+      "played": "Played",
+      "goals": "Goals",
+      "winPercent": "Win %",
+      "form": "Form:",
+      "recent": "Recent matches"
+    },
+    "cmsMenu": {
+      "custom": "Custom",
+      "active": "Active",
+      "label": "Label",
+      "path": "/path",
+      "pageOptional": "CMS page (optional)"
+    },
+    "auditPage": {
+      "metaTitle": "Audit",
+      "title": "Audit log",
+      "action": "Action",
+      "entity": "Entity"
+    },
+    "commentatorPage": {
+      "title": "Commentator",
+      "panel": "Commentator panel",
+      "publicLive": "Public live view"
+    },
+    "contactPage": {
+      "title": "Contact messages"
+    },
+    "galleryPhotos": {
+      "empty": "No photos yet. Add images or a folder."
+    },
+    "hofForm": {
+      "edit": "Edit entry",
+      "create": "New entry",
+      "name": "Name *",
+      "role": "Role *",
+      "years": "Years (e.g. 1998–2010)",
+      "bio": "Biography"
+    },
+    "museumForm": {
+      "edit": "Edit item",
+      "create": "New item",
+      "title": "Title *"
+    },
+    "timelineForm": {
+      "edit": "Edit event",
+      "create": "New event",
+      "year": "Year *",
+      "image": "Image"
+    },
+    "userForm": {
+      "edit": "Edit user",
+      "create": "New user",
+      "newPassword": "New password (optional)",
+      "password": "Password",
+      "firstName": "First name",
+      "lastName": "Last name",
+      "active": "Active",
+      "roles": "Roles"
+    },
+    "providerHints": {
+      "stripeTitle": "Stripe test (demo)",
+      "stripeBody": "In the Stripe Dashboard enable Test mode and enter the pk_test and sk_test keys. Test card:",
+      "stripeWebhook": "Local webhook: stripe listen --forward-to localhost:3000/payments/webhooks/stripe",
+      "paypalTitle": "PayPal sandbox",
+      "paypalBody": "developer.paypal.com → App → Client ID and Secret. Mode: sandbox. The charge is in EUR (same number as KM on the order). Webhook ID is required for the server callback; returning to the portal works without it.",
+      "paypalWebhook": "Webhook: POST /payments/webhooks/paypal",
+      "monriTitle": "Monri test",
+      "monriBody": "Test IPG: ipgtest.monri.com/v2/form. Live: ipg.monri.com. Merchant key + authenticity token. Mode: test. Currency BAM, amount in fening. Bridge: /placanje/monri.",
+      "monriWebhook": "Callback: POST /payments/webhooks/monri"
     }
   },
   "common": {

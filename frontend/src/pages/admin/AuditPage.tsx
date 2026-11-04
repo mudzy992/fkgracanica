@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useAuditLog } from '../../hooks';
 import { auditActionLabel } from '../../lib/audit-action-labels';
 import { formatDateTime } from '../../lib/utils';
@@ -8,6 +9,7 @@ import { Button } from '../../components/ui/button';
 import { AdminDataTable, AdminPageShell } from '../../components/admin/AdminPageShell';
 
 export function AuditPage() {
+  const { t } = useTranslation();
   const [action, setAction] = useState('');
   const [entity, setEntity] = useState('');
   const [from, setFrom] = useState('');
@@ -24,26 +26,46 @@ export function AuditPage() {
 
   return (
     <>
-      <Seo title="Audit" />
+      <Seo title={t('admin.auditPage.metaTitle')} />
       <AdminPageShell
         isError={isError}
         onRetry={() => void refetch()}
-        title="Audit log"
+        title={t('admin.auditPage.title')}
         isLoading={isLoading}
       >
         <div className="grid gap-2 border-b border-[var(--border-subtle)] p-4 sm:grid-cols-2 lg:grid-cols-4">
-          <Input placeholder="Akcija" value={action} onChange={(e) => setAction(e.target.value)} />
-          <Input placeholder="Entitet" value={entity} onChange={(e) => setEntity(e.target.value)} />
+          <Input
+            placeholder={t('admin.auditPage.action')}
+            value={action}
+            onChange={(e) => setAction(e.target.value)}
+          />
+          <Input
+            placeholder={t('admin.auditPage.entity')}
+            value={entity}
+            onChange={(e) => setEntity(e.target.value)}
+          />
           <Input type="date" value={from} onChange={(e) => setFrom(e.target.value)} />
           <Input type="date" value={to} onChange={(e) => setTo(e.target.value)} />
         </div>
         <AdminDataTable
           rows={entries}
           columns={[
-            { key: 'action', header: 'Akcija', render: (r) => auditActionLabel(r.action) },
-            { key: 'actor', header: 'Korisnik', render: (r) => r.actor?.email ?? '—' },
-            { key: 'entity', header: 'Entitet', render: (r) => r.entity ?? '—' },
-            { key: 'date', header: 'Datum', render: (r) => formatDateTime(r.createdAt) },
+            {
+              key: 'action',
+              header: t('admin.auditPage.action'),
+              render: (r) => auditActionLabel(r.action),
+            },
+            {
+              key: 'actor',
+              header: t('admin.orderSheet.user'),
+              render: (r) => r.actor?.email ?? '—',
+            },
+            { key: 'entity', header: t('admin.auditPage.entity'), render: (r) => r.entity ?? '—' },
+            {
+              key: 'date',
+              header: t('admin.analyticsPanel.date'),
+              render: (r) => formatDateTime(r.createdAt),
+            },
           ]}
         />
         {data?.meta && data.meta.totalPages > 1 && (

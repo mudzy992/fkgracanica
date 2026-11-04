@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useCreateMembershipAdmin } from '../../hooks/use-membership';
 import { AdminFormSheet } from '../../components/admin/AdminFormSheet';
 import { Button } from '../../components/ui/button';
@@ -10,6 +11,7 @@ interface Props {
 }
 
 export function MembershipAdminFormSheet({ open, onOpenChange }: Props) {
+  const { t } = useTranslation();
   const create = useCreateMembershipAdmin();
   const [email, setEmail] = useState('');
   const [activate, setActivate] = useState(false);
@@ -44,18 +46,22 @@ export function MembershipAdminFormSheet({ open, onOpenChange }: Props) {
         if (!o) reset();
         onOpenChange(o);
       }}
-      title="Novi član"
+      title={t('admin.membershipForm.newMember')}
     >
       <div className="space-y-4">
         <div>
-          <label className="mb-1 block text-sm text-text-muted">Email korisnika</label>
+          <label className="mb-1 block text-sm text-text-muted">
+            {t('admin.membershipForm.userEmail')}
+          </label>
           <Input
             type="email"
-            placeholder="korisnik@email.ba"
+            placeholder={t('admin.membershipForm.emailPlaceholder')}
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
-          <p className="mt-1 text-xs text-text-muted">Korisnik mora imati registrirani račun.</p>
+          <p className="mt-1 text-xs text-text-muted">
+            {t('admin.membershipForm.accountRequired')}
+          </p>
         </div>
         <label className="flex cursor-pointer items-center gap-2 text-sm">
           <input

@@ -1,4 +1,5 @@
 import { Pencil, Plus, Trash2 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import {
   useDeleteGallery,
@@ -16,6 +17,7 @@ import { contentStatusLabel } from '../../lib/content-status-labels';
 import type { GalleryItem } from '../../types';
 
 export function GalleryAdminPage() {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const canManage = hasPermission(user?.permissions, 'gallery.manage');
   const canApprove = hasPermission(user?.permissions, 'gallery.approve');
@@ -36,12 +38,12 @@ export function GalleryAdminPage() {
 
   return (
     <>
-      <Seo title="Galerija" />
+      <Seo title={t('admin.gallery')} />
       {dialog}
       <AdminPageShell
         isError={isError}
         onRetry={() => void refetch()}
-        title="Galerija"
+        title={t('admin.gallery')}
         isLoading={isLoading}
         actions={
           canManage ? (
@@ -78,7 +80,7 @@ export function GalleryAdminPage() {
                 <div className="flex gap-1">
                   {canManage && (
                     <Link to={`/admin/gallery/${r.id}/edit`}>
-                      <Button variant="ghost" size="icon" aria-label="Uredi">
+                      <Button variant="ghost" size="icon" aria-label={t('actions.edit')}>
                         <Pencil className="h-4 w-4" />
                       </Button>
                     </Link>
@@ -97,7 +99,7 @@ export function GalleryAdminPage() {
                       variant="ghost"
                       size="icon"
                       onClick={() => void onDelete(r)}
-                      aria-label="Obriši"
+                      aria-label={t('actions.delete')}
                     >
                       <Trash2 className="h-4 w-4 text-danger" />
                     </Button>

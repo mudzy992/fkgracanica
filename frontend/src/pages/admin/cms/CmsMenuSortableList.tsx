@@ -7,6 +7,7 @@ import {
   useSensors,
   type DragEndEvent,
 } from '@dnd-kit/core';
+import { useTranslation } from 'react-i18next';
 import {
   SortableContext,
   sortableKeyboardCoordinates,
@@ -47,6 +48,7 @@ function SortableMenuRow({
   onPatch: (patch: Partial<MenuDraftItem>) => void;
   onRemove: () => void;
 }) {
+  const { t } = useTranslation();
   const blocked = blockedModuleForItem(item, moduleFlags);
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: item.id ?? `new-${index}`,
@@ -76,7 +78,7 @@ function SortableMenuRow({
             <Lock className="h-3 w-3" /> Sistemska
           </Badge>
         ) : (
-          <Badge variant="muted">Prilagođena</Badge>
+          <Badge variant="muted">{t('admin.cmsMenu.custom')}</Badge>
         )}
         {blocked && (
           <Badge variant="warning" className="gap-1">
@@ -84,7 +86,7 @@ function SortableMenuRow({
           </Badge>
         )}
         <label className="ml-auto flex items-center gap-2 text-xs">
-          <span>Aktivno</span>
+          <span>{t('admin.cmsMenu.active')}</span>
           <Switch checked={item.enabled} onCheckedChange={(v) => onPatch({ enabled: v })} />
         </label>
       </div>
@@ -106,8 +108,8 @@ function SortableMenuRow({
         </div>
       ) : (
         <div className="grid gap-2 md:grid-cols-2">
-          <Input value={item.label} onChange={(e) => onPatch({ label: e.target.value })} placeholder="Label" />
-          <Input value={item.path} onChange={(e) => onPatch({ path: e.target.value })} placeholder="/putanja" />
+          <Input value={item.label} onChange={(e) => onPatch({ label: e.target.value })} placeholder={t('admin.cmsMenu.label')} />
+          <Input value={item.path} onChange={(e) => onPatch({ path: e.target.value })} placeholder={t('admin.cmsMenu.path')} />
           <select
             className="rounded-lg border border-slate-200 bg-background px-2 py-2 text-sm md:col-span-2"
             value={item.pageId ?? ''}
@@ -120,7 +122,7 @@ function SortableMenuRow({
               });
             }}
           >
-            <option value="">CMS stranica (opcionalno)</option>
+            <option value="">{t('admin.cmsMenu.pageOptional')}</option>
             {pages.map((p) => (
               <option key={p.id} value={p.id}>
                 {p.title}

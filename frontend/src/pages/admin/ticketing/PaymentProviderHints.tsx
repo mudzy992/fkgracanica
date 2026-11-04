@@ -1,25 +1,21 @@
 import type { ReactNode } from 'react';
+import { useTranslation } from 'react-i18next';
 
 export function PaymentProviderHints() {
+  const { t } = useTranslation();
   return (
     <div className="space-y-3">
-      <Hint title="Stripe test (demo)">
-        U Stripe Dashboardu uključite Test mode i unesite pk_test i sk_test ključeve. Test kartica:{' '}
-        <strong>4242 4242 4242 4242</strong>.
-        <span className="mt-2 block text-xs">
-          Webhook lokalno: stripe listen --forward-to localhost:3000/payments/webhooks/stripe
-        </span>
+      <Hint title={t('admin.providerHints.stripeTitle')}>
+        {t('admin.providerHints.stripeBody')} <strong>4242 4242 4242 4242</strong>.
+        <span className="mt-2 block text-xs">{t('admin.providerHints.stripeWebhook')}</span>
       </Hint>
-      <Hint title="PayPal sandbox">
-        developer.paypal.com → App → Client ID i Secret. Mode: sandbox. Charge ide u EUR (isti broj
-        kao KM na narudžbi). Webhook ID obavezan za server callback; povratak na portal radi i bez
-        njega.
-        <span className="mt-2 block text-xs">Webhook: POST /payments/webhooks/paypal</span>
+      <Hint title={t('admin.providerHints.paypalTitle')}>
+        {t('admin.providerHints.paypalBody')}
+        <span className="mt-2 block text-xs">{t('admin.providerHints.paypalWebhook')}</span>
       </Hint>
-      <Hint title="Monri test">
-        Test IPG: ipgtest.monri.com/v2/form. Live: ipg.monri.com. Merchant key + authenticity token.
-        Mode: test. Valuta BAM, iznos u feningima. Bridge: /placanje/monri.
-        <span className="mt-2 block text-xs">Callback: POST /payments/webhooks/monri</span>
+      <Hint title={t('admin.providerHints.monriTitle')}>
+        {t('admin.providerHints.monriBody')}
+        <span className="mt-2 block text-xs">{t('admin.providerHints.monriWebhook')}</span>
       </Hint>
     </div>
   );

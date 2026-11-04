@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useCreateTimelineEvent, useUpdateTimelineEvent } from '../../hooks/use-heritage-admin';
 import { AdminFormSheet } from '../../components/admin/AdminFormSheet';
 import { MediaPicker } from '../../components/admin/MediaPicker';
@@ -13,6 +14,7 @@ interface Props {
 }
 
 export function TimelineAdminFormSheet({ open, onOpenChange, edit }: Props) {
+  const { t } = useTranslation();
   const create = useCreateTimelineEvent();
   const update = useUpdateTimelineEvent();
   const [year, setYear] = useState('');
@@ -50,21 +52,41 @@ export function TimelineAdminFormSheet({ open, onOpenChange, edit }: Props) {
   };
 
   return (
-    <AdminFormSheet open={open} onOpenChange={onOpenChange} title={edit ? 'Uredi događaj' : 'Novi događaj'}>
+    <AdminFormSheet
+      open={open}
+      onOpenChange={onOpenChange}
+      title={edit ? t('admin.timelineForm.edit') : t('admin.timelineForm.create')}
+    >
       <div className="space-y-4">
-        <Input type="number" value={year} onChange={(e) => setYear(e.target.value)} placeholder="Godina *" />
-        <Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Naslov *" />
+        <Input
+          type="number"
+          value={year}
+          onChange={(e) => setYear(e.target.value)}
+          placeholder={t('admin.timelineForm.year')}
+        />
+        <Input
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          placeholder={t('admin.cmsWidget.titleRequired')}
+        />
         <textarea
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           rows={4}
           className="w-full rounded-lg border border-slate-200 p-2 text-sm"
-          placeholder="Opis"
+          placeholder={t('admin.cmsWidget.description')}
         />
-        <MediaPicker value={imagePath} onChange={setImagePath} label="Slika" />
+        <MediaPicker
+          value={imagePath}
+          onChange={setImagePath}
+          label={t('admin.timelineForm.image')}
+        />
         {feedback && <p className="text-sm text-danger">{feedback}</p>}
-        <Button onClick={() => void save()} disabled={!year || !title || create.isPending || update.isPending}>
-          {edit ? 'Spremi' : 'Kreiraj'}
+        <Button
+          onClick={() => void save()}
+          disabled={!year || !title || create.isPending || update.isPending}
+        >
+          {edit ? t('actions.save') : t('actions.create')}
         </Button>
       </div>
     </AdminFormSheet>

@@ -1,4 +1,5 @@
 import { Navigate, useParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useMatch } from '../../hooks';
 import { useMatchRealtime } from '../../hooks/use-match-realtime';
 import { Seo } from '../../components/seo/Seo';
@@ -19,6 +20,7 @@ function DeskSkeleton() {
 }
 
 export function CommentatorPage() {
+  const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
   const { data, isLoading, isError, refetch } = useMatch(id ?? '');
   useMatchRealtime(id);
@@ -27,15 +29,15 @@ export function CommentatorPage() {
   if (isError) {
     return (
       <div className="flex flex-col items-center gap-4 py-12">
-        <p className="text-text-muted">Nije moguće učitati utakmicu.</p>
+        <p className="text-text-muted">{t('admin.home.matchesError')}</p>
         <Button variant="outline" onClick={() => void refetch()}>
-          Pokušaj ponovo
+          {t('actions.retry')}
         </Button>
       </div>
     );
   }
   if (!data) {
-    return <p className="p-8 text-center text-text-muted">Utakmica nije pronađena.</p>;
+    return <p className="p-8 text-center text-text-muted">{t('admin.matchReport.notFound')}</p>;
   }
   if (data.status === 'FINISHED') {
     return <Navigate to={`/admin/matches/${data.id}/report`} replace />;
@@ -43,12 +45,12 @@ export function CommentatorPage() {
 
   return (
     <div>
-      <Seo title="Komentator" />
+      <Seo title={t('admin.commentatorPage.title')} />
       <CommentatorDeskHeader
         match={data}
-        title="Komentator panel"
+        title={t('admin.commentatorPage.panel')}
         publicHref={`/live/${data.id}`}
-        publicLabel="Javni live prikaz"
+        publicLabel={t('admin.commentatorPage.publicLive')}
       />
       <Card>
         <CardContent className="space-y-4 p-6">

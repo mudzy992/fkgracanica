@@ -1,8 +1,14 @@
 import { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useCreateUser, useUpdateUser, useUserRoleOptions, type UserFormData } from '../../hooks/use-users-admin';
+import {
+  useCreateUser,
+  useUpdateUser,
+  useUserRoleOptions,
+  type UserFormData,
+} from '../../hooks/use-users-admin';
 import { getApiErrorMessage } from '../../lib/api-error';
 import { AdminFormSheet } from '../../components/admin/AdminFormSheet';
 import { Button } from '../../components/ui/button';
@@ -40,6 +46,7 @@ interface Props {
 }
 
 export function UserAdminFormSheet({ open, onOpenChange, user, canCreate, canUpdate }: Props) {
+  const { t } = useTranslation();
   const create = useCreateUser();
   const update = useUpdateUser();
   const { data: roles } = useUserRoleOptions();
@@ -102,20 +109,20 @@ export function UserAdminFormSheet({ open, onOpenChange, user, canCreate, canUpd
     <AdminFormSheet
       open={open}
       onOpenChange={onOpenChange}
-      title={isEdit ? 'Uredi korisnika' : 'Novi korisnik'}
+      title={isEdit ? t('admin.userForm.edit') : t('admin.userForm.create')}
     >
       <form onSubmit={(e) => void handleSubmit(onSubmit)(e)} className="space-y-4">
-        <Input placeholder="Email" {...register('email')} />
+        <Input placeholder={t('admin.membershipForm.email')} {...register('email')} />
         {errors.email && <p className="text-xs text-danger">{errors.email.message}</p>}
         <Input
           type="password"
-          placeholder={isEdit ? 'Nova lozinka (opcionalno)' : 'Lozinka'}
+          placeholder={isEdit ? t('admin.userForm.newPassword') : t('admin.userForm.password')}
           {...register('password')}
         />
         {errors.password && <p className="text-xs text-danger">{errors.password.message}</p>}
         <div className="grid grid-cols-2 gap-2">
-          <Input placeholder="Ime" {...register('firstName')} />
-          <Input placeholder="Prezime" {...register('lastName')} />
+          <Input placeholder={t('admin.userForm.firstName')} {...register('firstName')} />
+          <Input placeholder={t('admin.userForm.lastName')} {...register('lastName')} />
         </div>
         {isEdit && (
           <label className="flex items-center gap-2 text-sm">
@@ -123,11 +130,11 @@ export function UserAdminFormSheet({ open, onOpenChange, user, canCreate, canUpd
               checked={watch('isActive') ?? true}
               onCheckedChange={(v) => setValue('isActive', v)}
             />
-            Aktivan
+            {t('admin.userForm.active')}
           </label>
         )}
         <div>
-          <p className="mb-2 text-sm font-medium">Uloge</p>
+          <p className="mb-2 text-sm font-medium">{t('admin.userForm.roles')}</p>
           <div className="flex flex-wrap gap-2">
             {roleList.map((r) => (
               <button
@@ -135,7 +142,9 @@ export function UserAdminFormSheet({ open, onOpenChange, user, canCreate, canUpd
                 type="button"
                 onClick={() => toggleRole(r.id)}
                 className={`rounded-lg border px-2 py-1 text-xs ${
-                  roleIds.includes(r.id) ? 'border-primary bg-primary text-white' : 'border-slate-200'
+                  roleIds.includes(r.id)
+                    ? 'border-primary bg-primary text-white'
+                    : 'border-slate-200'
                 }`}
               >
                 {r.name}

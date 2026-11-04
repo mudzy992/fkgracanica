@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useCreateHallOfFame, useUpdateHallOfFame } from '../../hooks/use-heritage-admin';
 import { getApiErrorMessage } from '../../lib/api-error';
 import { AdminFormSheet } from '../../components/admin/AdminFormSheet';
@@ -14,6 +15,7 @@ interface Props {
 }
 
 export function HallOfFameAdminFormSheet({ open, onOpenChange, edit }: Props) {
+  const { t } = useTranslation();
   const create = useCreateHallOfFame();
   const update = useUpdateHallOfFame();
   const [name, setName] = useState('');
@@ -49,15 +51,40 @@ export function HallOfFameAdminFormSheet({ open, onOpenChange, edit }: Props) {
   };
 
   return (
-    <AdminFormSheet open={open} onOpenChange={onOpenChange} title={edit ? 'Uredi unos' : 'Novi unos'}>
+    <AdminFormSheet
+      open={open}
+      onOpenChange={onOpenChange}
+      title={edit ? t('admin.hofForm.edit') : t('admin.hofForm.create')}
+    >
       <div className="space-y-4">
-        <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Ime *" />
-        <Input value={role} onChange={(e) => setRole(e.target.value)} placeholder="Uloga *" />
-        <Input value={years} onChange={(e) => setYears(e.target.value)} placeholder="Godine (npr. 1998–2010)" />
-        <textarea value={bio} onChange={(e) => setBio(e.target.value)} rows={4} className="w-full rounded-lg border border-slate-200 p-2 text-sm" placeholder="Biografija" />
+        <Input
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          placeholder={t('admin.hofForm.name')}
+        />
+        <Input
+          value={role}
+          onChange={(e) => setRole(e.target.value)}
+          placeholder={t('admin.hofForm.role')}
+        />
+        <Input
+          value={years}
+          onChange={(e) => setYears(e.target.value)}
+          placeholder={t('admin.hofForm.years')}
+        />
+        <textarea
+          value={bio}
+          onChange={(e) => setBio(e.target.value)}
+          rows={4}
+          className="w-full rounded-lg border border-slate-200 p-2 text-sm"
+          placeholder={t('admin.hofForm.bio')}
+        />
         <MediaPicker value={imagePath} onChange={setImagePath} />
-        <Button onClick={() => void save()} disabled={!name || !role || create.isPending || update.isPending}>
-          {edit ? 'Spremi' : 'Kreiraj'}
+        <Button
+          onClick={() => void save()}
+          disabled={!name || !role || create.isPending || update.isPending}
+        >
+          {edit ? t('actions.save') : t('actions.create')}
         </Button>
         {(create.isError || update.isError) && (
           <p className="text-sm text-danger">
