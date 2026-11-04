@@ -1,6 +1,7 @@
 import path from 'node:path';
 import { defineConfig } from 'vitest/config';
 import react from '@vitejs/plugin-react';
+import coverageBaseline from './coverage-baseline.json' with { type: 'json' };
 
 /**
  * FE-02 — frontend test infra.
@@ -31,6 +32,18 @@ export default defineConfig({
     globals: false,
     setupFiles: ['./src/test/setup.ts'],
     include: ['src/**/*.{test,spec}.{ts,tsx,mjs}'],
+    coverage: {
+      provider: 'v8',
+      // Svi aplikacijski izvori, i oni koje nijedan test nije importovao.
+      include: ['src/**/*.{js,jsx,ts,tsx,mjs,cjs}'],
+      exclude: [
+        'src/**/*.d.ts', 'src/**/*.d.mts', 'src/**/*.d.cts',
+        'src/**/*.{test,spec}.{js,jsx,ts,tsx,mjs,cjs}', 'src/test/**',
+      ],
+      reporter: ['text-summary', 'json', 'json-summary', 'html'],
+      reportsDirectory: './coverage',
+      thresholds: coverageBaseline.thresholds,
+    },
     restoreMocks: true,
   },
 });

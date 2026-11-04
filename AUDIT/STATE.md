@@ -8,14 +8,32 @@
 |-------|------------|
 | **Aktivna grana** | `arena/290a6f13-fkgracanica` |
 | **Trenutna faza** | CI-01 ✔ INF-01 ✔ INF-02 ✔ BE-01…**BE-09 ✔** → FE-01 ✔ FE-02 ✔ FE-03 ✔ FE-03b ✔ → CI-04 ✔ → FE-04a ✔ FE-04b ✔ → FE-05 ✔ → **FE-04c ✅ ZAVRŠEN (baseline 496 → 0)** → **BE-09d ✅ ZAVRŠEN** → **FE-06 🔄 audit završen, P-FE06-1…9 odobreni, implementacija traje** ; mobile zamrznut dok se BE/FE ne zaokruže |
-| **Trenutni segment** | **FE-06 — OTVOREN:** audit Playwright/axe/bundle/coverage završen; **P-FE06-1…9 odobreni**; P-FE06-1/3/4/5/6 potvrđeni u CI-ju; P-FE06-10/11 potvrđeni u CI-ju; P-FE06-12 potvrđen u CI-ju; P-FE06-2 i stabilizacija mock testa potvrđeni; P-FE06-7 i stabilizacija full-stack reloada potvrđeni u CI-ju; P-FE06-8 lokalno implementiran, CI potvrda čeka; slijedi P-FE06-9. Prethodno BE-09d ✅, FE-04c ✅. Mobile odgođen do završetka BE/FE rada. |
-| **Zadnji commit** | `0a26716` — `docs(audit): evidentiraj zeleni CI za FE-06 budget [FE-06]` |
-| **Zadnji CI run** | ✅ **`41827148252`** (`0a26716`, svih 6 jobova) https://github.com/mudzy992/fkgracanica/actions/runs/41827148252 ; ✅ **`41826599244`** (`a75a0fd`, svih 6 jobova) https://github.com/mudzy992/fkgracanica/actions/runs/41826599244 ; ✅ **`41825652861`** (`3b7304a`, svih 6 jobova) https://github.com/mudzy992/fkgracanica/actions/runs/41825652861 ; ✅ **`41825053494`** (`68f68a3`, svih 6 jobova; dijagnostika povremenog pada traje) https://github.com/mudzy992/fkgracanica/actions/runs/41825053494 ; ❌ **`41824442277`** (`b81a25b`, budget gate ✅, full-stack smoke timeout ❌) https://github.com/mudzy992/fkgracanica/actions/runs/41824442277 ; ✅ **`41823260648`** (`3bb0dab`, svih 6 jobova) https://github.com/mudzy992/fkgracanica/actions/runs/41823260648 ; ✅ **`41822464236`** (`7d33d3b`, svih 6 jobova uključujući stvarni full-stack) https://github.com/mudzy992/fkgracanica/actions/runs/41822464236 ; ❌ **`41821836827`** (`897f253`: full-stack job ✅, mock job ❌; ostali ✅; kasnije stabilizovano) https://github.com/mudzy992/fkgracanica/actions/runs/41821836827 ; ✅ **`41820317341`** (P-FE06-12, svih 5 jobova) https://github.com/mudzy992/fkgracanica/actions/runs/41820317341 ; ✅ **`41817896650`** (P-FE06-10/11, svih 5 jobova) https://github.com/mudzy992/fkgracanica/actions/runs/41817896650 ; ✅ **`41816371035`** (docs potvrda, svih 5 jobova) https://github.com/mudzy992/fkgracanica/actions/runs/41816371035 ; ✅ **`41815794845`** (P-FE06-1/3, svih 5 jobova uključujući browser mock+axe) https://github.com/mudzy992/fkgracanica/actions/runs/41815794845 ; ✅ **`41814125171`** (P-FE06-6, sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41814125171 ; ✅ **`41813051627`** (P-FE06-5, sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41813051627 ; ✅ **`41811296453`** (P-FE06-4, sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41811296453 ; ✅ **`41809421999`** (FE-06 evidencija CI-ja, sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41809421999 ; ✅ **`41809144900`** (FE-06 audit, sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41809144900 ; ✅ **`41802269029`** (BE-09d run-ID dokumentacija; sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41802269029 ; ✅ **`41801892490`** (docs BE-09d zatvoren, sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41801892490 ; ✅ **`41801427757`** (BE-09d implementacija + migracije, sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41801427757 ; ✅ **`41798892782`** (BE-09d audit, sva 4 joba) ; ✅ **`41795506967`** (docs batch 7+8, sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41795506967 ; ✅ **`41795171365`** (FE-04c batch 8, sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41795171365 ; ✅ **`41794454711`** (batch 7) ; ✅ **`41792020666`** (docs run-ID) ; ✅ **`41791659204`** (FE-04c batch 5+6 + docs, sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41791659204 ; ✅ **`41791137350`** (batch 5) ; ✅ **`41788831131`**, **`41788531790`**, **`41787973999`**, **`41780305565`**, **`41780020284`**, **`41779492872`**, **`41736615770`** (batch 1–4) |
+| **Trenutni segment** | **FE-06 — OTVOREN:** audit Playwright/axe/bundle/coverage završen; **P-FE06-1…9 odobreni**; P-FE06-1/3/4/5/6 potvrđeni u CI-ju; P-FE06-10/11 potvrđeni u CI-ju; P-FE06-12 potvrđen u CI-ju; P-FE06-2 i stabilizacija mock testa potvrđeni; P-FE06-7 i stabilizacija full-stack reloada potvrđeni u CI-ju; P-FE06-8 potvrđen u CI-ju; P-FE06-9 lokalno implementiran, CI čeka; coverage ≥50% ostaje otvoren. Prethodno BE-09d ✅, FE-04c ✅. Mobile odgođen do završetka BE/FE rada. |
+| **Zadnji commit** | `80ea031` — `perf(frontend): odgodi teže admin rute [FE-06]` |
+| **Zadnji CI run** | ✅ **`41831371015`** (`80ea031`, svih 6 jobova) https://github.com/mudzy992/fkgracanica/actions/runs/41831371015 ; ✅ **`41827148252`** (`0a26716`, svih 6 jobova) https://github.com/mudzy992/fkgracanica/actions/runs/41827148252 ; ✅ **`41826599244`** (`a75a0fd`, svih 6 jobova) https://github.com/mudzy992/fkgracanica/actions/runs/41826599244 ; ✅ **`41825652861`** (`3b7304a`, svih 6 jobova) https://github.com/mudzy992/fkgracanica/actions/runs/41825652861 ; ✅ **`41825053494`** (`68f68a3`, svih 6 jobova; dijagnostika povremenog pada traje) https://github.com/mudzy992/fkgracanica/actions/runs/41825053494 ; ❌ **`41824442277`** (`b81a25b`, budget gate ✅, full-stack smoke timeout ❌) https://github.com/mudzy992/fkgracanica/actions/runs/41824442277 ; ✅ **`41823260648`** (`3bb0dab`, svih 6 jobova) https://github.com/mudzy992/fkgracanica/actions/runs/41823260648 ; ✅ **`41822464236`** (`7d33d3b`, svih 6 jobova uključujući stvarni full-stack) https://github.com/mudzy992/fkgracanica/actions/runs/41822464236 ; ❌ **`41821836827`** (`897f253`: full-stack job ✅, mock job ❌; ostali ✅; kasnije stabilizovano) https://github.com/mudzy992/fkgracanica/actions/runs/41821836827 ; ✅ **`41820317341`** (P-FE06-12, svih 5 jobova) https://github.com/mudzy992/fkgracanica/actions/runs/41820317341 ; ✅ **`41817896650`** (P-FE06-10/11, svih 5 jobova) https://github.com/mudzy992/fkgracanica/actions/runs/41817896650 ; ✅ **`41816371035`** (docs potvrda, svih 5 jobova) https://github.com/mudzy992/fkgracanica/actions/runs/41816371035 ; ✅ **`41815794845`** (P-FE06-1/3, svih 5 jobova uključujući browser mock+axe) https://github.com/mudzy992/fkgracanica/actions/runs/41815794845 ; ✅ **`41814125171`** (P-FE06-6, sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41814125171 ; ✅ **`41813051627`** (P-FE06-5, sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41813051627 ; ✅ **`41811296453`** (P-FE06-4, sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41811296453 ; ✅ **`41809421999`** (FE-06 evidencija CI-ja, sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41809421999 ; ✅ **`41809144900`** (FE-06 audit, sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41809144900 ; ✅ **`41802269029`** (BE-09d run-ID dokumentacija; sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41802269029 ; ✅ **`41801892490`** (docs BE-09d zatvoren, sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41801892490 ; ✅ **`41801427757`** (BE-09d implementacija + migracije, sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41801427757 ; ✅ **`41798892782`** (BE-09d audit, sva 4 joba) ; ✅ **`41795506967`** (docs batch 7+8, sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41795506967 ; ✅ **`41795171365`** (FE-04c batch 8, sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41795171365 ; ✅ **`41794454711`** (batch 7) ; ✅ **`41792020666`** (docs run-ID) ; ✅ **`41791659204`** (FE-04c batch 5+6 + docs, sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41791659204 ; ✅ **`41791137350`** (batch 5) ; ✅ **`41788831131`**, **`41788531790`**, **`41787973999`**, **`41780305565`**, **`41780020284`**, **`41779492872`**, **`41736615770`** (batch 1–4) |
 | **check:all** | `npm run check:all` → **9/9**: check-coverage, file-size, console-ban, token-check, secrets-ban, layer-deps, docs-links, docker-context, bundle-react; u CI-ju audit-gate + standards. |
 
 ## Šta je urađeno (hronološki)
 
-### Sesija FE-06 — 2026-11-04 (P-FE06-8 lokalno)
+### Sesija FE-06 — 2026-11-04 (P-FE06-9 lokalno)
+
+- Vitest/V8 provider pinovani na **5.1.0**, svi app `src` fajlovi uključeni,
+  testovi/deklaracije/testna infrastruktura izuzeti. Scope gate provjerava sve
+  izvore i odbija višak; početni pragovi su ispod mjerenja, ručni ratchet
+  diže samo naviše, a CI odbija sniženje u odnosu na prethodni push. CI
+  proizvodi sažetak i HTML/JSON artefakt (7 dana).
+- Tri mjerenja **112/112** testova: **631 izvora** (38 sa izvršenim statementom),
+  linije **4,74%**, statements **4,91%**, funkcije **4,10%**, grane **3,68%**;
+  minimumi 4,6% / 4,8% / 4,0% / 3,6%. Negativna 100% proba je očekivano pala;
+  CLI proba nižeg praga je pala; scope/ratchet testovi **4/4**. CI potvrda
+  čeka; ≥50% nije dostignuto.
+- Dopunjeni P8 direktni URL/reload testovi svih osam lazy modula, oba season
+  URL-a i new/edit varijante; mock browser **31/31**. Ostale eager rute nisu
+  pojedinačno E2E testirane.
+- **Matrica:** 753/1434 auditiranih (backend 422/422, frontend 299/689,
+  mobile 1/292, infra 4/4, scripts 27/27). Nije test coverage.
+
+### Sesija FE-06 — 2026-11-04 (P-FE06-8 potvrđen)
 
 - Osam težih admin modula sada je lazy uz prevedeni status, sačuvani layout,
   postojeće guardove i P12 blocker. Greška importa nudi ručni reload; service
@@ -26,7 +44,8 @@
   (raw/gzip, −27,28% / −26,27%), ukupni **2.053.023 / 608.767 B**
   (+4,17% gzip). Snižen samo početni baseline; ukupni limit +5% ostaje.
   Vitest **112/112**, mock browser **26/26**, budget **3/3**, lint 0 errors /
-  30 ranijih upozorenja i `check:all` **9/9**. CI potvrda čeka push.
+  30 ranijih upozorenja i `check:all` **9/9**. CI ✅ **`41831371015`**
+  (`80ea031`, svih 6 jobova), https://github.com/mudzy992/fkgracanica/actions/runs/41831371015.
   Detalji i ograničenja u FE-06 §12.
 - **Matrica:** 750/1431 auditiranih (backend 422/422, frontend 298/688,
   mobile 1/292, infra 4/4, scripts 25/25). Nije test coverage.
@@ -960,8 +979,9 @@ preporuci slažem se" → odobreni **P-B09c-1…10 + P-B09c-12**, uz P-B08-6, P-
 
 1. Potpuni modalni popravci **P-FE06-10/11** potvrđeni su u CI-ju.
    **P-FE06-12 / B-FE06-11** je odobren, implementiran i potvrđen u CI-ju.
-   P7 budget i stabilizacija full-stack smoke reloada potvrđeni u CI-ju; P8
-   lokalno urađen, CI čeka; zatim P9 coverage. Manji logični commitovi; nakon svakog pusha
+   P7 budget, stabilizacija full-stack smoke reloada i P8 route-level lazy
+   potvrđeni u CI-ju; P9 lokalno implementiran, čeka CI. Test coverage ≥50%
+   ostaje nedostignut i B-FE06-02 ostaje otvoren. Manji logični commitovi; nakon svakog pusha
    sačekati stvarni CI i evidentirati ID. FE-06 ostaje otvoren do provjere svih
    kriterija i High nalaza.
 2. Zatim nastaviti backend/frontend backlog **P-B08-6**, P-B06-1/2, P-B02-1/2/3,

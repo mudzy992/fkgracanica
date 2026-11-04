@@ -17,7 +17,7 @@
 |-----|----------|-------|
 | `audit-gate` | `node scripts/audit/check-coverage.mjs` | matrica pokrivenosti — svaki izvorni fajl mora imati red (pravilo 4) |
 | `standards` | `node scripts/standards/check-all.mjs` | file-size, console-ban, secrets-ban, layer-deps, docs-links (+ coverage) |
-| `build-test` | `npm ci` → `prisma generate` → `prisma validate` → backend `nest build` → jest unit → backend eslint → frontend `tsc -b && vite build` → bundle budget gate → **vitest** → oxlint | build + testovi slojeva (frontend testovi od FE-02) |
+| `build-test` | `npm ci` → `prisma generate` → `prisma validate` → backend `nest build` → jest unit → backend eslint → frontend `tsc -b && vite build` → bundle budget gate → **vitest + V8 coverage** → scope/gate → oxlint | build + testovi slojeva (frontend testovi od FE-02) |
 | `browser-fullstack` | zasebni Postgres + Redis, migracije i minimalni sintetički seed, backend health-wait, web build i Playwright smoke | P-FE06-2; stvarni backend, samo testni podaci; trace samo na padu |
 | `browser-mock` | Izolovani API mock i axe | P-FE06-1/3; nije full-stack |
 | `e2e` | `postgres:16` + `redis:7` servisi → `prisma migrate deploy` → `prisma:seed` (RBAC + settings + admin + demo) → `npm run test:e2e` | **BE-09c/P-B09c-4**: e2e suite (8 specova) se prije nije izvršavao nigdje; sada je pokriven u CI-ju |
@@ -40,8 +40,8 @@ npx eslint "{src,apps,libs,test}/**/*.ts"   # u backend/
 
 ## Budući koraci (ne blokiraju CI-01)
 
-- **CI-02** — coverage prag + health-wait u `e2e` jobu (servisi i seed su uvedeni u BE-09c).
-- **CI-03** — bundle budget + odvojeni frontend job (vitest korak već postoji u `build-test`).
+- **CI-02** — backend coverage prag i dodatni health-wait u `e2e` jobu (servisi i seed su uvedeni u BE-09c; frontend V8 coverage je P-FE06-9).
+- **CI-03** — odvojeni frontend job (frontend budget i Vitest/V8 koraci već su u `build-test`).
 - **CI-04** — mobile build + Maestro E2E (`needs: svi prethodni`).
 - `gitleaks` (binarka u CI-ju) i `npm audit --audit-level=high` — dodaju se kad prođu
   Q-09/INF-02 (trenutno secrets-ban pokriva F-001 klasu kao zero-dep provjera).
@@ -90,3 +90,40 @@ P-FE06-8: nakon prvog route-splitting batcha smanjen je **samo početni JS**
 baseline (raw/gzip). Ukupni baseline ostaje originalni; tolerancija i svih
 osam gate metrika nisu povećani. Per-file gzip zbir obično raste kada se bundle
 podijeli u više fajlova; taj rast je dio ukupnog budžeta, ne mrežno mjerenje.
+
+## Frontend test coverage (P-FE06-9)
+
+```sh
+npm ci
+npm run test:coverage -w frontend
+node --test scripts/standards/frontend-coverage.test.mjs
+node scripts/standards/frontend-coverage.mjs
+```
+
+Vitest i `@vitest/coverage-v8` su tačno usklađeni i pinovani. V8 uključuje
+sve `frontend/src/**/*.{js,jsx,ts,tsx,mjs,cjs}`, uključujući fajlove koje
+nijedan test nije učitao; isključeni su samo `*.test.*`, `*.spec.*`, `.d.ts`
+deklaracije i testna infrastruktura `src/test/**`. Izvještaj ne obuhvata
+`frontend/server`, `public/sw.js`, CSS, browser/Playwright pokrivenost, backend
+ni mobile. Posebna scope provjera upoređuje svaku datoteku s JSON izvještajem
+i pada ako nedostaje izvor ili ako su test/vendor fajlovi dodani u nazivnik.
+
+Tri identična lokalna mjerenja pokrivaju **631 izvor**, od čega 38 ima
+barem jedan izvršeni statement. Polazni udio linija **4,74% (377/7953)**,
+statements **4,91% (439/8926)**, funkcija **4,10% (139/3390)**, grana
+**3,68% (287/7784)**. CI pragovi su redom **4,6%, 4,8%, 4,0%, 3,6%** —
+to su početni minimumi ispod izmjerenog stanja, **ne** tvrdnja da je dostignut
+cilj ≥50% / poželjnih ≥70%. Pad bilo koje metrike ispod praga ruši CI.
+CI uspoređuje pragove i s verzijom prije pusha (ili roditeljem pri ručnom
+pokretanju), te odbija sniženje bilo koje od četiri metrike, i kad push sadrži
+više commitova. Pri prvom uvođenju baselina nema prethodnog praga za poređenje.
+
+U `frontend/coverage/` nastaju JSON i HTML izvještaji (gitignored). CI dodaje
+sažetak u `GITHUB_STEP_SUMMARY` i zadržava `frontend-coverage` artefakt sedam
+dana. Ovo je unit coverage, ne audit matrica niti dokaz ispravnosti UI tokova.
+Kada novi testovi povećaju pokrivenost, nakon kompletnog mjerenja pokrenuti
+`node scripts/standards/frontend-coverage.mjs --ratchet`, pregledati i commitati
+promijenjeni `frontend/coverage-baseline.json`. Komanda podiže pragove samo
+prema gore, u koracima 0,1 pp sa 0,1 pp rezerve pri novom podizanju; ne radi
+implicitno u CI. Sniženje ili promjena obuhvata zahtijeva posebnu evidenciju
+i odobrenje; trenutni CI ne dozvoljava sniženje. Cilj je planski povećavati stvarne testove, ne smanjivati nazivnik.
