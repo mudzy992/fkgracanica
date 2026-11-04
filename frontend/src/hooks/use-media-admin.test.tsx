@@ -25,7 +25,7 @@ describe('media: admin query, mutacije i upload', () => {
       ? { items: [{ id: 'f1' }] } : path === '/media/assets' ? { data: [{ id: 'a1' }], total: 1 } : { id: 'a1' } }));
     const view = renderHook(({ id }: { id: string | null }) => ({
       folders: useMediaFolders(), assets: useMediaAssets({ folderId: 'f1', page: 2, search: 'grb', limit: 5 }), asset: useMediaAsset(id),
-    }), { wrapper, initialProps: { id: null } });
+    }), { wrapper, initialProps: { id: null as string | null } });
     await waitFor(() => expect(view.result.current.folders.isSuccess && view.result.current.assets.isSuccess).toBe(true));
     expect(view.result.current.folders.data).toEqual([{ id: 'f1' }]);
     expect(api.get).toHaveBeenCalledWith('/media/assets', { params: { folderId: 'f1', page: 2, search: 'grb', limit: 5 } });

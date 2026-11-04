@@ -24,7 +24,7 @@ describe('takmičenja i postave: admin hookovi', () => {
     const { qc, wrapper } = setup();
     api.get.mockResolvedValue({ data: [{ clubId: 'club-1', points: 3 }] });
     const view = renderHook(({ season, round }: { season?: string; round: number | null }) => useStandings(season, round), {
-      wrapper, initialProps: { season: undefined, round: null },
+      wrapper, initialProps: { season: undefined as string | undefined, round: null as number | null },
     });
     expect(api.get).not.toHaveBeenCalled();
     view.rerender({ season: 'season-1', round: 0 });
@@ -57,7 +57,7 @@ describe('takmičenja i postave: admin hookovi', () => {
     await act(async () => { expect(await result.current.mutateAsync(vars as never)).toEqual({ id: 'response' }); });
     if (method === 'delete') expect(api.delete).toHaveBeenCalledWith(path);
     else expect(api[method as keyof typeof api]).toHaveBeenCalledWith(path, body);
-    expect(invalidate.mock.calls.map(([arg]) => arg.queryKey)).toEqual(keys);
+    expect(invalidate.mock.calls.map(([arg]) => arg?.queryKey)).toEqual(keys);
   });
 
   it('prazna i popunjena postava čuvaju slotove i nulte koordinate; 409 ne invalidira cache', async () => {

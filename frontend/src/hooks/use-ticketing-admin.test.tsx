@@ -27,7 +27,7 @@ describe('ticketing admin: izolovani hookovi bez stvarnih plaćanja', () => {
     const view = renderHook(({ orderId }: { orderId?: string }) => ({
       config: useTicketingAdminConfig(), orders: useTicketingAdminOrders(),
       passes: useSeasonPassAdminList(), detail: useTicketingOrderDetail(orderId),
-    }), { wrapper, initialProps: { orderId: undefined } });
+    }), { wrapper, initialProps: { orderId: undefined as string | undefined } });
     await waitFor(() => expect(view.result.current.config.isSuccess && view.result.current.orders.isSuccess && view.result.current.passes.isSuccess).toBe(true));
     expect(view.result.current.orders.data).toEqual([{ id: 'o1' }]);
     expect(view.result.current.passes.data).toEqual([{ id: 'pass-1' }]);
@@ -54,7 +54,7 @@ describe('ticketing admin: izolovani hookovi bez stvarnih plaćanja', () => {
     await act(async () => { expect(await result.current.mutateAsync(vars as never)).toEqual({ id: 'result', status: 'CONFIRMED' }); });
     if (body === undefined) expect(request).toHaveBeenCalledWith(path);
     else expect(request).toHaveBeenCalledWith(path, body);
-    expect(invalidate.mock.calls.map(([arg]) => arg.queryKey)).toEqual(keys);
+    expect(invalidate.mock.calls.map(([arg]) => arg?.queryKey)).toEqual(keys);
     invalidate.mockClear();
     await act(async () => { await expect(result.current.mutateAsync(vars as never)).rejects.toThrow('403'); });
     expect(invalidate).not.toHaveBeenCalled();

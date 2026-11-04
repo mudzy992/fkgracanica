@@ -24,7 +24,7 @@ describe('novosti: admin query i mutacije', () => {
     api.get.mockImplementation(async (path: string) => ({ data: path === '/news-categories'
       ? { data: { items: [{ id: 'c1', name: 'Klub' }] } } : { id: 'n1', title: 'Naslov' } }));
     const view = renderHook(({ id }: { id?: string }) => ({ categories: useNewsCategories(), news: useNewsById(id) }), {
-      wrapper, initialProps: { id: undefined },
+      wrapper, initialProps: { id: undefined as string | undefined },
     });
     await waitFor(() => expect(view.result.current.categories.isSuccess).toBe(true));
     expect(view.result.current.categories.data).toEqual([{ id: 'c1', name: 'Klub' }]);
@@ -51,7 +51,7 @@ describe('novosti: admin query i mutacije', () => {
     await act(async () => { expect(await result.current.mutateAsync(vars as never)).toEqual({ id: 'result' }); });
     if (body === undefined) expect(request).toHaveBeenCalledWith(path);
     else expect(request).toHaveBeenCalledWith(path, body);
-    expect(invalidate.mock.calls.map(([arg]) => arg.queryKey)).toEqual(keys);
+    expect(invalidate.mock.calls.map(([arg]) => arg?.queryKey)).toEqual(keys);
     invalidate.mockClear();
     await act(async () => { await expect(result.current.mutateAsync(vars as never)).rejects.toThrow('403'); });
     expect(invalidate).not.toHaveBeenCalled();
