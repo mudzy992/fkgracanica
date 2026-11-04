@@ -301,12 +301,13 @@ jobs:
           from pathlib import Path
           from urllib.parse import urlsplit
           from zipfile import ZipFile
-          import json, os, re
+          import json, os
           lines = []
           root = Path(os.environ['RUNNER_TEMP'], 'old-fullstack')
           for path in root.rglob('error-context.md'):
-              for line in path.read_text(errors='replace').splitlines():
-                  if re.search(r'heading|alert|Page URL', line, re.I): lines.append('DOM ' + line[:180])
+              text = path.read_text(errors='replace')
+              snapshot = text.partition('# Page snapshot')[2].partition('# Test source')[0].strip()
+              lines.append('DOM ' + snapshot[:700])
           for path in root.rglob('trace.zip'):
               with ZipFile(path) as trace:
                   for name in trace.namelist():
@@ -315,14 +316,15 @@ jobs:
                               event = json.loads(raw).get('snapshot', {})
                               req, res = event.get('request', {}), event.get('response', {})
                               url = urlsplit(req.get('url', ''))
-                              if url.path.startswith('/api/v1/auth/'):
-                                  lines.append(f"AUTH {req.get('method')} {url.path} status={res.get('status')}")
+                              if url.path.startswith('/api/v1/') or url.path in ('/admin', '/prijava') or url.path.endswith('.js'):
+                                  lines.append(f"NET {req.get('method')} {url.path} status={res.get('status')} t={event.get('_monotonicTime')}")
                       elif name == 'test.trace':
                           for raw in trace.read(name).decode().splitlines():
                               event = json.loads(raw)
-                              if event.get('type') == 'before' and ('reload' in event.get('apiName', '') or 'waitForResponse' in event.get('apiName', '')):
-                                  lines.append('STEP ' + event.get('apiName', '') + ' time=' + str(event.get('startTime')))
-          text = ' | '.join(lines)[:2800].replace('%', '%25').replace('\r', '%0D').replace('\n', '%0A')
+                              title = event.get('title', '')
+                              if event.get('type') == 'before' and (title in ('Reload', 'Navigate') or title.startswith('Wait for event')):
+                                  lines.append('STEP ' + title + ' time=' + str(event.get('startTime')))
+          text = ' | '.join(lines)[:3800].replace('%', '%25').replace('\r', '%0D').replace('\n', '%0A')
           print('::notice title=Prethodni full-stack pad::' + (text or 'Nema dijagnostičkih događaja'))
           PYEOF
       - uses: actions/setup-node@v4
