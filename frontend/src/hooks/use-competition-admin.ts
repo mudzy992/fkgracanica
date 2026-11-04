@@ -134,7 +134,7 @@ export function useSetMatchLineup() {
       slots,
     }: {
       matchId: string;
-      slots: { playerId: string; clubId: string; positionX: number; positionY: number; isStarter?: boolean }[];
+      slots: { playerId: string; clubId: string; positionX?: number; positionY?: number; isStarter?: boolean }[];
     }) => (await api.put(`/matches/${matchId}/lineup`, { slots })).data,
     onSuccess: (_data, { matchId }) => {
       void qc.invalidateQueries({ queryKey: ['matches'] });

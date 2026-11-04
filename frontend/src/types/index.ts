@@ -193,6 +193,8 @@ export interface Match {
   homeClub?: Club;
   awayClub?: Club;
   events?: MatchEvent[];
+  /** True nakon prvog spremanja, uključujući namjerno praznu postavu. */
+  lineupConfigured?: boolean;
   lineups?: MatchLineup[];
   lineup?: MatchLineup[];
   liveComments?: LiveComment[];
@@ -227,7 +229,7 @@ export interface MatchLineup {
   positionX?: number | null;
   positionY?: number | null;
   isStarter: boolean;
-  player?: Player;
+  player?: Player | null;
 }
 
 export interface LiveComment {
