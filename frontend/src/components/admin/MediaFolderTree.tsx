@@ -34,6 +34,7 @@ function FolderNode({
   onRename?: (id: string, name: string) => void;
   onDelete?: (id: string, name: string) => void;
 }) {
+  const { t } = useTranslation();
   const [editing, setEditing] = useState(false);
   const [name, setName] = useState(folder.name);
 
@@ -57,7 +58,7 @@ function FolderNode({
             onClick={() => onSelect(folder.id)}
             className={cn(
               'flex flex-1 items-center justify-between rounded-lg px-3 py-2 text-left text-sm',
-              selectedId === folder.id ? 'bg-primary/10 text-primary' : 'hover:bg-surface',
+              selectedId === folder.id ? 'bg-primary/10 text-primary-light' : 'hover:bg-surface',
             )}
           >
             <span>{folder.name}</span>
@@ -67,7 +68,7 @@ function FolderNode({
         {!editing && (onRename || onDelete) ? (
           <div className="flex gap-1">
             {onRename ? (
-              <Button type="button" size="sm" variant="ghost" onClick={() => setEditing(true)}>
+              <Button type="button" size="sm" variant="ghost" aria-label={`${t('actions.edit')}: ${folder.name}`} onClick={() => setEditing(true)}>
                 ✎
               </Button>
             ) : null}
@@ -76,6 +77,7 @@ function FolderNode({
                 type="button"
                 size="sm"
                 variant="ghost"
+                aria-label={`${t('actions.delete')}: ${folder.name}`}
                 onClick={() => onDelete(folder.id, folder.name)}
               >
                 ×
@@ -121,10 +123,10 @@ export function MediaFolderTree({
         onClick={() => onSelect(undefined)}
         className={cn(
           'w-full rounded-lg px-3 py-2 text-left text-sm',
-          !selectedId ? 'bg-primary/10 text-primary' : 'hover:bg-surface',
+          !selectedId ? 'bg-primary/10 text-primary-light' : 'hover:bg-surface',
         )}
       >
-        Svi mediji
+        {t('admin.mediaFolders.all')}
       </button>
       {roots.map((folder) => (
         <FolderNode
@@ -145,7 +147,7 @@ export function MediaFolderTree({
             placeholder={t('admin.mediaPicker.newFolder')}
             className="text-sm"
           />
-          <Button size="sm" onClick={onCreate} disabled={!newName || isCreating}>
+          <Button size="sm" aria-label={`${t('actions.create')}: ${t('admin.mediaPicker.newFolder')}`} onClick={onCreate} disabled={!newName || isCreating}>
             +
           </Button>
         </div>

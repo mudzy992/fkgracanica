@@ -47,7 +47,7 @@ export function ConfirmDialog({
           {t('actions.cancel')}
         </Button>
         <Button
-          className={variant === 'danger' ? 'bg-danger hover:bg-danger/90' : ''}
+          className={variant === 'danger' ? 'bg-danger text-background hover:bg-danger hover:ring-2 hover:ring-danger' : ''}
           onClick={handleConfirm}
           disabled={isPending || confirmDisabled}
         >

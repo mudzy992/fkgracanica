@@ -22,7 +22,7 @@ export default defineConfig({
           enabled: true,
           include: [
             'react', 'react-dom', 'react-dom/client', 'react/jsx-runtime',
-            '@testing-library/react', 'react-router-dom', 'react-hook-form', 'react-i18next',
+            '@testing-library/react', 'react-router-dom', 'react-hook-form', 'react-i18next', 'lucide-react',
           ],
         },
       },

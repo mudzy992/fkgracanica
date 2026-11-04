@@ -794,7 +794,8 @@
       "moveTo": "Premjesti u mapu…"
     },
     "mediaFolders": {
-      "title": "Mape medija"
+      "title": "Mape medija",
+      "all": "Svi mediji"
     },
     "mediaToolbar": {
       "searchPlaceholder": "Pretraga po nazivu, tagu ili putanji…",

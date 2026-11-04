@@ -794,7 +794,8 @@
       "moveTo": "Move to folder…"
     },
     "mediaFolders": {
-      "title": "Media folders"
+      "title": "Media folders",
+      "all": "All media"
     },
     "mediaToolbar": {
       "searchPlaceholder": "Search by name, tag or path…",

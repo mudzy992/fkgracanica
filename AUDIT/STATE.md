@@ -8,12 +8,31 @@
 |-------|------------|
 | **Aktivna grana** | `arena/290a6f13-fkgracanica` |
 | **Trenutna faza** | CI-01 ✔ INF-01 ✔ INF-02 ✔ BE-01…**BE-09 ✔** → FE-01 ✔ FE-02 ✔ FE-03 ✔ FE-03b ✔ → CI-04 ✔ → FE-04a ✔ FE-04b ✔ → FE-05 ✔ → **FE-04c ✅ ZAVRŠEN (baseline 496 → 0)** → **BE-09d ✅ ZAVRŠEN** → **FE-06 🔄 audit završen, P-FE06-1…9 odobreni, implementacija traje** ; mobile zamrznut dok se BE/FE ne zaokruže |
-| **Trenutni segment** | **FE-06 — OTVOREN:** audit Playwright/axe/bundle/coverage završen; **P-FE06-1…9 odobreni**; P-FE06-4 implementiran i lokalno testiran, CI za ovaj commit još nije potvrđen. Prethodno BE-09d ✅, FE-04c ✅. Mobile odgođen do završetka BE/FE rada. |
-| **Zadnji commit** | `fix(a11y): popravi labele kontrast i semantiku [FE-06]` (CI za ovaj commit provjeriti poslije pusha) |
-| **Zadnji CI run** | ✅ **`41809421999`** (FE-06 evidencija CI-ja, sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41809421999 ; ✅ **`41809144900`** (FE-06 audit, sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41809144900 ; ✅ **`41802269029`** (BE-09d run-ID dokumentacija; sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41802269029 ; ✅ **`41801892490`** (docs BE-09d zatvoren, sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41801892490 ; ✅ **`41801427757`** (BE-09d implementacija + migracije, sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41801427757 ; ✅ **`41798892782`** (BE-09d audit, sva 4 joba) ; ✅ **`41795506967`** (docs batch 7+8, sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41795506967 ; ✅ **`41795171365`** (FE-04c batch 8, sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41795171365 ; ✅ **`41794454711`** (batch 7) ; ✅ **`41792020666`** (docs run-ID) ; ✅ **`41791659204`** (FE-04c batch 5+6 + docs, sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41791659204 ; ✅ **`41791137350`** (batch 5) ; ✅ **`41788831131`**, **`41788531790`**, **`41787973999`**, **`41780305565`**, **`41780020284`**, **`41779492872`**, **`41736615770`** (batch 1–4) |
+| **Trenutni segment** | **FE-06 — OTVOREN:** audit Playwright/axe/bundle/coverage završen; **P-FE06-1…9 odobreni**; P-FE06-4 potvrđen u CI-ju `41811296453`, P-FE06-5 implementiran lokalno; novi P-FE06-10 čeka odobrenje. Prethodno BE-09d ✅, FE-04c ✅. Mobile odgođen do završetka BE/FE rada. |
+| **Zadnji commit** | `fix(a11y): pristupacan sheet i ugnijezdeni modal [FE-06]` (CI za ovaj commit treba potvrditi) |
+| **Zadnji CI run** | ✅ **`41811296453`** (P-FE06-4, sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41811296453 ; ✅ **`41809421999`** (FE-06 evidencija CI-ja, sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41809421999 ; ✅ **`41809144900`** (FE-06 audit, sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41809144900 ; ✅ **`41802269029`** (BE-09d run-ID dokumentacija; sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41802269029 ; ✅ **`41801892490`** (docs BE-09d zatvoren, sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41801892490 ; ✅ **`41801427757`** (BE-09d implementacija + migracije, sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41801427757 ; ✅ **`41798892782`** (BE-09d audit, sva 4 joba) ; ✅ **`41795506967`** (docs batch 7+8, sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41795506967 ; ✅ **`41795171365`** (FE-04c batch 8, sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41795171365 ; ✅ **`41794454711`** (batch 7) ; ✅ **`41792020666`** (docs run-ID) ; ✅ **`41791659204`** (FE-04c batch 5+6 + docs, sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41791659204 ; ✅ **`41791137350`** (batch 5) ; ✅ **`41788831131`**, **`41788531790`**, **`41787973999`**, **`41780305565`**, **`41780020284`**, **`41779492872`**, **`41736615770`** (batch 1–4) |
 | **check:all** | `npm run check:all` → **9/9**: check-coverage, file-size, console-ban, token-check, secrets-ban, layer-deps, docs-links, docker-context, bundle-react; u CI-ju audit-gate + standards. |
 
 ## Šta je urađeno (hronološki)
+
+### Sesija FE-06 — 2026-11-04 (implementacija, P-FE06-5)
+
+- **Sheet:** nativni `showModal` izoluje pozadinu; imenovan je preko naslova,
+  početni fokus, Tab/Shift+Tab, Escape, backdrop, povrat fokusa i ref-counted
+  scroll lock. Sačuvani javna/admin navigacija, notifikacije i izbor medijske
+  mape, uključujući ugniježđenu potvrdu brisanja i `preventClose` granicu.
+- Popravljeni kontrast potvrde/odabrane mape, naslijeđeni tekst u nativnom
+  dijalogu i dostupna imena akcija, BS/EN nazivi zatvaranja/mapa. Chromium mock
+  testovi potvrdili fokusnu izolaciju i korisničke tokove; axe u stanjima admin
+  menija, notifikacija, medijskih mapa i potvrde: 0 critical/serious.
+- **Novi B-FE06-09 / P-FE06-10:** samostalni stari `Dialog` izvan Sheeta i dalje
+  tvrdi modalnost bez izolacije/fokusa/Escape; potvrđeno browser probom. Njegovu
+  globalnu promjenu ne raditi bez posebnog odobrenja. Preporučen puni modalni fix,
+  alternativno uklanjanje `aria-modal` bez rješavanja upravljanja fokusom.
+- **Matrica:** 716/1399 auditiranih (backend 421/421, frontend 268/660,
+  mobile 1/292, infra 4/4, scripts 22/22); nije test coverage.
+- Frontend build ✅, Vitest **82/82** ✅, lint 0 errors, `check:all` 9/9 ✅.
+  CI za P-FE06-4 ✅ `41811296453`; CI za P-FE06-5 potvrditi nakon pusha.
 
 ### Sesija FE-06 — 2026-11-04 (implementacija, P-FE06-4)
 
@@ -34,8 +53,8 @@ P-FE06-1…9, uključujući vidljive a11y/fokus/SEO/lazy promjene. Mobile ostaje
   kao produkcijski build. Bez promjene verzija ili mobilne aplikacije.
 - **Matrica:** 710/1394 auditiranih (backend 421/421, frontend 262/655,
   mobile 1/292, infra 4/4, scripts 22/22); nije test coverage.
-- **CI:** zadnji već potvrđeni run `41809421999` za `ea1d0c4`; CI za P-FE06-4
-  treba stvarno sačekati nakon pusha.
+- **CI:** ✅ `41811296453` za `a21053b` (sva 4 joba); ✅ `41809421999`
+  za `ea1d0c4`. Još nema browser/axe gatea u CI-ju.
 
 ### Sesija FE-06 — 2026-11-04 (audit browser testova, a11y i bundlea)
 
@@ -810,11 +829,11 @@ preporuci slažem se" → odobreni **P-B09c-1…10 + P-B09c-12**, uz P-B08-6, P-
 
 ## Šta je sljedeće (tačan sljedeći korak)
 
-1. Nastaviti odobrene **P-FE06-1…9**: poslije P4 implementirati i testirati
-   P5 pristupačan Sheet i P6 HTTP noindex, zatim P1/2/3 browser/axe, P7 budget
+1. Nastaviti odobrene **P-FE06-1…9**: poslije P4/P5 implementirati i testirati
+   P6 HTTP noindex, zatim P1/2/3 browser/axe, P7 budget
    prije P8 lazy, pa P9 coverage. Manji logični commitovi; nakon svakog pusha
    sačekati stvarni CI i evidentirati ID. FE-06 ostaje otvoren do provjere svih
-   kriterija i High nalaza.
+   kriterija i High nalaza; zatražiti odluku za novi P-FE06-10 / B-FE06-09.
 2. Zatim nastaviti backend/frontend backlog **P-B08-6**, P-B06-1/2, P-B02-1/2/3,
    P-B03-1, B-07-10…13, **P-CI04-1** te shared `lib/`/`hooks/`; coverage
    povećavati prema ≥50% i dodatno proširiti browser tokove. Ne predstavljati
