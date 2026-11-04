@@ -182,4 +182,7 @@ test('nespremljena forma blokira lazy rutu prije učitavanja chunka', async ({ p
   expect(requested).toContain(target);
   expect(prompts).toHaveLength(2);
   expect(saved).toEqual([]);
+  await page.reload();
+  await expect(page.getByRole('heading', { name: 'Ulaznice' })).toBeVisible();
+  await expect(page.getByText('Nema narudžbi.')).toBeVisible();
 });

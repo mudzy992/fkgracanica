@@ -31,4 +31,6 @@ test('uski web: status učitavanja i meni ostaju dostupni', async ({ page }) => 
   await navigation;
   await expect(page.getByRole('heading', { name: 'Nova galerija' })).toBeVisible();
   await expect(page.getByRole('status')).toHaveCount(0);
+  await page.reload();
+  await expect(page.getByRole('heading', { name: 'Nova galerija' })).toBeVisible();
 });

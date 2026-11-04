@@ -141,6 +141,8 @@ test('urednik nakon direktnog ulaza i reloada radi i šalje izmijenjeni sadržaj
   await page.getByRole('button', { name: 'Kreiraj (nacrt)' }).click();
   await expect(page).toHaveURL(/\/admin\/news\/mock-news\/edit$/);
   await expect(page.getByRole('heading', { name: 'Uredi vijest' })).toBeVisible();
+  await page.reload();
+  await expect(page.getByRole('heading', { name: 'Uredi vijest' })).toBeVisible();
   expect(saved?.title).toBe('Probna vijest');
   expect(saved?.content).toContain('Ovo je probni sadržaj vijesti.');
   await expect(page.getByRole('alert')).toHaveCount(0);

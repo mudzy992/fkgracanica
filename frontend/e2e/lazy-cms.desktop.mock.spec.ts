@@ -7,12 +7,17 @@ test('CMS lista i builder rade preko dinamičkih ruta i čuvaju uređivanje teks
     sections: [{ id: 'section', pageId: 'fake-page', widgetType: 'rich-text', sortOrder: 0, enabled: true, config: { html: '<p>Početni tekst</p>' } }],
   };
   await page.route(/\/api\/v1\/cms\/pages(?:\?.*)?$/, (route) => route.fulfill({ json: [cmsPage] }));
+  await page.route('**/api/v1/cms/pages/fake-page', (route) => route.fulfill({ json: cmsPage }));
   await page.route('**/api/v1/cms/widgets', (route) => route.fulfill({ json: [] }));
   await mockLogin(page);
   await page.goto('/admin/cms');
   await expect(page.getByRole('heading', { name: 'CMS stranice' })).toBeVisible();
+  await page.reload();
+  await expect(page.getByRole('heading', { name: 'CMS stranice' })).toBeVisible();
   await page.getByRole('link', { name: 'Uredi layout' }).click();
   await expect(page).toHaveURL(/\/admin\/cms\/pages\/fake-page$/);
+  await expect(page.getByRole('heading', { name: 'Uredi: Probna stranica' })).toBeVisible();
+  await page.reload();
   await expect(page.getByRole('heading', { name: 'Uredi: Probna stranica' })).toBeVisible();
   await page.getByRole('button', { name: /Tekst blok/ }).click();
   const sheet = page.getByRole('dialog', { name: 'Uredi: Tekst blok' });
