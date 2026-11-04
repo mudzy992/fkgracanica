@@ -7,13 +7,46 @@
 | Polje | Vrijednost |
 |-------|------------|
 | **Aktivna grana** | `arena/290a6f13-fkgracanica` |
-| **Trenutna faza** | CI-01 ✔ INF-01 ✔ INF-02 ✔ BE-01…**BE-09 ✔** → FE-01 ✔ FE-02 ✔ FE-03 ✔ FE-03b ✔ → CI-04 ✔ → FE-04a ✔ FE-04b ✔ → FE-05 ✔ → **FE-04c ✅ ZAVRŠEN (baseline 496 → 0)** → **BE-09d ✅ ZAVRŠEN (P-B09c-11: legacy `Match.round` uklonjen)** ; MOB-01 odgođen dok se BE/FE ne zaokruže |
-| **Trenutni segment** | **BE-09d — ✅ ZAVRŠEN** (P-B09c-11: backfill + DROP `Match.round`, `round` u API-ju izveden iz `roundRel`) ; sljedeći kandidat: **FE-06** (E2E + axe + bundle budget) ; prethodno **FE-04c ✅ ZAVRŠEN** (batch 1–8: baseline 496 → **0** nalaza, 130 → **0** fajlova; ratchet guard ostaje aktivan) ; sljedeći kandidat **MOB-01** ; prije: **FE-05 ✅**, **FE-04b ✅**, **FE-04a ✅**, **CI-04 ✅**, **FE-03b ✅**, **FE-03 ✅**, **FE-02 ✅**, **FE-01 ✅**, **BE-09c ✅** |
-| **Zadnji commit** | `docs(audit): BE-09d zatvoren — P-B09d-1…6 implementirano [BE-09d]` |
-| **Zadnji CI run** | ✅ **`41801892490`** (docs BE-09d zatvoren, sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41801892490 ; ✅ **`41801427757`** (BE-09d implementacija + migracije, sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41801427757 ; ✅ **`41798892782`** (BE-09d audit, sva 4 joba) ; ✅ **`41795506967`** (docs batch 7+8, sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41795506967 ; ✅ **`41795171365`** (FE-04c batch 8, sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41795171365 ; ✅ **`41794454711`** (batch 7) ; ✅ **`41792020666`** (docs run-ID) ; ✅ **`41791659204`** (FE-04c batch 5+6 + docs, sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41791659204 ; ✅ **`41791137350`** (batch 5) ; ✅ **`41788831131`**, **`41788531790`**, **`41787973999`**, **`41780305565`**, **`41780020284`**, **`41779492872`**, **`41736615770`** (batch 1–4) |
-| **check:all** | `npm run check:all` → **7/7** (check-coverage, file-size, console-ban, **token-check**, secrets-ban, layer-deps, docs-links); u CI-ju jobovi `audit-gate` + `standards`; pre-push hook pokreće `check:all` |
+| **Trenutna faza** | CI-01 ✔ INF-01 ✔ INF-02 ✔ BE-01…**BE-09 ✔** → FE-01 ✔ FE-02 ✔ FE-03 ✔ FE-03b ✔ → CI-04 ✔ → FE-04a ✔ FE-04b ✔ → FE-05 ✔ → **FE-04c ✅ ZAVRŠEN (baseline 496 → 0)** → **BE-09d ✅ ZAVRŠEN** → **FE-06 🔄 audit završen, čeka odobrenje predloga** ; mobile zamrznut dok se BE/FE ne zaokruže |
+| **Trenutni segment** | **FE-06 — OTVOREN:** audit Playwright/axe/bundle/coverage završen; predlozi **P-FE06-1…9 čekaju odobrenje**. Prethodno BE-09d ✅, FE-04c ✅. Mobile odgođen do završetka BE/FE rada. |
+| **Zadnji commit** | `docs(audit): FE-06 audit browser testova, a11y i bundlea [FE-06]` |
+| **Zadnji CI run** | ✅ **`41802269029`** (BE-09d run-ID dokumentacija; sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41802269029 ; ✅ **`41801892490`** (docs BE-09d zatvoren, sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41801892490 ; ✅ **`41801427757`** (BE-09d implementacija + migracije, sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41801427757 ; ✅ **`41798892782`** (BE-09d audit, sva 4 joba) ; ✅ **`41795506967`** (docs batch 7+8, sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41795506967 ; ✅ **`41795171365`** (FE-04c batch 8, sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41795171365 ; ✅ **`41794454711`** (batch 7) ; ✅ **`41792020666`** (docs run-ID) ; ✅ **`41791659204`** (FE-04c batch 5+6 + docs, sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41791659204 ; ✅ **`41791137350`** (batch 5) ; ✅ **`41788831131`**, **`41788531790`**, **`41787973999`**, **`41780305565`**, **`41780020284`**, **`41779492872`**, **`41736615770`** (batch 1–4) |
+| **check:all** | `npm run check:all` → **9/9**: check-coverage, file-size, console-ban, token-check, secrets-ban, layer-deps, docs-links, docker-context, bundle-react; u CI-ju audit-gate + standards. |
 
 ## Šta je urađeno (hronološki)
+
+### Sesija FE-06 — 2026-11-04 (audit browser testova, a11y i bundlea)
+
+Korisnik: „ako je redeploy prošao kako treba … možemo krenuti sa FE-06“.
+
+- **Audit završen, implementacija čeka odobrenje:** `AUDIT/segments/FE-06.md`;
+  P-FE06-1…9 uključuju izolovani Playwright/axe, pravi full-stack CI smoke,
+  popravljanje ozbiljnih a11y nalaza, pristupačan Sheet, HTTP noindex, budget,
+  postepeni lazy loading i V8 coverage baseline/ratchet.
+- **Browser proba:** Chromium 153 + axe u privremenom harnessu, mock API i CMS;
+  nema produkcijskog API-ja, podataka ni plaćanja. Prijava, admin, javne stranice
+  i mobilni web viewport; u više stanja axe nalazi `serious` (1,91:1 kontrast,
+  imena dugmadi i veličina cilja). Ručno: mobilni Sheet nema dialog/fokus/Escape;
+  kontakt labele nisu povezane s poljima. Test ne potvrđuje cijeli sajt.
+- **Test coverage:** 69/69 testova; privremeni V8 sa `src/**/*.{ts,tsx}`
+  (bez test/spec, `src/test/**`, `.d.ts`) = **1,76% linija (138/7837)**,
+  624 uključena fajla, 18 sa izvršenim statements. Nije isto što audit-matrica.
+- **Build:** entry JS **2.032.548 B**, gzip level 6 **582.522 B**; CSS
+  **166.708 B / 23.425 B** gzip. Bez dokaza da produkcijski proxy isporučuje gzip.
+- **B-FE06-06:** FE-03 `noindex` radi nakon JS-a, ali sirovi HTTP odgovor
+  `og-server.mjs` za `/prijava` i `/placanje/monri` nema noindex header/meta,
+  provjereno za browser i Googlebot UA. Ne tvrditi da je server-side dio dovršen;
+  `FE-03.md` dopunjen ovom razlikom.
+- **Matrica:** 33 pregledana reda ažurirana (15 ranije nepregledanih);
+  **705/1389** auditiranih fajlova: backend 421/421, frontend 257/650,
+  mobile 1/292 (historijski dodir iz BE-09d; dalje zamrznut), infra 4/4,
+  scripts 22/22. Ovo nisu procenti test coveragea.
+- **Deploy korekcija:** entrypoint radi `prisma migrate deploy` prije aplikacije;
+  nova uspješno pokrenuta verzija znači da su pending migracije prošle ili su
+  prethodno primijenjene. Produkciju nismo direktno provjerili. Već primijenjeni
+  DROP se ne ponavlja; `roundId` smije biti NULL, pa ranija preporuka o nuli nije
+  tačna; i `BE-09d.md` je ispravljen. Za potvrdu pregledati
+  `finished_at`/`rolled_back_at` u `_prisma_migrations`.
 
 ### Sesija BE-09d — 2026-11-04 (legacy `Match.round`, P-B09c-11)
 
@@ -27,7 +60,7 @@ live dakle redeploy. Mobile ne radimo dok maksimalno ne usavršimo backend i fro
 - **Nalazi:** B-09d-01 dva izvora istine (Medium), B-09d-02 lenj backfill → DROP bez backfilla
   gubi kolo (Medium), B-09d-03 `round` je u API-ju koji objavljena Android aplikacija koristi
   (Medium), B-09d-04 mrtvi fallbacki + spec (Low), B-09d-05 `DROP COLUMN` nepovratan i
-  automatski pri startu kontejnera (High), B-09d-06 zdravo (unique kola, idempotentan sync).
+  automatski pri prvom startu s pending migracijom (High; već primijenjeni DROP se ne ponavlja), B-09d-06 zdravo (unique kola, idempotentan sync).
 - **Odobreno 2026-11-04** (P-B09d-1,2,3,5,6 + DROP uz backup koji je korisnik uradio) → **implementirano**
   u commitu `2b3a7d7`: dvije migracije (`20261104120000_be09d_backfill_match_round` sa guard-om,
   `20261104120100_be09d_drop_match_round` sa DROP-om), `schema.prisma` bez `Match.round`,
@@ -216,7 +249,7 @@ Korisnik: „Odobravam sve preporuke u blokatorima kako si rekao."
   `iframe` samo YouTube/Vimeo, `rel="noopener noreferrer"`); `RichContent` sanitizuje
   prije `dangerouslySetInnerHTML` → pokrivene vijesti, CMS, muzej, trofeji, klupska historija.
   **7 novih XSS regresionih testova** (ukupno 47 testa / 12 fajlova).
-- **P-FE03-7 RIJEŠEN:** `Seo` `noindex` prop → `/prijava` i Monri payment bridge.
+- **P-FE03-7 klijentski implementiran:** `Seo` `noindex` prop → `/prijava` i Monri payment bridge. Naknadno FE-06/B-FE06-06: server-side noindex prije JS-a još nedostaje.
 - **Ispravljen style churn:** dodan `.prettierrc.json` (`singleQuote`, `printWidth 100`)
   i vraćena 39 fajla koja je `prettier` bez konfiguracije preformatirao u FE-02/FE-03.
 - **Napomena o okruženju:** tokom sesije se lokalni `.git` vratio na stariji commit
@@ -238,7 +271,7 @@ Korisnik: „Odobravam sve preporuke u blokatorima kako si rekao."
 - **B-FE03-05:** `loading="lazy" decoding="async"` na 31 sadržajnu sliku (hero ostaje eager).
 - **B-FE03-06:** `SearchPage` — `q` se sinhronizuje sa URL-om, validacija `page`, `Seo url`.
 - Otvoreno: **P-FE03-1** (XSS), **P-FE03-6** (i18n migracija 21 stranice → FE-03b),
-  **P-FE03-7** (`noindex` → FE-06).
+  **P-FE03-7** (`noindex` je naknadno klijentski implementiran; HTTP dopuna → FE-06/B-FE06-06).
 
 ### Sesija FE-02 — 2026-11-03 (frontend test infra)
 
@@ -755,30 +788,32 @@ preporuci slažem se" → odobreni **P-B09c-1…10 + P-B09c-12**, uz P-B08-6, P-
 
 ## Šta je sljedeće (tačan sljedeći korak)
 
-1. **BE-09c — čeka odobrenje korisnika** za P-B09c-1…10/12 (audit ✔, matrica ✔).
-   Nakon odobrenja: implementacija → testovi → zelen CI → zatvaranje **BE-09**
-   (matrica tada pokriva **sve** fajlove izvan `frontend/` i `mobile/`).
-   Backlog (ne blokira): **P-B08-6**, P-B06-1/2, P-B02-1/2/3, P-B03-1,
-   B-07-10…13.
-   ⚠️ Deploy: potreban `prisma migrate deploy` za `20261103120000_…`
-   (PaymentEvent + Payment.membershipId).
-2. Zatim BE-02…08 → FE → MOB → CI-02/03/04 → E2E-01 (INF-03 paralelno kad zatreba).
-3. Svaki segment: `AUDIT/segments/<ID>.md` + matrica + zelen CI + izvještaj (standard iz CI-01/INF-01/INF-02).
+1. Sačekati korisnikovo odobrenje ili izbor za **P-FE06-1…9**, posebno
+   vidljive a11y/fokus, SEO HTTP i route-lazy promjene. Implementirati odobreno
+   u manjim atomskim commitima, testirati, provjeriti CI nakon svakog pusha i
+   evidentirati verifikovane runove. Ne proglašavati FE-06 zatvorenim prije
+   odluke o High nalazima i provjere definisanih kriterija.
+2. Zatim nastaviti backend/frontend backlog **P-B08-6**, P-B06-1/2, P-B02-1/2/3,
+   P-B03-1, B-07-10…13, **P-CI04-1** te shared `lib/`/`hooks/`; coverage
+   povećavati prema ≥50% i dodatno proširiti browser tokove. Ne predstavljati
+   FE-06 početni browser suite kao cijeli E2E-01.
+3. **Mobile (MOB-01…04) odgođen** dok backend i frontend nisu maksimalno dorađeni.
+   Završni cross-klijentski E2E-01 tek nakon odobrenog mobile rada.
 
 ## Otvorena pitanja za korisnika (BLOKATORI)
 
 - **Q-01** root README: zadržati (ažuriran) ili penzionisati?
 - **Q-02** `.cursor/plans/**` penzionisati? (preporuka: DA; matrice/`rules` ostaju)
-- **Q-03** mobile smoke checkliste: žive? (preporuka: da, zadržati)
+- **Q-03** mobile smoke checkliste: žive? (odgođeno zajedno s mobile radom)
 - **Q-04** ✔ ODGOVORENO (D-004): **nije stvarna lozinka** → bez rotacije/rewrite; čišćenje `.env.example` **Sprovedeno u INF-02** ✔
 - **Q-05** ✔ ODGOVORENO (D-005): **Coolify; Traefik ne postoji** → `docker-compose1.yaml` penzionisan (INF-01)
 - **Q-06** ✔ ODGOVORENO (KAPIJA 2): CI-01 prvi; raniji pushovi bez CI-a evidentirani.
-- **Q-07** saglasnost produkcione baze sa jedinom `init_postgres` migracijom?
+- **Q-07** korisnik je potvrdio da su dotadašnje migracije primijenjene prije BE-09d; novi BE-09d redeploy/migracije nismo nezavisno provjerili na produkciji.
 - **Q-08** tačan runtime host u `DATABASE_URL` za verify-full (interno ime vs javni)?
 - **Q-09** ✔ ODGOVORENO (KAPIJA 2): alati iz §4 odobreni (instalacija ide u FE/MOB segmente).
 - **Q-10** ✔ ODGOVORENO u principu (KAPIJA 2); detalji (pristup/backup) potvrđuju se kad segment zatreba (INF/BE).
 - **Q-11** ✔ ODGOVORENO (D-006/„Odobravam preporuke"): **(a)** — throttler 100/60s + auth 10/60s + trust proxy
 - **Q-12** ✔ ODGOVORENO (D-006): **(a)** — audit javnih ruta u BE-01 (71), globalni APP_GUARD u **BE-02** s testovima
 - **Q-13** ✔ ODGOVORENO (D-006): **DA** — P2002→409, P2025→404, P2006→400 (implementirano + testovi)
-- **Q-14** (BE-07, traži odgovor): prodaje li se **obnova aktivnog članstva online**? (`PAYABLE_STATUSES` uključuje `ACTIVE`; odgovor bira P-B07-2 opciju A ili B)
-- **Q-15** (BE-07, traži odgovor): uvesti `Payment` red za članstvo (tačan prihod umjesto procjene) = **šema-dodatak** uz P-B07-2 (A)?
+- **Q-14** ✔ riješeno odabirom P-B07-2 (A): online obnova ostaje; vidi BE-07.
+- **Q-15** ✔ korisnik odobrio i implementirano: `Payment` red za članstvo; vidi D-007 / BE-07.

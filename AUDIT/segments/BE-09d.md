@@ -43,7 +43,7 @@ Napomena: `ROUND` u `scripts/qa-live-*.mjs|sh` je **broj kola kao parametar**, n
 | **B-09d-02** | **Medium (migracija)** | `syncLegacyRounds` je **lenj** (samo uz `GET /rounds?seasonId=`). Nijedan garantovani korak ne mapira sve redove `round != null, roundId == null` prije uklanjanja kolone → DROP bez backfilla bi **trajno izgubio** broj kola za te utakmice. |
 | **B-09d-03** | **Medium (kompatibilnost)** | `round` je danas u JSON-u svake utakmice. Objavljena Android aplikacija ga koristi kao fallback (`map-league-lists.ts:39`); starije verzije u produkciji ne mogu se ažurirati sinhrono sa backendom. Naglo uklanjanje polja iz API-ja mijenja ugovor za klijente na terenu. |
 | **B-09d-04** | Low (kod) | 5 fallback mjesta na frontendu/mobilnom (`?? match.round`) postaju mrtav kod nakon uklanjanja kolone; `round.util.spec.ts` testira ponašanje koje prestaje postojati. |
-| **B-09d-05** | **High (nepovratnost)** | `DROP COLUMN` je nepovratan. Migracija se izvršava **automatski pri startu kontejnera** (`CMD … npx prisma migrate deploy && node dist/src/main.js`), pa nema ručnog „prozorčeta" — potreban backup i guard u samoj migraciji. |
+| **B-09d-05** | **High (nepovratnost)** | `DROP COLUMN` je nepovratan. Pending migracija se izvršava automatski pri startu kontejnera (`npx prisma migrate deploy` prije aplikacije), pa nema ručnog „prozorčeta" — potreban backup i guard u samoj migraciji. Već primijenjeni DROP se ne izvršava ponovo. |
 | **B-09d-06** | Info ✓ | Zdravo: `Round` ima `@@unique([seasonCompetitionId, number])`; `syncLegacyRounds` je idempotentan (`upsert` + `updateMany`); `onDelete: SetNull` na `roundRel` je eksplicitan. |
 
 ## 4. Predlozi (čeka odobrenje)
@@ -82,9 +82,11 @@ istoj migraciji kao backfill) je brža ali nepovratna u istom deployu.
   **redeploy** koji će automatski pokrenuti `prisma migrate deploy` iz `CMD`-a.
 - **Obavezan backup** prije deploya sa `DROP COLUMN` (Coolify → PostgreSQL backup ili
   `pg_dump`). Migracija sama po sebi ne čuva podatke.
-- Migracije se izvršavaju pri **svakom** startu kontejnera (B-09c-13) → sa više replika
-  postoji rizik paralelnog `migrate deploy`; za ovaj segment dovoljno je da redeploy ide
-  sa **jednom** replikom.
+- `prisma migrate deploy` pokreće se pri **svakom** startu kontejnera, ali izvršava samo
+  pending migracije: već primijenjeni `DROP` se ne ponavlja. Sa više replika postoji rizik
+  paralelnog pozivanja migracija; za ovaj segment preporučen je redeploy sa **jednom** replikom.
+- **Korekcija 2026-11-04 (FE-06):** `Match.roundId` je nullable; broj svih utakmica bez
+  `roundId` ne mora biti 0. Guard je obuhvatao samo nenulti legacy `round` bez `roundId`.
 
 ## 7. Implementacija (odobreno 2026-11-04)
 
