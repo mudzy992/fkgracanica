@@ -13,6 +13,7 @@ on:
 
 permissions:
   contents: read
+  actions: read # privremeno: dijagnostika mock artefakta runa 41821836827
 
 concurrency:
   group: ci-${{ github.ref }}
@@ -143,6 +144,26 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Dijagnostika prethodnog mock pada
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh run download 41821836827 --name browser-mock-failure --dir "$RUNNER_TEMP/old-mock"
+          python3 - <<'PYEOF'
+          from pathlib import Path
+          from zipfile import ZipFile
+          import json, os, re
+          for path in Path(os.environ['RUNNER_TEMP'], 'old-mock').rglob('trace.zip'):
+              with ZipFile(path) as trace:
+                  for line in trace.read('test.trace').decode().splitlines():
+                      event = json.loads(line)
+                      if event.get('type') != 'error':
+                          continue
+                      text = path.parent.name + ' :: ' + event.get('message', '') + ' :: ' + str(event.get('stack', []))
+                      text = re.sub(r'\x1b\[[0-9;]*m', '', text).replace('%', '%25').replace('\r', '%0D').replace('\n', '%0A')
+                      print('::notice title=Prethodni mock pad::' + text[:3000])
+          PYEOF
       - uses: actions/setup-node@v4
         with:
           node-version: 22
@@ -155,7 +176,13 @@ jobs:
       - name: Build web sa relativnim testnim API putem
         run: npm run build:browser -w frontend
       - name: Izolovani mock browser i axe gate
-        run: npm run test:browser:mock -w frontend
+        run: |
+          if ! npm run test:browser:mock -w frontend > "$RUNNER_TEMP/browser-mock.log" 2>&1; then
+            cat "$RUNNER_TEMP/browser-mock.log"
+            node -e "const t=require('fs').readFileSync(process.env.RUNNER_TEMP+'/browser-mock.log','utf8').split('\n').slice(-55).join(' ').slice(-3200).replaceAll('%','%25').replaceAll('\r','%0D'); console.log('::error title=browser mock::'+t)"
+            exit 1
+          fi
+          cat "$RUNNER_TEMP/browser-mock.log"
       - name: Browser trace na padu (samo testni podaci)
         if: failure()
         uses: actions/upload-artifact@v4
