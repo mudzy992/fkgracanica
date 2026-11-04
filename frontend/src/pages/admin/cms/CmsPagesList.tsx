@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useCmsPages, useDeleteCmsPage } from '../../../hooks/use-cms-pages';
 import { useConfirm } from '../../../hooks/use-confirm';
 import { asArray } from '../../../lib/as-array';
@@ -18,6 +19,7 @@ function canDeletePage(page: CmsPage) {
 }
 
 export function CmsPagesList({ onCreate }: Props) {
+  const { t } = useTranslation();
   const { data, isLoading, isError, refetch } = useCmsPages(true);
   const pages = asArray<CmsPage>(data);
   const remove = useDeleteCmsPage();
@@ -39,13 +41,13 @@ export function CmsPagesList({ onCreate }: Props) {
       <AdminPageShell
         isError={isError}
         onRetry={() => void refetch()}
-        title="CMS stranice"
+        title={t('admin.cmsPages.title')}
         isLoading={isLoading}
-        actions={<Button onClick={onCreate}>Nova stranica</Button>}
+        actions={<Button onClick={onCreate}>{t('admin.cmsPages.new')}</Button>}
       >
         <AdminDataTable
           rows={pages}
-          empty="Nema stranica."
+          empty={t('admin.cmsPages.empty')}
           columns={[
             { key: 'title', header: 'Naslov', render: (r) => r.title },
             { key: 'slug', header: 'Slug', render: (r) => r.slug },
@@ -84,7 +86,7 @@ export function CmsPagesList({ onCreate }: Props) {
           ]}
         />
       </AdminPageShell>
-      <Seo title="CMS stranice" />
+      <Seo title={t('admin.cmsPages.title')} />
       {dialog}
     </>
   );

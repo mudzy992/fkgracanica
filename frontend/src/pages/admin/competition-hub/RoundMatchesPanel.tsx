@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { FileText, Pencil, Plus, Radio, Trash2 } from 'lucide-react';
 import { useMatches } from '../../../hooks';
@@ -25,6 +26,7 @@ interface Props {
 }
 
 export function RoundMatchesPanel({ seasonId, roundId, canManage }: Props) {
+  const { t } = useTranslation();
   const { data, isLoading } = useMatches(seasonId, roundId);
   const rows = useRoundMatchesSorted(data);
   const { user } = useAuth();
@@ -49,7 +51,7 @@ export function RoundMatchesPanel({ seasonId, roundId, canManage }: Props) {
     <>
       {dialog}
       <div className="flex items-center justify-between border-b border-slate-200 px-4 py-3">
-        <h3 className="text-sm font-semibold">Utakmice u kolu</h3>
+        <h3 className="text-sm font-semibold">{t('admin.roundMatches.title')}</h3>
         {canManage && (
           <Button
             size="sm"
@@ -138,7 +140,7 @@ export function RoundMatchesPanel({ seasonId, roundId, canManage }: Props) {
                                   setEdit(r);
                                   setOpen(true);
                                 }}
-                                aria-label="Uredi"
+                                aria-label={t('actions.edit')}
                               >
                                 <Pencil className="h-4 w-4" />
                               </Button>
@@ -151,7 +153,7 @@ export function RoundMatchesPanel({ seasonId, roundId, canManage }: Props) {
                                 variant="ghost"
                                 size="icon"
                                 onClick={() => void onDelete(r)}
-                                aria-label="Obriši"
+                                aria-label={t('actions.delete')}
                               >
                                 <Trash2 className="h-4 w-4 text-danger" />
                               </Button>

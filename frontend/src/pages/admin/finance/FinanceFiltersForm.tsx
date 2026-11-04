@@ -1,4 +1,5 @@
 import { Button } from '../../../components/ui/button';
+import { useTranslation } from 'react-i18next';
 import { Input } from '../../../components/ui/input';
 import type { FinanceFilters } from '../../../hooks/use-finance-summary';
 import { FinanceProviderChip } from './FinanceProviderChip';
@@ -15,6 +16,7 @@ export function FinanceFiltersForm({
   setDraft: (next: FinanceFilters) => void;
   onApply: () => void;
 }) {
+  const { t } = useTranslation();
   return (
     <form
       className="mb-6 space-y-4 rounded-xl border border-[var(--border-subtle)] bg-surface/40 p-4"
@@ -26,14 +28,22 @@ export function FinanceFiltersForm({
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <label className="block text-sm">
           <span className="mb-1 block text-text-muted">Od</span>
-          <Input type="date" value={draft.from} onChange={(e) => setDraft({ ...draft, from: e.target.value })} />
+          <Input
+            type="date"
+            value={draft.from}
+            onChange={(e) => setDraft({ ...draft, from: e.target.value })}
+          />
         </label>
         <label className="block text-sm">
           <span className="mb-1 block text-text-muted">Do</span>
-          <Input type="date" value={draft.to} onChange={(e) => setDraft({ ...draft, to: e.target.value })} />
+          <Input
+            type="date"
+            value={draft.to}
+            onChange={(e) => setDraft({ ...draft, to: e.target.value })}
+          />
         </label>
         <label className="block text-sm sm:col-span-2">
-          <span className="mb-1 block text-text-muted">Status uplate</span>
+          <span className="mb-1 block text-text-muted">{t('admin.financeFilters.status')}</span>
           <select
             className="h-10 w-full rounded-lg border border-[var(--border-subtle)] bg-background px-3 text-sm"
             value={draft.status}
@@ -48,7 +58,7 @@ export function FinanceFiltersForm({
         </label>
       </div>
       <div>
-        <p className="mb-2 text-sm text-text-muted">Način plaćanja</p>
+        <p className="mb-2 text-sm text-text-muted">{t('admin.financeFilters.method')}</p>
         <div className="flex flex-wrap gap-2">
           <button
             type="button"
@@ -72,11 +82,11 @@ export function FinanceFiltersForm({
           ))}
         </div>
         <p className="mt-2 text-xs text-text-muted">
-          Filter načina vrijedi za ulaznice. Članarine nemaju Payment red pa se prikazuju samo uz „Svi
-          načini”.
+          Filter načina vrijedi za ulaznice. Članarine nemaju Payment red pa se prikazuju samo uz
+          „Svi načini”.
         </p>
       </div>
-      <Button type="submit">Prikaži period</Button>
+      <Button type="submit">{t('admin.financeFilters.period')}</Button>
     </form>
   );
 }

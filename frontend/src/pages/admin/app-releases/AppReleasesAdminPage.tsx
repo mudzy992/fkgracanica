@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Seo } from '../../../components/seo/Seo';
 import { AdminDataTable, AdminPageShell } from '../../../components/admin/AdminPageShell';
@@ -17,6 +18,7 @@ type AppRelease = {
 };
 
 export function AppReleasesAdminPage() {
+  const { t } = useTranslation();
   const qc = useQueryClient();
   const list = useQuery({
     queryKey: ['app-releases'],
@@ -51,8 +53,8 @@ export function AppReleasesAdminPage() {
 
   return (
     <>
-      <Seo title="App release" />
-      <AdminPageShell title="Android app release" isLoading={list.isLoading}>
+      <Seo title={t('admin.releases.metaTitle')} />
+      <AdminPageShell title={t('admin.releases.title')} isLoading={list.isLoading}>
         <AppReleaseCreateForm
           uploading={uploading}
           creating={create.isPending}
@@ -64,15 +66,21 @@ export function AppReleasesAdminPage() {
         <AdminDataTable
           rows={list.data ?? []}
           columns={[
-            { key: 'version', header: 'Verzija', render: (r) => r.version },
-            { key: 'code', header: 'Code', render: (r) => String(r.versionCode) },
+            { key: 'version', header: t('admin.releases.colVersion'), render: (r) => r.version },
+            {
+              key: 'code',
+              header: t('admin.releases.colCode'),
+              render: (r) => String(r.versionCode),
+            },
             {
               key: 'status',
-              header: 'Status',
+              header: t('admin.membershipForm.status'),
               render: (r) => (
                 <span className="flex items-center gap-2">
                   <Badge variant={r.status === 'PUBLISHED' ? 'success' : 'muted'}>{r.status}</Badge>
-                  {r.forceUpdate ? <Badge variant="danger">Obavezno</Badge> : null}
+                  {r.forceUpdate ? (
+                    <Badge variant="danger">{t('admin.releases.required')}</Badge>
+                  ) : null}
                 </span>
               ),
             },
@@ -81,7 +89,11 @@ export function AppReleasesAdminPage() {
               header: '',
               render: (r) =>
                 r.status === 'DRAFT' ? (
-                  <Button size="sm" disabled={publish.isPending} onClick={() => void publish.mutateAsync(r.id)}>
+                  <Button
+                    size="sm"
+                    disabled={publish.isPending}
+                    onClick={() => void publish.mutateAsync(r.id)}
+                  >
                     Objavi
                   </Button>
                 ) : null,

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useAddMatchComment } from '../../../hooks/use-live-admin';
 import { useAddReportComment } from '../../../hooks/use-live-report';
 import type { LiveComment, Match } from '../../../types';
@@ -12,6 +13,7 @@ interface Props {
 }
 
 export function CommentatorCommentPanel({ match, reportMode, eventMinute = 0 }: Props) {
+  const { t } = useTranslation();
   const [message, setMessage] = useState('');
   const addLive = useAddMatchComment();
   const addReport = useAddReportComment();
@@ -21,7 +23,11 @@ export function CommentatorCommentPanel({ match, reportMode, eventMinute = 0 }: 
   const submit = () => {
     if (!message.trim()) return;
     if (reportMode) {
-      void addReport.mutateAsync({ matchId: match.id, message: message.trim(), minute: eventMinute });
+      void addReport.mutateAsync({
+        matchId: match.id,
+        message: message.trim(),
+        minute: eventMinute,
+      });
     } else {
       void addLive.mutateAsync({ matchId: match.id, message: message.trim() });
     }
@@ -30,7 +36,7 @@ export function CommentatorCommentPanel({ match, reportMode, eventMinute = 0 }: 
 
   return (
     <div className="space-y-3">
-      <h3 className="text-sm font-semibold">Komentari uživo</h3>
+      <h3 className="text-sm font-semibold">{t('admin.commentPanel.liveComments')}</h3>
       {canComment && (
         <div className="flex gap-2">
           <Input
@@ -39,7 +45,10 @@ export function CommentatorCommentPanel({ match, reportMode, eventMinute = 0 }: 
             placeholder="Komentar za publiku..."
             onKeyDown={(e) => e.key === 'Enter' && submit()}
           />
-          <Button onClick={submit} disabled={(addLive.isPending || addReport.isPending) || !message.trim()}>
+          <Button
+            onClick={submit}
+            disabled={addLive.isPending || addReport.isPending || !message.trim()}
+          >
             Pošalji
           </Button>
         </div>
@@ -47,11 +56,13 @@ export function CommentatorCommentPanel({ match, reportMode, eventMinute = 0 }: 
       <ul className="max-h-48 space-y-2 overflow-y-auto text-sm">
         {comments.map((c: LiveComment) => (
           <li key={c.id} className="rounded border border-slate-100 bg-surface p-2">
-            {c.minute != null && <span className="font-semibold text-primary">{c.minute}&apos; </span>}
+            {c.minute != null && (
+              <span className="font-semibold text-primary">{c.minute}&apos; </span>
+            )}
             {c.message}
           </li>
         ))}
-        {!comments.length && <li className="text-text-muted">Nema komentara.</li>}
+        {!comments.length && <li className="text-text-muted">{t('admin.commentPanel.empty')}</li>}
       </ul>
     </div>
   );

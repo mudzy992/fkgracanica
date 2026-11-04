@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useCreateRole } from '../../hooks/use-users-admin';
 import { getApiErrorMessage } from '../../lib/api-error';
 import { AdminFormSheet } from '../../components/admin/AdminFormSheet';
@@ -11,6 +12,7 @@ interface Props {
 }
 
 export function RolesAdminFormSheet({ open, onOpenChange }: Props) {
+  const { t } = useTranslation();
   const create = useCreateRole();
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
@@ -27,16 +29,24 @@ export function RolesAdminFormSheet({ open, onOpenChange }: Props) {
   };
 
   return (
-    <AdminFormSheet open={open} onOpenChange={onOpenChange} title="Nova uloga">
+    <AdminFormSheet open={open} onOpenChange={onOpenChange} title={t('admin.rolesForm.create')}>
       <div className="space-y-4">
-        <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Naziv *" />
-        <Input value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Opis" />
+        <Input
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          placeholder={t('admin.rolesForm.name')}
+        />
+        <Input
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          placeholder={t('admin.cmsWidget.description')}
+        />
         <Button onClick={() => void save()} disabled={!name || create.isPending}>
-          Kreiraj
+          {t('actions.create')}
         </Button>
         {create.isError && (
           <p className="text-sm text-danger">
-            {getApiErrorMessage(create.error, 'Kreiranje uloge nije uspjelo.')}
+            {getApiErrorMessage(create.error, t('admin.rolesForm.createError'))}
           </p>
         )}
       </div>

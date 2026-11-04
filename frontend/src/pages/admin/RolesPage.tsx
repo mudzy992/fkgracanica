@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { usePermissions, useRoles } from '../../hooks';
 import { useDeleteRole, useUpdateRolePermissions } from '../../hooks/use-users-admin';
 import { useAuth } from '../../lib/auth';
@@ -32,6 +33,7 @@ interface Permission {
 }
 
 export function RolesPage({ embedded = false }: Props) {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const canUpdate = hasPermission(user?.permissions, 'rbac.update');
   const { data: roles, isLoading, isError, refetch } = useRoles();
@@ -106,11 +108,11 @@ export function RolesPage({ embedded = false }: Props) {
               !canUpdate ? (
                 <span className="text-xs text-text-muted">—</span>
               ) : r.name === 'Administrator' ? (
-                <span className="text-xs text-text-muted">Sistemska</span>
+                <span className="text-xs text-text-muted">{t('admin.rolesPage.system')}</span>
               ) : (
                 <div className="flex gap-1">
                   <Button variant="outline" size="sm" onClick={() => openEdit(r)}>
-                    Uredi dozvole
+                    {t('admin.rolesPage.editPermissions')}
                   </Button>
                   {!isSystemRole(r.name) && (
                     <Button variant="ghost" size="sm" onClick={() => void onDelete(r)}>
@@ -170,12 +172,12 @@ export function RolesPage({ embedded = false }: Props) {
 
   return (
     <>
-      <Seo title="Uloge" />
+      <Seo title={t('admin.roles')} />
       {dialog}
       <AdminPageShell
         isError={isError}
         onRetry={() => void refetch()}
-        title="Uloge i dozvole"
+        title={t('admin.usersAndRoles')}
         isLoading={isLoading}
         actions={createAction}
       >

@@ -436,7 +436,12 @@
       "minVersionCode": "minSupportedVersionCode",
       "notes": "Release notes",
       "forceUpdate": "Force update",
-      "createError": "Release was not created."
+      "createError": "Release was not created.",
+      "metaTitle": "App release",
+      "title": "Android app release",
+      "colVersion": "Version",
+      "colCode": "Code",
+      "required": "Required"
     },
     "stadium": {
       "nameRequired": "Stadium name *",
@@ -648,6 +653,90 @@
       "status": "Online payment status",
       "membershipPrice": "Annual membership (KM)",
       "defaultProvider": "Default payment service"
+    },
+    "analyticsPage": {
+      "allSeasons": "All seasons"
+    },
+    "analyticsTabs": {
+      "team": "Team",
+      "h2h": "H2H",
+      "players": "Players",
+      "visitors": "Visitors"
+    },
+    "emailLog": {
+      "noErrors": "No email delivery errors",
+      "allDelivered": "All emails were delivered successfully."
+    },
+    "livePendingPage": {
+      "title": "Live reports awaiting approval",
+      "empty": "No matches pending.",
+      "match": "Match"
+    },
+    "membershipPage": {
+      "title": "Membership"
+    },
+    "rolesForm": {
+      "create": "New role",
+      "name": "Name *",
+      "createError": "Role creation failed."
+    },
+    "rolesPage": {
+      "system": "System",
+      "editPermissions": "Edit permissions"
+    },
+    "seasonEdition": {
+      "fromCatalog": "From catalog",
+      "newCompetition": "Or a new competition (name)",
+      "league": "League"
+    },
+    "sponsorForm": {
+      "edit": "Edit sponsor",
+      "create": "New sponsor",
+      "url": "URL (optional)",
+      "logo": "Logo"
+    },
+    "h2h": {
+      "clubA": "Club A",
+      "clubB": "Club B"
+    },
+    "cmsPages": {
+      "title": "CMS pages",
+      "new": "New page",
+      "create": "New CMS page",
+      "titleRequired": "Page title *",
+      "slugRequired": "Slug (e.g. about-us) *",
+      "empty": "No pages."
+    },
+    "commentPanel": {
+      "liveComments": "Live comments",
+      "empty": "No comments."
+    },
+    "matchFinished": {
+      "title": "Match (finished)",
+      "locked": "A finished match cannot be edited.",
+      "editReport": "Edit report"
+    },
+    "roundCascade": {
+      "title": "Delete round and everything linked?",
+      "irreversible": "This action cannot be undone.",
+      "ack": "I understand the data cannot be restored"
+    },
+    "roundMatches": {
+      "title": "Matches in the round"
+    },
+    "financeFilters": {
+      "status": "Payment status",
+      "method": "Payment method",
+      "period": "Show period"
+    },
+    "newsEditor": {
+      "title": "Title",
+      "excerpt": "Lead",
+      "content": "Content"
+    },
+    "ticketCategories": {
+      "name": "Name",
+      "price": "Price"
     }
   },
   "common": {

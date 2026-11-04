@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Dialog, DialogBody, DialogFooter, DialogHeader } from '../../../components/ui/dialog';
 import { Button } from '../../../components/ui/button';
 import { Input } from '../../../components/ui/input';
@@ -10,6 +11,7 @@ interface Props {
 }
 
 export function CmsPageCreateDialog({ open, onOpenChange }: Props) {
+  const { t } = useTranslation();
   const create = useCreateCmsPage();
   const [slug, setSlug] = useState('');
   const [title, setTitle] = useState('');
@@ -37,10 +39,18 @@ export function CmsPageCreateDialog({ open, onOpenChange }: Props) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange} className="max-w-md">
-      <DialogHeader onClose={() => onOpenChange(false)}>Nova CMS stranica</DialogHeader>
+      <DialogHeader onClose={() => onOpenChange(false)}>{t('admin.cmsPages.create')}</DialogHeader>
       <DialogBody className="space-y-3">
-        <Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Naslov stranice *" />
-        <Input value={slug} onChange={(e) => setSlug(e.target.value)} placeholder="Slug (npr. o-nama) *" />
+        <Input
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          placeholder={t('admin.cmsPages.titleRequired')}
+        />
+        <Input
+          value={slug}
+          onChange={(e) => setSlug(e.target.value)}
+          placeholder={t('admin.cmsPages.slugRequired')}
+        />
         {error && <p className="text-sm text-danger">{error}</p>}
       </DialogBody>
       <DialogFooter>

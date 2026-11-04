@@ -12,11 +12,11 @@ import { AnalyticsVisitorsPanel } from './analytics/AnalyticsVisitorsPanel';
 
 type Tab = 'team' | 'h2h' | 'player' | 'visitors';
 
-const TABS: { id: Tab; label: string }[] = [
-  { id: 'team', label: 'Tim' },
-  { id: 'h2h', label: 'H2H' },
-  { id: 'player', label: 'Igrači' },
-  { id: 'visitors', label: 'Posjetioci' },
+const TABS: { id: Tab; labelKey: string }[] = [
+  { id: 'team', labelKey: 'admin.analyticsTabs.team' },
+  { id: 'h2h', labelKey: 'admin.analyticsTabs.h2h' },
+  { id: 'player', labelKey: 'admin.analyticsTabs.players' },
+  { id: 'visitors', labelKey: 'admin.analyticsTabs.visitors' },
 ];
 
 export function AnalyticsPage() {
@@ -38,27 +38,29 @@ export function AnalyticsPage() {
             value={seasonId}
             onChange={(e) => setSeasonId(e.target.value)}
           >
-            <option value="">Sve sezone</option>
+            <option value="">{t('admin.analyticsPage.allSeasons')}</option>
             {seasons.map((s) => (
-              <option key={s.id} value={s.id}>{s.name}</option>
+              <option key={s.id} value={s.id}>
+                {s.name}
+              </option>
             ))}
           </select>
         )}
       </div>
 
       <div className="mb-5 flex gap-2 border-b border-[var(--border-subtle)]">
-        {TABS.map((t) => (
+        {TABS.map(({ id, labelKey }) => (
           <button
-            key={t.id}
-            onClick={() => setTab(t.id)}
+            key={id}
+            onClick={() => setTab(id)}
             className={[
               'pb-2 text-sm font-medium transition-colors',
-              tab === t.id
+              tab === id
                 ? 'border-b-2 border-primary text-text'
                 : 'text-text-muted hover:text-text',
             ].join(' ')}
           >
-            {t.label}
+            {t(labelKey)}
           </button>
         ))}
       </div>
@@ -70,9 +72,11 @@ export function AnalyticsPage() {
       ) : tab === 'visitors' ? (
         <AnalyticsVisitorsPanel />
       ) : isError ? (
-        <Button variant="outline" onClick={() => void refetch()}>Pokušaj ponovo</Button>
+        <Button variant="outline" onClick={() => void refetch()}>
+          {t('actions.retry')}
+        </Button>
       ) : isLoading || !data ? (
-        <p className="text-sm text-text-muted">Učitavanje...</p>
+        <p className="text-sm text-text-muted">{t('admin.common.loading')}</p>
       ) : (
         <AnalyticsTeamPanel data={data} />
       )}

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useClubs } from '../../../hooks';
 import { useH2H, type H2HAnalytics } from '../../../hooks/use-analytics';
 import { asArray } from '../../../lib/as-array';
@@ -14,10 +15,15 @@ function StatPill({ label, value }: { label: string; value: number }) {
 }
 
 function fmt(date: string) {
-  return new Date(date).toLocaleDateString('bs-BA', { day: '2-digit', month: '2-digit', year: 'numeric' });
+  return new Date(date).toLocaleDateString('bs-BA', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+  });
 }
 
 export function AnalyticsH2hPanel() {
+  const { t } = useTranslation();
   const { data: clubsRaw } = useClubs();
   const clubs = asArray<Club>(clubsRaw);
   const [a, setA] = useState('');
@@ -34,20 +40,28 @@ export function AnalyticsH2hPanel() {
           value={a}
           onChange={(e) => setA(e.target.value)}
         >
-          <option value="">Klub A</option>
-          {clubs.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+          <option value="">{t('admin.h2h.clubA')}</option>
+          {clubs.map((c) => (
+            <option key={c.id} value={c.id}>
+              {c.name}
+            </option>
+          ))}
         </select>
         <select
           className="h-10 rounded-lg border border-[var(--border-subtle)] bg-background px-3 text-sm"
           value={b}
           onChange={(e) => setB(e.target.value)}
         >
-          <option value="">Klub B</option>
-          {clubs.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+          <option value="">{t('admin.h2h.clubB')}</option>
+          {clubs.map((c) => (
+            <option key={c.id} value={c.id}>
+              {c.name}
+            </option>
+          ))}
         </select>
       </div>
 
-      {isFetching && <p className="text-sm text-text-muted">Učitavanje...</p>}
+      {isFetching && <p className="text-sm text-text-muted">{t('admin.common.loading')}</p>}
 
       {data && (
         <div className="space-y-4">
@@ -78,7 +92,9 @@ export function AnalyticsH2hPanel() {
               <li key={m.id} className="flex items-center justify-between px-4 py-2.5">
                 <span className="w-[38%] truncate text-right text-text-muted">{m.home}</span>
                 <div className="mx-3 flex min-w-[72px] flex-col items-center">
-                  <span className="font-bold tabular-nums">{m.homeScore}:{m.awayScore}</span>
+                  <span className="font-bold tabular-nums">
+                    {m.homeScore}:{m.awayScore}
+                  </span>
                   <span className="text-[10px] text-text-muted">{fmt(m.scheduledAt)}</span>
                 </div>
                 <span className="w-[38%] truncate text-left text-text-muted">{m.away}</span>

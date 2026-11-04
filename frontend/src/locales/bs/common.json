@@ -436,7 +436,12 @@
       "minVersionCode": "minSupportedVersionCode",
       "notes": "Napomene",
       "forceUpdate": "Obavezno ažuriranje",
-      "createError": "Release nije kreiran."
+      "createError": "Release nije kreiran.",
+      "metaTitle": "App release",
+      "title": "Android app release",
+      "colVersion": "Verzija",
+      "colCode": "Code",
+      "required": "Obavezno"
     },
     "stadium": {
       "nameRequired": "Naziv stadiona *",
@@ -648,6 +653,90 @@
       "status": "Status online plaćanja",
       "membershipPrice": "Godišnja članarina (KM)",
       "defaultProvider": "Zadani servis plaćanja"
+    },
+    "analyticsPage": {
+      "allSeasons": "Sve sezone"
+    },
+    "analyticsTabs": {
+      "team": "Tim",
+      "h2h": "H2H",
+      "players": "Igrači",
+      "visitors": "Posjetioci"
+    },
+    "emailLog": {
+      "noErrors": "Nema grešaka u slanju emailova",
+      "allDelivered": "Svi emailovi su uspješno isporučeni."
+    },
+    "livePendingPage": {
+      "title": "Live izvještaji na odobrenje",
+      "empty": "Nema utakmica na čekanju.",
+      "match": "Utakmica"
+    },
+    "membershipPage": {
+      "title": "Članstvo"
+    },
+    "rolesForm": {
+      "create": "Nova uloga",
+      "name": "Naziv *",
+      "createError": "Kreiranje uloge nije uspjelo."
+    },
+    "rolesPage": {
+      "system": "Sistemska",
+      "editPermissions": "Uredi dozvole"
+    },
+    "seasonEdition": {
+      "fromCatalog": "Iz kataloga",
+      "newCompetition": "Ili novo takmičenje (naziv)",
+      "league": "Ligaško"
+    },
+    "sponsorForm": {
+      "edit": "Uredi sponzora",
+      "create": "Novi sponzor",
+      "url": "URL (opcionalno)",
+      "logo": "Logo"
+    },
+    "h2h": {
+      "clubA": "Klub A",
+      "clubB": "Klub B"
+    },
+    "cmsPages": {
+      "title": "CMS stranice",
+      "new": "Nova stranica",
+      "create": "Nova CMS stranica",
+      "titleRequired": "Naslov stranice *",
+      "slugRequired": "Slug (npr. o-nama) *",
+      "empty": "Nema stranica."
+    },
+    "commentPanel": {
+      "liveComments": "Komentari uživo",
+      "empty": "Nema komentara."
+    },
+    "matchFinished": {
+      "title": "Utakmica (završena)",
+      "locked": "Završena utakmica se ne može uređivati.",
+      "editReport": "Uredi izvještaj"
+    },
+    "roundCascade": {
+      "title": "Obrisati kolo i sve povezano?",
+      "irreversible": "Ova radnja se ne može poništiti.",
+      "ack": "Razumijem da se podaci ne mogu vratiti"
+    },
+    "roundMatches": {
+      "title": "Utakmice u kolu"
+    },
+    "financeFilters": {
+      "status": "Status uplate",
+      "method": "Način plaćanja",
+      "period": "Prikaži period"
+    },
+    "newsEditor": {
+      "title": "Naslov",
+      "excerpt": "Uvod",
+      "content": "Sadržaj"
+    },
+    "ticketCategories": {
+      "name": "Naziv",
+      "price": "Cijena"
     }
   },
   "common": {
