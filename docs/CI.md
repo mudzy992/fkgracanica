@@ -108,12 +108,15 @@ deklaracije i testna infrastruktura `src/test/**`. Izvještaj ne obuhvata
 ni mobile. Posebna scope provjera upoređuje svaku datoteku s JSON izvještajem
 i pada ako nedostaje izvor ili ako su test/vendor fajlovi dodani u nazivnik.
 
-Tri identična lokalna mjerenja pokrivaju **631 izvor**, od čega 38 ima
+Tri početna identična lokalna mjerenja pokrivaju **631 izvor**, od čega 38 ima
 barem jedan izvršeni statement. Polazni udio linija **4,74% (377/7953)**,
 statements **4,91% (439/8926)**, funkcija **4,10% (139/3390)**, grana
-**3,68% (287/7784)**. CI pragovi su redom **4,6%, 4,8%, 4,0%, 3,6%** —
-to su početni minimumi ispod izmjerenog stanja, **ne** tvrdnja da je dostignut
-cilj ≥50% / poželjnih ≥70%. Pad bilo koje metrike ispod praga ruši CI.
+**3,68% (287/7784)**. Početni CI minimumi bili su redom **4,6%, 4,8%,
+4,0%, 3,6%**. Nakon prvog paketa dodatnih testova lokalno mjerenje je **7,28%**
+linija, **7,64%** statements, **6,16%** funkcija i **5,79%** grana, uz isti
+obuhvat od 631 izvora; ratchet je podignut na **7,1%, 7,5%, 6,0%, 5,6%**.
+To **nije** tvrdnja da je dostignut cilj ≥50% / poželjnih ≥70%. Pad bilo koje
+metrike ispod praga ruši CI.
 CI uspoređuje pragove i s verzijom prije pusha (ili roditeljem pri ručnom
 pokretanju), te odbija sniženje bilo koje od četiri metrike, i kad push sadrži
 više commitova. Pri prvom uvođenju baselina nema prethodnog praga za poređenje.
@@ -126,4 +129,5 @@ Kada novi testovi povećaju pokrivenost, nakon kompletnog mjerenja pokrenuti
 promijenjeni `frontend/coverage-baseline.json`. Komanda podiže pragove samo
 prema gore, u koracima 0,1 pp sa 0,1 pp rezerve pri novom podizanju; ne radi
 implicitno u CI. Sniženje ili promjena obuhvata zahtijeva posebnu evidenciju
-i odobrenje; trenutni CI ne dozvoljava sniženje. Cilj je planski povećavati stvarne testove, ne smanjivati nazivnik.
+i odobrenje; trenutni CI ne dozvoljava sniženje. Cilj je planski povećavati
+stvarne testove, ne smanjivati nazivnik.
