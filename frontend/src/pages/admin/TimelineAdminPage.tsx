@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { ArrowDown, ArrowUp, Pencil, Plus, Trash2 } from 'lucide-react';
 import { useClubTimeline } from '../../hooks';
 import { useDeleteTimelineEvent, useReorderTimelineEvents } from '../../hooks/use-heritage-admin';
@@ -12,6 +13,7 @@ import { TimelineAdminFormSheet } from './TimelineAdminFormSheet';
 import type { ClubTimelineEvent } from '../../types';
 
 export function TimelineAdminPage() {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const canManage = hasPermission(user?.permissions, 'club-timeline.manage');
   const { data, isLoading, isError, refetch } = useClubTimeline();
@@ -42,12 +44,12 @@ export function TimelineAdminPage() {
 
   return (
     <>
-      <Seo title="Vremenska linija" />
+      <Seo title={t('admin.timeline')} />
       {dialog}
       <AdminPageShell
         isError={isError}
         onRetry={() => void refetch()}
-        title="Vremenska linija kluba"
+        title={t('admin.timelinePage.title')}
         isLoading={isLoading}
         actions={
           canManage ? (
@@ -82,7 +84,7 @@ export function TimelineAdminPage() {
                       disabled={index === 0}
                       onClick={() => move(index, -1)}
 
-                      aria-label="Pomjeri gore"
+                      aria-label={t('admin.common.moveUp')}
                     >
                       <ArrowUp className="h-4 w-4" />
                     </Button>
@@ -92,7 +94,7 @@ export function TimelineAdminPage() {
                       disabled={index === rows.length - 1}
                       onClick={() => move(index, 1)}
 
-                      aria-label="Pomjeri dolje"
+                      aria-label={t('admin.common.moveDown')}
                     >
                       <ArrowDown className="h-4 w-4" />
                     </Button>
@@ -104,7 +106,7 @@ export function TimelineAdminPage() {
                         setOpen(true);
                       }}
 
-                      aria-label="Uredi"
+                      aria-label={t('actions.edit')}
                     >
                       <Pencil className="h-4 w-4" />
                     </Button>
@@ -112,7 +114,7 @@ export function TimelineAdminPage() {
                       variant="ghost"
                       size="icon"
                       onClick={() => void onDelete(r)}
-                      aria-label="Obriši"
+                      aria-label={t('actions.delete')}
                     >
                       <Trash2 className="h-4 w-4 text-danger" />
                     </Button>

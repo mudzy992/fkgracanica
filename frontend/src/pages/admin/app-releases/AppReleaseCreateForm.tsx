@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { getApiErrorMessage } from '../../../lib/api-error';
 import { Button } from '../../../components/ui/button';
 import { Input } from '../../../components/ui/input';
@@ -23,6 +24,7 @@ type Props = {
 };
 
 export function AppReleaseCreateForm({ uploading, creating, onUpload, onCreate }: Props) {
+  const { t } = useTranslation();
   const [file, setFile] = useState<File | null>(null);
   const [meta, setMeta] = useState<UploadMeta | null>(null);
   const [version, setVersion] = useState('');
@@ -61,13 +63,13 @@ export function AppReleaseCreateForm({ uploading, creating, onUpload, onCreate }
       setNotes('');
       setForceUpdate(false);
     } catch (err) {
-      setError(getApiErrorMessage(err, 'Release nije kreiran.'));
+      setError(getApiErrorMessage(err, t('admin.releases.createError')));
     }
   };
 
   return (
     <div className="space-y-3 rounded-xl border border-[var(--border-subtle)] p-4">
-      <h2 className="text-lg font-semibold">Novi Android release</h2>
+      <h2 className="text-lg font-semibold">{t('admin.releases.new')}</h2>
       {error && (
         <p role="alert" className="text-sm text-danger">
           {error}
@@ -80,7 +82,7 @@ export function AppReleaseCreateForm({ uploading, creating, onUpload, onCreate }
         disabled={!file || uploading}
         onClick={() => void handleUpload()}
       >
-        {uploading ? 'Upload…' : 'Upload APK'}
+        {uploading ? t('admin.releases.uploading') : t('admin.releases.uploadApk')}
       </Button>
       {meta ? (
         <p className="text-xs text-text-muted">
@@ -88,27 +90,31 @@ export function AppReleaseCreateForm({ uploading, creating, onUpload, onCreate }
         </p>
       ) : null}
       <Input
-        placeholder="Verzija (1.0.1)"
+        placeholder={t('admin.releases.version')}
         value={version}
         onChange={(e) => setVersion(e.target.value)}
       />
       <Input
-        placeholder="versionCode"
+        placeholder={t('admin.releases.versionCode')}
         type="number"
         value={versionCode}
         onChange={(e) => setVersionCode(e.target.value)}
       />
       <Input
-        placeholder="minSupportedVersionCode"
+        placeholder={t('admin.releases.minVersionCode')}
         type="number"
         value={minCode}
         onChange={(e) => setMinCode(e.target.value)}
       />
-      <Input placeholder="Napomene" value={notes} onChange={(e) => setNotes(e.target.value)} />
+      <Input
+        placeholder={t('admin.releases.notes')}
+        value={notes}
+        onChange={(e) => setNotes(e.target.value)}
+      />
       <div className="flex items-center gap-2">
         <Switch id="force" checked={forceUpdate} onCheckedChange={setForceUpdate} />
         <label htmlFor="force" className="text-sm">
-          Obavezno ažuriranje
+          {t('admin.releases.forceUpdate')}
         </label>
       </div>
       <Button

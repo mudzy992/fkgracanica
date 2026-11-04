@@ -1,23 +1,25 @@
 import { useVisitorGeo, useVisitorTrend, useVisitorTotals } from '../../../hooks/use-analytics';
+import { useTranslation } from 'react-i18next';
 import { AnalyticsGeoPanel } from './AnalyticsGeoPanel';
 import { AnalyticsVisitorsTrendChart } from './AnalyticsVisitorsTrendChart';
 
 export function AnalyticsVisitorsPanel() {
+  const { t } = useTranslation();
   const { data: totals, isLoading: totalsLoading } = useVisitorTotals(30);
   const { data: trend, isLoading: trendLoading } = useVisitorTrend(30);
   const { data: geo, isLoading: geoLoading } = useVisitorGeo(30);
 
   if (totalsLoading || trendLoading || geoLoading) {
-    return <p className="text-sm text-text-muted">Učitavanje posjetilaca…</p>;
+    return <p className="text-sm text-text-muted">{t('admin.analyticsPanel.loading')}</p>;
   }
 
   return (
     <div className="space-y-6">
       <div className="grid gap-4 sm:grid-cols-3">
         {[
-          { label: 'Web (30d)', value: totals?.web ?? 0 },
-          { label: 'Mobile (30d)', value: totals?.mobile ?? 0 },
-          { label: 'Ukupno (30d)', value: totals?.total ?? 0 },
+          { label: t('admin.analyticsPanel.web30'), value: totals?.web ?? 0 },
+          { label: t('admin.analyticsPanel.mobile30'), value: totals?.mobile ?? 0 },
+          { label: t('admin.analyticsPanel.total30'), value: totals?.total ?? 0 },
         ].map((item) => (
           <div
             key={item.label}
@@ -31,33 +33,43 @@ export function AnalyticsVisitorsPanel() {
 
       {trend && trend.length > 0 && (
         <div>
-          <h3 className="mb-3 text-sm font-semibold text-text-muted">Dnevni trend (30 dana)</h3>
+          <h3 className="mb-3 text-sm font-semibold text-text-muted">
+            {t('admin.analyticsPanel.dailyTrend')}
+          </h3>
           <AnalyticsVisitorsTrendChart trend={trend} />
         </div>
       )}
 
       {trend && trend.length > 0 && (
         <div>
-          <h3 className="mb-3 text-sm font-semibold text-text-muted">Tabela posjeta</h3>
+          <h3 className="mb-3 text-sm font-semibold text-text-muted">
+            {t('admin.analyticsPanel.table')}
+          </h3>
           <div className="overflow-x-auto rounded-xl border border-[var(--border-subtle)]">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-[var(--border-subtle)] text-left text-xs text-text-muted">
-                  <th className="px-4 py-2">Datum</th>
-                  <th className="px-4 py-2 text-right">Web</th>
-                  <th className="px-4 py-2 text-right">Mobile</th>
-                  <th className="px-4 py-2 text-right">Ukupno</th>
+                  <th className="px-4 py-2">{t('admin.analyticsPanel.date')}</th>
+                  <th className="px-4 py-2 text-right">{t('admin.visitors.web')}</th>
+                  <th className="px-4 py-2 text-right">{t('admin.visitors.mobile')}</th>
+                  <th className="px-4 py-2 text-right">{t('admin.visitors.total')}</th>
                 </tr>
               </thead>
               <tbody>
-                {trend.slice().reverse().map((row) => (
-                  <tr key={row.date} className="border-b border-[var(--border-subtle)] last:border-0">
-                    <td className="px-4 py-2 text-text-muted">{row.date}</td>
-                    <td className="px-4 py-2 text-right tabular-nums">{row.web}</td>
-                    <td className="px-4 py-2 text-right tabular-nums">{row.mobile}</td>
-                    <td className="px-4 py-2 text-right tabular-nums font-medium">{row.total}</td>
-                  </tr>
-                ))}
+                {trend
+                  .slice()
+                  .reverse()
+                  .map((row) => (
+                    <tr
+                      key={row.date}
+                      className="border-b border-[var(--border-subtle)] last:border-0"
+                    >
+                      <td className="px-4 py-2 text-text-muted">{row.date}</td>
+                      <td className="px-4 py-2 text-right tabular-nums">{row.web}</td>
+                      <td className="px-4 py-2 text-right tabular-nums">{row.mobile}</td>
+                      <td className="px-4 py-2 text-right tabular-nums font-medium">{row.total}</td>
+                    </tr>
+                  ))}
               </tbody>
             </table>
           </div>
@@ -65,7 +77,9 @@ export function AnalyticsVisitorsPanel() {
       )}
 
       <div>
-        <h3 className="mb-3 text-sm font-semibold text-text-muted">Geo distribucija (30 dana)</h3>
+        <h3 className="mb-3 text-sm font-semibold text-text-muted">
+          {t('admin.analyticsPanel.geo')}
+        </h3>
         <AnalyticsGeoPanel rows={geo ?? []} />
       </div>
     </div>

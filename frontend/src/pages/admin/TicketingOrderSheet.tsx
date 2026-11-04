@@ -1,4 +1,5 @@
 import { formatDateTime } from '../../lib/utils';
+import { useTranslation } from 'react-i18next';
 import {
   matchLabel,
   orderStatusLabel,
@@ -29,6 +30,7 @@ interface Props {
 }
 
 export function TicketingOrderSheet({ order, open, onOpenChange, canManage }: Props) {
+  const { t } = useTranslation();
   const { data: detail } = useTicketingOrderDetail(order?.id);
   const confirmPayment = useConfirmTicketingPayment();
   const confirmRefund = useConfirmTicketingRefund();
@@ -48,31 +50,36 @@ export function TicketingOrderSheet({ order, open, onOpenChange, canManage }: Pr
   return (
     <>
       {dialog}
-      <AdminFormSheet open={open} onOpenChange={onOpenChange} title={`Narudžba #${o.id.slice(0, 8)}`} size="lg">
+      <AdminFormSheet
+        open={open}
+        onOpenChange={onOpenChange}
+        title={t('admin.orderSheet.title', { id: o.id.slice(0, 8) })}
+        size="lg"
+      >
         <dl className="space-y-3 text-sm">
           <div>
-            <dt className="text-text-muted">Korisnik</dt>
+            <dt className="text-text-muted">{t('admin.orderSheet.user')}</dt>
             <dd className="font-medium">{o.user?.email ?? '—'}</dd>
           </div>
           <div>
-            <dt className="text-text-muted">Status</dt>
+            <dt className="text-text-muted">{t('admin.membershipForm.status')}</dt>
             <dd>
               <Badge variant={orderStatusVariant(o.status)}>{orderStatusLabel(o.status)}</Badge>
             </dd>
           </div>
           <div>
-            <dt className="text-text-muted">Iznos</dt>
+            <dt className="text-text-muted">{t('admin.orderSheet.amount')}</dt>
             <dd>{String(o.total)} KM</dd>
           </div>
           {o.createdAt && (
             <div>
-              <dt className="text-text-muted">Datum</dt>
+              <dt className="text-text-muted">{t('admin.analyticsPanel.date')}</dt>
               <dd>{formatDateTime(o.createdAt)}</dd>
             </div>
           )}
           {o.payment && (
             <div>
-              <dt className="text-text-muted">Plaćanje</dt>
+              <dt className="text-text-muted">{t('admin.orderSheet.payment')}</dt>
               <dd>{paymentStatusLabel(o.payment.status)}</dd>
             </div>
           )}
@@ -105,7 +112,9 @@ export function TicketingOrderSheet({ order, open, onOpenChange, canManage }: Pr
             {isPending && (
               <Button
                 disabled={confirmPayment.isPending}
-                onClick={() => void ask('Potvrditi uplatu na blagajni?', () => confirmPayment.mutateAsync(o.id))}
+                onClick={() =>
+                  void ask('Potvrditi uplatu na blagajni?', () => confirmPayment.mutateAsync(o.id))
+                }
               >
                 Potvrdi uplatu
               </Button>
@@ -124,7 +133,9 @@ export function TicketingOrderSheet({ order, open, onOpenChange, canManage }: Pr
                 variant="ghost"
                 disabled={cancel.isPending}
                 onClick={() =>
-                  void ask('Otkazati narudžbu?', () => cancel.mutateAsync(o.id).then(() => onOpenChange(false)))
+                  void ask('Otkazati narudžbu?', () =>
+                    cancel.mutateAsync(o.id).then(() => onOpenChange(false)),
+                  )
                 }
               >
                 Otkaži narudžbu

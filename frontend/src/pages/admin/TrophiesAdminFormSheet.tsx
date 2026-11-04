@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useCreateTrophy, useUpdateTrophy } from '../../hooks/use-content-admin';
 import { AdminFormSheet } from '../../components/admin/AdminFormSheet';
 import { MediaPicker } from '../../components/admin/MediaPicker';
@@ -14,6 +15,7 @@ interface Props {
 }
 
 export function TrophiesAdminFormSheet({ open, onOpenChange, edit }: Props) {
+  const { t } = useTranslation();
   const create = useCreateTrophy();
   const update = useUpdateTrophy();
   const [name, setName] = useState('');
@@ -52,33 +54,57 @@ export function TrophiesAdminFormSheet({ open, onOpenChange, edit }: Props) {
       else await create.mutateAsync(body);
       onOpenChange(false);
     } catch {
-      setFeedback('Spremanje nije uspjelo. Pokušajte ponovo.');
+      setFeedback(t('admin.common.saveFailed'));
     }
   };
 
   return (
-    <AdminFormSheet open={open} onOpenChange={onOpenChange} title={edit ? 'Uredi trofej' : 'Novi trofej'}>
+    <AdminFormSheet
+      open={open}
+      onOpenChange={onOpenChange}
+      title={edit ? t('admin.trophyForm.edit') : t('admin.trophyForm.create')}
+    >
       <div className="space-y-4">
-        <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Naziv *" />
-        <Input type="number" value={year} onChange={(e) => setYear(Number(e.target.value))} placeholder="Godina" />
-        <Input value={competition} onChange={(e) => setCompetition(e.target.value)} placeholder="Takmičenje" />
+        <Input
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          placeholder={t('admin.trophyForm.nameRequired')}
+        />
+        <Input
+          type="number"
+          value={year}
+          onChange={(e) => setYear(Number(e.target.value))}
+          placeholder={t('admin.trophyForm.year')}
+        />
+        <Input
+          value={competition}
+          onChange={(e) => setCompetition(e.target.value)}
+          placeholder={t('admin.calendar.competition')}
+        />
         <textarea
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           rows={4}
           className="w-full rounded-lg border border-slate-200 p-2 text-sm"
-          placeholder="Opis (prikazuje se kod istaknutog trofeja)"
+          placeholder={t('admin.trophyForm.description')}
         />
-        <MediaPicker value={imagePath} onChange={setImagePath} label="Slika trofeja" />
+        <MediaPicker
+          value={imagePath}
+          onChange={setImagePath}
+          label={t('admin.trophyForm.image')}
+        />
         <label className="flex items-center justify-between gap-3 rounded-lg border border-slate-200 p-3">
           <div>
-            <p className="text-sm font-medium">Istakni kao najbolji trofej</p>
-            <p className="text-xs text-text-muted">Prikazuje se istaknuto na početnoj i stranici trofeja</p>
+            <p className="text-sm font-medium">{t('admin.trophyForm.featured')}</p>
+            <p className="text-xs text-text-muted">{t('admin.trophyForm.featuredHint')}</p>
           </div>
           <Switch checked={featured} onCheckedChange={setFeatured} />
         </label>
         {feedback && <p className="text-sm text-danger">{feedback}</p>}
-        <Button onClick={() => void save()} disabled={!name || create.isPending || update.isPending}>
+        <Button
+          onClick={() => void save()}
+          disabled={!name || create.isPending || update.isPending}
+        >
           {edit ? 'Spremi' : 'Kreiraj'}
         </Button>
       </div>

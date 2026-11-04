@@ -144,7 +144,9 @@
       "no": "Ne",
       "actions": "Akcije",
       "saving": "Spremanje…",
-      "saveFailed": "Spremanje nije uspjelo. Pokušajte ponovo."
+      "saveFailed": "Spremanje nije uspjelo. Pokušajte ponovo.",
+      "moveUp": "Pomjeri gore",
+      "moveDown": "Pomjeri dolje"
     },
     "mediaPicker": {
       "pick": "Odabir medija",
@@ -393,6 +395,82 @@
       "seasonNotFound": "Sezona nije pronađena.",
       "competition": "Takmičenje",
       "participants": "Učesnici"
+    },
+    "analyticsPanel": {
+      "loading": "Učitavanje posjetilaca…",
+      "web30": "Web (30d)",
+      "mobile30": "Mobile (30d)",
+      "total30": "Ukupno (30d)",
+      "dailyTrend": "Dnevni trend (30 dana)",
+      "table": "Tabela posjeta",
+      "date": "Datum",
+      "geo": "Geo distribucija (30 dana)"
+    },
+    "trophyForm": {
+      "edit": "Uredi trofej",
+      "create": "Novi trofej",
+      "nameRequired": "Naziv *",
+      "year": "Godina",
+      "description": "Opis (prikazuje se kod istaknutog trofeja)",
+      "image": "Slika trofeja",
+      "featured": "Istakni kao najbolji trofej",
+      "featuredHint": "Prikazuje se istaknuto na početnoj i stranici trofeja"
+    },
+    "releases": {
+      "new": "Novi Android release",
+      "uploading": "Upload…",
+      "uploadApk": "Upload APK",
+      "version": "Verzija (1.0.1)",
+      "versionCode": "versionCode",
+      "minVersionCode": "minSupportedVersionCode",
+      "notes": "Napomene",
+      "forceUpdate": "Obavezno ažuriranje",
+      "createError": "Release nije kreiran."
+    },
+    "stadium": {
+      "nameRequired": "Naziv stadiona *",
+      "address": "Adresa",
+      "capacity": "Kapacitet",
+      "description": "Opis stadiona",
+      "image": "Slika stadiona",
+      "save": "Spremi stadion"
+    },
+    "matchForm": {
+      "edit": "Uredi utakmicu",
+      "create": "Nova utakmica",
+      "liveLocked": "Status i rezultat se mijenjaju u komentator panelu.",
+      "home": "Domaći",
+      "away": "Gosti",
+      "datetime": "Datum i vrijeme",
+      "pastMatch": "Utakmica u prošlosti (već odigrana)",
+      "statusHint": "Završenu utakmicu unesite rezultatom ovdje. LIVE ide preko komentatora.",
+      "openCommentator": "Otvori komentator"
+    },
+    "mediaAsset": {
+      "edit": "Uredi medij",
+      "filename": "Naziv fajla",
+      "tags": "Tagovi",
+      "tagsPlaceholder": "vijesti, hero",
+      "folder": "Mapa",
+      "noFolder": "Bez mape",
+      "saveError": "Izmjena medija nije sačuvana."
+    },
+    "timelinePage": {
+      "title": "Vremenska linija kluba"
+    },
+    "orderSheet": {
+      "title": "Narudžba #{{id}}",
+      "user": "Korisnik",
+      "amount": "Iznos",
+      "payment": "Plaćanje"
+    },
+    "commentatorBoard": {
+      "player": "Igrač",
+      "assist": "Asistent (opcionalno)",
+      "moreEvents": "Više događaja",
+      "substitution": "Izmjena",
+      "out": "Izlazi",
+      "in": "Ulazi"
     }
   },
   "common": {

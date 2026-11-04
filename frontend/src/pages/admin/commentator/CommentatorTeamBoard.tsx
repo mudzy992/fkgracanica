@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useAddMatchEvent } from '../../../hooks/use-live-admin';
 import { useAddReportEvent } from '../../../hooks/use-live-report';
 import { EntitySelect } from '../../../components/admin/EntitySelect';
@@ -29,6 +30,7 @@ export function CommentatorTeamColumn({
   reportMode,
   eventMinute = 0,
 }: Props) {
+  const { t } = useTranslation();
   const addLive = useAddMatchEvent();
   const addReport = useAddReportEvent();
   const [playerId, setPlayerId] = useState('');
@@ -75,49 +77,72 @@ export function CommentatorTeamColumn({
   return (
     <div className="rounded-lg border border-[var(--border-subtle)] bg-surface/50 p-3">
       <h3 className="mb-2 text-center text-sm font-semibold">{clubName}</h3>
-      <EntitySelect label="Igrač" value={playerId} onChange={setPlayerId} options={opts} />
       <EntitySelect
-        label="Asistent (opcionalno)"
+        label={t('admin.commentatorBoard.player')}
+        value={playerId}
+        onChange={setPlayerId}
+        options={opts}
+      />
+      <EntitySelect
+        label={t('admin.commentatorBoard.assist')}
         value={assistId}
         onChange={setAssistId}
         options={opts.filter((o) => o.id !== playerId)}
       />
       <div className="mt-2 grid grid-cols-3 gap-1">
-        {QUICK_EVENTS.map((t) => (
+        {QUICK_EVENTS.map((type) => (
           <Button
-            key={t}
+            key={type}
             size="sm"
-            variant={t === 'GOAL' ? 'default' : 'outline'}
+            variant={type === 'GOAL' ? 'default' : 'outline'}
             className="h-8 px-1 text-[11px]"
             disabled={disabled || busy || !playerId}
-            onClick={() => fireWithPlayer(t, t === 'GOAL')}
+            onClick={() => fireWithPlayer(type, type === 'GOAL')}
           >
-            {eventLabel(t)}
+            {eventLabel(type)}
           </Button>
         ))}
       </div>
       <details className="mt-2">
-        <summary className="cursor-pointer text-[11px] font-medium text-text-muted">Više događaja</summary>
+        <summary className="cursor-pointer text-[11px] font-medium text-text-muted">
+          {t('admin.commentatorBoard.moreEvents')}
+        </summary>
         <div className="mt-1.5 flex flex-wrap gap-1">
-          {MORE_EVENTS.map((t) => (
+          {MORE_EVENTS.map((type) => (
             <Button
-              key={t}
+              key={type}
               size="sm"
               variant="ghost"
               className="h-7 px-2 text-[10px]"
-              disabled={disabled || busy || (t === 'OWN_GOAL' && !playerId)}
-              onClick={() => (t === 'OWN_GOAL' ? fireWithPlayer(t) : fire(t, playerId ? { playerId } : undefined))}
+              disabled={disabled || busy || (type === 'OWN_GOAL' && !playerId)}
+              onClick={() =>
+                type === 'OWN_GOAL'
+                  ? fireWithPlayer(type)
+                  : fire(type, playerId ? { playerId } : undefined)
+              }
             >
-              {eventLabel(t)}
+              {eventLabel(type)}
             </Button>
           ))}
         </div>
       </details>
       <details className="mt-2 border-t border-[var(--border-subtle)] pt-2">
-        <summary className="cursor-pointer text-[11px] font-medium text-text-muted">Izmjena</summary>
+        <summary className="cursor-pointer text-[11px] font-medium text-text-muted">
+          {t('admin.commentatorBoard.substitution')}
+        </summary>
         <div className="mt-2 space-y-2">
-          <EntitySelect label="Izlazi" value={subOut} onChange={setSubOut} options={opts} />
-          <EntitySelect label="Ulazi" value={subIn} onChange={setSubIn} options={opts} />
+          <EntitySelect
+            label={t('admin.commentatorBoard.out')}
+            value={subOut}
+            onChange={setSubOut}
+            options={opts}
+          />
+          <EntitySelect
+            label={t('admin.commentatorBoard.in')}
+            value={subIn}
+            onChange={setSubIn}
+            options={opts}
+          />
           <Button
             className="h-8 w-full text-xs"
             size="sm"

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { ArrowDown, ArrowUp, Pencil, Plus, Trash2 } from 'lucide-react';
 import { useSponsors } from '../../hooks';
 import { useDeleteSponsor, useReorderSponsors } from '../../hooks/use-content-admin';
@@ -12,6 +13,7 @@ import { SponsorsAdminFormSheet } from './SponsorsAdminFormSheet';
 import type { Sponsor } from '../../types';
 
 export function SponsorsAdminPage() {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const canManage = hasPermission(user?.permissions, 'sponsors.manage');
   const { data, isLoading, isError, refetch } = useSponsors();
@@ -42,12 +44,12 @@ export function SponsorsAdminPage() {
 
   return (
     <>
-      <Seo title="Sponzori" />
+      <Seo title={t('admin.sponsors')} />
       {dialog}
       <AdminPageShell
         isError={isError}
         onRetry={() => void refetch()}
-        title="Sponzori"
+        title={t('admin.sponsors')}
         isLoading={isLoading}
         actions={
           canManage ? (
@@ -84,7 +86,7 @@ export function SponsorsAdminPage() {
                           disabled={index === 0}
                           onClick={() => move(index, -1)}
 
-                          aria-label="Pomjeri gore"
+                          aria-label={t('admin.common.moveUp')}
                         >
                           <ArrowUp className="h-4 w-4" />
                         </Button>
@@ -94,7 +96,7 @@ export function SponsorsAdminPage() {
                           disabled={index === rows.length - 1}
                           onClick={() => move(index, 1)}
 
-                          aria-label="Pomjeri dolje"
+                          aria-label={t('admin.common.moveDown')}
                         >
                           <ArrowDown className="h-4 w-4" />
                         </Button>
@@ -106,7 +108,7 @@ export function SponsorsAdminPage() {
                             setOpen(true);
                           }}
 
-                          aria-label="Uredi"
+                          aria-label={t('actions.edit')}
                         >
                           <Pencil className="h-4 w-4" />
                         </Button>
@@ -114,7 +116,7 @@ export function SponsorsAdminPage() {
                           variant="ghost"
                           size="icon"
                           onClick={() => void onDelete(r)}
-                          aria-label="Obriši"
+                          aria-label={t('actions.delete')}
                         >
                           <Trash2 className="h-4 w-4 text-danger" />
                         </Button>

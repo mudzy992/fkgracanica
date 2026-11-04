@@ -144,7 +144,9 @@
       "no": "No",
       "actions": "Actions",
       "saving": "Saving…",
-      "saveFailed": "Saving failed. Please try again."
+      "saveFailed": "Saving failed. Please try again.",
+      "moveUp": "Move up",
+      "moveDown": "Move down"
     },
     "mediaPicker": {
       "pick": "Select media",
@@ -393,6 +395,82 @@
       "seasonNotFound": "Season not found.",
       "competition": "Competition",
       "participants": "Participants"
+    },
+    "analyticsPanel": {
+      "loading": "Loading visitors…",
+      "web30": "Web (30d)",
+      "mobile30": "Mobile (30d)",
+      "total30": "Total (30d)",
+      "dailyTrend": "Daily trend (30 days)",
+      "table": "Visits table",
+      "date": "Date",
+      "geo": "Geo distribution (30 days)"
+    },
+    "trophyForm": {
+      "edit": "Edit trophy",
+      "create": "New trophy",
+      "nameRequired": "Name *",
+      "year": "Year",
+      "description": "Description (shown for the featured trophy)",
+      "image": "Trophy image",
+      "featured": "Feature as best trophy",
+      "featuredHint": "Shown as featured on the home page and trophies page"
+    },
+    "releases": {
+      "new": "New Android release",
+      "uploading": "Uploading…",
+      "uploadApk": "Upload APK",
+      "version": "Version (1.0.1)",
+      "versionCode": "versionCode",
+      "minVersionCode": "minSupportedVersionCode",
+      "notes": "Release notes",
+      "forceUpdate": "Force update",
+      "createError": "Release was not created."
+    },
+    "stadium": {
+      "nameRequired": "Stadium name *",
+      "address": "Address",
+      "capacity": "Capacity",
+      "description": "Stadium description",
+      "image": "Stadium image",
+      "save": "Save stadium"
+    },
+    "matchForm": {
+      "edit": "Edit match",
+      "create": "New match",
+      "liveLocked": "Status and score are changed in the commentator panel.",
+      "home": "Home",
+      "away": "Away",
+      "datetime": "Date and time",
+      "pastMatch": "Past match (already played)",
+      "statusHint": "Enter the result for a finished match here. LIVE goes through the commentator.",
+      "openCommentator": "Open commentator"
+    },
+    "mediaAsset": {
+      "edit": "Edit media",
+      "filename": "File name",
+      "tags": "Tags",
+      "tagsPlaceholder": "news, hero",
+      "folder": "Folder",
+      "noFolder": "No folder",
+      "saveError": "Media changes were not saved."
+    },
+    "timelinePage": {
+      "title": "Club timeline"
+    },
+    "orderSheet": {
+      "title": "Order #{{id}}",
+      "user": "User",
+      "amount": "Amount",
+      "payment": "Payment"
+    },
+    "commentatorBoard": {
+      "player": "Player",
+      "assist": "Assist (optional)",
+      "moreEvents": "More events",
+      "substitution": "Substitution",
+      "out": "Out",
+      "in": "In"
     }
   },
   "common": {
