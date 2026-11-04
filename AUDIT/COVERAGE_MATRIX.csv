@@ -843,7 +843,7 @@
 "frontend/src/lib/season-pass-document.ts","frontend","src","93","nepregledano","","",""
 "frontend/src/lib/season-pass-visual.ts","frontend","src","12","nepregledano","","",""
 "frontend/src/lib/season-utils.test.ts","frontend","src","46","pokriveno testom","P-FE06-9/P-FE06-13: sezone, izdanje i redoslijed pri nedostajućem booleanu","FE-06","2026-11-04"
-"frontend/src/lib/season-utils.ts","frontend","src","66","popravljeno","B-FE06-13/P-FE06-13: odobrena normalizacija isLeague, regresija i browser","FE-06","2026-11-04"
+"frontend/src/lib/season-utils.ts","frontend","src","66","popravljeno","B-FE06-13/P-FE06-13: odobrena normalizacija isLeague, regresija i browser, CI ✅ 41836863290","FE-06","2026-11-04"
 "frontend/src/lib/seo-meta.test.ts","frontend","src","34","pokriveno testom","P-FE06-9: canonical, opis, naslov i slike","FE-06","2026-11-04"
 "frontend/src/lib/seo-meta.ts","frontend","src","73","nepregledano","P-FE06-9: ciljani SEO helper testovi; shared audit ostaje","FE-06","2026-11-04"
 "frontend/src/lib/setting-field-utils.ts","frontend","src","34","nepregledano","","",""
