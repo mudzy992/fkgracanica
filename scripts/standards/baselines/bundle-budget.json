@@ -1,0 +1,27 @@
+{
+  "version": 1,
+  "tolerancePercent": 5,
+  "compression": "Node zlib gzip level 6; svaki fajl posebno, zbir bajtova",
+  "baseline": {
+    "initial": {
+      "js": {
+        "raw": 2038448,
+        "gzip": 584391
+      },
+      "css": {
+        "raw": 167277,
+        "gzip": 23478
+      }
+    },
+    "total": {
+      "js": {
+        "raw": 2038448,
+        "gzip": 584391
+      },
+      "css": {
+        "raw": 167277,
+        "gzip": 23478
+      }
+    }
+  }
+}

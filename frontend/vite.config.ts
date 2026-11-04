@@ -6,6 +6,7 @@ import tailwindcss from '@tailwindcss/vite';
 export default defineConfig({
   envDir: '..',
   plugins: [react(), tailwindcss()],
+  build: { manifest: true },
   resolve: {
     /**
      * CI-04/B-CI04-03: monorepo ima DVIJE kopije Reacta — `mobile` (Expo) pinuje

@@ -17,7 +17,7 @@
 |-----|----------|-------|
 | `audit-gate` | `node scripts/audit/check-coverage.mjs` | matrica pokrivenosti — svaki izvorni fajl mora imati red (pravilo 4) |
 | `standards` | `node scripts/standards/check-all.mjs` | file-size, console-ban, secrets-ban, layer-deps, docs-links (+ coverage) |
-| `build-test` | `npm ci` → `prisma generate` → `prisma validate` → backend `nest build` → jest unit → backend eslint → frontend `tsc -b && vite build` → **vitest** → oxlint | build + testovi slojeva (frontend testovi od FE-02) |
+| `build-test` | `npm ci` → `prisma generate` → `prisma validate` → backend `nest build` → jest unit → backend eslint → frontend `tsc -b && vite build` → bundle budget gate → **vitest** → oxlint | build + testovi slojeva (frontend testovi od FE-02) |
 | `browser-fullstack` | zasebni Postgres + Redis, migracije i minimalni sintetički seed, backend health-wait, web build i Playwright smoke | P-FE06-2; stvarni backend, samo testni podaci; trace samo na padu |
 | `browser-mock` | Izolovani API mock i axe | P-FE06-1/3; nije full-stack |
 | `e2e` | `postgres:16` + `redis:7` servisi → `prisma migrate deploy` → `prisma:seed` (RBAC + settings + admin + demo) → `npm run test:e2e` | **BE-09c/P-B09c-4**: e2e suite (8 specova) se prije nije izvršavao nigdje; sada je pokriven u CI-ju |
@@ -63,3 +63,25 @@ npx eslint "{src,apps,libs,test}/**/*.ts"   # u backend/
 
 Napomena: CI **ne** gradi Docker image; build se prvi put izvršava na Coolify
 deployu (predlog **P-CI04-2**).
+
+## Budžet frontend bundlea (P-FE06-7)
+
+Poslije čistog `npm run build -w frontend` pokrenuti:
+
+```sh
+node --test scripts/standards/bundle-budget.test.mjs
+node scripts/standards/bundle-budget.mjs
+```
+
+Vite manifest identifikuje `index.html` i sve **statičke tranzitivne** importe;
+početni JS/CSS sabira njihove jedinstvene izlazne datoteke. Ukupni JS/CSS
+obuhvata sve `.js`/`.css` datoteke u Vite `dist/assets`, uključujući dinamičke
+chunkove. Broji se raw i zbir gzip veličina svakog fajla (Node zlib level 6).
+HTML, slike, fontovi i public/service-worker resursi nisu dio ovog budžeta;
+gzip je reproducibilna procjena, ne dokaz kompresije na produkcijskom proxyju.
+
+Osam metrika poredi se s verzionisanim
+`scripts/standards/baselines/bundle-budget.json`; rast **preko 5%** ruši CI,
+kao i nedostajući/neispravan manifest ili output. Prag se ne ažurira automatski
+i ne povećava tiho; nakon optimizacije može se sniziti uz evidentiranje.
+`--report` je samo lokalni izvještaj, nije CI gate.

@@ -132,6 +132,10 @@ jobs:
       # stranica padne sa "Cannot read properties of null (reading 'useEffect')".
       - name: frontend bundle (jedna kopija Reacta)
         run: node scripts/standards/bundle-react.mjs
+      - name: Bundle budget (test gatea i 8 metrika)
+        run: |
+          node --test scripts/standards/bundle-budget.test.mjs
+          node scripts/standards/bundle-budget.mjs
       - name: frontend test (vitest)
         run: npm run test -w frontend
       - name: frontend lint (oxlint)
