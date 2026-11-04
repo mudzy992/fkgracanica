@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useClubs, useOwnClub } from '../../hooks';
 import { useCreatePlayer, useUpdatePlayer } from '../../hooks/use-competition-admin';
 import { AdminFormSheet } from '../../components/admin/AdminFormSheet';
@@ -20,6 +21,7 @@ interface Props {
 }
 
 export function PlayersAdminFormSheet({ open, onOpenChange, edit, clubId: fixedClubId }: Props) {
+  const { t } = useTranslation();
   const { data: clubs } = useClubs();
   const { data: ownClub } = useOwnClub();
   const create = useCreatePlayer();
@@ -76,17 +78,29 @@ export function PlayersAdminFormSheet({ open, onOpenChange, edit, clubId: fixedC
   };
 
   return (
-    <AdminFormSheet open={open} onOpenChange={onOpenChange} title={edit ? 'Uredi igrača' : 'Novi igrač'}>
+    <AdminFormSheet
+      open={open}
+      onOpenChange={onOpenChange}
+      title={edit ? t('admin.playerForm.edit') : t('admin.playerForm.create')}
+    >
       <div className="space-y-4">
-        <Input value={firstName} onChange={(e) => setFirstName(e.target.value)} placeholder="Ime *" />
-        <Input value={lastName} onChange={(e) => setLastName(e.target.value)} placeholder="Prezime *" />
+        <Input
+          value={firstName}
+          onChange={(e) => setFirstName(e.target.value)}
+          placeholder={t('admin.playerForm.firstName')}
+        />
+        <Input
+          value={lastName}
+          onChange={(e) => setLastName(e.target.value)}
+          placeholder={t('admin.playerForm.lastName')}
+        />
         {!fixedClubId && (
           <EntitySelect
-            label="Klub"
+            label={t('admin.playerForm.club')}
             options={clubOptions}
             value={clubId}
             onChange={setClubId}
-            placeholder="Odaberi klub"
+            placeholder={t('admin.playerForm.selectClub')}
           />
         )}
         <select
@@ -100,22 +114,34 @@ export function PlayersAdminFormSheet({ open, onOpenChange, edit, clubId: fixedC
             </option>
           ))}
         </select>
-        <Input type="number" value={number} onChange={(e) => setNumber(e.target.value)} placeholder="Broj dresa" />
-        <MediaPicker value={photoPath} onChange={setPhotoPath} label="Fotografija" />
+        <Input
+          type="number"
+          value={number}
+          onChange={(e) => setNumber(e.target.value)}
+          placeholder={t('admin.playerForm.shirt')}
+        />
+        <MediaPicker
+          value={photoPath}
+          onChange={setPhotoPath}
+          label={t('admin.playerForm.photo')}
+        />
         <textarea
           value={bio}
           onChange={(e) => setBio(e.target.value)}
           rows={3}
           className="w-full rounded-lg border border-slate-200 p-2 text-sm"
-          placeholder="Bio (opcionalno)"
+          placeholder={t('admin.playerForm.bio')}
         />
         <label className="flex items-center justify-between gap-3 rounded-lg border border-slate-200 p-3">
-          <span className="text-sm font-medium">Aktivan u kadru</span>
+          <span className="text-sm font-medium">{t('admin.playerForm.active')}</span>
           <Switch checked={isActive} onCheckedChange={setIsActive} />
         </label>
         {feedback && <p className="text-sm text-danger">{feedback}</p>}
-        <Button onClick={() => void save()} disabled={!firstName || !lastName || create.isPending || update.isPending}>
-          {edit ? 'Spremi' : 'Kreiraj'}
+        <Button
+          onClick={() => void save()}
+          disabled={!firstName || !lastName || create.isPending || update.isPending}
+        >
+          {edit ? t('actions.save') : t('actions.create')}
         </Button>
       </div>
     </AdminFormSheet>

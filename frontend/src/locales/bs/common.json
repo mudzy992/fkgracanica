@@ -142,7 +142,9 @@
       "error": "Došlo je do greške.",
       "yes": "Da",
       "no": "Ne",
-      "actions": "Akcije"
+      "actions": "Akcije",
+      "saving": "Spremanje…",
+      "saveFailed": "Spremanje nije uspjelo. Pokušajte ponovo."
     },
     "mediaPicker": {
       "pick": "Odabir medija",
@@ -346,6 +348,51 @@
       "catalog": "Katalog takmičenja",
       "emptyCompetitions": "Nema takmičenja.",
       "deleteSeason": "Obrisati sezonu?"
+    },
+    "ticketingForm": {
+      "capacity": "Kapacitet stadiona",
+      "memberDiscount": "Popust za članove (%)",
+      "maxPerUser": "Maks. ulaznica po korisniku (blagajna)",
+      "maxPerUserNote": "Online plaćanje nema ovaj limit.",
+      "seasonPrice": "Cijena sezonske karte (KM)",
+      "seasonPriceNote": "0 = nije u prodaji.",
+      "seasonLabel": "Naziv sezonske karte",
+      "boxOffice": "Kupovina na blagajni omogućena",
+      "categories": "Kategorije ulaznica",
+      "save": "Spremi postavke"
+    },
+    "membershipForm": {
+      "detail": "Detalj članstva",
+      "member": "Član",
+      "email": "Email",
+      "status": "Status",
+      "start": "Početak",
+      "end": "Istek",
+      "created": "Kreirano",
+      "club": "Klub"
+    },
+    "playerForm": {
+      "edit": "Uredi igrača",
+      "create": "Novi igrač",
+      "firstName": "Ime *",
+      "lastName": "Prezime *",
+      "club": "Klub",
+      "selectClub": "Odaberi klub",
+      "shirt": "Broj dresa",
+      "photo": "Fotografija",
+      "bio": "Bio (opcionalno)",
+      "active": "Aktivan u kadru"
+    },
+    "clubForm": {
+      "edit": "Uredi klub",
+      "create": "Novi klub",
+      "stadium": "Stadion",
+      "descriptionPublic": "Opis kluba (javni prikaz)"
+    },
+    "calendar": {
+      "seasonNotFound": "Sezona nije pronađena.",
+      "competition": "Takmičenje",
+      "participants": "Učesnici"
     }
   },
   "common": {

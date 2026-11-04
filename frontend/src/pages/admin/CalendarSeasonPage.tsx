@@ -1,4 +1,5 @@
 import { Link, useParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { ArrowLeft, Pencil, Plus, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import { useSeasons } from '../../hooks';
@@ -16,6 +17,7 @@ import { type CalendarSeason } from '../../lib/season-utils';
 import { SeasonEditionFormSheet, type SeasonEditionRow } from './SeasonEditionFormSheet';
 
 export function CalendarSeasonPage() {
+  const { t } = useTranslation();
   const { seasonId = '' } = useParams();
   const { data: seasons, isLoading } = useSeasons();
   const { user } = useAuth();
@@ -39,7 +41,7 @@ export function CalendarSeasonPage() {
   };
 
   if (isLoading) return <Skeleton className="mx-4 mt-8 h-64" />;
-  if (!season) return <p className="p-8 text-text-muted">Sezona nije pronađena.</p>;
+  if (!season) return <p className="p-8 text-text-muted">{t('admin.calendar.seasonNotFound')}</p>;
 
   return (
     <div className="space-y-6 pb-8">
@@ -47,14 +49,16 @@ export function CalendarSeasonPage() {
       {dialog}
       <div className="flex flex-wrap items-center gap-3">
         <Link to="/admin/competitions">
-          <Button variant="ghost" size="icon" aria-label="Nazad">
+          <Button variant="ghost" size="icon" aria-label={t('actions.back')}>
             <ArrowLeft className="h-4 w-4" />
           </Button>
         </Link>
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
             <h1 className="text-2xl font-bold">{season.name}</h1>
-            {season.isActive && <Badge variant="success">Aktivna</Badge>}
+            {season.isActive && (
+              <Badge variant="success">{t('admin.competitionsAdmin.colActive')}</Badge>
+            )}
           </div>
           <p className="text-sm text-text-muted">
             {season.yearStart}/{season.yearEnd}
@@ -78,20 +82,24 @@ export function CalendarSeasonPage() {
           rows={rows}
           empty="Nema takmičenja u ovoj sezoni."
           columns={[
-            { key: 'name', header: 'Takmičenje', render: (r) => r.competition?.name ?? '—' },
+            {
+              key: 'name',
+              header: t('admin.calendar.competition'),
+              render: (r) => r.competition?.name ?? '—',
+            },
             {
               key: 'league',
-              header: 'Liga',
+              header: t('admin.competitionsAdmin.colLeague'),
               render: (r) =>
                 r.competition?.isLeague ? (
-                  <Badge variant="success">Liga</Badge>
+                  <Badge variant="success">{t('admin.competitionsAdmin.league')}</Badge>
                 ) : (
-                  <Badge variant="muted">Ostalo</Badge>
+                  <Badge variant="muted">{t('admin.competitionsAdmin.other')}</Badge>
                 ),
             },
             {
               key: 'participants',
-              header: 'Učesnici',
+              header: t('admin.calendar.participants'),
               render: (r) => r.participants?.length ?? 0,
             },
             {
@@ -120,7 +128,7 @@ export function CalendarSeasonPage() {
                             setEdit(r);
                             setOpen(true);
                           }}
-                          aria-label="Uredi"
+                          aria-label={t('actions.edit')}
                         >
                           <Pencil className="h-4 w-4" />
                         </Button>
@@ -128,7 +136,7 @@ export function CalendarSeasonPage() {
                           variant="ghost"
                           size="icon"
                           onClick={() => void onDelete(r)}
-                          aria-label="Obriši"
+                          aria-label={t('actions.delete')}
                         >
                           <Trash2 className="h-4 w-4 text-danger" />
                         </Button>

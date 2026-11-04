@@ -142,7 +142,9 @@
       "error": "Something went wrong.",
       "yes": "Yes",
       "no": "No",
-      "actions": "Actions"
+      "actions": "Actions",
+      "saving": "Saving…",
+      "saveFailed": "Saving failed. Please try again."
     },
     "mediaPicker": {
       "pick": "Select media",
@@ -346,6 +348,51 @@
       "catalog": "Competitions catalog",
       "emptyCompetitions": "No competitions.",
       "deleteSeason": "Delete season?"
+    },
+    "ticketingForm": {
+      "capacity": "Stadium capacity",
+      "memberDiscount": "Member discount (%)",
+      "maxPerUser": "Max tickets per user (box office)",
+      "maxPerUserNote": "Online payment has no such limit.",
+      "seasonPrice": "Season ticket price (KM)",
+      "seasonPriceNote": "0 = not on sale",
+      "seasonLabel": "Season ticket name",
+      "boxOffice": "Box office purchase enabled",
+      "categories": "Ticket categories",
+      "save": "Save settings"
+    },
+    "membershipForm": {
+      "detail": "Membership detail",
+      "member": "Member",
+      "email": "Email",
+      "status": "Status",
+      "start": "Start",
+      "end": "Expiry",
+      "created": "Created",
+      "club": "Club"
+    },
+    "playerForm": {
+      "edit": "Edit player",
+      "create": "New player",
+      "firstName": "First name *",
+      "lastName": "Last name *",
+      "club": "Club",
+      "selectClub": "Select club",
+      "shirt": "Shirt number",
+      "photo": "Photo",
+      "bio": "Bio (optional)",
+      "active": "Active in squad"
+    },
+    "clubForm": {
+      "edit": "Edit club",
+      "create": "New club",
+      "stadium": "Stadium",
+      "descriptionPublic": "Club description (public)"
+    },
+    "calendar": {
+      "seasonNotFound": "Season not found.",
+      "competition": "Competition",
+      "participants": "Participants"
     }
   },
   "common": {
