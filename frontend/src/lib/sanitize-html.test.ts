@@ -30,9 +30,9 @@ describe('sanitizeHtml (FE-03 / P-FE03-1)', () => {
 
   it('dozvoljava YouTube embed, a odbija iframe sa druge domene', () => {
     const ok = sanitizeHtml(
-      '<iframe src="https://www.youtube.com/embed/abc123" title="video" allowfullscreen></iframe>',
+      '<iframe src="https://www.youtube.com/embed/abc123XYZ01" title="video" allowfullscreen></iframe>',
     );
-    expect(ok).toContain('youtube.com/embed/abc123');
+    expect(ok).toContain('youtube.com/embed/abc123XYZ01');
 
     const bad = sanitizeHtml('<iframe src="https://evil.example.com/x"></iframe>');
     expect(bad).not.toContain('evil.example.com');

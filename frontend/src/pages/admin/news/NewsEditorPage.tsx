@@ -2,6 +2,9 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useTranslation } from 'react-i18next';
+import { isInvalidChangedYouTubeUrl } from '../../../lib/youtube';
+import { getApiErrorMessage } from '../../../lib/api-error';
 import { Seo } from '../../../components/seo/Seo';
 import { Button } from '../../../components/ui/button';
 import { Skeleton } from '../../../components/ui/skeleton';
@@ -17,6 +20,7 @@ import { NewsEditorMain } from './NewsEditorMain';
 import { NewsEditorMeta } from './NewsEditorMeta';
 
 export function NewsEditorPage() {
+  const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
   const isEdit = Boolean(id);
   const navigate = useNavigate();
@@ -41,8 +45,12 @@ export function NewsEditorPage() {
 
   const onSubmit = async (data: NewsFormData) => {
     setError('');
+    if (isInvalidChangedYouTubeUrl(data.videoUrl, item?.videoUrl)) {
+      form.setError('videoUrl', { type: 'validate', message: t('video.invalidInput') }, { shouldFocus: true });
+      return;
+    }
     try {
-      const body = formToNewsBody(data);
+      const body = formToNewsBody(data, item?.videoUrl);
       if (isEdit && id) {
         await update.mutateAsync({ id, ...body });
         navigate('/admin/news');
@@ -50,8 +58,8 @@ export function NewsEditorPage() {
       }
       const created = await create.mutateAsync(body);
       navigate(`/admin/news/${created.id}/edit`, { replace: true });
-    } catch {
-      setError('Greška pri spremanju vijesti');
+    } catch (err) {
+      setError(getApiErrorMessage(err, 'Greška pri spremanju vijesti'));
     }
   };
 
@@ -100,7 +108,7 @@ export function NewsEditorPage() {
           errors={formState.errors}
         />
       </form>
-      {error ? <p className="mt-4 text-sm text-danger">{error}</p> : null}
+      {error ? <p role="alert" className="mt-4 text-sm text-danger">{error}</p> : null}
     </>
   );
 }

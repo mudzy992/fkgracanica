@@ -1,6 +1,7 @@
 {
   "video": {
     "invalidInput": "Enter a valid YouTube link with an 11-character ID.",
+    "embeddedUnavailable": "Embedded video unavailable: invalid link.",
     "unavailable": "Video unavailable. Please check the YouTube link.",
     "liveUnavailable": "Live stream unavailable. Please check the YouTube link.",
     "audioUnavailable": "Prematch audio unavailable. Please check the YouTube link."

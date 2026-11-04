@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useId, useMemo, useState } from 'react';
 import {
   usePrivateSettings,
   usePublicSettings,
@@ -8,6 +8,7 @@ import {
 import { useAuth } from '../../lib/auth';
 import { hasPermission } from '../../lib/permissions';
 import { getApiErrorMessage } from '../../lib/api-error';
+import { isInvalidChangedYouTubeUrl } from '../../lib/youtube';
 import { isModuleEnabled } from '../../lib/module-settings-rules';
 import { getSettingsTabs } from '../../lib/settings-sections';
 import { Seo } from '../../components/seo/Seo';
@@ -36,6 +37,8 @@ export function SettingsPage() {
   const updatePublic = useUpdatePublicSettings();
   const updatePrivate = useUpdatePrivateSettings();
   const [draft, setDraft] = useState<Record<string, string>>({});
+  const [audioError, setAudioError] = useState('');
+  const audioErrorId = useId();
 
   const isLoading = scope === 'public' ? pl : prl;
   const values = (scope === 'public' ? publicData : privateData) ?? {};
@@ -62,12 +65,19 @@ export function SettingsPage() {
 
   const setDraftKey = (key: string, value: string) => {
     if (!canUpdate) return;
+    if (key === 'live.prematchAudioUrl') setAudioError('');
     setDraft((d) => ({ ...d, [key]: value }));
   };
 
   const handleSave = async () => {
     if (!canUpdate || !Object.keys(draft).length) return;
     if (scope === 'private' && !window.confirm('Spremiti privatne postavke?')) return;
+    if (scope === 'public' && isInvalidChangedYouTubeUrl(draft['live.prematchAudioUrl'], publicData?.['live.prematchAudioUrl'])) {
+      setAudioError(t('video.invalidInput'));
+      setGroupTab('live');
+      return;
+    }
+    setAudioError('');
     try {
       if (scope === 'public') await updatePublic.mutateAsync(draft);
       else await updatePrivate.mutateAsync(draft);
@@ -80,6 +90,7 @@ export function SettingsPage() {
   const switchScope = (next: Scope) => {
     setScope(next);
     setDraft({});
+    setAudioError('');
     setGroupTab('modules');
   };
 
@@ -147,14 +158,17 @@ export function SettingsPage() {
             values={values}
             draft={draft}
             readOnly={!canUpdate}
+            invalidKey={audioError ? 'live.prematchAudioUrl' : undefined}
+            errorId={audioErrorId}
             onDraft={setDraftKey}
           />
         )}
 
         {(saveError || (canUpdate && Object.keys(draft).length > 0)) && (
           <div className="sticky bottom-0 flex flex-col gap-3 border-t border-[var(--border-subtle)] bg-background/95 px-5 py-4 backdrop-blur sm:flex-row sm:items-center sm:justify-between">
+            {audioError && <p id={audioErrorId} role="alert" className="text-sm text-danger">{audioError}</p>}
             {saveError && (
-              <p className="text-sm text-danger">
+              <p role="alert" className="text-sm text-danger">
                 {getApiErrorMessage(saveError, 'Spremanje postavki nije uspjelo.')}
               </p>
             )}

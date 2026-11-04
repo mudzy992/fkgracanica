@@ -9,10 +9,12 @@ interface Props {
   value: string;
   draftValue?: string;
   readOnly?: boolean;
+  invalid?: boolean;
+  errorId?: string;
   onDraft: (v: string) => void;
 }
 
-export function SettingFieldControl({ keyName, value, draftValue, readOnly, onDraft }: Props) {
+export function SettingFieldControl({ keyName, value, draftValue, readOnly, onDraft, invalid, errorId }: Props) {
   const current = draftValue ?? value;
 
   if (value === 'true' || value === 'false') {
@@ -33,6 +35,9 @@ export function SettingFieldControl({ keyName, value, draftValue, readOnly, onDr
 
   return (
     <Input
+      aria-label={settingLabel(keyName)}
+      aria-invalid={invalid || undefined}
+      aria-describedby={invalid ? errorId : undefined}
       value={current}
       disabled={readOnly}
       placeholder={settingInputPlaceholder(keyName)}

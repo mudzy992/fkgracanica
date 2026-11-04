@@ -1,3 +1,4 @@
+import { useId } from 'react';
 import { Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { asArray } from '../../../lib/as-array';
@@ -10,8 +11,10 @@ import { formatDate } from '../../../lib/utils';
 import type { GalleryItem, Match, Player } from '../../../types';
 import type { NewsEditorFieldsProps } from '../news-form-utils';
 
-export function NewsEditorMeta({ register, control, watch, setValue }: NewsEditorFieldsProps) {
+export function NewsEditorMeta({ register, control, watch, setValue, errors }: NewsEditorFieldsProps) {
   const { t } = useTranslation();
+  const videoId = useId();
+  const videoErrorId = `${videoId}-error`;
   const { data: categoriesRaw } = useNewsCategories();
   const categories = asArray<NewsCategory>(categoriesRaw);
   const title = watch('title');
@@ -38,8 +41,11 @@ export function NewsEditorMeta({ register, control, watch, setValue }: NewsEdito
         <Input {...register('tagsCsv')} placeholder={t('admin.newsForm.tagsPlaceholder')} />
       </div>
       <div>
-        <label className="mb-1 block text-sm font-medium">{t('admin.newsForm.videoUrl')}</label>
-        <Input {...register('videoUrl')} placeholder="https://..." />
+        <label htmlFor={videoId} className="mb-1 block text-sm font-medium">{t('admin.newsForm.videoUrl')}</label>
+        <Input id={videoId} {...register('videoUrl')} placeholder="https://..."
+          aria-invalid={!!errors.videoUrl || undefined}
+          aria-describedby={errors.videoUrl ? videoErrorId : undefined} />
+        {errors.videoUrl?.message && <p id={videoErrorId} role="alert" className="mt-1 text-xs text-danger">{errors.videoUrl.message}</p>}
       </div>
       <div>
         <label className="mb-1 block text-sm font-medium">{t('admin.newsForm.seoTitle')}</label>

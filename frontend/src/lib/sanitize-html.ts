@@ -1,4 +1,5 @@
 import DOMPurify from 'dompurify';
+import { safeRichIframeSrc } from './youtube';
 
 /**
  * FE-03/P-FE03-1 (odobreno): sanitizacija HTML-a iz CMS-a i vijesti.
@@ -73,8 +74,6 @@ const ALLOWED_ATTR = [
   'frameborder',
 ];
 
-/** Dozvoljeni `iframe` izvori (YouTube embed u vijestima/CMS-u). */
-const SAFE_IFRAME_SRC = /^https:\/\/(www\.)?(youtube(-nocookie)?\.com|player\.vimeo\.com)\//i;
 /** Dozvoljeni linkovi: http(s), mailto, tel ili relativna putanja. */
 const SAFE_LINK = /^(https?:\/\/|mailto:|tel:|\/|#)/i;
 
@@ -88,7 +87,7 @@ const PURIFY_CONFIG = {
 
 function allowedByAttribute(tag: string, attribute: string, value: string): boolean {
   if (tag === 'iframe') {
-    if (attribute === 'src') return SAFE_IFRAME_SRC.test(value);
+    if (attribute === 'src') return true; // Canonicalized below after DOMPurify's protocol filtering.
     return (
       attribute === 'width' ||
       attribute === 'height' ||
@@ -113,6 +112,12 @@ function harden(root: typeof DOMPurify): void {
     for (const attr of Array.from(el.attributes ?? [])) {
       if (!allowedByAttribute(tag, attr.name, attr.value)) el.removeAttribute(attr.name);
     }
+    if (tag === 'iframe') {
+      const src = el.getAttribute('src');
+      const safe = src && safeRichIframeSrc(src);
+      if (safe) el.setAttribute('src', safe);
+      else el.removeAttribute('src');
+    }
     if (tag === 'a' && el.getAttribute('target') === '_blank') {
       el.setAttribute('rel', 'noopener noreferrer');
     }
@@ -125,9 +130,16 @@ harden(DOMPurify);
  * Sanitizuje HTML prije renderovanja. Vraća string siguran za
  * `dangerouslySetInnerHTML` (prazan string ako ulaz nije string).
  */
-export function sanitizeHtml(html: string): string {
+export function sanitizeHtml(html: string, unavailableMessage = 'Ugrađeni video nije dostupan.'): string {
   if (typeof html !== 'string' || !html.trim()) return '';
-  return DOMPurify.sanitize(html, PURIFY_CONFIG);
+  const root = DOMPurify.sanitize(html, { ...PURIFY_CONFIG, RETURN_DOM: true }) as HTMLElement;
+  for (const frame of root.querySelectorAll('iframe:not([src])')) {
+    const notice = document.createElement('p');
+    notice.setAttribute('role', 'status');
+    notice.textContent = unavailableMessage;
+    frame.replaceWith(notice);
+  }
+  return root.innerHTML;
 }
 
 /** Izvoz za testove — provjera da allowlista ne uključi opasne tagove. */

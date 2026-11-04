@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { normalizeHtmlForRender } from '../../lib/html-content';
 import { sanitizeHtml } from '../../lib/sanitize-html';
 import { cn } from '../../lib/utils';
@@ -13,7 +14,8 @@ interface Props {
  * — bez toga je svaki `news.manage`/`cms.manage` nalog imao stored XSS.
  */
 export function RichContent({ html, className }: Props) {
-  const content = sanitizeHtml(normalizeHtmlForRender(html));
+  const { t } = useTranslation();
+  const content = sanitizeHtml(normalizeHtmlForRender(html), t('video.embeddedUnavailable'));
   if (!content) return null;
 
   return (
