@@ -1,7 +1,7 @@
 "file","layer","module","loc","status","findings","segment","date"
 ".githooks/pre-commit","infra","root","8","popravljeno","INF-02: pre-commit tajni skaner (secrets-ban)","INF-02","2026-11-02"
 ".githooks/pre-push","infra","root","7","pregledano","F-015/F-016/F-017/F-018 (CI-01)","CI-01","2026-11-02"
-".github/workflows/ci.yml","infra","root","395","popravljeno","P-FE06-7 budget i svih 6 jobova prošli 41826599244 | P-FE06-9: V8 coverage test, scope gate, summary i artefakt (CI ✅ 41834394696) | Ratchet odbija sniženje prema prethodnom pushu | P-FE06-2: tri uzastopna full-stack smoke ponavljanja","FE-06","2026-11-04"
+".github/workflows/ci.yml","infra","root","440","popravljeno","P-FE06-7 budget i svih 6 jobova prošli 41826599244 | P-FE06-9: V8 coverage test, scope gate, summary i artefakt (CI ✅ 41834394696) | Ratchet odbija sniženje prema prethodnom pushu | P-FE06-2: tri uzastopna full-stack smoke ponavljanja","FE-06","2026-11-04"
 "backend/docker-entrypoint.sh","backend","root","38","popravljeno","B-CI04-02: preflight (DATABASE_URL obavezan, placeholder odbijen, host maskiran)","CI-04","2026-11-03"
 "backend/Dockerfile","backend","root","44","popravljeno","B-CI04-02: nema DATABASE_URL build-arga; entrypoint preflight","CI-04","2026-11-03"
 "backend/eslint.config.mjs","backend","root","53","popravljeno","eslint debt CI-01 (asertacije/unused/Socket tipovi)","CI-01","2026-11-02"
