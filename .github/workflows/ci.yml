@@ -305,6 +305,9 @@ jobs:
   # P-FE06-2: zasebna, svježa baza/Redis i stvarni backend; bez produkcijskih podataka.
   browser-fullstack:
     name: browser smoke (backend + postgres + redis)
+    permissions:
+      contents: read
+      actions: read # privremeno: čitanje izolovanog artefakta pada
     runs-on: ubuntu-latest
     timeout-minutes: 15
     services:
@@ -338,6 +341,46 @@ jobs:
       E2E_BACKEND_URL: http://127.0.0.1:3000
     steps:
       - uses: actions/checkout@v4
+      - name: Dijagnostika ponovljenog full-stack pada
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if ! gh run download 41847919388 --name browser-fullstack-failure --dir "$RUNNER_TEMP/old-fullstack" > "$RUNNER_TEMP/old-download.log" 2>&1; then
+            echo '::notice title=Prethodni full-stack pad::Izolovani artefakt nije dostupan'
+            exit 0
+          fi
+          python3 - <<'PYEOF'
+          from pathlib import Path
+          from urllib.parse import urlsplit
+          from zipfile import ZipFile
+          import json, os
+          root = Path(os.environ['RUNNER_TEMP'], 'old-fullstack')
+          lines = []
+          for path in root.rglob('error-context.md'):
+              snapshot = path.read_text(errors='replace').partition('# Page snapshot')[2].partition('# Test source')[0]
+              lines.append('DOM ' + ' '.join(f"{key}={key in snapshot}" for key in ('Kontrolna tabla', 'Prijavi se', 'Učitavanje', 'alert')))
+          network = []
+          for path in root.rglob('trace.zip'):
+              with ZipFile(path) as trace:
+                  for name in trace.namelist():
+                      if name.endswith('.network'):
+                          for raw in trace.read(name).decode().splitlines():
+                              event = json.loads(raw).get('snapshot', {})
+                              req, res = event.get('request', {}), event.get('response', {})
+                              url = urlsplit(req.get('url', ''))
+                              if url.path.startswith('/api/v1/') or url.path in ('/', '/admin', '/prijava') or url.path.endswith('.js'):
+                                  network.append(f"NET {req.get('method')} {url.path} status={res.get('status')} t={event.get('_monotonicTime')}")
+                      elif name == 'test.trace':
+                          for raw in trace.read(name).decode().splitlines():
+                              event = json.loads(raw)
+                              title = event.get('title', '')
+                              if event.get('type') == 'before' and (title in ('Reload', 'Navigate') or title.startswith('Wait for event')):
+                                  lines.append('STEP ' + title[:70] + ' t=' + str(event.get('startTime')))
+          lines.extend(network[-35:])
+          text = ' | '.join(lines)[:3800].replace('%', '%25').replace('\r', '%0D').replace('\n', '%0A')
+          print('::notice title=Prethodni full-stack pad::' + (text or 'Nema dijagnostičkih događaja'))
+          PYEOF
       - uses: actions/setup-node@v4
         with:
           node-version: 22
