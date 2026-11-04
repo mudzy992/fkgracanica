@@ -32,7 +32,8 @@
     "retry": "Try again",
     "close": "Close",
     "confirm": "Confirm",
-    "language": "Language"
+    "language": "Language",
+    "remove": "Remove"
   },
   "home": {
     "heroTitle": "FK Gračanica",
@@ -138,7 +139,10 @@
     "common": {
       "loading": "Loading…",
       "select": "Select…",
-      "error": "Something went wrong."
+      "error": "Something went wrong.",
+      "yes": "Yes",
+      "no": "No",
+      "actions": "Actions"
     },
     "mediaPicker": {
       "pick": "Select media",
@@ -244,6 +248,104 @@
       "goals": "Goals",
       "ticketsSold": "Tickets sold",
       "pendingNews": "News awaiting approval"
+    },
+    "payments": {
+      "enabled": "Enabled",
+      "mode": {
+        "label": "Mode",
+        "sandbox": "Test (sandbox)",
+        "live": "Production",
+        "test": "Test"
+      },
+      "stripe": {
+        "publishableKey": "Publishable key",
+        "secretKey": "Secret key",
+        "webhookSecret": "Webhook secret"
+      },
+      "paypal": {
+        "clientId": "Client ID",
+        "clientSecret": "Client secret",
+        "currency": "Currency (default EUR)",
+        "webhookId": "Webhook ID (optional)"
+      },
+      "monri": {
+        "merchantKey": "Merchant key",
+        "authToken": "Authenticity token"
+      }
+    },
+    "cmsWidget": {
+      "foundedYear": "Founded year",
+      "titleRequired": "Title *",
+      "subtitle": "Subtitle",
+      "background": "Background image (hero + stadium)",
+      "backgroundDisplay": "Background display",
+      "bg": {
+        "all": "On — all screens",
+        "desktop": "Large screens only",
+        "mobile": "Small screens only",
+        "none": "Off"
+      },
+      "showNextMatch": "Show next match at the bottom of the hero",
+      "showLastResult": "Show last result (subtle)",
+      "buttons": "Buttons (label + link)",
+      "buttonLabel": "Button text",
+      "buttonUrl": "/path",
+      "variant": {
+        "primary": "Primary",
+        "outline": "Outline"
+      },
+      "sectionTitle": "Section title (optional)",
+      "galleryLatest": "Latest galleries",
+      "gallerySingle": "Single gallery",
+      "limit": "Limit",
+      "viewAllLink": "‘See all’ link",
+      "description": "Description",
+      "buttonUrlFull": "Button URL"
+    },
+    "club": {
+      "shortName": "Short name",
+      "city": "City",
+      "description": "Description",
+      "nameRequired": "Name *",
+      "shortNameHint": "Short name (e.g. FKG, SLO)",
+      "shortNameNote": "Shown on the TV scoreboard and results. Max 8 characters.",
+      "descriptionPlaceholder": "Club description",
+      "crest": "Crest",
+      "ownClub": "Our club",
+      "ownClubHint": "Only one club can be marked as ours."
+    },
+    "newsForm": {
+      "category": "Category",
+      "noCategory": "— No category —",
+      "tags": "Tags (comma separated)",
+      "tagsPlaceholder": "transfer, match",
+      "videoUrl": "Video URL",
+      "seoTitle": "SEO title",
+      "seoDescription": "SEO description",
+      "gallery": "Gallery",
+      "scheduledAt": "Scheduled publishing",
+      "relatedMatches": "Related matches",
+      "relatedPlayers": "Related players"
+    },
+    "competitionsAdmin": {
+      "metaTitle": "Competitions",
+      "title": "Competitions",
+      "catalogShort": "Catalog",
+      "seasonShort": "Season",
+      "seasons": "Seasons",
+      "emptySeasons": "No seasons.",
+      "colName": "Name",
+      "colPeriod": "Period",
+      "colCompetitions": "Competitions",
+      "open": "Open",
+      "colActive": "Active",
+      "colSlug": "Slug",
+      "colLeague": "League",
+      "league": "League",
+      "other": "Other",
+      "catalog": "Competitions catalog",
+      "emptyCompetitions": "No competitions.",
+      "deleteSeason": "Delete season?"
     }
   },
   "common": {

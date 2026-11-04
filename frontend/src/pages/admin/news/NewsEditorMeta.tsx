@@ -1,4 +1,5 @@
 import { Controller } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 import { asArray } from '../../../lib/as-array';
 import { EntitySelect } from '../../../components/admin/EntitySelect';
 import { SlugField } from '../../../components/admin/SlugField';
@@ -10,6 +11,7 @@ import type { GalleryItem, Match, Player } from '../../../types';
 import type { NewsEditorFieldsProps } from '../news-form-utils';
 
 export function NewsEditorMeta({ register, control, watch, setValue }: NewsEditorFieldsProps) {
+  const { t } = useTranslation();
   const { data: categoriesRaw } = useNewsCategories();
   const categories = asArray<NewsCategory>(categoriesRaw);
   const title = watch('title');
@@ -18,12 +20,12 @@ export function NewsEditorMeta({ register, control, watch, setValue }: NewsEdito
     <aside className="space-y-4 rounded-2xl border border-[var(--border-subtle)] bg-surface/40 p-4 lg:sticky lg:top-4">
       <SlugField title={title} value={watch('slug')} onChange={(v) => setValue('slug', v)} />
       <div>
-        <label className="mb-1 block text-sm font-medium">Kategorija</label>
+        <label className="mb-1 block text-sm font-medium">{t('admin.newsForm.category')}</label>
         <select
           className="w-full rounded-lg border border-slate-200 bg-background px-3 py-2 text-sm"
           {...register('categoryId')}
         >
-          <option value="">— Bez kategorije —</option>
+          <option value="">{t('admin.newsForm.noCategory')}</option>
           {categories.map((c) => (
             <option key={c.id} value={c.id}>
               {c.name}
@@ -32,23 +34,25 @@ export function NewsEditorMeta({ register, control, watch, setValue }: NewsEdito
         </select>
       </div>
       <div>
-        <label className="mb-1 block text-sm font-medium">Tagovi (zarezom)</label>
-        <Input {...register('tagsCsv')} placeholder="transfer, utakmica" />
+        <label className="mb-1 block text-sm font-medium">{t('admin.newsForm.tags')}</label>
+        <Input {...register('tagsCsv')} placeholder={t('admin.newsForm.tagsPlaceholder')} />
       </div>
       <div>
-        <label className="mb-1 block text-sm font-medium">Video URL</label>
+        <label className="mb-1 block text-sm font-medium">{t('admin.newsForm.videoUrl')}</label>
         <Input {...register('videoUrl')} placeholder="https://..." />
       </div>
       <div>
-        <label className="mb-1 block text-sm font-medium">SEO naslov</label>
+        <label className="mb-1 block text-sm font-medium">{t('admin.newsForm.seoTitle')}</label>
         <Input {...register('seoTitle')} />
       </div>
       <div>
-        <label className="mb-1 block text-sm font-medium">SEO opis</label>
+        <label className="mb-1 block text-sm font-medium">
+          {t('admin.newsForm.seoDescription')}
+        </label>
         <Textarea rows={2} {...register('seoDesc')} />
       </div>
       <div>
-        <label className="mb-1 block text-sm font-medium">Galerija</label>
+        <label className="mb-1 block text-sm font-medium">{t('admin.newsForm.gallery')}</label>
         <Controller
           name="galleryId"
           control={control}
@@ -64,11 +68,13 @@ export function NewsEditorMeta({ register, control, watch, setValue }: NewsEdito
         />
       </div>
       <div>
-        <label className="mb-1 block text-sm font-medium">Zakazano objavljivanje</label>
+        <label className="mb-1 block text-sm font-medium">{t('admin.newsForm.scheduledAt')}</label>
         <Input type="datetime-local" {...register('scheduledAt')} />
       </div>
       <div>
-        <label className="mb-1 block text-sm font-medium">Povezane utakmice</label>
+        <label className="mb-1 block text-sm font-medium">
+          {t('admin.newsForm.relatedMatches')}
+        </label>
         <Controller
           name="relatedMatchIds"
           control={control}
@@ -88,7 +94,9 @@ export function NewsEditorMeta({ register, control, watch, setValue }: NewsEdito
         />
       </div>
       <div>
-        <label className="mb-1 block text-sm font-medium">Povezani igrači</label>
+        <label className="mb-1 block text-sm font-medium">
+          {t('admin.newsForm.relatedPlayers')}
+        </label>
         <Controller
           name="relatedPlayerIds"
           control={control}
@@ -100,7 +108,9 @@ export function NewsEditorMeta({ register, control, watch, setValue }: NewsEdito
               multiple
               value={field.value}
               onChange={field.onChange}
-              formatLabel={(p) => `${p.firstName} ${p.lastName}${p.number ? ` (#${p.number})` : ''}`}
+              formatLabel={(p) =>
+                `${p.firstName} ${p.lastName}${p.number ? ` (#${p.number})` : ''}`
+              }
             />
           )}
         />

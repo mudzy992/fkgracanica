@@ -32,7 +32,8 @@
     "retry": "Pokušaj ponovo",
     "close": "Zatvori",
     "confirm": "Potvrdi",
-    "language": "Jezik"
+    "language": "Jezik",
+    "remove": "Ukloni"
   },
   "home": {
     "heroTitle": "FK Gračanica",
@@ -138,7 +139,10 @@
     "common": {
       "loading": "Učitavanje…",
       "select": "Odaberi…",
-      "error": "Došlo je do greške."
+      "error": "Došlo je do greške.",
+      "yes": "Da",
+      "no": "Ne",
+      "actions": "Akcije"
     },
     "mediaPicker": {
       "pick": "Odabir medija",
@@ -244,6 +248,104 @@
       "goals": "Golovi",
       "ticketsSold": "Prodane ulaznice",
       "pendingNews": "Vijesti na odobrenju"
+    },
+    "payments": {
+      "enabled": "Omogućen",
+      "mode": {
+        "label": "Režim",
+        "sandbox": "Test (sandbox)",
+        "live": "Produkcija",
+        "test": "Test"
+      },
+      "stripe": {
+        "publishableKey": "Javni ključ (publishable)",
+        "secretKey": "Tajni ključ",
+        "webhookSecret": "Webhook tajna"
+      },
+      "paypal": {
+        "clientId": "Client ID",
+        "clientSecret": "Client secret",
+        "currency": "Valuta (zadano EUR)",
+        "webhookId": "Webhook ID (opciono)"
+      },
+      "monri": {
+        "merchantKey": "Merchant key",
+        "authToken": "Authenticity token"
+      }
+    },
+    "cmsWidget": {
+      "foundedYear": "Godina osnivanja",
+      "titleRequired": "Naslov *",
+      "subtitle": "Podnaslov",
+      "background": "Pozadinska slika (hero + stadion)",
+      "backgroundDisplay": "Prikaz pozadine",
+      "bg": {
+        "all": "Uključeno — svi ekrani",
+        "desktop": "Samo veliki ekrani",
+        "mobile": "Samo mali ekrani",
+        "none": "Isključeno"
+      },
+      "showNextMatch": "Prikaži sljedeću utakmicu u hero dnu",
+      "showLastResult": "Prikaži zadnji rezultat (suptilno)",
+      "buttons": "Dugmad (label + link)",
+      "buttonLabel": "Tekst dugmeta",
+      "buttonUrl": "/putanja",
+      "variant": {
+        "primary": "Primarno",
+        "outline": "Outline"
+      },
+      "sectionTitle": "Naslov sekcije (opcionalno)",
+      "galleryLatest": "Najnovije galerije",
+      "gallerySingle": "Jedna galerija",
+      "limit": "Limit",
+      "viewAllLink": "Link 'Vidi sve'",
+      "description": "Opis",
+      "buttonUrlFull": "URL dugmeta"
+    },
+    "club": {
+      "shortName": "Kratko ime",
+      "city": "Grad",
+      "description": "Opis",
+      "nameRequired": "Naziv *",
+      "shortNameHint": "Kratko ime (npr. FKG, SLO)",
+      "shortNameNote": "Prikazuje se na TV semaforu i rezultatima. Max 8 znakova.",
+      "descriptionPlaceholder": "Opis kluba",
+      "crest": "Grb",
+      "ownClub": "Naš klub",
+      "ownClubHint": "Samo jedan klub može biti označen kao naš."
+    },
+    "newsForm": {
+      "category": "Kategorija",
+      "noCategory": "— Bez kategorije —",
+      "tags": "Tagovi (zarezom)",
+      "tagsPlaceholder": "transfer, utakmica",
+      "videoUrl": "Video URL",
+      "seoTitle": "SEO naslov",
+      "seoDescription": "SEO opis",
+      "gallery": "Galerija",
+      "scheduledAt": "Zakazano objavljivanje",
+      "relatedMatches": "Povezane utakmice",
+      "relatedPlayers": "Povezani igrači"
+    },
+    "competitionsAdmin": {
+      "metaTitle": "Takmičenja",
+      "title": "Takmičenja",
+      "catalogShort": "Katalog",
+      "seasonShort": "Sezona",
+      "seasons": "Sezone",
+      "emptySeasons": "Nema sezona.",
+      "colName": "Naziv",
+      "colPeriod": "Period",
+      "colCompetitions": "Takmičenja",
+      "open": "Otvori",
+      "colActive": "Aktivna",
+      "colSlug": "Slug",
+      "colLeague": "Liga",
+      "league": "Liga",
+      "other": "Ostalo",
+      "catalog": "Katalog takmičenja",
+      "emptyCompetitions": "Nema takmičenja.",
+      "deleteSeason": "Obrisati sezonu?"
     }
   },
   "common": {

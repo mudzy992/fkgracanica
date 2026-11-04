@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Badge } from '../../../components/ui/badge';
 import { Input } from '../../../components/ui/input';
 import { Switch } from '../../../components/ui/switch';
@@ -16,6 +17,7 @@ interface Props {
 }
 
 export function PaymentProviderCard({ id, label, gate, settings, onSet }: Props) {
+  const { t } = useTranslation();
   const badge = providerGateBadge(gate);
   const prefix = `payments.${id}`;
   return (
@@ -29,7 +31,7 @@ export function PaymentProviderCard({ id, label, gate, settings, onSet }: Props)
           checked={settings[`${prefix}.enabled`] === 'true'}
           onCheckedChange={(v) => onSet(`${prefix}.enabled`, String(v))}
         />
-        Omogućen
+        {t('admin.payments.enabled')}
       </label>
       {id === 'stripe' && <StripeFields settings={settings} onSet={onSet} />}
       {id === 'paypal' && <PaypalFields settings={settings} onSet={onSet} />}
@@ -54,22 +56,23 @@ function StripeFields({
   settings: Record<string, string>;
   onSet: (key: string, value: string) => void;
 }) {
+  const { t } = useTranslation();
   return (
     <div className="space-y-2">
-      <Field label="Javni ključ (publishable)">
+      <Field label={t('admin.payments.stripe.publishableKey')}>
         <Input
           value={settings['payments.stripe.publishableKey'] ?? ''}
           onChange={(e) => onSet('payments.stripe.publishableKey', e.target.value)}
         />
       </Field>
-      <Field label="Tajni ključ">
+      <Field label={t('admin.payments.stripe.secretKey')}>
         <Input
           type="password"
           value={settings['payments.stripe.secretKey'] ?? ''}
           onChange={(e) => onSet('payments.stripe.secretKey', e.target.value)}
         />
       </Field>
-      <Field label="Webhook tajna">
+      <Field label={t('admin.payments.stripe.webhookSecret')}>
         <Input
           type="password"
           value={settings['payments.stripe.webhookSecret'] ?? ''}
@@ -87,38 +90,39 @@ function PaypalFields({
   settings: Record<string, string>;
   onSet: (key: string, value: string) => void;
 }) {
+  const { t } = useTranslation();
   return (
     <div className="space-y-2">
-      <Field label="Client ID">
+      <Field label={t('admin.payments.paypal.clientId')}>
         <Input
           value={settings['payments.paypal.clientId'] ?? ''}
           onChange={(e) => onSet('payments.paypal.clientId', e.target.value)}
         />
       </Field>
-      <Field label="Client secret">
+      <Field label={t('admin.payments.paypal.clientSecret')}>
         <Input
           type="password"
           value={settings['payments.paypal.clientSecret'] ?? ''}
           onChange={(e) => onSet('payments.paypal.clientSecret', e.target.value)}
         />
       </Field>
-      <Field label="Režim">
+      <Field label={t('admin.payments.mode.label')}>
         <select
           className="flex h-10 w-full rounded-lg border border-[var(--border-subtle)] bg-background px-3 text-sm"
           value={settings['payments.paypal.mode'] || 'sandbox'}
           onChange={(e) => onSet('payments.paypal.mode', e.target.value)}
         >
-          <option value="sandbox">Test (sandbox)</option>
-          <option value="live">Produkcija</option>
+          <option value="sandbox">{t('admin.payments.mode.sandbox')}</option>
+          <option value="live">{t('admin.payments.mode.live')}</option>
         </select>
       </Field>
-      <Field label="Valuta (zadano EUR)">
+      <Field label={t('admin.payments.paypal.currency')}>
         <Input
           value={settings['payments.paypal.currency'] ?? 'EUR'}
           onChange={(e) => onSet('payments.paypal.currency', e.target.value)}
         />
       </Field>
-      <Field label="Webhook ID (opciono)">
+      <Field label={t('admin.payments.paypal.webhookId')}>
         <Input
           value={settings['payments.paypal.webhookId'] ?? ''}
           onChange={(e) => onSet('payments.paypal.webhookId', e.target.value)}
@@ -135,29 +139,30 @@ function MonriFields({
   settings: Record<string, string>;
   onSet: (key: string, value: string) => void;
 }) {
+  const { t } = useTranslation();
   return (
     <div className="space-y-2">
-      <Field label="Merchant key">
+      <Field label={t('admin.payments.monri.merchantKey')}>
         <Input
           value={settings['payments.monri.merchantKey'] ?? ''}
           onChange={(e) => onSet('payments.monri.merchantKey', e.target.value)}
         />
       </Field>
-      <Field label="Authenticity token">
+      <Field label={t('admin.payments.monri.authToken')}>
         <Input
           type="password"
           value={settings['payments.monri.authenticationKey'] ?? ''}
           onChange={(e) => onSet('payments.monri.authenticationKey', e.target.value)}
         />
       </Field>
-      <Field label="Režim">
+      <Field label={t('admin.payments.mode.label')}>
         <select
           className="flex h-10 w-full rounded-lg border border-[var(--border-subtle)] bg-background px-3 text-sm"
           value={settings['payments.monri.mode'] || 'test'}
           onChange={(e) => onSet('payments.monri.mode', e.target.value)}
         >
-          <option value="test">Test</option>
-          <option value="live">Produkcija</option>
+          <option value="test">{t('admin.payments.mode.test')}</option>
+          <option value="live">{t('admin.payments.mode.live')}</option>
         </select>
       </Field>
     </div>
