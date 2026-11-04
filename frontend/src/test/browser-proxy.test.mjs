@@ -48,6 +48,23 @@ describe('browser test proxy isolation', () => {
     }
   });
 
+  it('ograničava testno kašnjenje i odgađa ciljanu sintetičku posjetu', async () => {
+    const backendUrl = `http://127.0.0.1:${backend.address().port}`;
+    for (const visitDelayMs of [-1, 5001, 1.5, NaN]) {
+      expect(() => createBrowserTestServer({ backendUrl, distDir: directory, visitDelayMs })).toThrow();
+    }
+    const delayed = createBrowserTestServer({ backendUrl, distDir: directory, visitDelayMs: 200 });
+    const delayedPort = await listen(delayed);
+    try {
+      const start = performance.now();
+      const response = await fetch(`http://127.0.0.1:${delayedPort}/api/v1/public-analytics/visit`, { method: 'POST', body: 'synthetic' });
+      expect(performance.now() - start).toBeGreaterThanOrEqual(150);
+      expect(await response.json()).toEqual({ path: '/api/v1/public-analytics/visit', method: 'POST', body: 'synthetic' });
+    } finally {
+      await new Promise((resolve) => delayed.close(resolve));
+    }
+  });
+
   it('prosljeđuje relativni API i čuva HTML/robots handler', async () => {
     const base = `http://127.0.0.1:${port}`;
     const response = await fetch(`${base}/api/v1/auth/login?test=1`, { method: 'POST', body: 'mock-body' });

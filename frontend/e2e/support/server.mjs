@@ -5,11 +5,12 @@ import { createOgApp } from '../../server/og-server.mjs';
 import { createIsolationProxy } from './isolation-proxy.mjs';
 
 /** Browser testovi smiju se povezati samo s lokalnim, izolovanim backendom. */
-export function createBrowserTestServer({ backendUrl = 'http://127.0.0.1:3000', distDir } = {}) {
+export function createBrowserTestServer({ backendUrl = 'http://127.0.0.1:3000', distDir, visitDelayMs = 0 } = {}) {
   const backend = new URL(backendUrl);
   if (backend.protocol !== 'http:' || backend.hostname !== '127.0.0.1' || backend.pathname !== '/' || backend.search || backend.hash || backend.username || backend.password) {
     throw new Error('Browser test proxy prihvata samo izolovani HTTP backend na 127.0.0.1');
   }
+  if (!Number.isInteger(visitDelayMs) || visitDelayMs < 0 || visitDelayMs > 5000) throw new Error('Neispravno testno kašnjenje');
   const app = createOgApp({ distDir, internalApiUrl: `${backend.origin}/api/v1` });
   const proxyOptions = (req) => ({
     hostname: backend.hostname,
@@ -26,8 +27,15 @@ export function createBrowserTestServer({ backendUrl = 'http://127.0.0.1:3000', 
       return;
     }
     const upstream = http.request(proxyOptions(req), (response) => {
-      res.writeHead(response.statusCode ?? 502, response.headers);
-      response.pipe(res);
+      const relay = () => {
+        if (res.destroyed) { response.resume(); return; }
+        res.writeHead(response.statusCode ?? 502, response.headers);
+        response.pipe(res);
+      };
+      // Samo testni server: kontrolisana regresija navigacije prije kraja XHR-a.
+      if (visitDelayMs && req.method === 'POST' && path === '/api/v1/public-analytics/visit') {
+        setTimeout(relay, visitDelayMs).unref();
+      } else relay();
     });
     upstream.on('error', () => { if (!res.headersSent) res.writeHead(502); res.end(); });
     req.pipe(upstream);
@@ -56,7 +64,7 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
   const isolationPort = Number(process.env.E2E_PROXY_PORT ?? port + 1);
   if (!Number.isInteger(port) || !Number.isInteger(isolationPort) || port < 1 || isolationPort < 1 ||
     port > 65535 || isolationPort > 65535 || port === isolationPort) throw new Error('Neispravni browser test portovi');
-  const server = createBrowserTestServer({ backendUrl: process.env.E2E_BACKEND_URL });
+  const server = createBrowserTestServer({ backendUrl: process.env.E2E_BACKEND_URL, visitDelayMs: Number(process.env.E2E_VISIT_DELAY_MS ?? 0) });
   createIsolationProxy({ origin: `http://127.0.0.1:${port}` }).listen(isolationPort, '127.0.0.1', () => {
     // Playwright provjerava samo app port: ne oglašavati ga prije mrežne granice.
     server.listen(port, '0.0.0.0', () => console.log(`[browser-test-server] :${port}`));

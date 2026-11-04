@@ -1,13 +1,8 @@
-import type { Request } from '@playwright/test';
+import { watchPendingApi } from './support/pending-api.ts';
 import { test, expect } from './support/fullstack-fixture.ts';
 
 test('izolovani backend: seedovana naslovna, zaštita, prijava i odjava', async ({ page }) => {
-  const pendingApi = new Set<Request>();
-  page.on('request', (request) => {
-    if (new URL(request.url()).pathname.startsWith('/api/v1/')) pendingApi.add(request);
-  });
-  page.on('requestfinished', (request) => pendingApi.delete(request));
-  page.on('requestfailed', (request) => pendingApi.delete(request));
+  const pendingApi = watchPendingApi(page);
   const email = process.env.ADMIN_EMAIL;
   const password = process.env.ADMIN_PASSWORD;
   if (!email?.endsWith('@example.test') || !password || password.length < 16) {
@@ -15,9 +10,14 @@ test('izolovani backend: seedovana naslovna, zaštita, prijava i odjava', async 
   }
 
   const cms = page.waitForResponse((response) => new URL(response.url()).pathname === '/api/v1/cms/pages/home');
+  const visit = page.waitForResponse((response) => new URL(response.url()).pathname === '/api/v1/public-analytics/visit');
   await page.goto('/');
   expect((await cms).ok()).toBe(true);
   await expect(page.getByRole('heading', { name: 'FK Gračanica', level: 1 })).toBeVisible();
+  expect((await visit).status()).toBe(204);
+  // Ne napuštati naslovnicu dok njeni API zahtjevi još traju: otkazani XHR
+  // može ostati u Playwrightovom observeru i lažno blokirati kasniji reload.
+  await expect.poll(pendingApi, { message: 'Javni API pozivi moraju završiti prije navigacije' }).toEqual([]);
 
   await page.goto('/admin');
   await expect(page).toHaveURL(/\/prijava$/);
@@ -36,7 +36,7 @@ test('izolovani backend: seedovana naslovna, zaštita, prijava i odjava', async 
   await expect(page).toHaveURL(/\/admin$/);
   await expect(page.getByRole('heading', { name: 'Kontrolna tabla' })).toBeVisible();
   expect((await dashboard).ok()).toBe(true);
-  await expect.poll(() => pendingApi.size, { message: 'Admin API pozivi moraju završiti prije reload-a' }).toBe(0);
+  await expect.poll(pendingApi, { message: 'Admin API pozivi moraju završiti prije reload-a' }).toEqual([]);
   await expect.poll(() => page.evaluate(() => Boolean(localStorage.getItem('fk_access_token')))).toBe(true);
 
   const me = page.waitForResponse((response) => new URL(response.url()).pathname === '/api/v1/auth/me');
