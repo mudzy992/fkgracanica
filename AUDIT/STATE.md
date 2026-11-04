@@ -8,9 +8,9 @@
 |-------|------------|
 | **Aktivna grana** | `arena/290a6f13-fkgracanica` |
 | **Trenutna faza** | CI-01 ✔ INF-01 ✔ INF-02 ✔ BE-01…**BE-09 ✔** → FE-01 ✔ FE-02 ✔ FE-03 ✔ FE-03b ✔ → CI-04 ✔ → FE-04a ✔ FE-04b ✔ → FE-05 ✔ → **FE-04c ✅ ZAVRŠEN (baseline 496 → 0)** → **BE-09d ✅ ZAVRŠEN** → **FE-06 🔄 audit završen, P-FE06-1…9 odobreni, implementacija traje** ; mobile zamrznut dok se BE/FE ne zaokruže |
-| **Trenutni segment** | **FE-06 — OTVOREN:** audit Playwright/axe/bundle/coverage završen; **P-FE06-1…9 odobreni**; P-FE06-4/5/6 potvrđeni u CI-ju, P-FE06-1/3 lokalno implementirani; novi P-FE06-10/11 čekaju odobrenje. Prethodno BE-09d ✅, FE-04c ✅. Mobile odgođen do završetka BE/FE rada. |
-| **Zadnji commit** | `test(web): uvedi izolovane browser i axe provjere [FE-06]` (CI za ovaj commit treba potvrditi) |
-| **Zadnji CI run** | ✅ **`41814125171`** (P-FE06-6, sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41814125171 ; ✅ **`41813051627`** (P-FE06-5, sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41813051627 ; ✅ **`41811296453`** (P-FE06-4, sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41811296453 ; ✅ **`41809421999`** (FE-06 evidencija CI-ja, sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41809421999 ; ✅ **`41809144900`** (FE-06 audit, sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41809144900 ; ✅ **`41802269029`** (BE-09d run-ID dokumentacija; sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41802269029 ; ✅ **`41801892490`** (docs BE-09d zatvoren, sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41801892490 ; ✅ **`41801427757`** (BE-09d implementacija + migracije, sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41801427757 ; ✅ **`41798892782`** (BE-09d audit, sva 4 joba) ; ✅ **`41795506967`** (docs batch 7+8, sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41795506967 ; ✅ **`41795171365`** (FE-04c batch 8, sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41795171365 ; ✅ **`41794454711`** (batch 7) ; ✅ **`41792020666`** (docs run-ID) ; ✅ **`41791659204`** (FE-04c batch 5+6 + docs, sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41791659204 ; ✅ **`41791137350`** (batch 5) ; ✅ **`41788831131`**, **`41788531790`**, **`41787973999`**, **`41780305565`**, **`41780020284`**, **`41779492872`**, **`41736615770`** (batch 1–4) |
+| **Trenutni segment** | **FE-06 — OTVOREN:** audit Playwright/axe/bundle/coverage završen; **P-FE06-1…9 odobreni**; P-FE06-1/3/4/5/6 potvrđeni u CI-ju; novi P-FE06-10/11 čekaju odobrenje. Prethodno BE-09d ✅, FE-04c ✅. Mobile odgođen do završetka BE/FE rada. |
+| **Zadnji commit** | `704c513` — `test(web): uvedi izolovane browser i axe provjere [FE-06]` |
+| **Zadnji CI run** | ✅ **`41815794845`** (P-FE06-1/3, svih 5 jobova uključujući browser mock+axe) https://github.com/mudzy992/fkgracanica/actions/runs/41815794845 ; ✅ **`41814125171`** (P-FE06-6, sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41814125171 ; ✅ **`41813051627`** (P-FE06-5, sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41813051627 ; ✅ **`41811296453`** (P-FE06-4, sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41811296453 ; ✅ **`41809421999`** (FE-06 evidencija CI-ja, sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41809421999 ; ✅ **`41809144900`** (FE-06 audit, sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41809144900 ; ✅ **`41802269029`** (BE-09d run-ID dokumentacija; sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41802269029 ; ✅ **`41801892490`** (docs BE-09d zatvoren, sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41801892490 ; ✅ **`41801427757`** (BE-09d implementacija + migracije, sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41801427757 ; ✅ **`41798892782`** (BE-09d audit, sva 4 joba) ; ✅ **`41795506967`** (docs batch 7+8, sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41795506967 ; ✅ **`41795171365`** (FE-04c batch 8, sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41795171365 ; ✅ **`41794454711`** (batch 7) ; ✅ **`41792020666`** (docs run-ID) ; ✅ **`41791659204`** (FE-04c batch 5+6 + docs, sva 4 joba) https://github.com/mudzy992/fkgracanica/actions/runs/41791659204 ; ✅ **`41791137350`** (batch 5) ; ✅ **`41788831131`**, **`41788531790`**, **`41787973999`**, **`41780305565`**, **`41780020284`**, **`41779492872`**, **`41736615770`** (batch 1–4) |
 | **check:all** | `npm run check:all` → **9/9**: check-coverage, file-size, console-ban, token-check, secrets-ban, layer-deps, docs-links, docker-context, bundle-react; u CI-ju audit-gate + standards. |
 
 ## Šta je urađeno (hronološki)
@@ -24,7 +24,7 @@
   realnih podataka i plaćanja. To **nije** full-stack E2E.
 - Axe gate bez blanket isključenja: 0 critical/serious za definisana stanja;
   pozitivni test provjerava detekciju slike bez `alt`. Novi `browser-mock` CI job
-  tek treba potvrditi nakon pusha; trace/screenshot samo na padu, sintetički podaci.
+  ✅ `41815794845`; trace/screenshot samo na padu, sintetički podaci.
 - U grešci prijave je na hoveru nađen kontrast 2,54:1; već odobreni a11y popravak
   koristi tamni tekst na svijetlom hoveru i regresijski test. Testni relativni API
   proxy odbija udaljene hostove i ima HTTP/upgrade testove; P2 full-stack još otvoren.
@@ -34,8 +34,8 @@
 - **Matrica:** 725/1408 auditiranih (backend 421/421, frontend 277/669,
   mobile 1/292, infra 4/4, scripts 22/22); nije test coverage.
 - Čisti `npm ci`, browser build/typecheck, Vitest **93/93**, lint 0 errors i
-  `check:all` 9/9 ✅. Zadnji potvrđeni CI ✅ `41814125171` (P-FE06-6);
-  CI ovog commita provjeriti.
+  `check:all` 9/9 ✅. CI ✅ `41815794845` (5/5, uključujući novi browser
+  mock + axe job); prethodni P-FE06-6 CI ✅ `41814125171`.
 
 ### Sesija FE-06 — 2026-11-04 (implementacija, P-FE06-6)
 
@@ -866,11 +866,11 @@ preporuci slažem se" → odobreni **P-B09c-1…10 + P-B09c-12**, uz P-B08-6, P-
 
 ## Šta je sljedeće (tačan sljedeći korak)
 
-1. Nastaviti odobrene **P-FE06-1…9**: nakon P1/3 mock browser i axe gatea
-   implementirati P2 stvarni full-stack CI smoke, P7 budget
+1. Zatražiti odluku za nove **P-FE06-10/11 / B-FE06-09/10**. Nakon odluke
+   nastaviti odobrene **P-FE06-1…9**: P2 stvarni full-stack CI smoke, P7 budget
    prije P8 lazy, pa P9 coverage. Manji logični commitovi; nakon svakog pusha
    sačekati stvarni CI i evidentirati ID. FE-06 ostaje otvoren do provjere svih
-   kriterija i High nalaza; zatražiti odluku za nove P-FE06-10/11 / B-FE06-09/10.
+   kriterija i High nalaza.
 2. Zatim nastaviti backend/frontend backlog **P-B08-6**, P-B06-1/2, P-B02-1/2/3,
    P-B03-1, B-07-10…13, **P-CI04-1** te shared `lib/`/`hooks/`; coverage
    povećavati prema ≥50% i dodatno proširiti browser tokove. Ne predstavljati
