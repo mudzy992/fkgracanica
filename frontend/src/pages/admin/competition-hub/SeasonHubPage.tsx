@@ -1,4 +1,5 @@
 import { Link, useParams, useSearchParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { ArrowLeft } from 'lucide-react';
 import { useSeasons } from '../../../hooks';
 import { useAuth } from '../../../lib/auth';
@@ -13,6 +14,7 @@ import { RoundMatchesPanel } from './RoundMatchesPanel';
 import { SeasonRoundsPanel } from './SeasonRoundsPanel';
 
 export function SeasonHubPage() {
+  const { t } = useTranslation();
   const { seasonId = '', editionId = '' } = useParams();
   const [params, setParams] = useSearchParams();
   const selectedRoundId = params.get('roundId');
@@ -27,7 +29,7 @@ export function SeasonHubPage() {
   const backTo = found ? `/admin/seasons/${found.calendar.id}` : '/admin/competitions';
 
   if (isLoading) return <Skeleton className="mx-4 mt-8 h-64" />;
-  if (!found) return <p className="p-8 text-text-muted">Takmičenje u sezoni nije pronađeno.</p>;
+  if (!found) return <p className="p-8 text-text-muted">{t('admin.seasonHub.notFound')}</p>;
 
   return (
     <div className="space-y-6 pb-8">
@@ -42,7 +44,7 @@ export function SeasonHubPage() {
       />
       <div className="flex flex-wrap items-center gap-3">
         <Link to={backTo}>
-          <Button variant="ghost" size="icon" aria-label="Nazad">
+          <Button variant="ghost" size="icon" aria-label={t('actions.back')}>
             <ArrowLeft className="h-4 w-4" />
           </Button>
         </Link>
@@ -51,8 +53,12 @@ export function SeasonHubPage() {
             <h1 className="text-2xl font-bold">
               {found.edition.competition?.name ?? 'Takmičenje'}
             </h1>
-            {found.calendar.isActive && <Badge variant="success">Aktivna sezona</Badge>}
-            {found.edition.competition?.isLeague && <Badge variant="success">Liga</Badge>}
+            {found.calendar.isActive && (
+              <Badge variant="success">{t('admin.competitionForm.activeSeason')}</Badge>
+            )}
+            {found.edition.competition?.isLeague && (
+              <Badge variant="success">{t('admin.competitionsAdmin.league')}</Badge>
+            )}
           </div>
           <p className="text-sm text-text-muted">
             {found.calendar.name} · {found.calendar.yearStart}/{found.calendar.yearEnd}

@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link, useParams } from 'react-router-dom';
 import {
   useCmsPages,
@@ -21,6 +22,7 @@ import { CmsPageMetaForm } from './CmsPageMetaForm';
 import { CmsSectionEditDialog } from './CmsSectionEditDialog';
 
 export function CmsPageBuilderPage() {
+  const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
   const { data, isLoading } = useCmsPages(true);
   const page = useMemo(() => asArray<CmsPage>(data).find((p) => p.id === id), [data, id]);
@@ -86,7 +88,7 @@ export function CmsPageBuilderPage() {
   };
 
   if (!isLoading && !page) {
-    return <p className="p-8 text-text-muted">Stranica nije pronađena.</p>;
+    return <p className="p-8 text-text-muted">{t('admin.cmsBuilder.notFound')}</p>;
   }
 
   const saveMeta = async (pageId: string) => {
@@ -133,7 +135,7 @@ export function CmsPageBuilderPage() {
       <div className="mt-6 grid gap-4 lg:grid-cols-2 lg:items-start">
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <h2 className="font-semibold">Sekcije</h2>
+            <h2 className="font-semibold">{t('admin.cmsBuilder.sections')}</h2>
             <Button size="sm" onClick={() => setPickerOpen(true)}>
               + Widget
             </Button>
@@ -153,7 +155,7 @@ export function CmsPageBuilderPage() {
               }}
             />
           ) : (
-            <p className="text-sm text-text-muted">Nema sekcija.</p>
+            <p className="text-sm text-text-muted">{t('admin.cmsBuilder.noSections')}</p>
           )}
         </div>
         <div className="sticky top-4 h-[calc(100dvh-8rem)] min-h-[24rem]">

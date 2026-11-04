@@ -305,7 +305,10 @@
       "limit": "Limit",
       "viewAllLink": "Link 'Vidi sve'",
       "description": "Opis",
-      "buttonUrlFull": "URL dugmeta"
+      "buttonUrlFull": "URL dugmeta",
+      "sectionTitleShort": "Naslov sekcije",
+      "newsCount": "Broj vijesti",
+      "viewAllLabel": "Tekst 'Vidi sve'"
     },
     "club": {
       "shortName": "Kratko ime",
@@ -606,6 +609,45 @@
       "monriTitle": "Monri test",
       "monriBody": "Test IPG: ipgtest.monri.com/v2/form. Live: ipg.monri.com. Merchant key + authenticity token. Mode: test. Valuta BAM, iznos u feningima. Bridge: /placanje/monri.",
       "monriWebhook": "Callback: POST /payments/webhooks/monri"
+    },
+    "playerPanel": {
+      "selectPlayer": "Odaberi igrača…",
+      "season": "Sezona",
+      "minutes": "Min"
+    },
+    "clubHub": {
+      "notFound": "Klub nije pronađen."
+    },
+    "cmsBuilder": {
+      "notFound": "Stranica nije pronađena.",
+      "sections": "Sekcije",
+      "noSections": "Nema sekcija."
+    },
+    "cmsMeta": {
+      "title": "Naslov",
+      "draft": "Nacrt",
+      "published": "Objavljeno",
+      "save": "Sačuvaj meta",
+      "editTitle": "Uredi: {{title}}"
+    },
+    "seasonHub": {
+      "notFound": "Takmičenje u sezoni nije pronađeno."
+    },
+    "galleryEditor": {
+      "createAlbum": "Kreiraj album",
+      "titleRequired": "Naslov albuma *",
+      "descriptionOptional": "Opis (opcionalno)",
+      "afterCreate": "Nakon kreiranja albuma dodajete fotografije na cijelom ekranu.",
+      "photos": "Fotografije ({{count}})"
+    },
+    "mediaGrid": {
+      "copyUrl": "Kopiraj URL",
+      "copied": "Kopirano"
+    },
+    "ticketingPayments": {
+      "status": "Status online plaćanja",
+      "membershipPrice": "Godišnja članarina (KM)",
+      "defaultProvider": "Zadani servis plaćanja"
     }
   },
   "common": {

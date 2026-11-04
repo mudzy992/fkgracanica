@@ -1,4 +1,5 @@
 import { Check, Copy, Pencil, Trash2 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import type { MediaAsset } from '../../../hooks/use-media-admin';
 import { mediaUrl } from '../../../lib/media';
 import { cn } from '../../../lib/utils';
@@ -34,6 +35,7 @@ export function MediaAssetsGrid({
   onDelete,
   onEdit,
 }: Props) {
+  const { t } = useTranslation();
   if (!assets.length) {
     return <p className="p-6 text-center text-sm text-text-muted lg:hidden">{empty}</p>;
   }
@@ -85,7 +87,7 @@ export function MediaAssetsGrid({
                       variant="ghost"
                       className="h-7 flex-1 px-1"
                       onClick={() => onEdit(asset)}
-                      aria-label="Uredi"
+                      aria-label={t('actions.edit')}
                     >
                       <Pencil className="h-3.5 w-3.5" />
                     </Button>
@@ -96,10 +98,12 @@ export function MediaAssetsGrid({
                     variant="ghost"
                     className="h-7 flex-1 px-1"
                     onClick={() => onCopy(asset.originalPath)}
-                    aria-label="Kopiraj URL"
+                    aria-label={t('admin.mediaGrid.copyUrl')}
                   >
                     <Copy className="h-3.5 w-3.5" />
-                    {copied === asset.originalPath && <span className="sr-only">Kopirano</span>}
+                    {copied === asset.originalPath && (
+                      <span className="sr-only">{t('admin.mediaGrid.copied')}</span>
+                    )}
                   </Button>
                   {onDelete ? (
                     <Button
@@ -108,7 +112,7 @@ export function MediaAssetsGrid({
                       variant="ghost"
                       className="h-7 flex-1 px-1 text-danger"
                       onClick={() => void onDelete(asset.id, asset.filename)}
-                      aria-label="Obriši"
+                      aria-label={t('actions.delete')}
                     >
                       <Trash2 className="h-3.5 w-3.5" />
                     </Button>

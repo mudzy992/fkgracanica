@@ -1,10 +1,12 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { usePlayers, useSeasons } from '../../../hooks';
 import { asArray } from '../../../lib/as-array';
 import type { Player } from '../../../types';
 import { usePlayerAnalytics } from '../../../hooks/use-analytics';
 
 export function AnalyticsPlayerPanel() {
+  const { t } = useTranslation();
   const { data: playersRaw } = usePlayers({ activeOnly: true });
   const players = asArray<Player>(playersRaw);
   const { data: seasonsRaw } = useSeasons();
@@ -20,7 +22,7 @@ export function AnalyticsPlayerPanel() {
         value={id}
         onChange={(e) => setId(e.target.value)}
       >
-        <option value="">Odaberi igrača…</option>
+        <option value="">{t('admin.playerPanel.selectPlayer')}</option>
         {players.map((p) => (
           <option key={p.id} value={p.id}>
             {p.firstName} {p.lastName}
@@ -28,7 +30,7 @@ export function AnalyticsPlayerPanel() {
         ))}
       </select>
 
-      {isFetching && <p className="text-sm text-text-muted">Učitavanje...</p>}
+      {isFetching && <p className="text-sm text-text-muted">{t('admin.common.loading')}</p>}
 
       {data && (
         <div className="space-y-4">
@@ -41,7 +43,10 @@ export function AnalyticsPlayerPanel() {
               { label: '🟨', value: data.totals.yellowCards },
               { label: '🟥', value: data.totals.redCards },
             ].map((s) => (
-              <div key={s.label} className="rounded-xl border border-[var(--border-subtle)] bg-surface/50 px-3 py-2">
+              <div
+                key={s.label}
+                className="rounded-xl border border-[var(--border-subtle)] bg-surface/50 px-3 py-2"
+              >
                 <p className="text-xs text-text-muted">{s.label}</p>
                 <p className="mt-1 text-xl font-bold tabular-nums">{s.value}</p>
               </div>
@@ -52,18 +57,21 @@ export function AnalyticsPlayerPanel() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-[var(--border-subtle)] text-left text-xs text-text-muted">
-                  <th className="px-4 py-2">Sezona</th>
+                  <th className="px-4 py-2">{t('admin.playerPanel.season')}</th>
                   <th className="px-4 py-2 text-right">N</th>
                   <th className="px-4 py-2 text-right">G</th>
                   <th className="px-4 py-2 text-right">A</th>
-                  <th className="px-4 py-2 text-right">Min</th>
+                  <th className="px-4 py-2 text-right">{t('admin.playerPanel.minutes')}</th>
                   <th className="px-4 py-2 text-right">🟨</th>
                   <th className="px-4 py-2 text-right">🟥</th>
                 </tr>
               </thead>
               <tbody>
                 {data.seasons.map((row) => (
-                  <tr key={row.seasonId} className="border-b border-[var(--border-subtle)] last:border-0">
+                  <tr
+                    key={row.seasonId}
+                    className="border-b border-[var(--border-subtle)] last:border-0"
+                  >
                     <td className="px-4 py-2">{seasonName(row.seasonId)}</td>
                     <td className="px-4 py-2 text-right tabular-nums">{row.appearances}</td>
                     <td className="px-4 py-2 text-right tabular-nums">{row.goals}</td>

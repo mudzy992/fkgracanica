@@ -305,7 +305,10 @@
       "limit": "Limit",
       "viewAllLink": "‘See all’ link",
       "description": "Description",
-      "buttonUrlFull": "Button URL"
+      "buttonUrlFull": "Button URL",
+      "sectionTitleShort": "Section title",
+      "newsCount": "News count",
+      "viewAllLabel": "‘See all’ text"
     },
     "club": {
       "shortName": "Short name",
@@ -606,6 +609,45 @@
       "monriTitle": "Monri test",
       "monriBody": "Test IPG: ipgtest.monri.com/v2/form. Live: ipg.monri.com. Merchant key + authenticity token. Mode: test. Currency BAM, amount in fening. Bridge: /placanje/monri.",
       "monriWebhook": "Callback: POST /payments/webhooks/monri"
+    },
+    "playerPanel": {
+      "selectPlayer": "Select player…",
+      "season": "Season",
+      "minutes": "Min"
+    },
+    "clubHub": {
+      "notFound": "Club not found."
+    },
+    "cmsBuilder": {
+      "notFound": "Page not found.",
+      "sections": "Sections",
+      "noSections": "No sections."
+    },
+    "cmsMeta": {
+      "title": "Title",
+      "draft": "Draft",
+      "published": "Published",
+      "save": "Save meta",
+      "editTitle": "Edit: {{title}}"
+    },
+    "seasonHub": {
+      "notFound": "Competition in season not found."
+    },
+    "galleryEditor": {
+      "createAlbum": "Create album",
+      "titleRequired": "Album title *",
+      "descriptionOptional": "Description (optional)",
+      "afterCreate": "After creating the album you add photos on the full screen.",
+      "photos": "Photos ({{count}})"
+    },
+    "mediaGrid": {
+      "copyUrl": "Copy URL",
+      "copied": "Copied"
+    },
+    "ticketingPayments": {
+      "status": "Online payment status",
+      "membershipPrice": "Annual membership (KM)",
+      "defaultProvider": "Default payment service"
     }
   },
   "common": {

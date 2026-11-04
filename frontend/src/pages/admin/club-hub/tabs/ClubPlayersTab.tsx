@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Pencil, Plus, Trash2 } from 'lucide-react';
 import { usePlayers } from '../../../../hooks';
 import { useDeletePlayer } from '../../../../hooks/use-competition-admin';
@@ -13,6 +14,7 @@ import { PlayersAdminFormSheet } from '../../PlayersAdminFormSheet';
 import type { Player } from '../../../../types';
 
 export function ClubPlayersTab({ clubId }: { clubId: string }) {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const canManage = hasPermission(user?.permissions, 'players.manage');
   const { data, isLoading: playersLoading } = usePlayers({ clubId });
@@ -31,7 +33,7 @@ export function ClubPlayersTab({ clubId }: { clubId: string }) {
     if (ok) void remove.mutateAsync(item.id);
   };
 
-  if (playersLoading) return <p className="text-sm text-text-muted">Učitavanje...</p>;
+  if (playersLoading) return <p className="text-sm text-text-muted">{t('admin.common.loading')}</p>;
 
   return (
     <>
@@ -59,7 +61,7 @@ export function ClubPlayersTab({ clubId }: { clubId: string }) {
             render: (r) => (
               <span className="flex items-center gap-2">
                 {r.firstName} {r.lastName}
-                {!r.isActive && <Badge variant="muted">Neaktivan</Badge>}
+                {!r.isActive && <Badge variant="muted">{t('admin.playerForm.inactive')}</Badge>}
               </span>
             ),
           },
@@ -78,7 +80,7 @@ export function ClubPlayersTab({ clubId }: { clubId: string }) {
                       setEdit(r);
                       setOpen(true);
                     }}
-                    aria-label="Uredi"
+                    aria-label={t('actions.edit')}
                   >
                     <Pencil className="h-4 w-4" />
                   </Button>
@@ -86,7 +88,7 @@ export function ClubPlayersTab({ clubId }: { clubId: string }) {
                     variant="ghost"
                     size="icon"
                     onClick={() => void onDelete(r)}
-                    aria-label="Obriši"
+                    aria-label={t('actions.delete')}
                   >
                     <Trash2 className="h-4 w-4 text-danger" />
                   </Button>
