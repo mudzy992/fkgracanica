@@ -32,7 +32,7 @@ describe('NotificationBell mobile Sheet', () => {
     const sheet = screen.getByRole('dialog', { name: 'Notifikacije' });
     expect(within(sheet).getByText('Nema novih notifikacija')).toBeInTheDocument();
     await user.click(within(sheet).getByRole('link', { name: /Pogledaj sve/ }));
-    expect(screen.getByText('Odredište notifikacija')).toBeInTheDocument();
+    expect(await screen.findByText('Odredište notifikacija')).toBeInTheDocument();
     expect(screen.queryByRole('dialog', { name: 'Notifikacije' })).not.toBeInTheDocument();
   });
 });
