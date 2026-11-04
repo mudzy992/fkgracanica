@@ -1,5 +1,10 @@
 {
   "video": {
+    "pasteUnavailable": "This browser does not support safe pasting. Use a newer browser.",
+    "editorUnavailable": "Embedded video unavailable: invalid link. Saved content has not been changed automatically.",
+    "editorInvalidInput": "Enter a valid YouTube video or playlist.",
+    "removeEmbedded": "Remove video",
+    "embeddedTitle": "Embedded video",
     "invalidInput": "Enter a valid YouTube link with an 11-character ID.",
     "embeddedUnavailable": "Embedded video unavailable: invalid link.",
     "unavailable": "Video unavailable. Please check the YouTube link.",

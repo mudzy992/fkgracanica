@@ -29,3 +29,11 @@ describe('stripHtml', () => {
     expect(stripHtml('')).toBe('');
   });
 });
+
+it('pri izvlačenju teksta čuva ponašanje za head i iframe bez mijenjanja izvornog HTML-a', () => {
+  const input =
+    '<html><head><title>Naziv</title></head><body><p>Tekst</p><iframe src="https://www.youtube.com/embed/abc/../../redirect?q=https://example.invalid/">opis</iframe></body></html>';
+  expect(stripHtml(input)).toBe('Tekstopis');
+  expect(input).toContain('/redirect');
+  expect(normalizeHtmlForRender('&lt;b&gt;Gol&lt;/b&gt;')).toBe('<b>Gol</b>');
+});

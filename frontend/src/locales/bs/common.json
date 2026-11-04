@@ -1,5 +1,10 @@
 {
   "video": {
+    "pasteUnavailable": "Ovaj preglednik ne omogućava sigurno lijepljenje. Koristite noviji preglednik.",
+    "editorUnavailable": "Ugrađeni video nije dostupan: neispravan link. Spremljeni sadržaj nije automatski izmijenjen.",
+    "editorInvalidInput": "Unesite ispravan YouTube video ili playlistu.",
+    "removeEmbedded": "Ukloni video",
+    "embeddedTitle": "Ugrađeni video",
     "invalidInput": "Unesite ispravan YouTube link s ID-jem od 11 znakova.",
     "embeddedUnavailable": "Ugrađeni video nije dostupan: neispravan link.",
     "unavailable": "Video nije dostupan. Provjerite YouTube link.",
