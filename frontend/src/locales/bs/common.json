@@ -592,6 +592,16 @@
     "contactPage": {
       "title": "Kontakt poruke"
     },
+    "galleryBatch": {
+      "partial": "Neke fotografije možda su već dodane; dodavanje nije u potpunosti uspjelo. Galerija je osvježena. Pregledajte je prije ponovnog odabira; kod neizvjesnog mrežnog odgovora slika se može pojaviti i kasnije.",
+      "partialUnverified": "Neke fotografije možda su već dodane, ali stanje galerije nije moguće osvježiti. Dodavanje je onemogućeno dok osvježavanje ne uspije.",
+      "savedUnverified": "Fotografije su poslane, ali stanje galerije nije moguće osvježiti. Dodavanje je onemogućeno dok osvježavanje ne uspije.",
+      "initialUnverified": "Stanje galerije nije moguće osvježiti. Dodavanje je onemogućeno dok osvježavanje ne uspije.",
+      "folderFailed": "Nije moguće učitati slike iz odabrane mape. Nijedna fotografija nije poslana.",
+      "refreshed": "Galerija je osvježena. Pregledajte fotografije prije novog dodavanja.",
+      "checking": "Dodavanje ili osvježavanje galerije je u toku.",
+      "retry": "Osvježi galeriju"
+    },
     "galleryPhotos": {
       "empty": "Još nema fotografija. Dodajte slike ili mapu."
     },

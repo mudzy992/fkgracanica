@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { Seo } from '../../../components/seo/Seo';
@@ -25,11 +25,27 @@ export function GalleryEditorPage() {
   const [description, setDescription] = useState('');
   const [error, setError] = useState('');
 
+  const lastServerFields = useRef<{ id: string; title: string; description: string } | null>(null);
+  const touched = useRef({ id, title: false, description: false });
+  const markTouched = (field: 'title' | 'description') => {
+    if (touched.current.id !== id) touched.current = { id, title: false, description: false };
+    touched.current[field] = true;
+  };
   useEffect(() => {
     if (!detail) return;
-    setTitle(detail.title);
-    setDescription(detail.description ?? '');
+    const previous = lastServerFields.current;
+    const incoming = { id: detail.id, title: detail.title, description: detail.description ?? '' };
+    const edited = touched.current.id === incoming.id ? touched.current : { title: false, description: false };
+    lastServerFields.current = incoming;
+    // Ni oporavak prvog učitavanja ni foto-refetch ne smiju obrisati nacrt.
+    setTitle((value) => previous?.id === incoming.id
+      ? (value === previous.title ? incoming.title : value)
+      : (edited.title ? value : incoming.title));
+    setDescription((value) => previous?.id === incoming.id
+      ? (value === previous.description ? incoming.description : value)
+      : (edited.description ? value : incoming.description));
   }, [detail]);
+  const existingPaths = useMemo(() => detail?.photos?.map((photo) => photo.path) ?? [], [detail?.photos]);
 
   const save = async () => {
     setError('');
@@ -79,12 +95,12 @@ export function GalleryEditorPage() {
       <div className="mb-8 grid gap-4 lg:grid-cols-2">
         <Input
           value={title}
-          onChange={(e) => setTitle(e.target.value)}
+          onChange={(e) => { markTouched('title'); setTitle(e.target.value); }}
           placeholder={t('admin.galleryEditor.titleRequired')}
         />
         <textarea
           value={description}
-          onChange={(e) => setDescription(e.target.value)}
+          onChange={(e) => { markTouched('description'); setDescription(e.target.value); }}
           rows={2}
           className="w-full rounded-lg border border-slate-200 bg-background p-2 text-sm"
           placeholder={t('admin.galleryEditor.descriptionOptional')}
@@ -97,7 +113,7 @@ export function GalleryEditorPage() {
             <h2 className="text-sm font-semibold text-text-muted">
               {t('admin.galleryEditor.photos', { count: photos.length })}
             </h2>
-            <GalleryPhotoPicker galleryId={id} existingPaths={photos.map((p) => p.path)} />
+            <GalleryPhotoPicker key={id} galleryId={id} existingPaths={existingPaths} />
           </div>
           <GalleryAdminPhotos galleryId={id} photos={photos} />
         </section>

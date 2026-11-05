@@ -72,12 +72,16 @@ export function useAddGalleryPhoto() {
 export function useAddGalleryPhotos() {
   const qc = useQueryClient();
   return useMutation({
+    // Nikada automatski ne ponavljati pojedinačni POST s neizvjesnim ishodom.
+    retry: false,
+    networkMode: 'always',
     mutationFn: async ({ galleryId, paths }: { galleryId: string; paths: string[] }) => {
       for (const path of paths) {
-        await api.post(`/gallery/${galleryId}/photos`, { path });
+        await api.post(`/gallery/${galleryId}/photos`, { path }, { timeout: 30_000 });
       }
     },
-    onSuccess: () => void qc.invalidateQueries({ queryKey: ['gallery'] }),
+    // Djelimični uspjeh također mijenja server; detalj potvrđuje zasebni GET.
+    onSettled: () => void qc.invalidateQueries({ queryKey: ['gallery'], refetchType: 'none' }),
   });
 }
 

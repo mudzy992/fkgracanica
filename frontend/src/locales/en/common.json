@@ -592,6 +592,16 @@
     "contactPage": {
       "title": "Contact messages"
     },
+    "galleryBatch": {
+      "partial": "Some photos may already have been added; the operation did not complete. The gallery has been refreshed. Review it before selecting again; after an uncertain network response a photo may appear later.",
+      "partialUnverified": "Some photos may already have been added, but the gallery could not be refreshed. Adding photos is disabled until refresh succeeds.",
+      "savedUnverified": "The photos were sent, but the gallery could not be refreshed. Adding photos is disabled until refresh succeeds.",
+      "initialUnverified": "The gallery could not be refreshed. Adding photos is disabled until refresh succeeds.",
+      "folderFailed": "Could not load photos from the selected folder. No photos were sent.",
+      "refreshed": "The gallery was refreshed. Review the photos before adding more.",
+      "checking": "Adding photos or refreshing the gallery.",
+      "retry": "Refresh gallery"
+    },
     "galleryPhotos": {
       "empty": "No photos yet. Add images or a folder."
     },
