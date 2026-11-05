@@ -30,7 +30,12 @@ export function SwitchDouble({ checked, onCheckedChange }: {
   checked: boolean; onCheckedChange: (value: boolean) => void;
 }) {
   return (
-    <button role="switch" aria-checked={checked} onClick={() => onCheckedChange(!checked)}>
+    <button
+      type="button"
+      role="switch"
+      aria-checked={checked}
+      onClick={() => onCheckedChange(!checked)}
+    >
       switch:{String(checked)}
     </button>
   );
