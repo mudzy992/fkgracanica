@@ -15,6 +15,21 @@
 
 ## Šta je urađeno (hronološki)
 
+### Sesija FE-06 — 2026-11-05 (coverage batch 17; 69,83% linija)
+
+- Coverage batch 17 (§57): ljuska (`PublicNavItems`, `PublicFooter`,
+  `FooterAppDownloadCta`, `AdminShowcaseBanner`), `Seo`, čuvari ruta
+  (`ProtectedRoute`, `ModuleRoute`, `ShowcaseGate`), priča kluba (story dijelovi +
+  `useActiveChapter`), timske statistike (`team-stats-utils`, `TeamSeasonStats`),
+  članstvo (`MemberHomeStrip`, grupni/pojedinačni export, forma za učlanjenje,
+  `MembershipInactivePanel`, `MembershipCardPanel`/`DigitalCard`), pretraga
+  (`SearchResultSections`) i komentari vijesti — **14 fajlova / 113 testova**.
+- Provjere: FE **1760/1760** u 235 fajlova, V8 linije **69,83%**, ratchet
+  **69,7/69,2/64,9/56,8%**, matrica **1708**, fajlova na 0% **291** (bilo 338),
+  `check:all` 9/9, build i lint čisti.
+- Nalaz **Q-FE06-35** (čeka odluku): `MemberHomeStrip` baca `TypeError` ako
+  obavijesti dođu bez `meta`; ništa nije mijenjano.
+
 ### Sesija FE-06 — 2026-11-05 (coverage batch 16; 66,34% linija)
 
 - **CI `42111483734` (`6402196`) = 5/6:** pao je samo `e2e (postgres + redis)` —
