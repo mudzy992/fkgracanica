@@ -27,7 +27,7 @@ export default defineConfig({
             '@tanstack/react-query', '@tiptap/react', '@tiptap/core', '@tiptap/starter-kit',
             '@tiptap/extension-link', '@tiptap/extension-image', '@tiptap/extension-underline',
             '@tiptap/extension-youtube', '@tiptap/pm/model', '@tiptap/pm/state',
-            '@tiptap/pm/view', '@tiptap/pm/transform',
+            '@tiptap/pm/view', '@tiptap/pm/transform', 'framer-motion',
           ],
         },
       },

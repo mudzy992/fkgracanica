@@ -15,6 +15,21 @@
 
 ## Šta je urađeno (hronološki)
 
+### Sesija FE-06 — 2026-11-05 (coverage batch 16; 66,34% linija)
+
+- Coverage batch 16 (§55): `PageRenderer`, `WidgetRenderer`, `widgetSchemas` +
+  `validateWidgetConfig`, registar widgeta, hero (widget + `hero-background-utils` +
+  `hero-match-utils` + pozadina/grb/traka), `ClubActionsWidget`, `ClubAboutCtaWidget`,
+  `GalleryWidget`, `SponsorsWidget`, `NewsFeedWidget` sa karticama,
+  `FeaturedPlayersWidget`, `TrophiesWidget` i `App` — **14 fajlova / 117 testova**.
+- Testna infrastruktura: `framer-motion` u `deps.optimizer.client.include` (bez toga je
+  svaka `motion` komponenta padala na dvostrukom Reactu) i stub `IntersectionObserver`
+  u `src/test/setup.ts`. Nema promjene ponašanja aplikacije.
+- Nalaz **Q-FE06-34** (čeka odluku): šest CMS fajlova je mrtav kod (50 statementa) —
+  predlog uklanjanja, ništa nije brisano.
+- Provjere: FE **1646/1646** u 221 fajlu, V8 linije **66,34%**, ratchet
+  **66,2/65,8/61,3/53,1%**, matrica **1694**, `check:all` u toku provjere.
+
 ### Sesija FE-06 — 2026-11-05 (coverage batch 15; 63,87% linija)
 
 - Coverage batch 15 (§54): javne stranice (`MuseumPage`, `HallOfFamePage`,

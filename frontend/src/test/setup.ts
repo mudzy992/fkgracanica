@@ -16,4 +16,21 @@ if (!window.matchMedia) {
   })) as typeof window.matchMedia;
 }
 
+// jsdom ne implementira IntersectionObserver — koristi ga framer-motion `whileInView`.
+// Stub odmah javi „nije u vidnom polju“; animacije nisu predmet unit testova.
+if (!('IntersectionObserver' in window)) {
+  class IntersectionObserverStub {
+    readonly root = null;
+    readonly rootMargin = '0px';
+    readonly thresholds: readonly number[] = [0];
+    observe() {}
+    unobserve() {}
+    disconnect() {}
+    takeRecords() {
+      return [];
+    }
+  }
+  (window as unknown as Record<string, unknown>).IntersectionObserver = IntersectionObserverStub;
+}
+
 afterEach(() => cleanup());
