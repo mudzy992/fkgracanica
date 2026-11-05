@@ -1558,3 +1558,5 @@
 "frontend/src/hooks/fe06-live-report.test.tsx","frontend","src/hooks","127","pokriveno testom","FE-06 coverage batch 3: 7 testova izvještaja utakmice (događaj/komentar/brisanje/submit) i live stats popup tajmera","FE-06","2026-11-05"
 "frontend/src/hooks/fe06-public-web.test.tsx","frontend","src/hooks","65","pokriveno testom","FE-06 coverage batch 3: 7 testova javne statistike i filtriranja vijesti po utakmici","FE-06","2026-11-05"
 "frontend/src/lib/fe06-seo-document.test.ts","frontend","src/lib","110","pokriveno testom","FE-06 coverage batch 3: 10 testova seo-meta pomoćnika i applySeoToDocument (meta, canonical, JSON-LD)","FE-06","2026-11-05"
+"frontend/src/components/layout/fe06-command-palette.test.tsx","frontend","src","131","pokriveno testom","FE-06 coverage batch 4: 8 testova palete komandi (dozvole, filtriranje, strelice/Enter, vanjska stavka, Ctrl+K, reset)","FE-06","2026-11-05"
+"frontend/src/components/layout/fe06-command-palette-logic.test.ts","frontend","src","75","pokriveno testom","FE-06 coverage batch 4: 7 testova normalize/filterCommands/buildCommands (dijakritika, prefiks, dedupe, dozvole)","FE-06","2026-11-05"
