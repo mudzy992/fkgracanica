@@ -41,14 +41,18 @@ export function HeritageAdminPage() {
 
   const tabParam = searchParams.get('tab');
   const activeTab = resolveTab(tabParam, canHof, canMuseum);
+  const hasTab = canHof || canMuseum;
 
   useEffect(() => {
+    // P-FE06-29/30: bez ijednog taba preusmjeravanje ispod mora ostati na snazi —
+    // upis `?tab=` bi ga poništio i ostavio praznu stranicu.
+    if (!hasTab) return;
     if (tabParam !== activeTab) {
       setSearchParams({ tab: activeTab }, { replace: true });
     }
-  }, [tabParam, activeTab, setSearchParams]);
+  }, [hasTab, tabParam, activeTab, setSearchParams]);
 
-  if (!canHof && !canMuseum) return <Navigate to="/admin" replace />;
+  if (!hasTab) return <Navigate to="/admin" replace />;
 
   const setTab = (tab: Tab) => setSearchParams({ tab }, { replace: true });
 

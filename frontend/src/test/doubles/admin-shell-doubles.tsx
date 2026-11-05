@@ -51,3 +51,16 @@ export function AdminDataTableDouble({ rows, columns, empty, onRowClick }: {
     </div>
   );
 }
+
+export function AdminPaginationDouble({ meta, page, onPageChange }: {
+  meta: { totalPages: number }; page: number; onPageChange: (page: number) => void;
+}) {
+  if (meta.totalPages <= 1) return null;
+  return (
+    <div>
+      <span>stranica:{page}/{meta.totalPages}</span>
+      <button onClick={() => onPageChange(page - 1)}>Prethodna</button>
+      <button onClick={() => onPageChange(page + 1)}>Sljedeća</button>
+    </div>
+  );
+}
