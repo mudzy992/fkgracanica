@@ -24,7 +24,10 @@ export default defineConfig({
           include: [
             'react', 'react-dom', 'react-dom/client', 'react/jsx-runtime',
             '@testing-library/react', 'react-router-dom', 'react-hook-form', 'react-i18next', 'lucide-react',
-            '@tanstack/react-query',
+            '@tanstack/react-query', '@tiptap/react', '@tiptap/core', '@tiptap/starter-kit',
+            '@tiptap/extension-link', '@tiptap/extension-image', '@tiptap/extension-underline',
+            '@tiptap/extension-youtube', '@tiptap/pm/model', '@tiptap/pm/state',
+            '@tiptap/pm/view', '@tiptap/pm/transform',
           ],
         },
       },
