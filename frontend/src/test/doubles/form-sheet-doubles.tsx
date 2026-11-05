@@ -26,14 +26,15 @@ export function MediaPickerDouble({ value, onChange, label }: {
   );
 }
 
-export function SwitchDouble({ checked, onCheckedChange }: {
-  checked: boolean; onCheckedChange: (value: boolean) => void;
+export function SwitchDouble({ checked, onCheckedChange, disabled }: {
+  checked: boolean; onCheckedChange: (value: boolean) => void; disabled?: boolean;
 }) {
   return (
     <button
       type="button"
       role="switch"
       aria-checked={checked}
+      disabled={disabled}
       onClick={() => onCheckedChange(!checked)}
     >
       switch:{String(checked)}
