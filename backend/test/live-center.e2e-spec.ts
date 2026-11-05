@@ -43,9 +43,18 @@ describe('Live center (e2e)', () => {
     accessToken = login.body.accessToken as string;
 
     const matches = await request(app.getHttpServer()).get('/api/v1/matches');
-    let scheduled = (matches.body as { id: string; status: string }[]).find(
-      (m) => m.status === 'SCHEDULED',
-    );
+    // FE-06 (CI e2e izolacija): `start` prevodi utakmicu u LIVE i time je
+    // uklanja iz `findActiveScheduledHomeMatch()` — a taj upit koristi
+    // ticketing e2e. Zato ovaj spec NIKAD ne uzima (niti pravi) utakmicu
+    // čiji je domaćin vlastiti klub; inače paralelni `ticketing-qr` spec
+    // ostane bez aktivne utakmice i `reserve` vrati 400.
+    let scheduled = (
+      matches.body as {
+        id: string;
+        status: string;
+        homeClub?: { isOwnClub?: boolean } | null;
+      }[]
+    ).find((m) => m.status === 'SCHEDULED' && m.homeClub?.isOwnClub !== true);
     if (!scheduled) {
       const seasons = await request(app.getHttpServer()).get('/api/v1/seasons');
       const clubs = await request(app.getHttpServer()).get('/api/v1/clubs');
@@ -53,10 +62,10 @@ describe('Live center (e2e)', () => {
         seasons.body as { competitions?: { id: string }[] }[]
       )[0];
       const seasonId = calendar?.competitions?.[0]?.id;
-      const clubIds = (clubs.body as { id: string }[])
-        .slice(0, 2)
-        .map((c) => c.id);
-      if (!seasonId || clubIds.length < 2) {
+      const clubList = clubs.body as { id: string; isOwnClub?: boolean }[];
+      const homeClub = clubList.find((c) => c.isOwnClub !== true);
+      const awayClub = clubList.find((c) => c.id !== homeClub?.id);
+      if (!seasonId || !homeClub || !awayClub) {
         throw new Error('Missing season/clubs for live e2e');
       }
       const created = await request(app.getHttpServer())
@@ -64,8 +73,8 @@ describe('Live center (e2e)', () => {
         .set('Authorization', `Bearer ${accessToken}`)
         .send({
           seasonId,
-          homeClubId: clubIds[0],
-          awayClubId: clubIds[1],
+          homeClubId: homeClub.id,
+          awayClubId: awayClub.id,
           scheduledAt: new Date(Date.now() + 86400000).toISOString(),
         });
       scheduled = created.body as { id: string; status: string };

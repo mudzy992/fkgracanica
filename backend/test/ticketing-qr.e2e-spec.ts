@@ -106,6 +106,14 @@ describe('Ticketing QR (e2e)', () => {
         quantity: 1,
       });
 
+    if (reserved.status !== 201) {
+      // FE-06: bez ovoga CI prikazuje samo „Expected 201, received 400" bez
+      // razloga iz servisa (npr. nema aktivne utakmice / limit blagajne).
+      throw new Error(
+        `reserve nije uspio: ${reserved.status} ${JSON.stringify(reserved.body)}`,
+      );
+    }
+
     expect(reserved.status).toBe(201);
     const orderId = reserved.body.id as string;
     const qrCode = reserved.body.tickets[0].qrCode as string;
