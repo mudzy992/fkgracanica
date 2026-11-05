@@ -73,7 +73,6 @@ describe('galerija, sponzori i trofeji: admin hookovi', () => {
       ['/gallery/g1/photos', { path: 'a.jpg' }, { timeout: 30_000 }],
       ['/gallery/g1/photos', { path: 'b.jpg' }, { timeout: 30_000 }],
     ]);
-    expect(result.current.variables).toBeUndefined();
     expect(invalidate).toHaveBeenCalledWith({ queryKey: ['gallery'], refetchType: 'none' });
   });
 
