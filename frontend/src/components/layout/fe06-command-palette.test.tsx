@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { render, screen, within, fireEvent } from '@testing-library/react';
+import { render, screen, within, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter, useLocation } from 'react-router-dom';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
@@ -84,8 +84,8 @@ describe('AdminCommandPalette', () => {
     await user.type(input(), 'admin');
     await user.keyboard('{ArrowDown}');
     await user.keyboard('{Enter}');
-    expect(path()).toMatch(/^\/admin/);
-    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    await waitFor(() => expect(path()).toMatch(/^\/admin/));
+    await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
   });
 
   it('klik na stavku navigira i zatvara paletu', async () => {
@@ -93,8 +93,8 @@ describe('AdminCommandPalette', () => {
     auth.permissions = [];
     renderPalette();
     await user.click(within(screen.getByRole('dialog')).getAllByRole('option')[0]);
-    expect(path()).toBe('/admin/news');
-    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    await waitFor(() => expect(path()).toBe('/admin/news'));
+    await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
   });
 
   it('vanjska stavka otvara novi prozor umjesto navigacije', async () => {
