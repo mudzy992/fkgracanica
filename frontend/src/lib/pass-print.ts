@@ -10,6 +10,16 @@ export function downloadHtml(filename: string, html: string) {
   URL.revokeObjectURL(url);
 }
 
+/** Štampa se pokreće tačno jednom: prvi (load ili fallback) timer otkazuje drugi. */
+function once(fn: () => void) {
+  let used = false;
+  return () => {
+    if (used) return;
+    used = true;
+    fn();
+  };
+}
+
 function printViaIframe(html: string) {
   const iframe = document.createElement('iframe');
   iframe.setAttribute('aria-hidden', 'true');
@@ -23,13 +33,13 @@ function printViaIframe(html: string) {
   doc.open();
   doc.write(html);
   doc.close();
-  const run = () => {
+  const run = once(() => {
     setTimeout(() => {
       iframe.contentWindow?.focus();
       iframe.contentWindow?.print();
       document.body.removeChild(iframe);
     }, 500);
-  };
+  });
   iframe.onload = run;
   setTimeout(run, 1500);
 }
@@ -44,7 +54,7 @@ export function openPrintHtml(html: string) {
     return;
   }
   const cleanup = () => URL.revokeObjectURL(url);
-  const runPrint = () => {
+  const runPrint = once(() => {
     try {
       win.focus();
       win.print();
@@ -52,7 +62,7 @@ export function openPrintHtml(html: string) {
       printViaIframe(html);
     }
     cleanup();
-  };
+  });
   win.addEventListener('load', () => setTimeout(runPrint, 600));
   setTimeout(runPrint, 2500);
 }

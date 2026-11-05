@@ -1,5 +1,5 @@
 import { ticketStatusLabel } from './ticketing-status';
-import { escapeHtml, urlToDataUrl } from './pass-image';
+import { escapeAttribute, escapeHtml, urlToDataUrl } from './pass-image';
 import { mediaUrl } from './media';
 import { qrDataUrl } from './pass-qr';
 import { passDocumentShell } from './pass-print';
@@ -54,9 +54,9 @@ async function passBlock(data: SeasonPassVisualData): Promise<string> {
   const qr = data.qrValue ? await qrDataUrl(data.qrValue, 160) : '';
   const crest = await crestSrc(data.crestUrl);
   const cancelled = data.cancelled || data.status === 'CANCELLED' || data.status === 'REFUNDED';
-  const mark = crest ? `<img class="sp-mark" src="${crest}" alt="" />` : '';
+  const mark = crest ? `<img class="sp-mark" src="${escapeAttribute(crest)}" alt="" />` : '';
   const crestEl = crest
-    ? `<img class="sp-crest" src="${crest}" alt="" />`
+    ? `<img class="sp-crest" src="${escapeAttribute(crest)}" alt="" />`
     : `<div class="sp-crest-fb">FK</div>`;
 
   return `<div class="spass${cancelled ? ' cancelled' : ''}">
@@ -81,7 +81,7 @@ async function passBlock(data: SeasonPassVisualData): Promise<string> {
       <span class="sp-status">${escapeHtml(ticketStatusLabel(data.status))}</span>
       <div><div class="sp-lbl">Karta</div><div class="sp-cat">${escapeHtml(data.label)}</div></div>
       <div class="sp-price">${escapeHtml(data.price)} KM</div>
-      ${qr ? `<img class="sp-qr" src="${qr}" alt="QR" />` : ''}
+      ${qr ? `<img class="sp-qr" src="${escapeAttribute(qr)}" alt="QR" />` : ''}
     </div>
   </div>`;
 }

@@ -1,5 +1,5 @@
 import { membershipStatusLabel } from './membership-status';
-import { escapeHtml, urlToDataUrl } from './pass-image';
+import { escapeAttribute, escapeHtml, urlToDataUrl } from './pass-image';
 import { qrDataUrl } from './pass-qr';
 import { passDocumentShell } from './pass-print';
 
@@ -78,7 +78,7 @@ async function crestMarkup(url?: string): Promise<string> {
   if (!url) return '<div class="crest-fb">FK</div>';
   const embedded = await urlToDataUrl(url);
   const src = embedded ?? url;
-  return `<img class="crest" src="${src}" alt="" />`;
+  return `<img class="crest" src="${escapeAttribute(src)}" alt="" />`;
 }
 
 async function cardBlock(data: MembershipCardPrintData): Promise<string> {
@@ -105,7 +105,7 @@ async function cardBlock(data: MembershipCardPrintData): Promise<string> {
           <div class="row">Broj: <strong>${escapeHtml(data.cardNumber)}</strong></div>
           <div class="row">Važi do: <strong>${escapeHtml(data.validUntil)}</strong></div>
         </div>
-        <img class="qr" src="${qr}" alt="QR" />
+        <img class="qr" src="${escapeAttribute(qr)}" alt="QR" />
       </div>
     </div>
   </div>`;

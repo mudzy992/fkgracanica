@@ -1,5 +1,5 @@
 import { ticketStatusLabel } from './ticketing-status';
-import { escapeHtml, urlToDataUrl } from './pass-image';
+import { escapeAttribute, escapeHtml, urlToDataUrl } from './pass-image';
 import { mediaUrl } from './media';
 import { qrDataUrl } from './pass-qr';
 import { passDocumentShell } from './pass-print';
@@ -100,7 +100,9 @@ async function crestImg(path?: string, fallback?: string): Promise<string> {
   const url = path.startsWith('http') ? path : mediaUrl(path, 'thumb');
   const embedded = url ? await urlToDataUrl(url) : undefined;
   const src = embedded ?? url;
-  return src ? `<img class="st-team-crest" src="${src}" alt="" />` : `<div class="st-team-fb">FK</div>`;
+  return src
+    ? `<img class="st-team-crest" src="${escapeAttribute(src)}" alt="" />`
+    : `<div class="st-team-fb">FK</div>`;
 }
 
 function metaLine(data: TicketPassPrintData): string {
@@ -115,7 +117,7 @@ async function ticketBlock(data: TicketPassPrintData): Promise<string> {
   const cancelled = data.status === 'CANCELLED' || data.status === 'REFUND_REQUESTED';
   const meta = metaLine(data);
   const bgLayer = bg
-    ? `<div class="st-bg-wrap"><div class="st-bg" style="background-image:url('${bg}')"></div><div class="st-overlay"></div></div>`
+    ? `<div class="st-bg-wrap"><div class="st-bg" style="background-image:url('${escapeAttribute(bg)}')"></div><div class="st-overlay"></div></div>`
     : `<div class="st-fallback"></div>`;
 
   return `<div class="sticket${cancelled ? ' cancelled' : ''}">
@@ -145,7 +147,7 @@ async function ticketBlock(data: TicketPassPrintData): Promise<string> {
       <span class="st-status">${escapeHtml(ticketStatusLabel(data.status))}</span>
       <div><div class="st-sector-lbl">Sektor</div><div class="st-sector">${escapeHtml(data.category)}</div></div>
       <div class="st-price">${escapeHtml(data.price)} KM</div>
-      ${qr ? `<img class="st-qr" src="${qr}" alt="QR" />` : ''}
+      ${qr ? `<img class="st-qr" src="${escapeAttribute(qr)}" alt="QR" />` : ''}
     </div>
   </div>`;
 }
