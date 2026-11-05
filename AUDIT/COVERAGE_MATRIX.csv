@@ -1553,3 +1553,8 @@
 "frontend/src/hooks/fe06-club-newsletter.test.tsx","frontend","hooks","152","pokriveno testom","FE-06 coverage batch 2: 11 testova klupskog huba (postava/stadion/statistika) i newsletter kampanja + realtime","FE-06","2026-11-05"
 "frontend/src/hooks/fe06-realtime-favicon-route.test.tsx","frontend","hooks","107","pokriveno testom","FE-06 coverage batch 2: 16 testova realtime statusa, dinamičkog favicona i mapa ruta→modul","FE-06","2026-11-05"
 "frontend/src/lib/fe06-match-seo.test.ts","frontend","src","80","pokriveno testom","FE-06 coverage batch 2: 8 testova naslova/opisa/slike za dijeljenje utakmice","FE-06","2026-11-05"
+"frontend/src/hooks/fe06-youtube-players.test.tsx","frontend","src/hooks","145","pokriveno testom","FE-06 coverage batch 3: 8 testova stream/audio plejera (veličina, ready, pauza/cue retry, aktivnost, unmount, legacy)","FE-06","2026-11-05"
+"frontend/src/lib/fe06-youtube-api.test.ts","frontend","src/lib","49","pokriveno testom","FE-06 coverage batch 3: 4 testa učitavanja YouTube API-ja (keš, skripta, prethodni handler)","FE-06","2026-11-05"
+"frontend/src/hooks/fe06-live-report.test.tsx","frontend","src/hooks","127","pokriveno testom","FE-06 coverage batch 3: 7 testova izvještaja utakmice (događaj/komentar/brisanje/submit) i live stats popup tajmera","FE-06","2026-11-05"
+"frontend/src/hooks/fe06-public-web.test.tsx","frontend","src/hooks","65","pokriveno testom","FE-06 coverage batch 3: 7 testova javne statistike i filtriranja vijesti po utakmici","FE-06","2026-11-05"
+"frontend/src/lib/fe06-seo-document.test.ts","frontend","src/lib","110","pokriveno testom","FE-06 coverage batch 3: 10 testova seo-meta pomoćnika i applySeoToDocument (meta, canonical, JSON-LD)","FE-06","2026-11-05"
