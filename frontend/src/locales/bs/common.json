@@ -163,6 +163,22 @@
       "moveDown": "Pomjeri dolje",
       "saveFailedShort": "Spremanje nije uspjelo."
     },
+    "mediaUpload": {
+      "progressLabel": "Napredak uploada",
+      "progress": "Upload: {{done}}/{{total}} završeno, {{failed}} neuspješno.",
+      "refreshing": "Osvježavanje biblioteke…",
+      "summary": "Upload završen: {{succeeded}}/{{total}} uspješno, {{failed}} neuspješno.",
+      "failed": "Ovi fajlovi nisu potvrđeni ili nisu poslani. Provjerite biblioteku prije ponovnog odabira:",
+      "rejected": "Ovi fajlovi nisu dodani u red:",
+      "notImage": "nije slika",
+      "noSession": "sesija nije aktivna",
+      "unconfirmed": "ishod nije potvrđen",
+      "sessionChanged": "nije poslano jer se sesija promijenila",
+      "noFolder": "nije odabrana mapa",
+      "refreshFailed": "Osvježavanje biblioteke nije potvrđeno. Provjerite stanje prije ponovnog uploada istih slika.",
+      "retryRefresh": "Osvježi biblioteku",
+      "clearReport": "Zatvori izvještaj"
+    },
     "mediaPicker": {
       "pick": "Odabir medija",
       "pickGallery": "Odabir fotografija za galeriju",

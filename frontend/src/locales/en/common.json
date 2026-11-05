@@ -163,6 +163,22 @@
       "moveDown": "Move down",
       "saveFailedShort": "Saving failed."
     },
+    "mediaUpload": {
+      "progressLabel": "Upload progress",
+      "progress": "Upload: {{done}}/{{total}} finished, {{failed}} failed.",
+      "refreshing": "Refreshing the library…",
+      "summary": "Upload finished: {{succeeded}}/{{total}} successful, {{failed}} failed.",
+      "failed": "These files were not confirmed or were not sent. Check the library before selecting them again:",
+      "rejected": "These files were not added to the queue:",
+      "notImage": "not an image",
+      "noSession": "session is not active",
+      "unconfirmed": "outcome not confirmed",
+      "sessionChanged": "not sent because the session changed",
+      "noFolder": "no folder selected",
+      "refreshFailed": "The library refresh could not be confirmed. Check its contents before uploading the same images again.",
+      "retryRefresh": "Refresh library",
+      "clearReport": "Dismiss report"
+    },
     "mediaPicker": {
       "pick": "Select media",
       "pickGallery": "Select gallery photos",

@@ -30,7 +30,7 @@ export function MediaUploadZone({ folderId, disabled, onTrigger, onFiles, classN
           'flex min-h-11 w-full items-center justify-center gap-2 rounded-lg border border-dashed px-4 py-3 text-sm transition',
           disabled || !folderId
             ? 'cursor-not-allowed border-slate-200 text-text-muted opacity-60'
-            : 'border-primary/40 text-primary hover:border-primary hover:bg-primary/5',
+            : 'border-primary/40 text-primary-light hover:border-primary-light hover:bg-primary/5',
         )}
         onDragOver={(e) => e.preventDefault()}
         onDrop={handleDrop}
