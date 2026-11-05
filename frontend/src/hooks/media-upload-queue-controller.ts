@@ -3,6 +3,7 @@ import type { AxiosRequestConfig } from 'axios';
 import { api } from '../lib/api';
 import { cancelMediaRefresh, refreshMediaQueries } from './media-upload-refresh';
 import { mediaOwnerMatches, MediaSessionChanged } from './media-upload-session';
+import { createMediaUploadUnloadGuard } from './media-upload-unload';
 
 type ItemStatus = 'pending' | 'uploading' | 'done' | 'error' | 'notSent';
 type RejectReason = 'notImage' | 'noFolder' | 'noSession';
@@ -45,6 +46,7 @@ export class MediaUploadQueueController {
   private items: QueueItem[] = [];
   private rejected: RejectedUpload[] = [];
   private listeners = new Set<() => void>();
+  private readonly setUnloadRisk = createMediaUploadUnloadGuard();
   private snapshot = initial;
   private nextId = 0;
   private running = false;
@@ -64,6 +66,7 @@ export class MediaUploadQueueController {
   getSnapshot = () => this.snapshot;
 
   private publish() {
+    this.setUnloadRisk(this.items.some((item) => item.status === 'pending' || item.status === 'uploading'));
     const failedFiles: FailedUpload[] = this.items.filter((item) => item.status === 'error' || item.status === 'notSent')
       .map(({ id, name, folderId, folderName, status }) => ({
         id, name, folderId, folderName, reason: status === 'notSent' ? 'sessionChanged' : 'unconfirmed',
