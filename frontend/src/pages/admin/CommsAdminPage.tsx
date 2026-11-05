@@ -50,14 +50,18 @@ export function CommsAdminPage() {
 
   const tabParam = searchParams.get('tab');
   const activeTab = resolveTab(tabParam, canContact, canNewsletter, canEmailLog);
+  const hasTab = canContact || canNewsletter || canEmailLog;
 
   useEffect(() => {
+    // Bez ijednog dostupnog taba preusmjeravanje ispod mora ostati na snazi —
+    // upis `?tab=` ovdje bi ga poništio i ostavio praznu stranicu.
+    if (!hasTab) return;
     if (tabParam !== activeTab) {
       setSearchParams({ tab: activeTab }, { replace: true });
     }
-  }, [tabParam, activeTab, setSearchParams]);
+  }, [hasTab, tabParam, activeTab, setSearchParams]);
 
-  if (!canContact && !canNewsletter && !canEmailLog) return <Navigate to="/admin" replace />;
+  if (!hasTab) return <Navigate to="/admin" replace />;
 
   const setTab = (tab: Tab) => setSearchParams({ tab }, { replace: true });
 
