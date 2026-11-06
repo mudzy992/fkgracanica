@@ -98,7 +98,8 @@ describe('HeritageAdminPage — tabovi', () => {
     state.perms = ['hall-of-fame.manage', 'museum.manage'];
     renderAt();
     await user.click(screen.getByRole('button', { name: 'Muzej' }));
-    expect(screen.getByText('panel:muzej:true')).toBeInTheDocument();
+    // batch 18: ista flaky sinhrona provjera kao kod UsersRolesPage — čekamo ishod
+    await waitFor(() => expect(screen.getByText('panel:muzej:true')).toBeInTheDocument());
     await waitFor(() => expect(screen.getByTestId('loc')).toHaveTextContent('tab=museum'));
   });
 

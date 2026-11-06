@@ -85,7 +85,9 @@ describe('UsersRolesPage — dozvole i tabovi', () => {
     state.perms = ['users.read', 'rbac.read'];
     renderAt();
     await user.click(screen.getByRole('button', { name: 'admin.roles' }));
-    expect(screen.getByText('panel:roles:true')).toBeInTheDocument();
+    // FE-06 (batch 18): sinhrona provjera je bila flaky na sporijem CI runneru —
+    // klik mijenja stanje pa se panel i URL sinhronizuju kroz efekat. Čekamo ishod.
+    await waitFor(() => expect(screen.getByText('panel:roles:true')).toBeInTheDocument());
     await waitFor(() => expect(screen.getByTestId('loc')).toHaveTextContent('tab=roles'));
   });
 

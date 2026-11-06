@@ -128,10 +128,11 @@ describe('CommsAdminPage — tabovi i URL', () => {
     state.perms = ['contact.read', 'newsletter.read', 'settings.read'];
     renderAt('/admin/comms?tab=contact');
     await user.click(screen.getByRole('button', { name: 'Email log' }));
-    expect(screen.getByText('email-log-panel')).toBeInTheDocument();
+    // batch 18: sinhrona provjera odmah nakon klika je bila flaky na CI runneru
+    await waitFor(() => expect(screen.getByText('email-log-panel')).toBeInTheDocument());
     await waitFor(() => expect(screen.getByTestId('loc')).toHaveTextContent('tab=email-log'));
     await user.click(screen.getByRole('button', { name: 'Kontakt' }));
-    expect(screen.getByText('kontakt-ugrađen:true')).toBeInTheDocument();
+    await waitFor(() => expect(screen.getByText('kontakt-ugrađen:true')).toBeInTheDocument());
   });
 
   it('nema tabova kad je dostupan samo email log', () => {
