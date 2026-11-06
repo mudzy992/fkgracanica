@@ -31,6 +31,7 @@
 - Matrica: **4** nova test fajla normalizovana (`nepregledano` → `pokriveno testom`, segment FE-06, 2026-11-06).
 - CI **`42283211611`** (`adade56`) = **6/6 success**.
 - CI **`42284120841`** (`b2792d4`, dokumentacija batcha 26) = **6/6 success**.
+- CI **`42286046890`** (`dea1522`, run-ID dokumentacija batcha 26) = **6/6 success**;
 - Otvoreni nalazi nepromijenjeni: **Q-FE06-31** (`MediaBulkActionBar`), **Q-FE06-32** (`ProfileAvatarEditor`),
   **Q-FE06-33** (`PassQrCode`/`MembershipQrCode` bez `.catch()`), **Q-FE06-34** (šest CMS fajlova = mrtav kod),
   **Q-FE06-35** (`MemberHomeStrip` → `unread?.meta.total`), **Q-FE06-36** (`MediaPickerDialog` bez `selectedPaths`).
