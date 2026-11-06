@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "measuredOn": "2026-11-04",
+  "measuredOn": "2026-11-06",
   "initialMeasurement": {
     "files": 631,
     "lines": {
@@ -25,10 +25,10 @@
     }
   },
   "thresholds": {
-    "lines": 91.3,
-    "statements": 90.5,
-    "functions": 88.5,
-    "branches": 80.6
+    "lines": 94.6,
+    "statements": 93.5,
+    "functions": 92.2,
+    "branches": 86.6
   },
   "targetPercent": 50
 }
