@@ -112,4 +112,20 @@ describe('TeamSeasonStats', () => {
     const row = within(screen.getByRole('table')).getAllByRole('row')[1];
     expect(row.textContent).toContain('0/0');
   });
+
+  it('isti broj golova sortira po asistencijama, pa po nastupima', () => {
+    const player = (id: string, assists: number, appearances: number) => ({
+      id,
+      firstName: id.toUpperCase(),
+      lastName: 'Test',
+      stats: stat(2, assists, appearances),
+    });
+    renderStats({
+      ...stats,
+      players: [player('p3', 1, 30), player('p1', 5, 10), player('p2', 3, 20), player('p4', 3, 25)],
+    });
+    const rows = within(screen.getByRole('table')).getAllByRole('row').slice(1);
+    expect(rows.map((row) => within(row).getAllByRole('cell')[0].textContent))
+      .toEqual(['P1 Test', 'P4 Test', 'P2 Test', 'P3 Test']);
+  });
 });

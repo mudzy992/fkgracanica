@@ -158,4 +158,16 @@ describe('MediaAssetFormSheet — spremanje', () => {
     rerender(<Sheet {...props()} />);
     expect(screen.getByRole('button', { name: 'Sačuvaj' })).toBeDisabled();
   });
+
+  it('izmjena naziva fajla ide u zahtjev', async () => {
+    const user = userEvent.setup();
+    renderSheet();
+    const filename = screen.getByDisplayValue('slika.jpg');
+    await user.clear(filename);
+    await user.type(filename, 'nova.jpg');
+    await user.click(screen.getByRole('button', { name: 'Sačuvaj' }));
+    expect(state.update).toHaveBeenCalledWith({
+      id: 'a1', filename: 'nova.jpg', tags: 'stadion, tribina', folderId: 'f1',
+    });
+  });
 });

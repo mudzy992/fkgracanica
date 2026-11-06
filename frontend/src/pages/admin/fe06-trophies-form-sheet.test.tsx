@@ -102,11 +102,14 @@ describe('TrophiesAdminFormSheet', () => {
   it('greška spremanja ostaje u sheetu', async () => {
     const user = userEvent.setup();
     state.create = { ...state.create, mutateAsync: vi.fn(async () => { throw new Error('x'); }) };
-    renderSheet();
+    const { rerender } = renderSheet();
     await user.type(screen.getByPlaceholderText('admin.trophyForm.nameRequired'), 'Kup');
     await user.click(screen.getByRole('button', { name: 'Kreiraj' }));
     await waitFor(() => expect(screen.getByText('admin.common.saveFailed')).toBeInTheDocument());
     expect(state.onOpenChange).not.toHaveBeenCalled();
+    rerender(<TrophiesAdminFormSheet open={false} onOpenChange={state.onOpenChange} edit={null} />);
+    rerender(<TrophiesAdminFormSheet open onOpenChange={state.onOpenChange} edit={null} />);
+    expect(screen.queryByText('admin.common.saveFailed')).toBeNull();
   });
 
   it('dok je mutacija u toku dugme je onemogućeno', () => {

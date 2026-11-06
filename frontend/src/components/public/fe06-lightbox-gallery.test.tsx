@@ -164,4 +164,15 @@ describe('PremiumPhotoBento', () => {
     await userEvent.keyboard('{Escape}');
     expect(screen.queryByRole('dialog')).toBeNull();
   });
+
+  it('klik na strelice mijenja indeks i ne zatvara dijalog', async () => {
+    const onChange = vi.fn();
+    const onClose = vi.fn();
+    render(<Lightbox images={images} index={1} onClose={onClose} onChange={onChange} />);
+    await userEvent.click(screen.getByRole('button', { name: '‹' }));
+    expect(onChange).toHaveBeenCalledWith(0);
+    await userEvent.click(screen.getByRole('button', { name: '›' }));
+    expect(onChange).toHaveBeenCalledWith(2);
+    expect(onClose).not.toHaveBeenCalled();
+  });
 });

@@ -139,4 +139,12 @@ describe('HeroSectionForm', () => {
     await userEvent.click(screen.getByRole('button', { name: '+ Dugme' }));
     expect((last().buttons as unknown[]).length).toBe(1);
   });
+
+  it('izmjenjuje godinu osnivanja i podnaslov', async () => {
+    renderForm({ title: 'Naslov', foundedYear: '1921', subtitle: 'Stari' });
+    await userEvent.type(screen.getByPlaceholderText('admin.cmsWidget.foundedYear'), '9');
+    expect(last()).toMatchObject({ foundedYear: '19219' });
+    await userEvent.type(screen.getByPlaceholderText('admin.cmsWidget.subtitle'), '!');
+    expect(last()).toMatchObject({ subtitle: 'Stari!', foundedYear: '19219' });
+  });
 });

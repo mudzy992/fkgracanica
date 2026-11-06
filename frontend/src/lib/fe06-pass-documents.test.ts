@@ -131,4 +131,10 @@ describe('dokumenti za štampu', () => {
     const withoutQr = await buildSeasonPassHtml({ ...season, qrValue: undefined }, 'x');
     expect(query(withoutQr, '.sp-qr')).toBeNull();
   });
+
+  it('sezonska propusnica bez grba koristi tekstualni fallback', async () => {
+    const html = await buildSeasonPassHtml({ ...season, crestUrl: undefined }, 'x');
+    expect(query(html, '.sp-crest')).toBeNull();
+    expect(query(html, '.sp-crest-fb')?.textContent).toBe('FK');
+  });
 });

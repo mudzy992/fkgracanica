@@ -129,4 +129,21 @@ describe('NewsletterCampaignComposer — spremanje nacrta', () => {
     await fill(user);
     expect(screen.getByRole('button', { name: 'Spremi nacrt' })).toBeDisabled();
   });
+
+  it('izmijenjen tekst dugmeta ide u pregled i nacrt', async () => {
+    const user = userEvent.setup();
+    render(<NewsletterCampaignComposer />);
+    await fill(user);
+    await user.click(screen.getByRole('switch'));
+    await user.clear(screen.getByPlaceholderText('Tekst dugmeta'));
+    await user.type(screen.getByPlaceholderText('Tekst dugmeta'), 'Kupi kartu');
+    await user.type(screen.getByPlaceholderText('https://…'), 'https://fkgracanica.ba');
+    await user.click(screen.getByRole('button', { name: 'Spremi nacrt' }));
+    await waitFor(() =>
+      expect(state.create).toHaveBeenCalledWith({
+        subject: 'Novi naslov', textBody: 'Prvi pasus', ctaLabel: 'Kupi kartu',
+        ctaUrl: 'https://fkgracanica.ba',
+      }),
+    );
+  });
 });

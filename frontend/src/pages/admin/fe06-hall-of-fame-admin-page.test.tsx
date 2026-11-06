@@ -118,4 +118,13 @@ describe('HallOfFameAdminPage — akcije', () => {
     await waitFor(() => expect(state.confirm).toHaveBeenCalled());
     expect(state.remove).not.toHaveBeenCalled();
   });
+
+  it('zatvaranje sheeta briše odabrani zapis', async () => {
+    const user = userEvent.setup();
+    render(<HallOfFameAdminPage embedded />);
+    await user.click(within(row('h1')).getByRole('button', { name: 'actions.edit' }));
+    expect(screen.getByText(/sheet:true:h1/)).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'zatvori-sheet' }));
+    expect(screen.getByText(/sheet:false:-/)).toBeInTheDocument();
+  });
 });

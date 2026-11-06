@@ -93,11 +93,14 @@ describe('SponsorsAdminFormSheet', () => {
   it('greška spremanja ostaje u sheetu', async () => {
     const user = userEvent.setup();
     state.create = { ...state.create, mutateAsync: vi.fn(async () => { throw new Error('x'); }) };
-    renderSheet();
+    const { rerender } = renderSheet();
     await user.type(screen.getByPlaceholderText('admin.rolesForm.name'), 'Bank');
     await user.click(screen.getByRole('button', { name: 'actions.create' }));
     await waitFor(() => expect(screen.getByText('Spremanje nije uspjelo. Pokušajte ponovo.')).toBeInTheDocument());
     expect(state.onOpenChange).not.toHaveBeenCalled();
+    rerender(<SponsorsAdminFormSheet open={false} onOpenChange={state.onOpenChange} edit={null} />);
+    rerender(<SponsorsAdminFormSheet open onOpenChange={state.onOpenChange} edit={null} />);
+    expect(screen.queryByText('Spremanje nije uspjelo. Pokušajte ponovo.')).toBeNull();
   });
 
   it('dok je mutacija u toku dugme je onemogućeno', () => {

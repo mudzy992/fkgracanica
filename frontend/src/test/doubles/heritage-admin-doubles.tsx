@@ -95,6 +95,7 @@ export function museumSheetModule() {
       return (
         <div>
           sheet:{String(props.open)}:{String(edit?.id ?? '-')}
+          <button onClick={() => (props.onOpenChange as (o: boolean) => void)(false)}>zatvori-sheet</button>
         </div>
       );
     },
@@ -109,6 +110,7 @@ export function hallOfFameSheetModule() {
       return (
         <div>
           sheet:{String(props.open)}:{String(edit?.id ?? '-')}
+          <button onClick={() => (props.onOpenChange as (o: boolean) => void)(false)}>zatvori-sheet</button>
         </div>
       );
     },

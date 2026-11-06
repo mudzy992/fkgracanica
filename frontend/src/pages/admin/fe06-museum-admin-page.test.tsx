@@ -122,4 +122,13 @@ describe('MuseumAdminPage — akcije', () => {
     await waitFor(() => expect(state.confirm).toHaveBeenCalled());
     expect(state.remove).not.toHaveBeenCalled();
   });
+
+  it('zatvaranje sheeta briše odabrani zapis', async () => {
+    const user = userEvent.setup();
+    render(<MuseumAdminPage embedded />);
+    await user.click(within(row('m1')).getByRole('button', { name: 'actions.edit' }));
+    expect(screen.getByText(/sheet:true:m1/)).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'zatvori-sheet' }));
+    expect(screen.getByText(/sheet:false:-/)).toBeInTheDocument();
+  });
 });

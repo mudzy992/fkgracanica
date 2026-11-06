@@ -42,4 +42,20 @@ describe('provjera osvježavanja medija', () => {
     expect(client.getQueryState(assetKey)?.fetchStatus).toBe('paused');
     offA(); offF(); client.clear();
   });
+
+  it('odbijeni upit ne potvrđuje osvježavanje', async () => {
+    const client = new QueryClient();
+    vi.spyOn(client, 'invalidateQueries').mockRejectedValue(new Error('x'));
+    expect(await refreshMediaQueries(client)).toBe(false);
+    client.clear();
+  });
+
+  it('greška pri pozivu osvježavanja vraća false', async () => {
+    const client = new QueryClient();
+    vi.spyOn(client, 'invalidateQueries').mockImplementation(() => {
+      throw new Error('x');
+    });
+    expect(await refreshMediaQueries(client)).toBe(false);
+    client.clear();
+  });
 });

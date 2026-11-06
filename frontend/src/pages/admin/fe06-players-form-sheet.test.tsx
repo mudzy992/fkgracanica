@@ -143,12 +143,15 @@ describe('PlayersAdminFormSheet — kreiranje', () => {
   it('greška spremanja ostaje u sheetu', async () => {
     const user = userEvent.setup();
     state.create = { ...state.create, mutateAsync: vi.fn(async () => { throw new Error('x'); }) };
-    renderSheet();
+    const { rerender } = renderSheet();
     await user.type(screen.getByPlaceholderText('admin.playerForm.firstName'), 'Emir');
     await user.type(screen.getByPlaceholderText('admin.playerForm.lastName'), 'Begić');
     await user.click(screen.getByRole('button', { name: 'actions.create' }));
     await waitFor(() => expect(screen.getByText('Spremanje nije uspjelo. Pokušajte ponovo.')).toBeInTheDocument());
     expect(state.onOpenChange).not.toHaveBeenCalled();
+    rerender(<PlayersAdminFormSheet open={false} onOpenChange={state.onOpenChange} edit={null} />);
+    rerender(<PlayersAdminFormSheet open onOpenChange={state.onOpenChange} edit={null} />);
+    expect(screen.queryByText('Spremanje nije uspjelo. Pokušajte ponovo.')).toBeNull();
   });
 });
 

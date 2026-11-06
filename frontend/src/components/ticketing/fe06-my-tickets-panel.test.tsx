@@ -10,6 +10,7 @@ const state = vi.hoisted(() => ({
   orders: { data: undefined as unknown, isLoading: false },
   season: { data: undefined as unknown },
   groups: [] as unknown[],
+  result: [] as unknown[],
   dialogs: [] as Record<string, unknown>[],
   seasonCards: [] as unknown[],
 }));
@@ -26,14 +27,19 @@ vi.mock('../../hooks/use-ticketing', () => ({
 vi.mock('../../lib/group-tickets-by-match', () => ({
   groupTicketsByMatch: (orders: unknown[]) => {
     state.groups.push(orders);
-    return state.groups.length ? [] : [];
+    return state.result;
   },
   filterTicketOrdersGroups: undefined,
 }));
 vi.mock('./MatchTicketsDialog', () => ({
   MatchTicketsDialog: (props: Record<string, unknown>) => {
     state.dialogs.push(props);
-    return props.group ? <div data-testid="tickets-dialog" /> : null;
+    return props.group ? (
+      <div>
+        <div data-testid="tickets-dialog" />
+        <button onClick={() => (props.onClose as () => void)()}>zatvori-dialog</button>
+      </div>
+    ) : null;
   },
 }));
 vi.mock('./SeasonPassCard', () => ({
@@ -81,6 +87,7 @@ describe('MyTicketsPanel', () => {
     state.orders = { data: [], isLoading: false };
     state.season = { data: undefined };
     state.groups = [];
+    state.result = [];
     state.dialogs = [];
     state.seasonCards = [];
   });
@@ -132,5 +139,21 @@ describe('MyTicketsPanel', () => {
     wrap(<MyTicketsPanel />);
     expect(state.dialogs[0]).toMatchObject({ group: null, open: false });
     expect(screen.queryByTestId('tickets-dialog')).toBeNull();
+  });
+
+  it('klik na karticu utakmice otvara dijalog, zatvaranje ga čisti', async () => {
+    const user = userEvent.setup();
+    state.result = [{
+      matchId: 'm1',
+      match: { id: 'm1', scheduledAt: '2026-05-01T17:00:00.000Z', homeClub: { name: 'FK Gračanica' }, awayClub: { name: 'FK Slavija' } },
+      items: [{ ticket: { id: 't1', status: 'PAID_AT_BOX_OFFICE' }, order: { id: 'o1' } }],
+    }];
+    wrap(<MyTicketsPanel />);
+    expect(screen.queryByTestId('tickets-dialog')).toBeNull();
+    await user.click(screen.getByRole('button', { name: /FK Gračanica/ }));
+    expect(screen.getByTestId('tickets-dialog')).toBeTruthy();
+    expect(state.dialogs.at(-1)).toMatchObject({ open: true, group: { matchId: 'm1' } });
+    await user.click(screen.getByRole('button', { name: 'zatvori-dialog' }));
+    expect(state.dialogs.at(-1)).toMatchObject({ open: false, group: null });
   });
 });
