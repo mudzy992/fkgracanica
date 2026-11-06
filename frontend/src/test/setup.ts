@@ -33,4 +33,19 @@ if (!('IntersectionObserver' in window)) {
   (window as unknown as Record<string, unknown>).IntersectionObserver = IntersectionObserverStub;
 }
 
+// jsdom ne implementira getClientRects na Range-u — ProseMirror ga zove pri
+// `scrollIntoView` nakon fokusiranja selekcije. Prazan spisak je dovoljan.
+if (typeof Range !== 'undefined') {
+  const emptyRectList = () => {
+    const list = [] as unknown as DOMRectList;
+    return Object.assign(list, { item: () => null });
+  };
+  if (!Range.prototype.getClientRects) {
+    Range.prototype.getClientRects = emptyRectList;
+  }
+  if (!Range.prototype.getBoundingClientRect) {
+    Range.prototype.getBoundingClientRect = () => new DOMRect();
+  }
+}
+
 afterEach(() => cleanup());
