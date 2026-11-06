@@ -17,6 +17,7 @@ const state = vi.hoisted(() => ({
   deleteComp: { mutateAsync: vi.fn(async () => ({})) },
   deleteSeason: { mutateAsync: vi.fn(async () => ({})) },
   sheet: null as null | { open: boolean; mode: unknown; editCompetition: unknown; editSeason: unknown },
+  closeSheet: vi.fn(),
 }));
 
 vi.mock('../../hooks', () => ({
@@ -29,7 +30,10 @@ vi.mock('../../lib/auth', () => ({ useAuth: () => ({ user: { permissions: state.
 vi.mock('../../hooks/use-confirm', () => ({ useConfirm: () => ({ confirm: state.confirm, dialog: null }) }));
 vi.mock('../../components/seo/Seo', () => ({ Seo: () => null }));
 vi.mock('./CompetitionsAdminFormSheet', () => ({
-  CompetitionsAdminFormSheet: (props: { open: boolean; mode: unknown; editCompetition: unknown; editSeason: unknown }) => {
+  CompetitionsAdminFormSheet: (props: {
+    open: boolean; mode: unknown; editCompetition: unknown; editSeason: unknown;
+    onOpenChange: (open: boolean) => void;
+  }) => {
     state.sheet = props;
     return props.open
       ? <div data-testid="sheet">mode:{String(props.mode)} comp:{String((props.editCompetition as Row | null)?.id ?? '-')} season:{String((props.editSeason as Row | null)?.id ?? '-')}</div>
@@ -114,6 +118,20 @@ describe('CompetitionsAdminPage', () => {
     const compRow = screen.getByTestId('row-Premijer liga');
     await user.click(within(compRow).getByRole('button', { name: /Uredi|edit/i }));
     expect(screen.getByTestId('sheet')).toHaveTextContent('mode:competition comp:c1');
+  });
+
+  it('dugme za sezonu otvara obrazac u režimu season', async () => {
+    const user = userEvent.setup();
+    renderPage();
+    await user.click(screen.getByRole('button', { name: /sezona|season/i }));
+    expect(screen.getByTestId('sheet')).toHaveTextContent('mode:season comp:- season:-');
+  });
+
+  it('zatvaranje obrasca resetuje režim i odabrane zapise', async () => {
+    renderPage();
+    const sheet = state.sheet as unknown as { onOpenChange: (open: boolean) => void };
+    sheet.onOpenChange(false);
+    expect(screen.queryByTestId('sheet')).toBeNull();
   });
 
   it('brisanje sezone i takmičenja ide kroz potvrdu', async () => {

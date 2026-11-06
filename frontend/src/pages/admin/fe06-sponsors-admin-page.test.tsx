@@ -1,4 +1,4 @@
-import { render, screen, waitFor, within } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { SponsorsAdminPage } from './SponsorsAdminPage';
@@ -27,9 +27,15 @@ vi.mock('../../components/admin/AdminPageShell', async () => {
   return { AdminPageShell: d.AdminPageShellDouble, AdminDataTable: d.AdminDataTableDouble };
 });
 vi.mock('./SponsorsAdminFormSheet', () => ({
-  SponsorsAdminFormSheet: (props: { open: boolean; edit: Record<string, unknown> | null }) => {
+  SponsorsAdminFormSheet: (props: {
+    open: boolean; edit: Record<string, unknown> | null; onOpenChange: (open: boolean) => void;
+  }) => {
     state.sheet = props;
-    return <div>sheet:{String(props.open)}:{String(props.edit?.id ?? '-')}</div>;
+    return (
+      <button type="button" onClick={() => props.onOpenChange(false)}>
+        sheet:{String(props.open)}:{String(props.edit?.id ?? '-')}
+      </button>
+    );
   },
 }));
 
@@ -123,6 +129,23 @@ describe('SponsorsAdminPage — akcije', () => {
     await user.click(screen.getByRole('button', { name: 'actions.delete' }));
     await waitFor(() => expect(state.confirm).toHaveBeenCalledTimes(1));
     expect(state.remove.mutateAsync).not.toHaveBeenCalled();
+  });
+
+  it('dugme Novi otvara prazan sheet', async () => {
+    const user = userEvent.setup();
+    render(<SponsorsAdminPage />);
+    await user.click(screen.getByRole('button', { name: 'Novi' }));
+    expect(screen.getByText('sheet:true:-')).toBeInTheDocument();
+  });
+
+  it('zatvaranje sheeta resetuje odabranog sponzora', async () => {
+    const user = userEvent.setup();
+    state.list = { ...state.list, data: [sponsor()] };
+    render(<SponsorsAdminPage />);
+    await user.click(screen.getByRole('button', { name: 'actions.edit' }));
+    expect(screen.getByText('sheet:true:sp1')).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: /sheet:/ }));
+    expect(screen.getByText('sheet:false:-')).toBeInTheDocument();
   });
 
   it('prazna lista prikazuje tabelu bez redova', () => {
