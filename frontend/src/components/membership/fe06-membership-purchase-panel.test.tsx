@@ -154,6 +154,29 @@ describe('MembershipPurchasePanel', () => {
     }));
   });
 
+  it('paneli na čekanju i obnove prosljeđuju odabrani provajder u checkout', async () => {
+    const user = userEvent.setup();
+    const { unmount } = render(<MembershipPurchasePanel config={cfg()} memberships={[row('PENDING')]} />);
+    await user.click(screen.getByRole('button', { name: 'plati-sada' }));
+    await waitFor(() => expect(state.checkout.mutateAsync).toHaveBeenCalledWith({
+      membershipId: 'm1', amount: 50, provider: 'stripe',
+    }));
+    unmount();
+    render(<MembershipPurchasePanel config={cfg()} memberships={[row('EXPIRED')]} />);
+    await user.click(screen.getByRole('button', { name: 'obnovi-online' }));
+    await waitFor(() => expect(state.checkout.mutateAsync).toHaveBeenCalledWith({
+      membershipId: 'm1', amount: 50, provider: 'monri',
+    }));
+  });
+
+  it('URL provajdera preusmjerava stranicu na naplatu', async () => {
+    const user = userEvent.setup();
+    state.checkout = { ...state.checkout, mutateAsync: vi.fn(async () => ({ url: '#naplata' })) };
+    render(<MembershipPurchasePanel config={cfg()} memberships={[row('PENDING')]} />);
+    await user.click(screen.getByRole('button', { name: 'plati-sada' }));
+    await waitFor(() => expect(window.location.hash).toBe('#naplata'));
+  });
+
   it('bez online prodaje prikazuje informacije sa blagajne', () => {
     render(<MembershipPurchasePanel config={cfg({ membershipOnlineEnabled: false })} />);
     expect(screen.getByText('blagajna-info')).toBeInTheDocument();

@@ -20,6 +20,28 @@ function Example() {
   );
 }
 
+describe('AdminFormSheet — zatvaranje i zaštita', () => {
+  it('X dugme zatvara formu bez izmjena', async () => {
+    const user = userEvent.setup();
+    render(<Example />);
+    await user.click(screen.getByRole('button', { name: 'Otvori formu' }));
+    const closeButtons = screen.getAllByRole('button', { name: 'Zatvori' });
+    await user.click(closeButtons[closeButtons.length - 1]);
+    expect(screen.queryByRole('dialog', { name: 'Uređivanje' })).not.toBeInTheDocument();
+  });
+
+  it('beforeunload se blokira samo kad ima nesačuvanih izmjena', () => {
+    render(
+      <AdminFormSheet open onOpenChange={vi.fn()} title="Zaštita">
+        <label>Naziv <input defaultValue="x" /></label>
+      </AdminFormSheet>,
+    );
+    const clean = new Event('beforeunload', { cancelable: true });
+    window.dispatchEvent(clean);
+    expect(clean.defaultPrevented).toBe(false);
+  });
+});
+
 describe('AdminFormSheet i modalni Dialog', () => {
   it('ne odbacuje izmjenu ako se potvrda zatvaranja odbije', async () => {
     const user = userEvent.setup();

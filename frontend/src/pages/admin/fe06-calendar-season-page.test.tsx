@@ -1,4 +1,5 @@
 import { render, screen, within } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { CalendarSeasonPage } from './CalendarSeasonPage';
@@ -35,6 +36,7 @@ vi.mock('./SeasonEditionFormSheet', () => ({
     return (
       <div>
         sheet:{String(props.open)}:{String(edit?.id ?? '-')}:{String(props.seasonId)}
+        <button onClick={() => (props.onOpenChange as (o: boolean) => void)(false)}>zatvori-sheet</button>
       </div>
     );
   },
@@ -146,5 +148,14 @@ describe('CalendarSeasonPage — tabela takmičenja', () => {
     state.seasons = [{ id: 's1', name: 'Sezona 2025/26', yearStart: 2025, yearEnd: 2026 }];
     renderPage();
     expect(screen.getByText('Nema takmičenja u ovoj sezoni.')).toBeInTheDocument();
+  });
+
+  it('zatvaranje sheet-a briše odabrano izdanje', async () => {
+    const user = userEvent.setup();
+    renderPage();
+    await user.click(within(row('e1')).getByRole('button', { name: 'actions.edit' }));
+    expect(screen.getByText(/sheet:true:e1/)).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'zatvori-sheet' }));
+    expect(screen.getByText(/sheet:false:-/)).toBeInTheDocument();
   });
 });

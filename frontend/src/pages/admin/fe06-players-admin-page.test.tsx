@@ -45,6 +45,7 @@ vi.mock('./PlayersAdminFormSheet', () => ({
     return (
       <div>
         sheet:{String(props.open)}:{String(edit?.id ?? '-')}:{String(props.clubId ?? '-')}
+        <button onClick={() => (props.onOpenChange as (o: boolean) => void)(false)}>zatvori-sheet</button>
       </div>
     );
   },
@@ -148,5 +149,14 @@ describe('PlayersAdminPage — dozvole i akcije', () => {
     await user.click(within(row('p2')).getByRole('button', { name: 'actions.delete' }));
     await waitFor(() => expect(state.confirm).toHaveBeenCalled());
     expect(state.remove).not.toHaveBeenCalled();
+  });
+
+  it('zatvaranje sheet-a briše odabranog igrača', async () => {
+    const user = userEvent.setup();
+    render(<PlayersAdminPage />);
+    await user.click(within(row('p1')).getByRole('button', { name: 'actions.edit' }));
+    expect(screen.getByText(/sheet:true:p1/)).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'zatvori-sheet' }));
+    expect(screen.getByText(/sheet:false:-/)).toBeInTheDocument();
   });
 });

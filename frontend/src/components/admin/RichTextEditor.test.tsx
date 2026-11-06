@@ -80,6 +80,20 @@ describe('RichTextEditor paste selection', () => {
     expect(editor.querySelector('iframe')).toBeNull();
   });
 
+  it('puštanje tastera V vraća obično lijepljenje na HTML', async () => {
+    const { editor, onChange } = await mountEditor();
+    editor.focus();
+    const text = editor.querySelector('p')!.firstChild!;
+    window.getSelection()!.collapse(text, text.textContent!.length);
+    fireEvent.keyDown(editor, { key: 'v', ctrlKey: true, shiftKey: true });
+    fireEvent.keyUp(editor, { key: 'v' });
+    await act(async () => paste(editor, {
+      'text/html': '<iframe src="https://www.youtube.com/embed/abc123XYZ01"></iframe>',
+      'text/plain': 'Običan tekst',
+    }));
+    expect(String(onChange.mock.lastCall?.[0])).toContain('https://www.youtube.com/embed/abc123XYZ01');
+  });
+
   it('ne lažira selekciju kada editor nema fokus', async () => {
     const { editor } = await mountEditor();
     const dispatch = vi.spyOn(document, 'dispatchEvent');

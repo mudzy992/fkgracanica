@@ -119,4 +119,14 @@ describe('GenericSectionForm', () => {
     await userEvent.type(screen.getByPlaceholderText('admin.cmsWidget.viewAllLink'), 'https://x.ba');
     expect(last()).toMatchObject({ viewAllUrl: 'https://x.ba' });
   });
+
+  it('naslov, tekst i oba dugmeta šalju izmjene', async () => {
+    renderForm('club-cta');
+    await userEvent.type(screen.getByPlaceholderText('admin.cmsWidget.sectionTitle'), 'Naslov');
+    expect(last()).toMatchObject({ title: 'Naslov' });
+    await userEvent.type(screen.getByPlaceholderText('admin.cmsWidget.buttonLabel'), 'Pridruži se');
+    expect(last()).toMatchObject({ buttonLabel: 'Pridruži se' });
+    await userEvent.type(screen.getByPlaceholderText('admin.cmsWidget.buttonUrlFull'), '/clanstvo');
+    expect(last()).toMatchObject({ buttonUrl: '/clanstvo' });
+  });
 });

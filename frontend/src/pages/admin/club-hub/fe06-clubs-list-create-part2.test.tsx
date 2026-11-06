@@ -64,8 +64,14 @@ vi.mock('../../../components/seo/Seo', () => ({
   },
 }));
 vi.mock('../../../components/admin/AdminFormSheet', () => ({
-  AdminFormSheet: ({ open, title, children }: { open: boolean; title: string; children: React.ReactNode }) =>
-    open ? <section aria-label={title}>{children}</section> : null,
+  AdminFormSheet: ({ open, title, children, onOpenChange }: {
+    open: boolean; title: string; children: React.ReactNode; onOpenChange?: (o: boolean) => void;
+  }) => (open ? (
+    <section aria-label={title}>
+      {children}
+      <button onClick={() => onOpenChange?.(false)}>zatvori-sheet</button>
+    </section>
+  ) : null),
 }));
 vi.mock('../../../components/admin/MediaPicker', () => ({
   MediaPicker: ({ value, onChange, label }: { value: string; onChange: (v: string) => void; label: string }) => (
@@ -140,5 +146,14 @@ describe('ClubsCreateSheet', () => {
     renderSheet();
     await userEvent.type(screen.getByPlaceholderText('admin.clubForm.name'), 'FK Test');
     expect(screen.getByRole('button', { name: 'Kreiraj i otvori hub' })).toHaveProperty('disabled', true);
+  });
+
+  it('zatvaranje sheet-a resetuje unesena polja', async () => {
+    const onOpenChange = vi.fn();
+    renderSheet(vi.fn(), onOpenChange);
+    await userEvent.type(screen.getByPlaceholderText('admin.clubForm.name'), 'FK Test');
+    await userEvent.click(screen.getByRole('button', { name: 'zatvori-sheet' }));
+    expect(onOpenChange).toHaveBeenCalledWith(false);
+    expect((screen.getByPlaceholderText('admin.clubForm.name') as HTMLInputElement).value).toBe('');
   });
 });

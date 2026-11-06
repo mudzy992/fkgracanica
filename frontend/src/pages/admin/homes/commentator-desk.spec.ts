@@ -3,9 +3,12 @@ import type { Match } from '../../../types';
 import {
   awaitingApproval,
   deskHref,
+  deskCounts,
   groupDeskMatches,
   needsReport,
   pickCommentatorDeskMatches,
+  pickToday,
+  pickUpcoming,
   primaryDeskMatch,
 } from './commentator-desk';
 
@@ -84,5 +87,28 @@ describe('commentator-desk', () => {
     const picked = pickCommentatorDeskMatches([draft, live], now);
     expect(picked.map((m) => m.id)).toEqual(['live', 'draft']);
     expect(primaryDeskMatch([draft, live], now)?.id).toBe('live');
+  });
+
+  it('spaja faze bez duplikata i sortira dan i predstojeće po vremenu', () => {
+    const later = fixture({ id: 'b', status: 'SCHEDULED', scheduledAt: new Date(2026, 7, 18, 21, 0).toISOString() });
+    const earlier = fixture({ id: 'a', status: 'SCHEDULED', scheduledAt: new Date(2026, 7, 18, 19, 0).toISOString() });
+    expect(pickToday([later, earlier], now).map((m) => m.id)).toEqual(['a', 'b']);
+
+    const soon = fixture({ id: 'soon', status: 'SCHEDULED', scheduledAt: new Date(2026, 7, 19, 18, 0).toISOString() });
+    const laterUpcoming = fixture({ id: 'late', status: 'SCHEDULED', scheduledAt: new Date(2026, 7, 20, 18, 0).toISOString() });
+    expect(pickUpcoming([laterUpcoming, soon], now).map((m) => m.id)).toEqual(['soon', 'late']);
+
+    const merged = pickCommentatorDeskMatches([earlier, earlier, soon], now);
+    expect(merged.map((m) => m.id)).toEqual(['a', 'soon']);
+  });
+
+  it('broji live, danas, nacrte i utakmice na odobrenju', () => {
+    const counts = deskCounts([
+      fixture({ id: 'l', status: 'LIVE' }),
+      fixture({ id: 't', status: 'SCHEDULED' }),
+      fixture({ id: 'd', status: 'FINISHED' }),
+      fixture({ id: 'p', status: 'FINISHED', reportStatus: 'PENDING_APPROVAL' }),
+    ], now);
+    expect(counts).toEqual({ live: 1, today: 1, drafts: 1, pending: 1 });
   });
 });

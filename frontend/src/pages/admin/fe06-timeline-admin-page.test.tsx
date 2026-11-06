@@ -27,9 +27,16 @@ vi.mock('../../components/admin/AdminPageShell', async () => {
   return { AdminPageShell: d.AdminPageShellDouble, AdminDataTable: d.AdminDataTableDouble };
 });
 vi.mock('./TimelineAdminFormSheet', () => ({
-  TimelineAdminFormSheet: (props: { open: boolean; edit: Record<string, unknown> | null }) => {
+  TimelineAdminFormSheet: (props: {
+    open: boolean; edit: Record<string, unknown> | null; onOpenChange: (o: boolean) => void;
+  }) => {
     state.sheet = props;
-    return <div>sheet:{String(props.open)}:{String(props.edit?.id ?? '-')}</div>;
+    return (
+      <div>
+        sheet:{String(props.open)}:{String(props.edit?.id ?? '-')}
+        <button onClick={() => props.onOpenChange(false)}>zatvori-sheet</button>
+      </div>
+    );
   },
 }));
 
@@ -138,5 +145,15 @@ describe('TimelineAdminPage — akcije', () => {
     await user.click(screen.getByRole('button', { name: 'actions.delete' }));
     await waitFor(() => expect(state.confirm).toHaveBeenCalledTimes(1));
     expect(state.remove.mutateAsync).not.toHaveBeenCalled();
+  });
+
+  it('zatvaranje sheet-a briše odabrani događaj', async () => {
+    const user = userEvent.setup();
+    state.list = { ...state.list, data: [event()] };
+    render(<TimelineAdminPage />);
+    await user.click(screen.getByRole('button', { name: 'actions.edit' }));
+    expect(screen.getByText('sheet:true:e1')).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'zatvori-sheet' }));
+    expect(screen.getByText('sheet:false:-')).toBeInTheDocument();
   });
 });

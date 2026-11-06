@@ -25,10 +25,10 @@
     }
   },
   "thresholds": {
-    "lines": 98.2,
-    "statements": 97.4,
-    "functions": 97.2,
-    "branches": 90.9
+    "lines": 98.8,
+    "statements": 98.1,
+    "functions": 98.1,
+    "branches": 91.5
   },
   "targetPercent": 50
 }
