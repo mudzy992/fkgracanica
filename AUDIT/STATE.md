@@ -15,6 +15,21 @@
 
 ## Šta je urađeno (hronološki)
 
+### Sesija FE-06 — 2026-11-05 (coverage batch 18; 72,53% linija)
+
+- Coverage batch 18 (§58): CMS admin (meni, birač widgeta, lista stranica, meta forma,
+  dijalog sekcije, sve forme sekcija), medijski sloj (picker, folder picker, dijalog) i
+  editor kategorija ulaznica — **14 fajlova / 136 testova**.
+- Provjere: FE **1896/1896** u 249 fajlova, V8 linije **72,53%**, ratchet
+  **72,4/71,9/68,7/59,3%**, matrica **1722**, fajlova na 0% **274** (bilo 291),
+  `check:all` 9/9, build i lint čisti.
+- Nalaz **Q-FE06-36** (čeka odluku): `MediaPickerDialog` ulazi u beskonačnu petlju ako
+  se `selectedPaths` izostavi (default `[]` = nova referenca svakog rendera). Stvarni
+  pozivaoci ga uvijek prosljeđuju; ništa nije mijenjano.
+- Radno stablo je vraćeno na `b7f1d3d` pa na `origin/arena/290a6f13-fkgracanica`
+  (`916ad06`); provjereno da nije izgubljen nijedan fajl (0 razlika prema remote tipu)
+  i ponovo instalirane zavisnosti (`npm ci`).
+
 ### Sesija FE-06 — 2026-11-05 (coverage batch 17; 69,83% linija)
 
 - Coverage batch 17 (§57): ljuska (`PublicNavItems`, `PublicFooter`,
