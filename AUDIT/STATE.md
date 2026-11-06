@@ -33,6 +33,8 @@
   `tsc -b` čist; lint 0 grešaka (41 upozorenje).
 - Matrica: normalizovano **110 redova** test fajlova coverage batcheva 19–22
   (`nepregledano` → `pokriveno testom`, segment FE-06).
+- CI **`42237680449`** (`ec27278`) = **6/6 success** (build + test, standards,
+  audit-gate, e2e, browser mock + axe, browser smoke).
 - Nove lekcije: fajl direktno u `src/` ne ulazi u vitest `include`; `vi.mock`
   fabrika ne smije koristiti top-level `const`; `vi.hoisted` vrijednost se poziva
   kroz prosljeđivač ako se mijenja u `beforeEach`; `canEditReport` traži
