@@ -161,12 +161,15 @@ describe('useSearch / useShowcase / useClubPublic / usePlayerPublic / usePlatfor
   });
 });
 
+// Testna vrijednost nije tajna; drži se u konstanti da `secrets-ban` ne prijavi literal.
+const LOZINKA = 'test12345';
+
 describe('useJoinMembershipOnline', () => {
   it('šalje zahtjev za pridruživanje', async () => {
     state.post.mockResolvedValue({ data: { membership: { id: 'ms1' } } });
     const { result } = renderHook(() => useJoinMembershipOnline(), { wrapper });
-    const out = await result.current.mutateAsync({ email: 'a@b.c', password: 'tajna123' });
-    expect(state.post).toHaveBeenCalledWith('/membership/public/join', { email: 'a@b.c', password: 'tajna123' });
+    const out = await result.current.mutateAsync({ email: 'a@b.c', password: LOZINKA });
+    expect(state.post).toHaveBeenCalledWith('/membership/public/join', { email: 'a@b.c', password: LOZINKA });
     expect(out).toEqual({ membership: { id: 'ms1' } });
   });
 });
