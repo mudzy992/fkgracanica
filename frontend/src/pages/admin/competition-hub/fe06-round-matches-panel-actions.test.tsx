@@ -108,6 +108,17 @@ describe('RoundMatchesPanel — obrasci i brisanje', () => {
     expect(state.lineup).toMatchObject({ open: true, matchId: 'm1' });
   });
 
+  it('zatvaranje forme i postave sklanja odabir', async () => {
+    const user = userEvent.setup();
+    renderPanel();
+    await user.click(screen.getByRole('button', { name: /Utakmica/ }));
+    await user.click(screen.getByRole('button', { name: 'zatvori-formu' }));
+    expect(state.form.open).toBe(false);
+    await user.click(screen.getByRole('button', { name: 'Postava' }));
+    await user.click(screen.getByRole('button', { name: 'zatvori-postavu' }));
+    expect(state.lineup).toMatchObject({ open: false, matchId: null });
+  });
+
   it('brisanje traži potvrdu sa imenima klubova pa briše', async () => {
     const user = userEvent.setup();
     renderPanel();

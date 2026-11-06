@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
@@ -86,6 +86,21 @@ describe('MatchFormSheet — kreiranje', () => {
     await user.type(dateInput, '2999-13-45T99:99');
     await user.click(screen.getByRole('button', { name: 'Kreiraj' }));
     await waitFor(() => expect(state.create.mutateAsync).not.toHaveBeenCalled());
+  });
+
+  it('zatvoren sheet ne priprema formu', () => {
+    render(
+      <MemoryRouter>
+        <MatchFormSheet open={false} onOpenChange={state.onOpenChange} edit={null} seasonId="se1" roundId="r1" />
+      </MemoryRouter>,
+    );
+    expect(screen.queryByDisplayValue(/^\d{4}-/)).toBeNull();
+  });
+
+  it('ručni unos stadiona mijenja vrijednost polja', () => {
+    renderSheet();
+    fireEvent.change(screen.getByPlaceholderText('admin.clubForm.stadium'), { target: { value: 'Pomoćni teren' } });
+    expect(screen.getByDisplayValue('Pomoćni teren')).toBeInTheDocument();
   });
 
   it('uspješno kreiranje šalje zakazanu utakmicu i zatvara sheet', async () => {

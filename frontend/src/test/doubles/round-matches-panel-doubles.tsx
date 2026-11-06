@@ -69,17 +69,21 @@ export function roundMatchesSheetsModule() {
     MatchFormSheet: (props: Record<string, unknown>) => {
       roundMatchesState.form = props;
       const edit = props.edit as { id?: string } | null;
+      const close = props.onOpenChange as (open: boolean) => void;
       return (
         <div>
           forma:{String(props.open)}:{String(edit?.id ?? '-')}
+          {props.open ? <button onClick={() => close(false)}>zatvori-formu</button> : null}
         </div>
       );
     },
     MatchLineupSheet: (props: Record<string, unknown>) => {
       roundMatchesState.lineup = props;
+      const close = props.onOpenChange as (open: boolean) => void;
       return (
         <div>
           postava:{String(props.open)}:{String(props.matchId ?? '-')}
+          {props.open ? <button onClick={() => close(false)}>zatvori-postavu</button> : null}
         </div>
       );
     },

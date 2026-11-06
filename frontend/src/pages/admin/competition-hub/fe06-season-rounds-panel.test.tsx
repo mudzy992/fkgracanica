@@ -101,6 +101,23 @@ describe('SeasonRoundsPanel — obrasci kola', () => {
     expect(screen.getByText('form:true:r1:se1')).toBeInTheDocument();
   });
 
+  it('klik na kolo bira to kolo', async () => {
+    const user = userEvent.setup();
+    state.rounds = { data: [round()], isLoading: false };
+    renderPanel();
+    await user.click(screen.getByText('Derbi kolo'));
+    expect(state.onSelectRound).toHaveBeenCalledWith('r1');
+  });
+
+  it('zatvaranje obrasca kola sklanja odabrano kolo', async () => {
+    const user = userEvent.setup();
+    state.rounds = { data: [round()], isLoading: false };
+    renderPanel();
+    await user.click(screen.getByRole('button', { name: 'actions.edit' }));
+    await user.click(screen.getByRole('button', { name: 'zatvori-formu' }));
+    expect(screen.getByText('form:false:-:se1')).toBeInTheDocument();
+  });
+
   it('kaskadni dijalog je zatvoren i bez uticaja dok se ništa ne briše', () => {
     renderPanel();
     expect(state.cascade).toMatchObject({ open: false, roundLabel: '', isPending: false });

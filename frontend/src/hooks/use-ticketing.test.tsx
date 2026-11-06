@@ -3,7 +3,8 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { act, renderHook, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { useMyTicketOrders, useMatchAvailability, useTicketingPublicConfig, useMySeasonPass,
-  useReserveTicket, useRequestTicketRefund, useCancelMyTicketOrder, useOpenSeasonPass } from './use-ticketing';
+  useReserveTicket, useRequestTicketRefund, useCancelMyTicketOrder, useOpenSeasonPass,
+  useTicketableMatches, useNextHomeMatch } from './use-ticketing';
 
 const api = vi.hoisted(() => ({ get: vi.fn(), post: vi.fn() }));
 vi.mock('../lib/api', () => ({ api }));
@@ -69,5 +70,26 @@ describe('korisnički ticketing query i mutacije', () => {
     await act(async () => { await result.result.current.mutateAsync(); });
     expect(api.post).toHaveBeenCalledWith('/ticketing/season-pass/open');
     expect(invalidate).toHaveBeenCalledWith({ queryKey: ['ticketing', 'season-pass'] });
+  });
+
+  it('dohvata dostupnost, utakmice u prodaji i narednu domaću utakmicu', async () => {
+    const { wrapper } = setup();
+    api.get.mockImplementation(async (path: string) => ({
+      data: path.endsWith('/availability') ? { left: 3 }
+        : path.includes('ticketable') ? { items: [{ id: 'm1' }] } : { id: 'm2' },
+    }));
+    const result = renderHook(() => ({
+      availability: useMatchAvailability('m1'),
+      matches: useTicketableMatches(),
+      next: useNextHomeMatch(),
+    }), { wrapper });
+    await waitFor(() => expect(result.result.current.matches.isSuccess).toBe(true));
+    await waitFor(() => expect(result.result.current.next.isSuccess).toBe(true));
+    expect(result.result.current.availability.data).toEqual({ left: 3 });
+    expect(result.result.current.matches.data).toEqual([{ id: 'm1' }]);
+    expect(result.result.current.next.data).toEqual({ id: 'm2' });
+    expect(api.get).toHaveBeenCalledWith('/ticketing/matches/m1/availability');
+    expect(api.get).toHaveBeenCalledWith('/ticketing/matches/ticketable');
+    expect(api.get).toHaveBeenCalledWith('/public/next-home-match');
   });
 });

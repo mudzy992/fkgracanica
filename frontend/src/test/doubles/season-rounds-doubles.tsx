@@ -14,9 +14,15 @@ export const seasonRoundsState = {
 
 export function RoundFormSheetDouble(props: {
   open: boolean; edit: Record<string, unknown> | null; seasonId: string;
+  onOpenChange: (open: boolean) => void;
 }) {
   seasonRoundsState.form = props;
-  return <div>form:{String(props.open)}:{String(props.edit?.id ?? '-')}:{props.seasonId}</div>;
+  return (
+    <div>
+      <span>form:{String(props.open)}:{String(props.edit?.id ?? '-')}:{props.seasonId}</span>
+      {props.open && <button onClick={() => props.onOpenChange(false)}>zatvori-formu</button>}
+    </div>
+  );
 }
 
 export function RoundCascadeDeleteDialogDouble(props: {

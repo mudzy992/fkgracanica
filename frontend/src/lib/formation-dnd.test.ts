@@ -40,4 +40,11 @@ describe('dodjela klupske postave', () => {
     expect(resolveDragAssignments(slots, 'player-a', 'player-b')).toBeNull();
     expect(resolveDragAssignments(slots, 'invalid', 'slot-b-0')).toBeNull();
   });
+
+  it('prevlačenje zauzetog mjesta zamjenjuje oba igrača', () => {
+    expect(resolveDragAssignments(slots, squadSlotDndId(slots[0]), squadSlotDndId(slots[2]))).toEqual([
+      { slotIndex: 0, isBench: true, playerId: 'a' },
+      { slotIndex: 0, isBench: false, playerId: 'b' },
+    ]);
+  });
 });

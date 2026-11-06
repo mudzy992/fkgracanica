@@ -35,14 +35,15 @@ export function AdminPageShellDouble({ title, isLoading, isError, onRetry, actio
   );
 }
 
-export function AdminDataTableDouble({ rows, columns, empty, onRowClick }: {
+export function AdminDataTableDouble({ rows, columns, empty, onRowClick, rowClassName }: {
   rows: AdminRow[]; columns: AdminColumn[]; empty?: string;
-  onRowClick?: (row: AdminRow) => void;
+  onRowClick?: (row: AdminRow) => void; rowClassName?: (row: AdminRow) => string | undefined;
 }) {
   return rows.length === 0 ? <p>{empty}</p> : (
     <div>
       {rows.map((row) => (
-        <div key={row.id} data-testid={`row-${row.id}`} onClick={() => onRowClick?.(row)}>
+        <div key={row.id} data-testid={`row-${row.id}`} className={rowClassName?.(row)}
+          onClick={() => onRowClick?.(row)}>
           {columns.map((column) => (
             <span key={column.key} data-col={column.key}>{column.render(row)}</span>
           ))}

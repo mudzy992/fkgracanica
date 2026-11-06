@@ -153,4 +153,21 @@ describe('koordinate i nedirnuti redovi pri spremanju', () => {
     const pitch = matchLineupToPitchSlots([row('wing', 71, 25)], 'home');
     expect(mapPitchPosition(pitch[0].positionX, pitch[0].positionY, false)).toEqual({ left: 71, top: 25 });
   });
+
+  it('fallback preskače klub koji već ima redove i ne duplicira igrača', () => {
+    const existing = [{ id: 'squad-default-home-0', playerId: 'p1', clubId: 'home' }] as MatchLineup[];
+    const result = resolvePublicMatchLineup(existing, false, [
+      { clubId: 'home', squad: [squadSlot(0, 'p2')] },
+      { clubId: 'away', squad: [squadSlot(0, 'p1', { clubId: 'away' })] },
+    ]);
+    expect(result).toHaveLength(1);
+    expect(result[0].playerId).toBe('p1');
+
+    const shared = resolvePublicMatchLineup([], false, [
+      { clubId: 'home', squad: [squadSlot(10, 'wing')] },
+      { clubId: 'away', squad: [squadSlot(10, 'wing', { clubId: 'away' })] },
+    ]);
+    expect(shared).toHaveLength(1);
+    expect(shared[0].clubId).toBe('home');
+  });
 });

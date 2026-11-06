@@ -133,4 +133,14 @@ describe('RoundMatchesPanel — dozvole i akcije', () => {
     expect(screen.queryByRole('button', { name: 'actions.delete' })).toBeNull();
     expect(within(row('m1')).getByText('Retro')).toBeInTheDocument();
   });
+
+  it('samo zakazana utakmica dobija istaknutu ivicu reda', () => {
+    resetRoundMatchesState([
+      match({ status: 'SCHEDULED' }),
+      match({ id: 'm2', status: 'FINISHED' }),
+    ]);
+    render(<MemoryRouter><RoundMatchesPanel seasonId="se1" roundId="r1" canManage /></MemoryRouter>);
+    expect(screen.getByTestId('row-m1').className).toContain('border-l-4');
+    expect(screen.getByTestId('row-m2').className).not.toContain('border-l-4');
+  });
 });

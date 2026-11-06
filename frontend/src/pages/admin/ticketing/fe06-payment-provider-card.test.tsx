@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 import { PaymentProviderCard } from './PaymentProviderCard';
@@ -148,5 +148,37 @@ describe('PaymentProviderCard — Monri polja', () => {
     const onSet = renderCard({ id: 'monri', settings: { 'payments.monri.mode': 'test' } });
     await user.selectOptions(screen.getByRole('combobox'), 'live');
     expect(onSet).toHaveBeenCalledWith('payments.monri.mode', 'live');
+  });
+});
+
+describe('PaymentProviderCard — sva polja', () => {
+  const inputs = () => Array.from(document.querySelectorAll('input'));
+
+  it('Stripe tajni ključ i webhook id idu u postavke', () => {
+    const onSet = renderCard();
+    const [, secret, webhook] = inputs();
+    fireEvent.change(secret, { target: { value: 'sk' } });
+    fireEvent.change(webhook, { target: { value: 'wh' } });
+    expect(onSet).toHaveBeenCalledWith('payments.stripe.secretKey', 'sk');
+    expect(onSet).toHaveBeenCalledWith('payments.stripe.webhookSecret', 'wh');
+  });
+
+  it('PayPal clientId, tajna, valuta i webhook idu u postavke', () => {
+    const onSet = renderCard({ id: 'paypal' });
+    const [clientId, secret, currency, webhook] = inputs();
+    fireEvent.change(clientId, { target: { value: 'c2' } });
+    fireEvent.change(secret, { target: { value: 's2' } });
+    fireEvent.change(currency, { target: { value: 'BAM' } });
+    fireEvent.change(webhook, { target: { value: 'w2' } });
+    expect(onSet).toHaveBeenCalledWith('payments.paypal.clientId', 'c2');
+    expect(onSet).toHaveBeenCalledWith('payments.paypal.clientSecret', 's2');
+    expect(onSet).toHaveBeenCalledWith('payments.paypal.currency', 'BAM');
+    expect(onSet).toHaveBeenCalledWith('payments.paypal.webhookId', 'w2');
+  });
+
+  it('Monri merchant key ide u postavke', () => {
+    const onSet = renderCard({ id: 'monri' });
+    fireEvent.change(inputs()[0], { target: { value: 'mk' } });
+    expect(onSet).toHaveBeenCalledWith('payments.monri.merchantKey', 'mk');
   });
 });

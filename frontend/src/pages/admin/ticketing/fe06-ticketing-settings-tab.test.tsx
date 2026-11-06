@@ -144,6 +144,29 @@ describe('TicketingSettingsTab — čuvanje', () => {
     expect(state.save.mock.calls[0][0]).toMatchObject({ 'ticketing.stadiumCapacity': '9500' });
   });
 
+  it('izmjena popusta, limita, cijene i oznake sezone ulazi u zahtjev', async () => {
+    const user = userEvent.setup();
+    renderTab();
+    const fields: Array<[string, string]> = [
+      ['admin.ticketingForm.memberDiscount', '25'],
+      ['admin.ticketingForm.maxPerUser', '6'],
+      ['admin.ticketingForm.seasonPrice', '150'],
+      ['admin.ticketingForm.seasonLabel', 'Sezona 26/27'],
+    ];
+    for (const [label, value] of fields) {
+      const input = inputByLabel(label);
+      await user.clear(input);
+      await user.type(input, value);
+    }
+    await user.click(screen.getByRole('button', { name: 'admin.ticketingForm.save' }));
+    expect(state.save.mock.calls[0][0]).toMatchObject({
+      'ticketing.memberDiscountPercent': '25',
+      'ticketing.maxBoxOfficeTicketsPerUser': '6',
+      'ticketing.seasonPassPrice': '150',
+      'ticketing.seasonPassLabel': 'Sezona 26/27',
+    });
+  });
+
   it('dok je spremanje u toku dugme je onemogućeno sa drugim tekstom', () => {
     state.saving = true;
     renderTab();

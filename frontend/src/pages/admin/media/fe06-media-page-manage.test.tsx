@@ -132,6 +132,34 @@ describe('MediaPage — brisanje, zamjena i dozvole', () => {
     expect(state.choose).toHaveBeenCalled();
   });
 
+  it('kopiranje originalnog linka označava putanju', async () => {
+    const user = userEvent.setup();
+    const writeText = vi.fn(async () => undefined);
+    Object.defineProperty(navigator, 'clipboard', { value: { writeText }, configurable: true });
+    render(<MediaPage />);
+    await user.click(screen.getByRole('button', { name: 'kopiraj' }));
+    await waitFor(() => expect(state.assetsProps.copied).toBe('x/slika.jpg'));
+    expect(writeText).toHaveBeenCalledTimes(1);
+  });
+
+  it('zona za upload prosljeđuje fajlove u red sa nazivom mape', async () => {
+    const user = userEvent.setup();
+    render(<MediaPage />);
+    state.enqueue = vi.fn();
+    await user.click(screen.getByRole('button', { name: 'izaberi-f1' }));
+    await user.click(screen.getByRole('button', { name: /zone:f1/ }));
+    expect(state.enqueue).toHaveBeenCalledWith(expect.any(Array), 'f1', 'Prva');
+  });
+
+  it('zatvaranje asset sheeta sklanja odabrani medij', async () => {
+    const user = userEvent.setup();
+    render(<MediaPage />);
+    await user.click(screen.getByRole('button', { name: 'uredi' }));
+    expect(screen.getByText('asset-sheet:true')).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'zatvori-asset' }));
+    expect(screen.getByText('asset-sheet:false')).toBeInTheDocument();
+  });
+
   it('dozvola samo za upload pušta upload, ali ne i upravljanje', () => {
     state.user = { id: 'u3', permissions: ['media.upload'] };
     render(<MediaPage />);

@@ -124,5 +124,11 @@ export function MediaFolderSheetDouble(props: Record<string, unknown>) {
 
 export function MediaAssetFormSheetDouble(props: Record<string, unknown>) {
   mediaPageState.assetSheetProps = props;
-  return <div>asset-sheet:{String((props as { open: boolean }).open)}</div>;
+  const p = props as { open: boolean; onOpenChange: (open: boolean) => void };
+  return (
+    <div>
+      <span>asset-sheet:{String(p.open)}</span>
+      {p.open && <button onClick={() => p.onOpenChange(false)}>zatvori-asset</button>}
+    </div>
+  );
 }
