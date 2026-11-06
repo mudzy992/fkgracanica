@@ -35,7 +35,7 @@
   `await vi.hoisted(async () => await import('…/doubles'))`. `react-router-dom`
   se u testovima koristi kroz stvarni `MemoryRouter`; `useParams` traži rutu sa
   parametrom. `alt=""` nema `role="img"`.
-- CI **`42195877010`** (`fe08399`) = **6/6 success**.
+- CI **`42195877010`** (`fe08399`) = **6/6 success**; docs run **`42196576007`** (`04139af`) = **6/6 success**.
 - Nalazi koji čekaju izričitu odluku (ništa nije mijenjano): **Q-FE06-31**,
   **Q-FE06-32**, **Q-FE06-33**, **Q-FE06-34**, **Q-FE06-35**, **Q-FE06-36**.
 
