@@ -1,4 +1,5 @@
 import { screen, waitFor } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { LeaguePage } from './LeaguePage';
@@ -93,5 +94,20 @@ describe('LeaguePage — učitavanje i selekcija', () => {
     state.seasons = { data: [season({ competitions: [] })], isLoading: false };
     renderInRouter(<LeaguePage />);
     expect(state.calls).toContainEqual({ hook: 'matches', args: { editionId: undefined } });
+  });
+});
+
+describe('LeaguePage — nestanak odabrane sezone', () => {
+  it('bira novu aktivnu sezonu kad prethodna nestane iz liste', async () => {
+    const { rerender } = renderInRouter(<LeaguePage />);
+    expect(state.calls).toContainEqual({ hook: 'standings', args: { editionId: 'ed1', upToRound: null } });
+    state.seasons = {
+      data: [season({ id: 's9', name: '2026/27', yearStart: 2026, competitions: [{ id: 'ed9', competition: { name: 'Liga', isLeague: true } }] })],
+      isLoading: false,
+    };
+    rerender(<MemoryRouter><LeaguePage /></MemoryRouter>);
+    await waitFor(() =>
+      expect(state.calls).toContainEqual({ hook: 'standings', args: { editionId: 'ed9', upToRound: null } }),
+    );
   });
 });

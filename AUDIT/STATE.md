@@ -15,6 +15,26 @@
 
 ## Šta je urađeno (hronološki)
 
+### Sesija FE-06 — 2026-11-07 (coverage batch 30; 99,62 % linija)
+
+- Coverage batch 30 (§70): `ShowcasePage` (nedostajuća katalog sekcija),
+  `LeaguePage` (nestanak odabrane sezone bira novu), `SponsorsSection` i
+  `LatestNews` skeleton stanja, `LastResult` (najnovija od više završenih
+  utakmica), `TicketingOrdersTab` (zatvaranje sheeta) i novi direktni test
+  `SettingsModuleSection` — **5 proširenih (+6 testova) + 1 novi fajl (5
+  testova)**, sve sedam meta **100 %** u izolovanom mjerenju; bez promjena
+  vidljivog ponašanja.
+- Provjere: FE **3365/3365** u **412** fajla (bilo 3354/411), V8 linije
+  **99,62 % (8481/8513)**, statementi **98,96 % (9500/9599)**, funkcije
+  **99,26 % (3498/3524)**, grane **92,35 % (7782/8426)** (bilo 99,56 / 98,89 /
+  99,09 / 92,22); ratchet **99,5 / 98,8 / 99,1 / 92,2 %**; nepokrivenih
+  statementa **99** u **88** fajlova (bilo 106 u 95), nijedan fajl nema više
+  od 5 (`main.tsx`); matrica **1886**; `check:all` **9/9**; `tsc -b` čist;
+  `test:coverage` **exit 0**.
+- Otvoreni nalazi nepromijenjeni: **Q-FE06-31** (`MediaBulkActionBar`), **Q-FE06-32** (`ProfileAvatarEditor`),
+  **Q-FE06-33** (`PassQrCode`/`MembershipQrCode` bez `.catch()`), **Q-FE06-34** (šest CMS fajlova = mrtav kod),
+  **Q-FE06-35** (`MemberHomeStrip` → `unread?.meta.total`), **Q-FE06-36** (`MediaPickerDialog` bez `selectedPaths`).
+
 ### Sesija FE-06 — 2026-11-07 (coverage batch 29; 99,56 % linija)
 
 - Coverage batch 29 (§69): YouTube audio player (pokazivač i odgođeni `load`

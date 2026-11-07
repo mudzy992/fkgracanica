@@ -122,6 +122,12 @@ describe('TrophiesSection', () => {
 });
 
 describe('SponsorsSection', () => {
+  it('dok se učitava prikazuje šest kostura bez sponzora', () => {
+    state.sponsors = { data: undefined, isLoading: true };
+    const { container } = wrap(<SponsorsSection />);
+    expect(container.querySelectorAll('.animate-pulse')).toHaveLength(6);
+  });
+
   it('prikazuje logo ili ime i vanjski link', () => {
     state.sponsors = {
       data: [

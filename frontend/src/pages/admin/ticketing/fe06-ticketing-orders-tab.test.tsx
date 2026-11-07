@@ -20,9 +20,14 @@ vi.mock('../../../components/ticketing/TicketingValidatePanel', () => ({
   TicketingValidatePanel: () => <div>validate-panel</div>,
 }));
 vi.mock('../TicketingOrderSheet', () => ({
-  TicketingOrderSheet: (props: { order: Record<string, unknown> | null; open: boolean; canManage: boolean }) => {
+  TicketingOrderSheet: (props: { order: Record<string, unknown> | null; open: boolean; canManage: boolean; onOpenChange: (o: boolean) => void }) => {
     state.sheet = props as typeof state.sheet;
-    return <div>sheet:{String(props.open)}:{String(props.order?.id ?? '-')}:{String(props.canManage)}</div>;
+    return (
+      <div>
+        <span>sheet:{String(props.open)}:{String(props.order?.id ?? '-')}:{String(props.canManage)}</span>
+        <button onClick={() => props.onOpenChange(false)}>zatvori-sheet</button>
+      </div>
+    );
   },
 }));
 vi.mock('../../../components/admin/AdminPageShell', async () => ({
@@ -106,6 +111,17 @@ describe('TicketingOrdersTab — tabela i filteri', () => {
     expect(ids()).toEqual(['row-o-cancelled', 'row-o-refunded']);
     await user.click(screen.getByRole('button', { name: 'Sve' }));
     expect(ids()).toHaveLength(6);
+  });
+
+  it('detalj otvara sheet, a zatvaranje poništava odabir', async () => {
+    const user = userEvent.setup();
+    state.orders = { data: [order()], isLoading: false };
+    render(<TicketingOrdersTab />);
+    expect(screen.getByText('sheet:false:-:true')).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'Detalj' }));
+    expect(screen.getByText('sheet:true:ord1234567890:true')).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'zatvori-sheet' }));
+    expect(screen.getByText('sheet:false:-:true')).toBeInTheDocument();
   });
 
   it('bez dozvole upravljanja nema panela ni akcija', () => {

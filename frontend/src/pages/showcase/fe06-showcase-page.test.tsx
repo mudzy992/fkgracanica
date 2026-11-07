@@ -148,3 +148,20 @@ describe('ShowcasePage', () => {
     expect(screen.getAllByText('Komentator').length).toBeGreaterThan(0);
   });
 });
+
+describe('ShowcasePage — djelimični katalog', () => {
+  it('preskače katalog sekciju koja nedostaje', () => {
+    const full = payload();
+    const first = renderPage();
+    expect(screen.getByText('Potrebe kluba')).toBeTruthy();
+    first.unmount();
+    state.showcase = {
+      data: { ...full, sections: full.sections.filter((x) => x.id !== 'club-needs') },
+      isLoading: false,
+      isError: false,
+    };
+    renderPage();
+    expect(screen.queryByText('Potrebe kluba')).toBeNull();
+    expect(screen.getByText('Identitet')).toBeTruthy();
+  });
+});

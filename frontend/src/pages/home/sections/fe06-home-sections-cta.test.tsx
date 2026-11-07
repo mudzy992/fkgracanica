@@ -38,6 +38,13 @@ beforeEach(() => {
 });
 
 describe('LatestNews', () => {
+  it('dok se učitava prikazuje tri kostura bez vijesti', () => {
+    state.news = { data: undefined, isLoading: true };
+    const { container } = wrap(<LatestNews />);
+    expect(container.querySelectorAll('.animate-pulse')).toHaveLength(9);
+    expect(screen.queryByRole('link', { name: /vijesti\// })).toBeNull();
+  });
+
   it('prikazuje naslov, sažetak i datum', () => {
     state.news = {
       data: [
@@ -67,6 +74,19 @@ describe('LatestNews', () => {
 });
 
 describe('LastResult', () => {
+  it('od više završenih utakmica bira najnoviju', () => {
+    state.matches = {
+      data: [
+        { id: 'm-old', status: 'FINISHED', scheduledAt: '2020-01-01T17:00:00.000Z', homeScore: 1, awayScore: 2, homeClub: { shortName: 'DOM' }, awayClub: { shortName: 'GOS' } },
+        { id: 'm-new', status: 'FINISHED', scheduledAt: '2026-02-01T17:00:00.000Z', homeScore: 3, awayScore: 0, homeClub: { shortName: 'DOM' }, awayClub: { shortName: 'GOS' } },
+      ],
+      isLoading: false,
+    };
+    const { container } = wrap(<LastResult />);
+    expect(container.querySelector('a')?.getAttribute('href')).toBe('/utakmice/m-new');
+    expect(screen.getByText(/3\s*:/)).toBeInTheDocument();
+  });
+
   it('prikazuje najnoviji završeni rezultat sa skraćenim imenima', () => {
     state.matches = {
       data: [
