@@ -10,6 +10,7 @@ describe('responzivna upload zona', () => {
     render(<MediaUploadZone folderId="folder" onFiles={onFiles} onTrigger={onTrigger} />);
     const button = screen.getByRole('button', { name: 'Dodaj slike (galerija ili kamera)' });
     fireEvent.click(button);
+    fireEvent.dragOver(button);
     fireEvent.drop(button, { dataTransfer: { files: [file] } });
     expect(onTrigger).toHaveBeenCalledOnce();
     expect(onFiles).toHaveBeenCalledWith([file]);

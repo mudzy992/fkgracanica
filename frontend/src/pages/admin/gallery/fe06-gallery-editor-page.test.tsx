@@ -1,6 +1,6 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom';
+import { MemoryRouter, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { GalleryEditorPage } from './GalleryEditorPage';
 
@@ -36,10 +36,16 @@ function Probe() {
   return <div data-testid="loc">{useLocation().pathname}</div>;
 }
 
+function GoTo({ to }: { to: string }) {
+  const navigate = useNavigate();
+  return <button onClick={() => navigate(to)}>prebaci</button>;
+}
+
 function Harness({ id }: { id?: string }) {
   return (
     <MemoryRouter initialEntries={[id ? `/admin/gallery/${id}/edit` : '/admin/gallery/new']}>
       <Probe />
+      <GoTo to="/admin/gallery/g2/edit" />
       <Routes>
         <Route path="/admin/gallery/new" element={<GalleryEditorPage />} />
         <Route path="/admin/gallery/:id/edit" element={<GalleryEditorPage />} />
@@ -169,5 +175,22 @@ describe('GalleryEditorPage — zaštita nacrta pri osvježavanju', () => {
     state.detail = { data: detail({ title: 'Novi naslov sa servera' }), isLoading: false };
     view.rerender(<Harness id="g1" />);
     expect(screen.getByDisplayValue('Novi naslov sa servera')).toBeInTheDocument();
+  });
+});
+
+describe('GalleryEditorPage — promjena galerije', () => {
+  it('nakon prelaska na drugu galeriju novo polje opet broji kao izmjena', async () => {
+    const user = userEvent.setup();
+    renderAt('g1');
+    state.detail = { data: { ...detail(), id: 'g2', title: 'Kup 2027' }, isLoading: false };
+    await user.click(screen.getByRole('button', { name: 'prebaci' }));
+    expect(await screen.findByDisplayValue('Kup 2027')).toBeInTheDocument();
+    const title = screen.getByDisplayValue('Kup 2027');
+    await user.clear(title);
+    await user.type(title, 'Novi naziv');
+    await user.click(screen.getByRole('button', { name: 'actions.save' }));
+    await waitFor(() => expect(state.update.mutateAsync).toHaveBeenCalledWith({
+      id: 'g2', title: 'Novi naziv', description: 'Finale',
+    }));
   });
 });

@@ -45,3 +45,14 @@ describe('live stream editor', () => {
     expect(screen.getByRole('dialog')).toBeInTheDocument();
   });
 });
+
+describe('live stream editor — zatvaranje', () => {
+  it('X u zaglavlju zatvara dijalog bez spremanja', async () => {
+    open();
+    fireEvent.click(screen.getAllByRole('button', { name: 'Zatvori' }).find((b) => !b.className.includes('inset-0'))!);
+    await waitFor(() =>
+      expect(screen.queryByPlaceholderText('https://youtube.com/watch?v=...')).toBeNull(),
+    );
+    expect(save).not.toHaveBeenCalled();
+  });
+});

@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { Match } from '../../../types';
@@ -70,6 +70,13 @@ describe('CommentatorCommentPanel', () => {
   it('unos je dostupan za LIVE i HALFTIME', () => {
     render(<CommentatorCommentPanel match={match({ status: 'HALFTIME' })} />);
     expect(screen.getByPlaceholderText('admin.commentPanel.placeholder')).toBeTruthy();
+  });
+
+  it('Enter na prazan unos ne šalje komentar', () => {
+    render(<CommentatorCommentPanel match={match({ status: 'LIVE' })} />);
+    const input = screen.getByPlaceholderText('admin.commentPanel.placeholder');
+    fireEvent.keyDown(input, { key: 'Enter' });
+    expect(screen.getByRole('button', { name: 'Pošalji' })).toBeDisabled();
   });
 
   it('vani utakmice unos je skriven, lista ostaje', () => {

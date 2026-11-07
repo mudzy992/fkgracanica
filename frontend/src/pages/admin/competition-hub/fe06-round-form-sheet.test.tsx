@@ -109,3 +109,11 @@ describe('RoundFormSheet', () => {
     expect(screen.getByRole('button', { name: 'Spremi' })).toBeDisabled();
   });
 });
+
+describe('RoundFormSheet — zatvoren sheet', () => {
+  it('kad je sheet zatvoren ne popunjava polja iz editacije', () => {
+    render(<RoundFormSheet open={false} onOpenChange={state.onOpenChange} edit={round() as never} seasonId="se1" />);
+    expect(screen.getByPlaceholderText('admin.roundForm.namePlaceholder')).toHaveValue('');
+    expect(screen.getByPlaceholderText('admin.roundForm.numberPlaceholder')).toHaveValue(1);
+  });
+});

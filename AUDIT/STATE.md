@@ -15,6 +15,26 @@
 
 ## Šta je urađeno (hronološki)
 
+### Sesija FE-06 — 2026-11-07 (coverage batch 31; 99,67 % linija)
+
+- Coverage batch 31 (§71): media (upload zona, folder sheet, akcija Uredi,
+  `copyMediaOriginalUrl` sa 2 s resetom), galerija (promjena galerije resetuje
+  `touched`), kola (`RoundFormSheet` sa `open=false`), komentator (X na stream
+  dijalogu, Enter na prazan unos) i dva nova direktna testa
+  (`SettingsFieldGroupPanel` sa praznom grupom, media helperi) —
+  **10 proširenih (+12) + 2 nova fajla (8 testova)**; deset meta **100 %**,
+  ostalo su potvrđene mrtve zaštite.
+- Provjere: FE **3379/3379** u **414** fajla (bilo 3365/412), V8 linije
+  **99,67 % (8485/8513)**, statementi **99,06 % (9509/9599)**, funkcije
+  **99,40 % (3503/3524)**, grane **92,41 % (7787/8426)** (bilo 99,62 / 98,96 /
+  99,26 / 92,35); ratchet **99,5 / 98,9 / 99,3 / 92,3 %**; nepokrivenih
+  statementa **90** u **79** fajlova (bilo 99 u 88), nijedan fajl nema više
+  od 5 (`main.tsx`); matrica **1888**; `check:all` **9/9**; `tsc -b` čist;
+  `test:coverage` **exit 0**.
+- Otvoreni nalazi nepromijenjeni: **Q-FE06-31** (`MediaBulkActionBar`), **Q-FE06-32** (`ProfileAvatarEditor`),
+  **Q-FE06-33** (`PassQrCode`/`MembershipQrCode` bez `.catch()`), **Q-FE06-34** (šest CMS fajlova = mrtav kod),
+  **Q-FE06-35** (`MemberHomeStrip` → `unread?.meta.total`), **Q-FE06-36** (`MediaPickerDialog` bez `selectedPaths`).
+
 ### Sesija FE-06 — 2026-11-07 (coverage batch 30; 99,62 % linija)
 
 - Coverage batch 30 (§70): `ShowcasePage` (nedostajuća katalog sekcija),

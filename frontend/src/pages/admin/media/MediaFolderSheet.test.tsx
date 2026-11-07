@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { render, screen, within } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 import '../../../i18n';
@@ -58,5 +58,18 @@ describe('MediaFolderSheet', () => {
     expect(remove).toHaveBeenCalledOnce();
     expect(sheet).toBeInTheDocument();
     expect(document.body.style.overflow).toBe('hidden');
+  });
+});
+
+describe('MediaFolderSheet — zatvaranje', () => {
+  it('X u zaglavlju zatvara sheet bez odabira mape', async () => {
+    const user = userEvent.setup();
+    const onSelect = vi.fn();
+    render(<Example onSelect={onSelect} onDelete={vi.fn()} />);
+    await user.click(screen.getByRole('button', { name: 'Otvori mape' }));
+    const sheet = await screen.findByRole('dialog');
+    await user.click(within(sheet).getAllByRole('button', { name: 'Zatvori' }).find((b) => !b.className.includes('inset-0'))!);
+    await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull());
+    expect(onSelect).not.toHaveBeenCalled();
   });
 });

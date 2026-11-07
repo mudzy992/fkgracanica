@@ -124,3 +124,13 @@ describe('MediaAssetsGrid', () => {
     expect(screen.getByRole('img').getAttribute('src')).toContain('original/a1.jpg');
   });
 });
+
+describe('MediaAssetsGrid — akcija uređivanja', () => {
+  it('dugme Uredi zove onEdit sa fajlom', async () => {
+    const user = userEvent.setup();
+    const onEdit = vi.fn();
+    render(<MediaAssetsGrid {...gridProps({ onEdit })} />);
+    await user.click(screen.getAllByRole('button', { name: 'actions.edit' })[0]!);
+    expect(onEdit).toHaveBeenCalledWith(expect.objectContaining({ id: 'a1' }));
+  });
+});
