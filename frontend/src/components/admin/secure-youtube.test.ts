@@ -151,3 +151,22 @@ describe('siguran YouTube unos', () => {
     }
   });
 });
+
+describe('paste pravilo za YouTube', () => {
+  it('getAttributes vraća siguran src za prepoznati link', () => {
+    const config = SecureYoutube.config as unknown as {
+      addPasteRules: (this: unknown) => { handler: (p: Record<string, unknown>) => void }[];
+    };
+    const [rule] = config.addPasteRules.call({ type: { name: 'youtube' } });
+    const inserted: unknown[] = [];
+    const chain = () => ({
+      deleteRange: () => ({ insertContentAt: (_pos: unknown, node: unknown) => inserted.push(node) }),
+    });
+    const typed = (url: string) => Object.assign([url], { input: `vidi ${url}` });
+    rule.handler({ match: typed('https://youtu.be/abc123XYZ01'), chain, range: {}, pasteEvent: null });
+    expect(inserted).toEqual([
+      { type: 'youtube', attrs: { src: safeEditorYoutubeSrc('https://youtu.be/abc123XYZ01') } },
+    ]);
+    expect(inserted[0]).toMatchObject({ attrs: { src: expect.stringContaining('youtube') } });
+  });
+});

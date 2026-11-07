@@ -32,8 +32,7 @@ vi.mock('../../../components/admin/AdminBreadcrumbs', () => ({
 vi.mock('./CmsPageMetaForm', () => ({
   CmsPageMetaForm: ({ meta, onChange, onSave, isPending }: {
     meta: { title: string; slug: string; status: string };
-    onChange: (m: { title: string; slug: string; status: string }) => void;
-    onSave: () => void; isPending?: boolean;
+    onChange: (m: { title: string; slug: string; status: string }) => void; onSave: () => void; isPending?: boolean;
   }) => (
     <div>
       <span>meta:{meta.title}|{meta.slug}|{meta.status}</span>
@@ -69,15 +68,17 @@ vi.mock('./CmsSortableSections', () => ({
   ),
 }));
 vi.mock('./CmsSectionEditDialog', () => ({
-  CmsSectionEditDialog: ({ open, section, dirty, onChange, onSave }: {
+  CmsSectionEditDialog: ({ open, section, dirty, onChange, onSave, onOpenChange }: {
     open: boolean; section: CmsPageSection | null; dirty: boolean;
-    onChange: (c: Record<string, unknown>) => void; onSave: () => void;
+    onChange: (c: Record<string, unknown>) => void; onSave: () => void; onOpenChange: (o: boolean) => void;
   }) => {
     state.editDialog = { open, section, dirty };
     return open ? (
       <div data-testid="edit-dialog">
         <span>dijalog:{section?.id} dirty:{String(dirty)}</span>
         <button onClick={() => onChange({ title: 'Novo' })}>promijeni-config</button>
+        <button onClick={() => onOpenChange(true)}>zadrži-dijalog</button>
+        <button onClick={() => onOpenChange(false)}>zatvori-dijalog</button>
         <button onClick={onSave}>sačuvaj-sekciju</button>
       </div>
     ) : null;
@@ -85,20 +86,14 @@ vi.mock('./CmsSectionEditDialog', () => ({
 }));
 
 const section = (id: string, widgetType = 'text'): CmsPageSection => ({ id, widgetType, enabled: true, config: { text: id } }) as unknown as CmsPageSection;
-const page = (over: Partial<CmsPage> = {}): CmsPage => ({
-  id: 'pg1', title: 'O nama', slug: 'o-nama', status: 'DRAFT',
-  sections: [section('s1'), section('s2', 'gallery')],
-  ...over,
-}) as unknown as CmsPage;
+const page = (over: Partial<CmsPage> = {}): CmsPage =>
+  ({ id: 'pg1', title: 'O nama', slug: 'o-nama', status: 'DRAFT', sections: [section('s1'), section('s2', 'gallery')], ...over }) as unknown as CmsPage;
 
-const renderPage = (id = 'pg1') =>
-  render(
-    <MemoryRouter initialEntries={[`/admin/cms/${id}`]}>
-      <Routes>
-        <Route path="/admin/cms/:id" element={<CmsPageBuilderPage />} />
-      </Routes>
-    </MemoryRouter>,
-  );
+const renderPage = (id = 'pg1') => render(
+  <MemoryRouter initialEntries={[`/admin/cms/${id}`]}>
+    <Routes><Route path="/admin/cms/:id" element={<CmsPageBuilderPage />} /></Routes>
+  </MemoryRouter>,
+);
 
 beforeEach(() => {
   state.pages = { data: [page()], isLoading: false };
@@ -189,5 +184,16 @@ describe('CmsPageBuilderPage', () => {
     await user.click(screen.getByRole('button', { name: '+ Widget' }));
     expect(screen.getByText('picker:pg1')).toBeInTheDocument();
     expect(state.picker).toEqual({ open: true, pageId: 'pg1' });
+  });
+
+  it('dijalog ostaje otvoren na zahtjev za otvaranje i zatvara se na zahtjev za zatvaranje', async () => {
+    const user = userEvent.setup();
+    renderPage();
+    await user.click(screen.getByRole('button', { name: 'otvori-prvu' }));
+    await user.click(screen.getByRole('button', { name: 'zadrži-dijalog' }));
+    expect(screen.getByTestId('edit-dialog')).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'zatvori-dijalog' }));
+    expect(screen.queryByTestId('edit-dialog')).toBeNull();
+    expect(screen.getByText('preview:2 edit:- draft:ne')).toBeInTheDocument();
   });
 });

@@ -171,4 +171,29 @@ describe('LeagueTableWidget — izbor edicije', () => {
     renderWidget();
     expect(state.table.highlightClubId).toBeUndefined();
   });
+
+  it('bez sezona koristi praznu listu bez pada', () => {
+    state.seasons = { data: undefined, isLoading: false };
+    renderWidget();
+    expect(screen.queryAllByRole('button')).toHaveLength(0);
+    expect(screen.queryByTestId('skeleton')).toBeNull();
+  });
+  it('novi podaci sezona zadržavaju postojeći izbor', () => {
+    state.seasons = { data: [calendar([edition('e1'), edition('e2')])], isLoading: false };
+    const { rerender } = renderWidget();
+    expect(state.standingsEdition).toBe('e1');
+    state.seasons = { data: [calendar([edition('e1'), edition('e2'), edition('e3')])], isLoading: false };
+    rerender(<LeagueTableWidget config={{} as never} />);
+    expect(state.standingsEdition).toBe('e1');
+  });
+
+  it('izbor pada na ligu kad odabrana edicija nestane', () => {
+    state.seasons = { data: [calendar([edition('e1'), edition('e2')])], isLoading: false };
+    const { rerender } = renderWidget();
+    expect(state.standingsEdition).toBe('e1');
+    state.leagueEdition = { id: 'e2' };
+    state.seasons = { data: [calendar([edition('e2')])], isLoading: false };
+    rerender(<LeagueTableWidget config={{} as never} />);
+    expect(state.standingsEdition).toBe('e2');
+  });
 });

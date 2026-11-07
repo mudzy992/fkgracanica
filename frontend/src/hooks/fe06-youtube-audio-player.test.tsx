@@ -98,6 +98,18 @@ describe('useYouTubeAudioPlayer', () => {
     expect(player.destroy).not.toHaveBeenCalled();
   });
 
+  it('pokazivač nakon unmounta ne dira uništeni player', async () => {
+    const { handlers, player } = installYt();
+    const { unmount } = render(<AudioHarness url="https://youtu.be/dQw4w9WgXcQ" active />);
+    await waitFor(() => expect(handlers.onReady).toBeTruthy());
+    handlers.onReady({ target: player } as never);
+    player.playVideo.mockClear();
+    unmount();
+    window.dispatchEvent(new Event('pointerdown'));
+    expect(player.playVideo).not.toHaveBeenCalled();
+    expect(player.destroy).toHaveBeenCalledTimes(1);
+  });
+
   it('pauza i cue ponovo pokreću reprodukciju sa odgođenim pokušajem', async () => {
     const { handlers, player } = installYt();
     render(<AudioHarness url="https://youtu.be/dQw4w9WgXcQ" active />);
@@ -120,6 +132,32 @@ describe('useYouTubeAudioPlayer', () => {
     handlers.onReady({ target: player } as never);
     unmount();
     expect(player.destroy).toHaveBeenCalled();
+  });
+
+  it('odgođeno učitavanje API-ja nakon unmounta ne kreira player', async () => {
+    let resolveLoad!: () => void;
+    state.load = vi.fn(() => new Promise<void>((done) => { resolveLoad = done; }));
+    const Player = vi.fn();
+    (window as unknown as { YT: unknown }).YT = { Player, PlayerState: {} };
+    const { unmount } = render(<AudioHarness url="https://youtu.be/dQw4w9WgXcQ" active />);
+    await waitFor(() => expect(state.load).toHaveBeenCalled());
+    unmount();
+    resolveLoad();
+    await new Promise((done) => setTimeout(done, 0));
+    expect(Player).not.toHaveBeenCalled();
+  });
+
+  it('učitan API bez window.YT ne kreira player i ne pada', async () => {
+    const Player = vi.fn();
+    state.load = vi.fn(async () => {
+      delete (window as unknown as { YT?: unknown }).YT;
+      return undefined;
+    });
+    render(<AudioHarness url="https://youtu.be/dQw4w9WgXcQ" active />);
+    await waitFor(() => expect(state.load).toHaveBeenCalled());
+    await new Promise((done) => setTimeout(done, 0));
+    expect(Player).not.toHaveBeenCalled();
+    expect(screen.getByTestId('container')).toBeInTheDocument();
   });
 
   it('loadYouTubeApi odbijanje ne ruši hook', async () => {

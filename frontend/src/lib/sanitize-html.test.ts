@@ -53,4 +53,16 @@ describe('sanitizeHtml (FE-03 / P-FE03-1)', () => {
       expect(out).toContain(tag);
     }
   });
+
+  it('uklanja href sa protokolom koji nije na allowlisti (ftp, cid)', () => {
+    expect(sanitizeHtml('<a href="ftp://fkgracanica.ba/fajl.pdf">x</a>')).toBe('<a>x</a>');
+    expect(sanitizeHtml('<a href="cid:logo@fk.ba">x</a>')).toBe('<a>x</a>');
+    expect(sanitizeHtml('<img src="ftp://fk.ba/slika.jpg" alt="a">')).toBe('<img alt="a">');
+  });
+
+  it('zadržava relativne, mailto i tel linkove', () => {
+    expect(sanitizeHtml('<a href="/vijesti">x</a>')).toContain('href="/vijesti"');
+    expect(sanitizeHtml('<a href="mailto:info@fk.ba">x</a>')).toContain('mailto:info@fk.ba');
+    expect(sanitizeHtml('<a href="tel:+387600000">x</a>')).toContain('tel:+387600000');
+  });
 });

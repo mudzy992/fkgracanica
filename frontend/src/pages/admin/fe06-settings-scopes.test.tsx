@@ -12,6 +12,7 @@ const state = vi.hoisted(() => ({
   publicError: null as Error | null,
   privateError: null as Error | null,
   permissions: ['settings.update'] as string[],
+  liveEnabled: true,
 }));
 
 vi.mock('../../hooks', () => ({
@@ -60,10 +61,11 @@ vi.mock('react-i18next', () => ({
   useTranslation: () => ({ t: (k: string) => (k === 'video.invalidInput' ? 'NEVALIDNO' : k) }),
 }));
 vi.mock('../../lib/settings-sections', () => ({
-  getSettingsTabs: (scope: string) => [
+  getSettingsTabs: (scope: string, hasGroup: (g: string) => boolean, liveEnabled: boolean) => [
     { id: 'modules', kind: 'modules', title: `${scope}-moduli`, description: 'Opis modula' },
-    { id: 'fields', kind: 'fields', title: 'Polja', group: 'club' },
-    { id: 'plain', kind: 'other', title: 'Bez opisa' },
+    ...(hasGroup('club') ? [{ id: 'fields', kind: 'fields', title: 'Polja', group: 'club' }] : []),
+    ...(liveEnabled ? [{ id: 'live', kind: 'fields', title: 'Uživo', group: 'live' }] : []),
+    ...(scope === 'public' ? [{ id: 'plain', kind: 'other', title: 'Bez opisa' }] : []),
   ],
 }));
 
@@ -77,6 +79,7 @@ beforeEach(() => {
   state.publicError = null;
   state.privateError = null;
   state.permissions = ['settings.update'];
+  state.liveEnabled = true;
 });
 
 describe('SettingsPage — scope i tabovi', () => {
@@ -166,5 +169,15 @@ describe('SettingsPage — spremanje', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Sačuvaj promjene' }));
     await waitFor(() => expect(state.savePublic).toHaveBeenCalled());
     expect(screen.queryByRole('alert')).toBeNull();
+  });
+
+  it('nestanak aktivnog taba vraća prvi tab', async () => {
+    render(<SettingsPage />);
+    fireEvent.click(screen.getByRole('button', { name: 'Uživo' }));
+    expect(screen.getByTestId('fields').textContent).toContain('live|');
+    state.publicData = { 'feature.live': 'false' };
+    fireEvent.click(screen.getByText('promijeni-ime'));
+    await waitFor(() => expect(screen.queryByRole('button', { name: 'Uživo' })).toBeNull());
+    expect(screen.getByRole('button', { name: 'public-moduli' })).toHaveClass('bg-primary');
   });
 });

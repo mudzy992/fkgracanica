@@ -15,6 +15,32 @@
 
 ## Šta je urađeno (hronološki)
 
+### Sesija FE-06 — 2026-11-07 (coverage batch 29; 99,56 % linija)
+
+- Coverage batch 29 (§69): YouTube audio player (pokazivač i odgođeni `load`
+  nakon unmounta, API bez `window.YT`), `sanitize-html` (nove šeme `ftp:`/`cid:`
+  uz zadržane relativne/`mailto:`/`tel:`), tabela lige (bez sezona, nove sezone,
+  nestanak odabrane edicije — fajl **100 %**), `SettingsPage` (nestanak
+  aktivnog taba vraća prvi, uz mock sa sva tri argumenta), CMS builder
+  (`onOpenChange(true/false)` na dijalogu sekcije) i Tiptap paste pravilo
+  (`getAttributes` za prepoznati link) — **6 proširenih fajlova / +11 testova**,
+  bez promjena vidljivog ponašanja.
+- Provjere: FE **3354/3354** u **411** fajlu (bilo 3343), V8 linije
+  **99,56 % (8476/8513)**, statementi **98,89 % (9493/9599)**, funkcije
+  **99,09 % (3492/3524)**, grane **92,22 % (7771/8426)** (bilo 99,53 / 98,82 /
+  99,00 / 92,08); ratchet **99,4 / 98,7 / 98,9 / 92,1 %** (grane +0,2);
+  nepokrivenih statementa **106** u **95** fajlova (bilo 113 u 98), nijedan
+  fajl nema više od 5 (`main.tsx`); matrica **1885**; `check:all` **9/9**;
+  `tsc -b` čist; `test:coverage` **exit 0**.
+- Mrtve zaštite potvrđene u §69 (iza `disabled` dugmadi ili stanja koje UI ne
+  može proizvesti): `SettingsPage` 73, `CmsPageBuilderPage` 85,
+  `AppReleaseCreateForm` 39/49, `ClubFormationTab` 76/81,
+  `CommentatorTeamBoard` 62/71, `NewsletterCampaignComposer` 30/37,
+  `CustomHtmlEditor` 38, `unsaved-navigation` 23, `sanitize-html` 111.
+- Otvoreni nalazi nepromijenjeni: **Q-FE06-31** (`MediaBulkActionBar`), **Q-FE06-32** (`ProfileAvatarEditor`),
+  **Q-FE06-33** (`PassQrCode`/`MembershipQrCode` bez `.catch()`), **Q-FE06-34** (šest CMS fajlova = mrtav kod),
+  **Q-FE06-35** (`MemberHomeStrip` → `unread?.meta.total`), **Q-FE06-36** (`MediaPickerDialog` bez `selectedPaths`).
+
 ### Sesija FE-06 — 2026-11-07 (coverage batch 28; 99,53 % linija)
 
 - Coverage batch 28 (§68): `AdminPageShell`/`AdminDataTable` prvi put direktno,
