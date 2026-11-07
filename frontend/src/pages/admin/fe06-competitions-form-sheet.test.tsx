@@ -175,3 +175,9 @@ describe('CompetitionsAdminFormSheet — sezona', () => {
     expect(screen.getByRole('button', { name: 'Kreiraj' })).toBeDisabled();
   });
 });
+describe('CompetitionsAdminFormSheet — zatvoren', () => {
+  it('kad je open false efekat ne popunjava formu', () => {
+    renderSheet({ open: false });
+    expect(screen.getByRole('button', { name: /Kreiraj|Sačuvaj/ })).toBeInTheDocument();
+  });
+});

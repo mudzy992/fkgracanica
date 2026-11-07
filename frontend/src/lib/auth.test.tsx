@@ -84,3 +84,9 @@ describe('AuthProvider', () => {
     expect(mocks.clearTokens).toHaveBeenCalled();
   });
 });
+
+describe('useAuth van providera', () => {
+  it('baca jasnu grešku umjesto tihog undefined', () => {
+    expect(() => renderHook(() => useAuth())).toThrow('useAuth must be used within AuthProvider');
+  });
+});

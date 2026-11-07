@@ -83,11 +83,14 @@ export function membershipExportModule() {
 
 export function membershipDetailModule() {
   return {
-    MembershipDetailSheet: ({ membership, open }: { membership: MembershipRow | null; open: boolean }) => {
+    MembershipDetailSheet: ({ membership, open, onOpenChange }: {
+      membership: MembershipRow | null; open: boolean; onOpenChange?: (open: boolean) => void;
+    }) => {
       membershipState.detail = { id: membership?.id ?? '', open };
       return (
         <div>
           detalj:{membership?.id ?? 'nema'}:{String(open)}
+          {onOpenChange ? <button onClick={() => onOpenChange(false)}>zatvori-detalj</button> : null}
         </div>
       );
     },

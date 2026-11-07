@@ -187,3 +187,9 @@ describe('HallOfFameAdminFormSheet — izmjena', () => {
     expect(screen.getByText('Spremanje nije uspjelo.')).toBeInTheDocument();
   });
 });
+describe('HallOfFameAdminFormSheet — zatvoren', () => {
+  it('kad je open false ne popunjava polja iz editacije', () => {
+    renderSheet({ open: false, edit: { id: 'h1', name: 'Posebno ime', role: 'Legenda', years: '1990' } });
+    expect(screen.queryByDisplayValue('Posebno ime')).toBeNull();
+  });
+});

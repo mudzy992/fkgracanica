@@ -164,3 +164,16 @@ describe('SeasonEditionFormSheet — izmjena učesnika', () => {
     expect(screen.getByRole('button', { name: 'Spremi' })).toBeDisabled();
   });
 });
+describe('SeasonEditionFormSheet — zatvoren', () => {
+  it('kad je open false ne popunjava polja iz editacije', () => {
+    render(
+      <SeasonEditionFormSheet
+        open={false}
+        onOpenChange={state.onOpenChange}
+        seasonId="se1"
+        editEdition={{ id: 'e1', name: 'Posebna liga', competitionId: 'c1', isLeague: true } as never}
+      />,
+    );
+    expect(screen.queryByDisplayValue('Posebna liga')).toBeNull();
+  });
+});

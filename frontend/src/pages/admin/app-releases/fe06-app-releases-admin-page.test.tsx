@@ -9,23 +9,21 @@ const state = vi.hoisted(() => ({
   calls: [] as Array<{ method: string; url: string; body?: unknown; headers?: unknown }>,
   invalidate: vi.fn(),
   form: {} as Record<string, unknown>,
-  uploadGate: Promise.resolve({
-    apkPath: 'apps/app-1.2.3.apk',
-    apkSha256: 'abc',
-    apkSizeBytes: 1024,
-  }),
+  queryOptions: undefined as undefined | { queryFn?: () => Promise<unknown> },
+  uploadGate: Promise.resolve({ apkPath: 'apps/app-1.2.3.apk', apkSha256: 'abc', apkSizeBytes: 1024 }),
 }));
 
 vi.mock('react-i18next', () => ({ useTranslation: () => ({ t: (k: string) => k }) }));
 vi.mock('@tanstack/react-query', () => ({
   useQueryClient: () => ({ invalidateQueries: state.invalidate }),
-  useQuery: () => state.list,
+  useQuery: (options: { queryFn?: () => Promise<unknown> }) => {
+    state.queryOptions = options;
+    return state.list;
+  },
   useMutation: (options: { mutationFn?: (arg: unknown) => unknown; onSuccess?: () => void }) => ({
     isPending: state.pending,
     mutateAsync: async (arg: unknown) => {
-      const result = await options.mutationFn?.(arg);
-      options.onSuccess?.();
-      return result;
+      const result = await options.mutationFn?.(arg); options.onSuccess?.(); return result;
     },
   }),
 }));
@@ -187,5 +185,15 @@ describe('AppReleasesAdminPage — akcije', () => {
     render(<AppReleasesAdminPage />);
     expect(state.form.creating).toBe(true);
     expect(screen.getByText('forma:uploading=false:creating=true')).toBeInTheDocument();
+  });
+});
+
+describe('AppReleasesAdminPage — upit', () => {
+  it('queryFn dohvaća listu izdanja', async () => {
+    render(<AppReleasesAdminPage />);
+    const options = state.queryOptions as { queryFn: () => Promise<unknown> };
+    state.calls.length = 0;
+    expect(Array.isArray(await options.queryFn())).toBe(true);
+    expect(state.calls).toContainEqual({ method: 'get', url: '/app-releases' });
   });
 });

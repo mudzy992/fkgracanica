@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ProfileAvatarEditor } from './ProfileAvatarEditor';
@@ -142,5 +142,13 @@ describe('ProfileAvatarEditor — upload i brisanje', () => {
     expect(screen.getByRole('button', { name: /actions.delete/ })).toBeDisabled();
     resolve({ data: { path: 'p.jpg' } });
     await waitFor(() => expect(state.patch).toHaveBeenCalled());
+  });
+});
+
+describe('ProfileAvatarEditor — prazan odabir', () => {
+  it('promjena inputa bez fajla ne pokreće upload', async () => {
+    render(<ProfileAvatarEditor />);
+    fireEvent.change(fileInput(), { target: { files: [] } });
+    expect(state.post).not.toHaveBeenCalled();
   });
 });

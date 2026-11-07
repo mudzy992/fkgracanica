@@ -119,3 +119,11 @@ describe('ClubAboutCtaSectionForm', () => {
     expect(state.changes).toEqual([]);
   });
 });
+
+describe('NextMatchSectionForm — izmjena naslova', () => {
+  it('unos u naslov čuva ostala polja sekcije', async () => {
+    render(<Harness Comp={NextMatchSectionForm} initial={{ title: 'Sljedeća', showResult: true }} />);
+    await userEvent.type(screen.getByDisplayValue('Sljedeća'), '!');
+    expect(last()).toMatchObject({ title: 'Sljedeća!', showResult: true });
+  });
+});

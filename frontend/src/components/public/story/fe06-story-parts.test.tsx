@@ -139,3 +139,18 @@ describe('ClubStoryCoda', () => {
     );
   });
 });
+
+describe('ClubStoryProgress — pokretni pojas', () => {
+  it('klik u pokretnom pojasu takođe bira eru', async () => {
+    const onSelect = vi.fn();
+    const chapter = document.createElement('div');
+    chapter.id = 'story-chapter-e2';
+    chapter.scrollIntoView = vi.fn();
+    document.body.appendChild(chapter);
+    render(<ClubStoryProgress events={events} activeId="e1" onSelect={onSelect} />);
+    await userEvent.click(screen.getAllByRole('button', { name: '1974' })[1]);
+    expect(onSelect).toHaveBeenCalledWith('e2');
+    expect(chapter.scrollIntoView).toHaveBeenCalled();
+    chapter.remove();
+  });
+});

@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { beforeAll, describe, expect, it, vi } from 'vitest';
 import { installDialogPolyfill } from '../../test/dialog-polyfill';
@@ -85,5 +85,26 @@ describe('HofLegendDialog', () => {
       />,
     );
     expect(document.body.querySelector('img')).not.toBeNull();
+  });
+});
+
+describe('HofLegendDialog — zatvaranje', () => {
+  const igrac = { id: 'l2', name: 'Asim Hodžić', role: 'Kapiten', years: '1980–1990', photoPath: null, imagePath: null, description: '<p>Legenda</p>' };
+
+  it('X u zaglavlju zove onClose', async () => {
+    const onClose = vi.fn();
+    wrap(<HofLegendDialog entry={igrac as never} open onClose={onClose} />);
+    const buttons = screen.getAllByRole('button', { name: 'actions.close' });
+    fireEvent.click(buttons.find((b) => !b.className.includes('inset-0'))!);
+    expect(onClose).toHaveBeenCalled();
+  });
+
+  it('klik na podlogu takođe zove onClose kroz onOpenChange', () => {
+    const onClose = vi.fn();
+    wrap(<HofLegendDialog entry={igrac as never} open onClose={onClose} />);
+    const backdrop = screen.getAllByRole('button', { name: 'actions.close' })
+      .find((b) => b.className.includes('inset-0'))!;
+    fireEvent.click(backdrop);
+    expect(onClose).toHaveBeenCalledTimes(1);
   });
 });

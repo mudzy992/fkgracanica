@@ -15,6 +15,29 @@
 
 ## Šta je urađeno (hronološki)
 
+### Sesija FE-06 — 2026-11-07 (coverage batch 33; 99,91 % linija)
+
+- Coverage batch 33 (§73): posljednji dohvatljivi statementi iz §72 — lib edge
+  slučajevi (`mediaUrl`, `galleryPreviewUrl`, `museumCategoryLabel`,
+  `resolveEventSide`, `isPastDatetime`, `buildFormationSlots`, `getSettingsTabs`,
+  `safeRichIframeSrc`, `urlToDataUrl`, `storedLanguage` bez `window`), motion
+  `useReducedMotion`, zatvoreni `Dialog`/`Sheet` guardovi (`open={false}` ×4,
+  `useAuth` van providera, `MembershipDetailSheet` `onOpenChange`, `SheetHeader`
+  `onClose`), vidljivost admin modula, `queryFn` rukovaoci (email log, izdanja),
+  filter/retry na članstvu, `Dialog` X/footer/podloga, red medija i
+  `MembershipCardsBulkExport`/`NewsCommentsSection` guardovi — **3 nova fajla
+  + 19 proširenih testova, ukupno +37 testova**; bez promjena vidljivog ponašanja.
+- Provjere: FE **3440/3440** u **419** fajlova (bilo 3403/416), V8 linije
+  **99,91 % (8506/8513)**, statementi **99,55 % (9556/9599)**, funkcije
+  **99,97 % (3523/3524)**, grane **92,99 % (7836/8426)** (bilo 99,77 / 99,23 /
+  99,60 / 92,72); ratchet **99,8 / 99,4 / 99,8 / 92,8 %**; nepokrivenih
+  statementa **43** u **32** fajla (bilo 73 u 62) — svi su mrtve zaštite iza
+  `disabled`/`return null`; jedina nepokrivena funkcija je `main.tsx` bootstrap;
+  matrica **1893**; `check:all` **9/9**; `tsc -b` čist; `test:coverage` **exit 0**.
+- Pokrivenost je time na plafonu: dalje povećanje bi značilo brisanje/refaktor
+  mrtvog koda (traži izričitu odluku); Q-FE06-31…36 ostaju otvoreni.
+- CI run se upisuje nakon provjere pusha.
+
 ### Sesija FE-06 — 2026-11-07 (coverage batch 32; 99,77 % linija)
 
 - Coverage batch 32 (§72): javni widgeti (`OnlinePaymentChoice`, `FormShell`,

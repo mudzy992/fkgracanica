@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import '../../i18n';
 import { installDialogPolyfill } from '../../test/dialog-polyfill';
-import { Dialog, DialogBody, DialogHeader } from './dialog';
+import { Dialog, DialogBody, DialogFooter, DialogHeader } from './dialog';
 
 installDialogPolyfill();
 afterEach(() => { document.body.style.overflow = ''; vi.restoreAllMocks(); });
@@ -94,3 +94,43 @@ describe('samostalni Dialog', () => {
     expect(document.body.style.overflow).toBe('');
   });
 });
+
+describe('Dialog — X, podloga i footer', () => {
+  it('X dugme zatvara dijalog, a footer se renderuje', async () => {
+    const user = userEvent.setup();
+    render(
+      <Wrapper>
+        <DialogBody>tijelo</DialogBody>
+        <DialogFooter>
+          <button>Sačuvaj</button>
+        </DialogFooter>
+      </Wrapper>,
+    );
+    await user.click(screen.getByRole('button', { name: 'Otvori dijalog' }));
+    expect(screen.getByRole('button', { name: 'Sačuvaj' })).toBeInTheDocument();
+    await user.click(within(screen.getByRole('dialog')).getAllByRole('button', { name: 'Zatvori' })
+      .find((b) => b.tabIndex === 0)!);
+    expect(screen.queryByRole('dialog')).toBeNull();
+  });
+
+  it('klik direktno na dijalog (podloga) ga zatvara', async () => {
+    const user = userEvent.setup();
+    render(<Wrapper><DialogBody>tijelo</DialogBody></Wrapper>);
+    await user.click(screen.getByRole('button', { name: 'Otvori dijalog' }));
+    fireEvent.click(screen.getByRole('dialog'));
+    expect(screen.queryByRole('dialog')).toBeNull();
+  });
+});
+
+function Wrapper({ children }: { children: React.ReactNode }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <>
+      <button onClick={() => setOpen(true)}>Otvori dijalog</button>
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogHeader onClose={() => setOpen(false)}>Naslov</DialogHeader>
+        {children}
+      </Dialog>
+    </>
+  );
+}

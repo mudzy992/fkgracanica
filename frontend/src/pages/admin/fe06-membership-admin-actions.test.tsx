@@ -134,6 +134,15 @@ describe('MembershipAdminPage — detalj, kreiranje i linkovi', () => {
     expect(state.detail.open).toBe(true);
   });
 
+  it('zatvaranje sheeta detalja poništava odabir', async () => {
+    const user = userEvent.setup();
+    renderPage();
+    await user.click(screen.getByRole('button', { name: 'Detalj' }));
+    expect(state.detail.open).toBe(true);
+    await user.click(screen.getByRole('button', { name: 'zatvori-detalj' }));
+    expect(state.detail).toEqual({ id: '', open: false });
+  });
+
   it('dugme Novi član otvara formu za kreiranje', async () => {
     const user = userEvent.setup();
     renderPage();
@@ -152,5 +161,31 @@ describe('MembershipAdminPage — detalj, kreiranje i linkovi', () => {
     state.perms = [];
     renderPage();
     expect(screen.queryByRole('link', { name: /Online postavke/ })).toBeNull();
+  });
+});
+
+describe('MembershipAdminPage — filter i ponovni pokušaj', () => {
+  it('filter po statusu sužava tabelu', async () => {
+    const user = userEvent.setup();
+    state.rows = [
+      row({ id: 'm1', status: 'ACTIVE' }),
+      row({
+        id: 'm2',
+        status: 'PENDING',
+        user: { id: 'u2', email: 'marko@example.com', firstName: 'Marko', lastName: 'Marković' },
+      }),
+    ];
+    renderPage();
+    await user.click(screen.getByRole('button', { name: 'Na čekanju' }));
+    expect(screen.getByTestId('row-m2')).toBeInTheDocument();
+    expect(screen.queryByTestId('row-m1')).toBeNull();
+  });
+
+  it('ponovni pokušaj iz greške poziva refetch', async () => {
+    const user = userEvent.setup();
+    state.isError = true;
+    renderPage();
+    await user.click(screen.getByRole('button', { name: 'pokušaj-ponovo' }));
+    expect(state.refetch).toHaveBeenCalledTimes(1);
   });
 });

@@ -27,10 +27,7 @@ vi.mock('../../hooks/use-newsletter-admin', () => ({
       refetch: state.refetch,
     };
   },
-  useUnsubscribeNewsletter: () => ({
-    mutateAsync: state.unsubscribe,
-    isPending: state.unsubPending,
-  }),
+  useUnsubscribeNewsletter: () => ({ mutateAsync: state.unsubscribe, isPending: state.unsubPending }),
 }));
 vi.mock('../../hooks/use-confirm', () => ({
   useConfirm: () => ({ confirm: state.confirm, dialog: null }),
@@ -124,6 +121,9 @@ describe('NewsletterAdminPage — pretraga, tabovi, izvoz', () => {
     await user.click(screen.getByRole('button', { name: 'Kampanje' }));
     expect(screen.getByText('panel-kampanja')).toBeInTheDocument();
     expect(screen.queryByText('a@mail.ba')).toBeNull();
+    await user.click(screen.getByRole('button', { name: 'Pretplatnici' }));
+    expect(screen.queryByText('panel-kampanja')).toBeNull();
+    expect(screen.getByText('a@mail.ba')).toBeInTheDocument();
   });
 
   it('izvoz CSV dohvata blob i pokreće preuzimanje', async () => {

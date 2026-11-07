@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { cleanup, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
@@ -15,6 +15,7 @@ const state = vi.hoisted(() => ({
   navProps: {} as Record<string, unknown>,
   palette: {} as Record<string, unknown>,
   resetKeys: [] as unknown[],
+  visibility: [] as boolean[],
 }));
 
 vi.mock('react-i18next', () => ({ useTranslation: () => ({ t: (k: string) => k }) }));
@@ -34,6 +35,8 @@ vi.mock('../../lib/admin-module-map', () => ({
 vi.mock('./admin-nav-groups', () => ({
   filterNavLeaves: (permissions: unknown, isVisible: (item: unknown) => boolean) => {
     state.filterCalls.push([permissions, typeof isVisible]);
+    const items = [{ moduleKeys: ['news', 'media'] }, { moduleKeys: ['media'] }, { to: '/admin/media' }, { to: '/admin/other' }];
+    state.visibility = items.map((item) => isVisible(item));
     return state.groups;
   },
 }));
@@ -50,17 +53,17 @@ vi.mock('../common/RouteLoading', () => ({ RouteLoading: () => <p>ucitavanje-rut
 vi.mock('../ui/sheet', () => ({
   Sheet: ({ open, children }: { open: boolean; children: React.ReactNode }) =>
     open ? <div data-testid="sheet">{children}</div> : null,
-  SheetHeader: ({ children }: { children: React.ReactNode }) => <header>{children}</header>,
+  SheetHeader: ({ children, onClose }: { children?: React.ReactNode; onClose?: () => void }) => (
+    <header>{children}{onClose ? <button onClick={onClose}>zatvori-sheet</button> : null}</header>
+  ),
   SheetContent: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
 }));
 vi.mock('./AdminSidebarNav', () => ({
   AdminSidebarNav: (props: Record<string, unknown>) => {
     state.navProps = props;
     return (
-      <div>
-        nav:{String((props.groups as unknown[]).length)}:{String(!!props.onNavigate)}
-        <button onClick={() => (props.onNavigate as (() => void) | undefined)?.()}>idi</button>
-      </div>
+      <div>nav:{String((props.groups as unknown[]).length)}:{String(!!props.onNavigate)}
+        <button onClick={() => (props.onNavigate as (() => void) | undefined)?.()}>idi</button></div>
     );
   },
 }));
@@ -69,18 +72,15 @@ vi.mock('./AdminCommandPalette', () => ({
   AdminCommandPalette: (props: Record<string, unknown>) => {
     state.palette = props;
     return (
-      <div>
-        paleta:{String(props.open)}
-        <button onClick={() => (props.onOpenChange as (o: boolean) => void)(true)}>otvori-paletu</button>
-      </div>
+      <div>paleta:{String(props.open)}
+        <button onClick={() => (props.onOpenChange as (o: boolean) => void)(true)}>otvori-paletu</button></div>
     );
   },
 }));
 
 const group = { key: 'main', label: 'Glavno', leaves: [] } as unknown as AdminNavGroup;
 
-const renderLayout = () =>
-  render(
+const renderLayout = () => render(
     <MemoryRouter initialEntries={['/admin/media']}>
       <Routes>
         <Route path="/admin" element={<AdminLayout />}>
@@ -96,10 +96,7 @@ beforeEach(() => {
   state.publicSettings = { media: true };
   state.privateSettings = { news: false };
   state.groups = [group];
-  state.filterCalls = [];
-  state.navProps = {};
-  state.palette = {};
-  state.resetKeys = [];
+  Object.assign(state, { filterCalls: [], navProps: {}, palette: {}, resetKeys: [] });
 });
 
 describe('AdminLayout — ljuska i navigacija', () => {
@@ -152,6 +149,10 @@ describe('AdminLayout — pokretni meni', () => {
     // dva rendera nav-a (bočna traka + sheet) → klik na onaj iz sheet-a
     await user.click(screen.getAllByRole('button', { name: 'idi' })[1]);
     expect(screen.queryByTestId('sheet')).toBeNull();
+    await user.click(screen.getByRole('button', { name: 'admin.openMenu' }));
+    expect(screen.getByTestId('sheet')).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'zatvori-sheet' }));
+    expect(screen.queryByTestId('sheet')).toBeNull();
   });
 
   it('ikona pretrage u zaglavlju otvara paletu', async () => {
@@ -180,5 +181,19 @@ describe('AdminLayout — odjava', () => {
     expect(buttons).toHaveLength(2);
     await user.click(buttons[1]);
     expect(state.logout).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe('AdminLayout — vidljivost modula u navigaciji', () => {
+  it('modulski ključevi i mapa ruta određuju vidljivost', () => {
+    state.publicSettings = { news: false, media: true };
+    state.privateSettings = { news: true };
+    render(<MemoryRouter><AdminLayout /></MemoryRouter>);
+    expect(state.visibility).toEqual([true, true, true, true]);
+    cleanup();
+    state.publicSettings = { news: false, media: false };
+    state.privateSettings = {};
+    render(<MemoryRouter><AdminLayout /></MemoryRouter>);
+    expect(state.visibility).toEqual([false, false, false, true]);
   });
 });

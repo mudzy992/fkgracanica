@@ -5,17 +5,18 @@ import { describe, expect, it, vi } from 'vitest';
 import { MediaAssetsTable } from '../MediaAssetsTable';
 
 vi.mock('../../../components/admin/AdminPageShell', () => ({
-  AdminDataTable: ({ rows, empty, columns }: {
+  AdminDataTable: ({ rows, empty, columns, rowClassName }: {
     rows: Array<Record<string, unknown> & { id: string }>;
     empty?: string;
     columns: Array<{ key: string; render: (row: never) => ReactNode }>;
+    rowClassName?: (row: Record<string, unknown> & { id: string }) => string | undefined;
   }) =>
     rows.length === 0 ? (
       <p>{empty}</p>
     ) : (
       <div>
         {rows.map((row) => (
-          <div key={row.id} data-testid={`row-${row.id}`}>
+          <div key={row.id} data-testid={`row-${row.id}`} className={rowClassName?.(row)}>
             {columns.map((column) => (
               <span key={column.key} data-col={column.key}>{column.render(row as never)}</span>
             ))}
@@ -124,4 +125,12 @@ describe('MediaAssetsTable', () => {
   });
 
   void noop;
+});
+
+describe('MediaAssetsTable — označeni red', () => {
+  it('odabrani red dobija istaknutu klasu', () => {
+    render(<MediaAssetsTable {...tableProps({ selectionMode: true, onToggleSelect: noop, isSelected: (id: string) => id === 'a2' })} />);
+    expect(screen.getByTestId('row-a2').className).toBe('bg-primary/5');
+    expect(screen.getByTestId('row-a1').className).toBe('');
+  });
 });

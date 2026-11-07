@@ -1,7 +1,10 @@
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { persistLanguage, storedLanguage } from './i18n-lang';
 
-afterEach(() => localStorage.clear());
+afterEach(() => {
+  localStorage.clear();
+  vi.unstubAllGlobals();
+});
 
 describe('i18n-lang', () => {
   it('bez pohranjenog izbora vraća bosanski', () => {
@@ -18,6 +21,13 @@ describe('i18n-lang', () => {
     localStorage.setItem('fk_lang', 'de');
     expect(storedLanguage()).toBe('bs');
     persistLanguage('bs');
+    expect(storedLanguage()).toBe('bs');
+  });
+});
+
+describe('i18n-lang bez window', () => {
+  it('na serveru vraća bosanski bez čitanja localStorage', () => {
+    vi.stubGlobal('window', undefined);
     expect(storedLanguage()).toBe('bs');
   });
 });

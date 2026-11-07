@@ -173,3 +173,9 @@ describe('MuseumAdminFormSheet — izmjena', () => {
     expect(screen.getByText('admin.common.saveFailedShort')).toBeInTheDocument();
   });
 });
+describe('MuseumAdminFormSheet — zatvoren', () => {
+  it('kad je open false ne popunjava polja iz editacije', () => {
+    renderSheet({ open: false, edit: { id: 'm1', title: 'Posebni eksponat', category: 'document', year: 1999 } });
+    expect(screen.queryByDisplayValue('Posebni eksponat')).toBeNull();
+  });
+});

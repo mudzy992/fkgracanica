@@ -129,3 +129,13 @@ describe('ClubBasicTab — forma', () => {
     expect(input('admin.club.nameRequired')).toHaveValue('NK Zenica');
   });
 });
+
+describe('ClubBasicTab — izmjena opisa', () => {
+  it('unos u opis mijenja stanje forme', async () => {
+    render(<ClubBasicTab club={club()} />);
+    const description = screen.getByPlaceholderText('admin.club.descriptionPlaceholder');
+    await userEvent.clear(description);
+    await userEvent.type(description, 'Novi opis');
+    expect(description).toHaveValue('Novi opis');
+  });
+});

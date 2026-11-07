@@ -43,8 +43,10 @@ const state = vi.hoisted(() => ({
   seo: [] as (string | undefined)[],
   queries: [] as { queryKey: unknown[] }[],
   email: { data: undefined as unknown, isLoading: false },
+  apiGet: vi.fn(),
 }));
 
+vi.mock('../../lib/api', () => ({ api: { get: state.apiGet } }));
 vi.mock('react-i18next', () => ({ useTranslation: () => ({ t: (k: string) => k }) }));
 vi.mock('../../hooks/use-notifications', () => ({
   useNotifications: () => state.list,
@@ -126,5 +128,16 @@ describe('EmailLogPanel', () => {
     render(<EmailLogPanel />);
     await userEvent.click(screen.getByRole('button', { name: 'Sljedeća' }));
     expect(state.queries.at(-1)?.queryKey).toEqual(['email-log', 2]);
+  });
+});
+
+describe('EmailLogPanel — upit', () => {
+  it('queryFn dohvaća stranicu sa limitom 20', async () => {
+    state.email = { data: undefined, isLoading: true };
+    render(<EmailLogPanel />);
+    const options = state.queries.at(-1) as unknown as { queryFn: () => Promise<unknown> };
+    state.apiGet.mockResolvedValueOnce({ data: { data: [], meta: meta(1) } });
+    await expect(options.queryFn()).resolves.toEqual({ data: [], meta: meta(1) });
+    expect(state.apiGet).toHaveBeenCalledWith('/email-log', { params: { page: 1, limit: 20 } });
   });
 });

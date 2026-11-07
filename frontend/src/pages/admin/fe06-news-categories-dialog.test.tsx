@@ -20,20 +20,12 @@ vi.mock('../../hooks/use-news-admin', () => ({
 }));
 vi.mock('../../components/ui/dialog', () => ({
   Dialog: ({ open, children, preventClose }: { open: boolean; children: React.ReactNode; preventClose?: boolean }) =>
-    open ? (
-      <div data-testid="dialog" data-prevent={String(!!preventClose)}>
-        {children}
-      </div>
-    ) : null,
+    open ? <div data-testid="dialog" data-prevent={String(!!preventClose)}>{children}</div> : null,
   DialogHeader: ({ children, onClose, preventClose }: {
     children: React.ReactNode; onClose: () => void; preventClose?: boolean;
   }) => (
-    <header>
-      <h2>{children}</h2>
-      <button onClick={onClose} disabled={preventClose} aria-label="actions.close">
-        x
-      </button>
-    </header>
+    <header><h2>{children}</h2>
+      <button onClick={onClose} disabled={preventClose} aria-label="actions.close">x</button></header>
   ),
   DialogBody: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
   DialogFooter: ({ children }: { children: React.ReactNode }) => <footer>{children}</footer>,
@@ -115,6 +107,13 @@ describe('NewsCategoriesDialog — dodavanje', () => {
     await user.click(screen.getByRole('button', { name: 'Dodaj' }));
     await waitFor(() => expect(state.create).toHaveBeenCalledWith({ name: 'Analiza' }));
     expect(nameInput()).toHaveValue('');
+  });
+
+  it('Enter na prazno polje ne šalje zahtjev', async () => {
+    const user = userEvent.setup();
+    renderDialog();
+    await user.type(nameInput(), '{Enter}');
+    expect(state.create).not.toHaveBeenCalled();
   });
 
   it('Enter u polju pokreće dodavanje', async () => {
