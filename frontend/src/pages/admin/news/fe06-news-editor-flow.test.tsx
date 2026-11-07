@@ -92,6 +92,31 @@ describe('NewsEditorPage — napuštanje i učitavanje', () => {
     expect(await screen.findByText('Lista vijesti')).toBeInTheDocument();
   });
 
+  it('izmjena pa odustajanje pita i ostaje na formi kad se potvrda odbije', async () => {
+    const confirm = vi.spyOn(window, 'confirm').mockReturnValue(false);
+    renderAt('/admin/news/new');
+    fireEvent.change(document.querySelector<HTMLInputElement>('input[name="title"]')!, {
+      target: { value: 'Nedovršena vijest' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Odustani' }));
+    expect(confirm).toHaveBeenCalledTimes(1);
+    expect(screen.queryByText('Lista vijesti')).toBeNull();
+    confirm.mockReturnValue(true);
+    fireEvent.click(screen.getByRole('button', { name: 'Odustani' }));
+    expect(await screen.findByText('Lista vijesti')).toBeInTheDocument();
+  });
+
+  it('potvrđena izmjena pa povratak pita tačno jednom po kliku', async () => {
+    const confirm = vi.spyOn(window, 'confirm').mockReturnValue(true);
+    renderAt('/admin/news/new');
+    fireEvent.change(document.querySelector<HTMLInputElement>('input[name="title"]')!, {
+      target: { value: 'Spremna vijest' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: '← Vijesti' }));
+    expect(confirm).toHaveBeenCalledTimes(1);
+    expect(await screen.findByText('Lista vijesti')).toBeInTheDocument();
+  });
+
   it('uređivanje dok se vijest učitava prikazuje skeleton bez forme', () => {
     state.loading = true;
     renderAt('/admin/news/n1/edit');

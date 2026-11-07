@@ -1,12 +1,11 @@
 {
   "version": 1,
-  "description": "Registar mrtvih zaštita (P-FE06-42). Svaki statement koji V8 coverage prijavi kao nepokriven mora biti ovdje; `node scripts/audit/dead-guards.mjs` pada za neupisan statement i upozorava za zastario unos. Linija je početna linija statementa iz `frontend/coverage/coverage-final.json`.",
+  "description": "Registar mrtvih zaštita (P-FE06-42). Svaki statement koji V8 coverage prijavi kao nepokriven mora biti ovdje; `node scripts/audit/dead-guards.mjs` pada za neupisan statement i upozorava za zastario unos. Linija je početna linija statementa iz `frontend/coverage/coverage-final.json`. Unos se uklanja čim grana postane dostupna (primjer: Q-FE06-37, `NewsEditorPage`).",
   "kinds": {
     "disabled-ui": "Kontrola koja bi pokrenula ovaj kod je u tom stanju `disabled` ili se ne renderuje, pa grana kroz UI nije dostupna.",
     "type-invariant": "Pozvana funkcija po tipu nikad ne vraća praznu vrijednost za date ulazе, pa je grana odbrane nemoguća.",
     "double-guard": "Isti uslov je već provjeren pri renderovanju ili u drugom izrazu, pa je ova grana redundantna.",
-    "synthetic-event": "Grana brani sintetičke događaje; stvarni DOM događaji uvijek nose `Element` kao `target`.",
-    "latent-defect": "Zaštita je mrtva zbog postojećeg defekta; popravka mijenja vidljivo ponašanje i čeka odluku."
+    "synthetic-event": "Grana brani sintetičke događaje; stvarni DOM događaji uvijek nose `Element` kao `target`."
   },
   "guards": [
     {
@@ -224,12 +223,6 @@
       "line": 48,
       "kind": "disabled-ui",
       "why": "Premještanje je `disabled={busy || !targetFolder}`."
-    },
-    {
-      "file": "frontend/src/pages/admin/news/NewsEditorPage.tsx",
-      "line": 42,
-      "kind": "latent-defect",
-      "why": "Q-FE06-37: react-hook-form ažurira `isDirty` samo kad je polje pretplaćeno tokom renderovanja; ovdje se čita samo u rukovaocu, pa je uvijek `false` i potvrda o nesačuvanim izmjenama nikad ne izlazi. Popravka mijenja vidljivo ponašanje → čeka odluku."
     }
   ]
 }

@@ -15,6 +15,32 @@
 
 ## Šta je urađeno (hronološki)
 
+### Sesija FE-06 — 2026-11-07 (Q-FE06-37 popravljen; 99,97 % linija, funkcije 100 %)
+
+- **Q-FE06-37 (odobreno: „popravi isDirty“):** `NewsEditorPage` je čitao
+  `formState.isDirty` samo u rukovaocu, a react-hook-form računa `isDirty` samo
+  za polja pretplaćena tokom renderovanja → potvrda „Ima nesačuvanih izmjena.
+  Napustiti?“ **nikad nije izlazila** i korisnik je gubio izmjene jednim klikom.
+  Popravka (§75): `const isDirty = formState.isDirty;` u tijelu komponente;
+  `requestBack` koristi tu vrijednost. Tekst potvrde, navigacija, `reset`,
+  validacija i tok kreiranja/izmjene **nepromijenjeni**.
+- **Regresije:** `fe06-news-editor-flow.test.tsx` 5 → **7** testova — izmjena pa
+  „Odustani“ pita tačno jednom (odbijanje ostaje na formi, potvrda navigira) i
+  potvrđeni povratak preko „← Vijesti“ pita tačno jednom. Test „bez izmjena
+  povratak ne pita“ i dalje prolazi (nema lažnih potvrda).
+- **Registar mrtvih zaštita:** unos `NewsEditorPage:42` (`latent-defect`)
+  **uklonjen**; registar **36** unosa u **29** fajlova, klasa `latent-defect`
+  uklonjena iz `kinds`; `docs/CI.md` opisuje ga kao zatvoren nalaz.
+- Provjere: FE **3448/3448** u **421** fajlu (bilo 3446/421), V8 linije
+  **99,97 % (8514/8516)**, statementi **99,62 % (9566/9602)**, funkcije
+  **100 % (3526/3526)**, grane **93,08 % (7842/8425)** (bilo 99,97 / 99,61 /
+  100 / 93,05); ratchet nepromijenjen **99,8 / 99,5 / 99,9 / 92,9 %** (porast
+  manji od koraka sa rezervom); nepokrivenih **36** u **29** fajlova, svi u
+  registru; matrica **1898**; `check:all` **9/9**; `tsc -b` čist;
+  `dead-guards.test.mjs` **4/4**; `test:coverage` **exit 0**.
+- Otvoreni nalazi: **Q-FE06-31…36** (Q-37 zatvoren).
+- CI run se upisuje nakon provjere pusha.
+
 ### Sesija FE-06 — 2026-11-07 (paket P-FE06-42; 99,97 % linija, funkcije 100 %)
 
 - **Audit mrtvih zaštita:** 43 nepokrivena statementa razvrstana po uzroku —

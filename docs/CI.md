@@ -171,5 +171,6 @@ jer je izvještaj gitignored i nastaje tek nakon mjerenja.
 Registar se **ne koristi za skrivanje duga**: unos je dozvoljen samo za granu
 koja je stvarno nedostižna. Nova grana se prvo pokušava pokriti testom; ako je
 dostupna samo kroz promjenu vidljivog ponašanja, otvara se nalaz i čeka odluku
-(primjer: `latent-defect` unos za `NewsEditorPage` — Q-FE06-37).
+(primjer: Q-FE06-37 — `NewsEditorPage` nije računao `isDirty`; nalaz je odobren,
+popravljen i njegov unos je **uklonjen** iz registra).
 

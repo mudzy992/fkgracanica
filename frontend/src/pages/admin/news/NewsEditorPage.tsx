@@ -33,13 +33,21 @@ export function NewsEditorPage() {
     defaultValues: emptyNewsForm,
   });
   const { register, handleSubmit, reset, control, watch, setValue, formState } = form;
+  /**
+   * Q-FE06-37: react-hook-form računa `isDirty` samo za polja na koja je
+   * pretplaćen tokom renderovanja. Čitanje isključivo u rukovaocu (`requestBack`)
+   * vraćalo je uvijek `false`, pa potvrda o nesačuvanim izmjenama nikad nije
+   * izlazila. Pretplata ispod je jedina promjena ponašanja: potvrda se sada
+   * stvarno prikazuje kad forma ima izmjene.
+   */
+  const isDirty = formState.isDirty;
 
   useEffect(() => {
     if (item) reset(newsItemToForm(item));
   }, [item, reset]);
 
   const requestBack = () => {
-    if (formState.isDirty && !window.confirm('Ima nesačuvanih izmjena. Napustiti?')) return;
+    if (isDirty && !window.confirm('Ima nesačuvanih izmjena. Napustiti?')) return;
     navigate('/admin/news');
   };
 
