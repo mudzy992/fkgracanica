@@ -1,4 +1,4 @@
-import { render } from '@testing-library/react';
+import { fireEvent, render } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { describe, expect, it } from 'vitest';
 import { LeagueFormDots } from './LeagueFormDots';
@@ -40,6 +40,7 @@ describe('FormResultChips', () => {
     expect(tip?.textContent).toContain('FK Gračanica vs FK Slavija');
     expect(tip?.textContent).toContain('3:1');
     expect(container.querySelector('a')?.getAttribute('href')).toBe('/utakmice/m1');
+    fireEvent.click(container.querySelector('a')!);
   });
 
   it('bez naziva kluba koristi protivnika i obrnut rezultat za gostovanje', () => {

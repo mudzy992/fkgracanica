@@ -29,6 +29,15 @@ describe('membership query i mutacije', () => {
     expect(api.get).toHaveBeenCalledTimes(2);
   });
 
+  it('detalj sa ID-em dohvaća zapis', async () => {
+    const { wrapper } = setup();
+    api.get.mockResolvedValue({ data: { id: 'm9', status: 'ACTIVE' } });
+    const hook = renderHook(() => useMembershipDetail('m9'), { wrapper });
+    await waitFor(() => expect(hook.result.current.isSuccess).toBe(true));
+    expect(api.get).toHaveBeenCalledWith('/membership/m9');
+    expect(hook.result.current.data).toEqual({ id: 'm9', status: 'ACTIVE' });
+  });
+
   it.each([
     { name: 'activate', hook: useActivateMembership }, { name: 'renew', hook: useRenewMembership },
     { name: 'suspend', hook: useSuspendMembership }, { name: 'cancel', hook: useCancelMembership },

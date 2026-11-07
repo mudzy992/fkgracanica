@@ -97,6 +97,25 @@ describe('useYouTubeStreamPlayer', () => {
     expect(instances[0].player.destroy).toHaveBeenCalled();
   });
 
+  it('odgođeno učitavanje API-ja nakon unmounta ne kreira plejer', async () => {
+    let resolveLoad!: () => void;
+    const deferred = new Promise<void>((done) => { resolveLoad = done; });
+    ytApi.loadYouTubeApi.mockReturnValueOnce(deferred);
+    const instances = installYt();
+    const { unmount } = render(<StreamHost url={YOUTUBE} active />);
+    unmount();
+    resolveLoad();
+    await flush();
+    expect(instances).toHaveLength(0);
+  });
+
+  it('učitan API bez window.YT ne kreira plejer i ne pada', async () => {
+    const { getByTestId } = render(<StreamHost url={YOUTUBE} active />);
+    await flush();
+    expect(getByTestId('yt').dataset.vid).toBe('abcdefghijk');
+    expect((window as unknown as { YT?: unknown }).YT).toBeUndefined();
+  });
+
   it('deprecated useYouTubePlayer radi isto što i stream varijanta', async () => {
     const instances = installYt();
     function LegacyHost() {

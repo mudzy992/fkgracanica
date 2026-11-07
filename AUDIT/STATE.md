@@ -15,6 +15,27 @@
 
 ## Šta je urađeno (hronološki)
 
+### Sesija FE-06 — 2026-11-07 (coverage batch 32; 99,77 % linija)
+
+- Coverage batch 32 (§72): javni widgeti (`OnlinePaymentChoice`, `FormShell`,
+  `PlayerCard`), live plejeri sa ispravnim linkovima, `RichContent` prazan
+  sadržaj, ticketing (zatvaranje dijaloga, povrat, preusmjeravanje na plaćanje,
+  izbor provajdera), klubske/teamske sezone sa osvježenom listom, hookovi
+  (`use-live-stats-popup` sa lažnim tajmerima, `useMembershipDetail`,
+  `useYouTubeStreamPlayer` unmount/bez `YT`) i `refreshAccessToken` bez tokena —
+  **11 proširenih (+19) + 2 nova fajla (12 testova)**; bez promjena vidljivog
+  ponašanja.
+- Provjere: FE **3403/3403** u **416** fajlova (bilo 3379/414), V8 linije
+  **99,77 % (8494/8513)**, statementi **99,23 % (9526/9599)**, funkcije
+  **99,60 % (3510/3524)**, grane **92,72 % (7813/8426)** (bilo 99,67 / 99,06 /
+  99,40 / 92,41); ratchet **99,6 / 99,1 / 99,5 / 92,6 %**; nepokrivenih
+  statementa **73** u **62** fajlova (bilo 90 u 79), nijedan fajl nema više
+  od 5 (`main.tsx`); matrica **1890**; `check:all` **9/9**; `tsc -b` čist;
+  `test:coverage` **exit 0**.
+- Otvoreni nalazi nepromijenjeni: **Q-FE06-31** (`MediaBulkActionBar`), **Q-FE06-32** (`ProfileAvatarEditor`),
+  **Q-FE06-33** (`PassQrCode`/`MembershipQrCode` bez `.catch()`), **Q-FE06-34** (šest CMS fajlova = mrtav kod),
+  **Q-FE06-35** (`MemberHomeStrip` → `unread?.meta.total`), **Q-FE06-36** (`MediaPickerDialog` bez `selectedPaths`).
+
 ### Sesija FE-06 — 2026-11-07 (coverage batch 31; 99,67 % linija)
 
 - Coverage batch 31 (§71): media (upload zona, folder sheet, akcija Uredi,

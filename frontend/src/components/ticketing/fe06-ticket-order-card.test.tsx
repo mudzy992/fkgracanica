@@ -90,10 +90,12 @@ describe('TicketOrderCard', () => {
     Object.defineProperty(window, 'location', { writable: true, value: original });
   });
 
-  it('plaćena narudžba nudi povrat i nema otkazivanja', () => {
+  it('plaćena narudžba nudi povrat i nema otkazivanja', async () => {
+    const user = userEvent.setup();
     state.config = { data: config };
     render(<TicketOrderCard order={order({ status: 'paid' })} />);
-    expect(screen.getByRole('button', { name: 'Zatraži povrat' })).toBeTruthy();
+    await user.click(screen.getByRole('button', { name: 'Zatraži povrat' }));
+    expect(state.refund.mutateAsync).toHaveBeenCalledWith('o1');
     expect(screen.queryByRole('button', { name: 'Otkaži rezervaciju' })).toBeNull();
     expect(screen.getByText('Plaćeno')).toBeTruthy();
   });

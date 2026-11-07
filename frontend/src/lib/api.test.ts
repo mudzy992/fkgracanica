@@ -32,6 +32,13 @@ describe('API session and refresh', () => {
     expect(getRefreshToken()).toBeNull();
   });
 
+  it('direktan refresh bez refresh tokena baca grešku bez zahtjeva', async () => {
+    clearTokens();
+    const post = vi.spyOn(axios, 'post');
+    await expect(refreshAccessToken()).rejects.toThrow('No refresh token');
+    expect(post).not.toHaveBeenCalled();
+  });
+
   it('ne osvježava ako već postoji access token ili nema refresh tokena', async () => {
     const post = vi.spyOn(axios, 'post');
     expect(await ensureAccessToken()).toBeNull();

@@ -138,3 +138,19 @@ describe('TeamSeasonStatsSection — više takmičenja u sezoni', () => {
     await waitFor(() => expect(state.statsCalls.at(-1)).toEqual(['club-1', 'kup']));
   });
 });
+
+describe('TeamSeasonStatsSection — osvježeni podaci', () => {
+  it('zadržava odabranu godinu kad se participacije ponovo učitaju', async () => {
+    const list = () => [
+      p({ seasonId: 's2024', seasonName: '2024/25', yearStart: 2024, yearEnd: 2025, isActive: false }),
+      p({ seasonId: 's2025', seasonName: '2025/26', yearStart: 2025, yearEnd: 2026 }),
+    ];
+    state.participations = list();
+    const { rerender } = renderSection();
+    await waitFor(() => expect(state.statsCalls.at(-1)).toEqual(['club-1', 's2025']));
+    state.participations = list();
+    rerender(<TeamSeasonStatsSection clubId="club-1" />);
+    await waitFor(() => expect(state.statsCalls.at(-1)).toEqual(['club-1', 's2025']));
+    expect(screen.getByRole('button', { name: '2025/26' })).toHaveAttribute('aria-pressed', 'true');
+  });
+});

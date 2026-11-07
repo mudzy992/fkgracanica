@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ClubCompetitionTabs } from './ClubCompetitionTabs';
@@ -142,5 +142,15 @@ describe('ClubCompetitionTabs', () => {
     const pills = screen.getAllByRole('button', { name: /Premijer liga/ });
     expect(pills[0].getAttribute('data-active')).toBe('true');
     expect(pills[1].getAttribute('data-active')).toBe('false');
+  });
+});
+
+describe('ClubCompetitionTabs — osvježeni podaci', () => {
+  it('zadržava odabranu sezonu kad se lista participacija osvježi', async () => {
+    const { rerender } = renderTabs([participation(), participation({ seasonId: 's2', seasonName: '2024/25', isActive: false })]);
+    await waitFor(() => expect(state.seasonArgs.at(-1)).toBe('s1'));
+    rerender(<ClubCompetitionTabs clubId="c1" participations={[participation(), participation({ seasonId: 's2', seasonName: '2024/25', isActive: false })] as never} />);
+    await waitFor(() => expect(state.seasonArgs.at(-1)).toBe('s1'));
+    expect(screen.getAllByRole('button').length).toBeGreaterThan(0);
   });
 });

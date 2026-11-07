@@ -20,3 +20,10 @@ describe('objašnjenje neispravnog ugrađenog videa', () => {
     }
   });
 });
+
+describe('RichContent — prazan sadržaj', () => {
+  it('za prazan HTML ne renderira ništa', () => {
+    const { container } = render(<RichContent html="" />);
+    expect(container).toBeEmptyDOMElement();
+  });
+});

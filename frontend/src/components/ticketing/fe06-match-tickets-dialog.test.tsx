@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { beforeAll, describe, expect, it, vi } from 'vitest';
 import { installDialogPolyfill } from '../../test/dialog-polyfill';
 import { MatchTicketsDialog } from './MatchTicketsDialog';
@@ -108,5 +108,17 @@ describe('MatchTicketsDialog', () => {
       />,
     );
     expect(container.textContent).not.toMatch(/\d{1,2}\.\d{1,2}\.\d{4}/);
+  });
+});
+
+describe('MatchTicketsDialog — zatvaranje', () => {
+  it('X u zaglavlju i klik na pozadinu zovu onClose', () => {
+    const onClose = vi.fn();
+    render(<MatchTicketsDialog group={group([{ id: 't1', orderId: 'o1' }]) as never} open onClose={onClose} />);
+    const dialog = screen.getByRole('dialog');
+    fireEvent.click(screen.getAllByRole('button', { name: 'actions.close' }).find((b) => !b.className.includes('inset-0'))!);
+    expect(onClose).toHaveBeenCalledTimes(1);
+    fireEvent.click(dialog);
+    expect(onClose).toHaveBeenCalledTimes(2);
   });
 });

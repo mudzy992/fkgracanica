@@ -182,3 +182,16 @@ describe('SeasonPassPanel — prodaja', () => {
     expect(screen.getByRole('button', { name: 'Priprema…' })).toBeDisabled();
   });
 });
+
+describe('SeasonPassPanel — izbor provajdera', () => {
+  it('odabir provajdera pokreće plaćanje', async () => {
+    const user = userEvent.setup();
+    state.providers = ['monri', 'stripe'];
+    renderPanel();
+    await user.click(screen.getByRole('button', { name: 'plati-stripe' }));
+    await waitFor(() => expect(state.checkout.mutateAsync).toHaveBeenCalledWith({
+      passId: 'p1',
+      provider: 'stripe',
+    }));
+  });
+});

@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { TicketOrderActions } from './TicketOrderActions';
@@ -128,5 +128,21 @@ describe('TicketOrderActions', () => {
     );
     expect(screen.getByRole('button', { name: 'Plati putem Stripe' })).toBeTruthy();
     expect(screen.getByRole('button', { name: 'Plati putem PayPal' })).toBeTruthy();
+  });
+});
+
+describe('TicketOrderActions — preusmjeravanje na plaćanje', () => {
+  it('URL iz checkouta preusmjerava stranicu', async () => {
+    const user = userEvent.setup();
+    const original = window.location;
+    Object.defineProperty(window, 'location', { configurable: true, writable: true, value: { href: '' } });
+    state.checkout = { mutateAsync: vi.fn(async () => ({ url: 'https://pay.example/checkout' })), isPending: false };
+    try {
+      render(<TicketOrderActions order={order()} config={config as never} />);
+      await user.click(screen.getByRole('button', { name: /Plati online/ }));
+      await waitFor(() => expect(window.location.href).toBe('https://pay.example/checkout'));
+    } finally {
+      Object.defineProperty(window, 'location', { configurable: true, writable: true, value: original });
+    }
   });
 });
