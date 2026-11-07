@@ -61,4 +61,20 @@ describe('AdminFormSheet i modalni Dialog', () => {
     expect(screen.queryByRole('dialog', { name: 'Uređivanje' })).not.toBeInTheDocument();
     expect(trigger).toHaveFocus();
   });
+
+  it('dirty prop zatvara bez pitanja i bez potvrde', async () => {
+    const onOpenChange = vi.fn();
+    const confirm = vi.spyOn(window, 'confirm');
+    render(
+      <AdminFormSheet open onOpenChange={onOpenChange} title="Zaključano" dirty>
+        <label>Naziv <input defaultValue="x" /></label>
+      </AdminFormSheet>,
+    );
+    const closes = screen.getAllByRole('button', { name: 'Zatvori' });
+    expect(closes[closes.length - 1]).toBeDisabled();
+    fireEvent(screen.getByRole('dialog', { name: 'Zaključano' }), new Event('cancel', { cancelable: true }));
+    expect(onOpenChange).not.toHaveBeenCalled();
+    expect(confirm).not.toHaveBeenCalled();
+    confirm.mockRestore();
+  });
 });

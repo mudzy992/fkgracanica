@@ -150,4 +150,19 @@ describe('ClubStadiumTab — spremanje', () => {
     expect(input('admin.stadium.capacity')).toHaveValue(1500);
     expect(input('admin.stadium.address')).toHaveValue('');
   });
+
+  it('izmjena adrese i opisa ide u zahtjev', async () => {
+    const user = userEvent.setup();
+    render(<ClubStadiumTab clubId="c1" />);
+    const address = input('admin.stadium.address');
+    await user.clear(address);
+    await user.type(address, 'Ulica 12');
+    const description = screen.getByPlaceholderText('admin.stadium.description');
+    await user.clear(description);
+    await user.type(description, 'Novi opis stadiona');
+    await user.click(screen.getByRole('button', { name: 'admin.stadium.save' }));
+    expect(state.save).toHaveBeenCalledWith(
+      expect.objectContaining({ address: 'Ulica 12', description: 'Novi opis stadiona' }),
+    );
+  });
 });

@@ -147,4 +147,14 @@ describe('GalleryPhotoPicker', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Odustani' }));
     expect(state.batch.add).not.toHaveBeenCalled();
   });
+
+  it('X u zaglavlju zatvara dijalog mape', async () => {
+    render(<GalleryPhotoPicker galleryId="g1" existingPaths={[]} />);
+    await userEvent.click(screen.getByRole('button', { name: /Dodaj mapu/ }));
+    expect(screen.getByTestId('folder-picker')).toBeInTheDocument();
+    const closes = screen.getAllByRole('button', { name: 'actions.close' });
+    await userEvent.click(closes[closes.length - 1]);
+    expect(screen.queryByTestId('folder-picker')).toBeNull();
+    expect(state.batch.add).not.toHaveBeenCalled();
+  });
 });

@@ -150,4 +150,11 @@ describe('EntitySelect — asinhroni izvor', () => {
     await user.click(screen.getByRole('button', { name: 'Solo' }));
     expect(onChange).toHaveBeenCalledWith(['c9']);
   });
+
+  it('queryFn dohvaća podatke sa endpointom i parametrima', async () => {
+    render(<AsyncSelect {...asyncProps({ params: { limit: 5 } })} />);
+    const options = state.queries[state.queries.length - 1] as { queryFn: () => Promise<unknown> };
+    await expect(options.queryFn()).resolves.toEqual([]);
+    expect(state.get).toHaveBeenCalledWith('/clubs', { params: { limit: 5 } });
+  });
 });

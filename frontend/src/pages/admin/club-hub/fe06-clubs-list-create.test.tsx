@@ -1,7 +1,7 @@
-import { render, screen, within } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import type { ReactNode } from 'react';
-import { MemoryRouter } from 'react-router-dom';
+import { MemoryRouter, useLocation } from 'react-router-dom';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ClubsListPage } from './ClubsListPage';
 
@@ -181,5 +181,17 @@ describe('ClubsListPage', () => {
     renderPage(<ClubsListPage />);
     expect(screen.queryByRole('button', { name: 'actions.delete' })).toBeNull();
     expect(screen.getByRole('link', { name: 'admin.clubsList.manage' })).toBeTruthy();
+  });
+
+  it('kreiranje kluba vodi na hub novog kluba', async () => {
+    const user = userEvent.setup();
+    const Ruta = () => <p>{`ruta:${useLocation().pathname}${useLocation().search}`}</p>;
+    render(
+      <MemoryRouter initialEntries={['/admin/clubs']}><ClubsListPage /><Ruta /></MemoryRouter>,
+    );
+    await user.click(screen.getByRole('button', { name: /Novi klub/ }));
+    await user.type(screen.getByPlaceholderText('admin.clubForm.name'), 'FK Novi');
+    await user.click(screen.getByRole('button', { name: /Kreiraj i otvori hub/ }));
+    await waitFor(() => expect(screen.getByText('ruta:/admin/clubs/c-new?tab=basic')).toBeTruthy());
   });
 });

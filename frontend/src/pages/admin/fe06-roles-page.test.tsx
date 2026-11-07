@@ -33,8 +33,14 @@ vi.mock('./RolesAdminFormSheet', () => ({
   RolesAdminFormSheet: ({ open }: { open: boolean }) => (open ? <div>novi-sheet</div> : null),
 }));
 vi.mock('../../components/admin/AdminFormSheet', () => ({
-  AdminFormSheet: ({ open, title, children }: { open: boolean; title: string; children: ReactNode }) =>
-    open ? <section aria-label={title}>{children}</section> : null,
+  AdminFormSheet: ({ open, title, children, onOpenChange }: {
+    open: boolean; title: string; children: ReactNode; onOpenChange?: (o: boolean) => void;
+  }) => (open ? (
+    <section aria-label={title}>
+      {children}
+      <button onClick={() => onOpenChange?.(false)}>zatvori-sheet</button>
+    </section>
+  ) : null),
 }));
 vi.mock('../../components/admin/AdminPageShell', () => ({
   AdminPageShell: ({ title, isError, onRetry, actions, children }: {
@@ -170,5 +176,14 @@ describe('RolesPage', () => {
     render(<RolesPage />);
     await user.click(screen.getByRole('button', { name: 'pokušaj-ponovo' }));
     expect(refetch).toHaveBeenCalled();
+  });
+
+  it('zatvaranje sheeta dozvola poništava odabranu ulogu', async () => {
+    const user = userEvent.setup();
+    render(<RolesPage embedded />);
+    await user.click(screen.getByRole('button', { name: /editPermissions|Dozvole/i }));
+    const sheet = screen.getByRole('region', { name: /Dozvole: Editor/ });
+    await user.click(within(sheet).getByRole('button', { name: 'zatvori-sheet' }));
+    expect(screen.queryByRole('region', { name: /Dozvole: Editor/ })).toBeNull();
   });
 });

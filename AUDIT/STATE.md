@@ -15,6 +15,30 @@
 
 ## Šta je urađeno (hronološki)
 
+### Sesija FE-06 — 2026-11-07 (coverage batch 28; 99,53 % linija)
+
+- Coverage batch 28 (§68): `AdminPageShell`/`AdminDataTable` prvi put direktno,
+  `NotificationBell` (zatvaranje zaglavlja, označavanje pročitanim),
+  `form-dirty` (`aria-pressed`/`aria-checked`), `RolesPage` zatvaranje sheeta,
+  `ClubsListPage` kreiranje → navigacija na hub, `ClubStadiumTab` adresa/opis,
+  `TicketsReserveActions` (zaštita limita i kombinovani prikaz),
+  `EntitySelect` `queryFn`, `ErrorBoundary` reload, `GalleryPhotoPicker`
+  zaglavlje dijaloga i `AdminFormSheet` `dirty` —
+  **2 nova fajla / 10 testova + modul dvojnika + 9 proširenih (+12 testova)**,
+  bez promjena vidljivog ponašanja.
+- Provjere: FE **3343/3343** u **411** fajlova, V8 linije **99,53 % (8473/8513)**,
+  statementi **98,82 % (9486/9599)**, funkcije **99,00 % (3489/3524)**, grane
+  **92,08 % (7759/8426)**; ratchet **99,4 / 98,7 / 98,9 / 91,9 %**; nepokrivenih
+  statementa **113** u **98** fajlova (bilo 128 u 106), nijedan fajl nema više
+  od 5 (`main.tsx`); matrica **1885**; `check:all` **9/9**; `tsc -b` čist;
+  `test:coverage` **exit 0**.
+- Matrica: **2** nova test fajla + modul dvojnika normalizovana (`nepregledano` → `pokriveno testom`, segment FE-06, 2026-11-07).
+- Mrtve zaštite zabilježene u §68 (iza onemogućenih kontrola) — ne pokrivaju se.
+- CI **`42374111122`** (`931d36e`, dokumentacija batcha 27) = **6/6 success**.
+- Otvoreni nalazi nepromijenjeni: **Q-FE06-31** (`MediaBulkActionBar`), **Q-FE06-32** (`ProfileAvatarEditor`),
+  **Q-FE06-33** (`PassQrCode`/`MembershipQrCode` bez `.catch()`), **Q-FE06-34** (šest CMS fajlova = mrtav kod),
+  **Q-FE06-35** (`MemberHomeStrip` → `unread?.meta.total`), **Q-FE06-36** (`MediaPickerDialog` bez `selectedPaths`).
+
 ### Sesija FE-06 — 2026-11-07 (coverage batch 27; 99,37 % linija)
 
 - Coverage batch 27 (§67): dugi rep (dijalog potvrde, jezički izbor, živi tekst

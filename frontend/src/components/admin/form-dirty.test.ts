@@ -80,4 +80,16 @@ describe('form-dirty (FE-04b)', () => {
     expect(isFormDirty(root, '')).toBe(false);
     expect(isFormDirty(null, 'a=1')).toBe(false);
   });
+
+  it('prati aria-pressed i aria-checked prekidače bez name atributa', () => {
+    const root = mount(
+      '<button id="prekidac" aria-pressed="false">B</button>'
+      + '<div id="polje" role="switch" aria-checked="false"></div>',
+    );
+    const initial = snapshotForm(root);
+    expect(initial).toContain('prekidac=false');
+    expect(initial).toContain('polje=false');
+    root.querySelector('#prekidac')!.setAttribute('aria-pressed', 'true');
+    expect(isFormDirty(root, initial)).toBe(true);
+  });
 });

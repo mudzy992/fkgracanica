@@ -48,4 +48,23 @@ describe('lazy ruta', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Pokušaj ponovo' }));
     expect(screen.getByText('Oporavljeno')).toBeInTheDocument();
   });
+
+  it('reload dugme na grešci rute osvježava stranicu', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => undefined);
+    const reload = vi.fn();
+    const original = window.location;
+    Object.defineProperty(window, 'location', {
+      configurable: true,
+      value: { ...original, reload },
+    });
+    try {
+      const Page = lazyRoute(() => Promise.reject(new Error('mreža')));
+      render(<ErrorBoundary resetKey="/x"><Suspense fallback={<RouteLoading />}><Page /></Suspense></ErrorBoundary>);
+      expect(await screen.findByRole('alert')).toHaveTextContent('Stranicu nije moguće učitati');
+      await userEvent.click(screen.getByRole('button', { name: 'Ponovo učitaj stranicu' }));
+      expect(reload).toHaveBeenCalledTimes(1);
+    } finally {
+      Object.defineProperty(window, 'location', { configurable: true, value: original });
+    }
+  });
 });
