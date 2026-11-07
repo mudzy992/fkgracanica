@@ -17,6 +17,13 @@ import { Input } from '../ui/input';
 
 type Mode = 'single' | 'multiple';
 
+/**
+ * Q-FE06-36: default `[]` je nova referenca svakog rendera, a efekat zavisi od
+ * `selectedPaths` → `setPicked` → render → beskonačna petlja. Modulska
+ * konstanta drži referencu stabilnom kad prop nije proslijeđen.
+ */
+const NO_PATHS: string[] = [];
+
 interface Props {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -31,7 +38,7 @@ export function MediaPickerDialog({
   onOpenChange,
   mode = 'single',
   title = 'Odabir medija',
-  selectedPaths = [],
+  selectedPaths = NO_PATHS,
   onConfirm,
 }: Props) {
   const { t } = useTranslation();

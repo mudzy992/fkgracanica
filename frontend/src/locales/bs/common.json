@@ -831,7 +831,8 @@
       "namePlaceholder": "Naziv (opcionalno)"
     },
     "mediaBulk": {
-      "moveTo": "Premjesti u mapu…"
+      "moveTo": "Premjesti u mapu…",
+      "actionError": "Akcija nije izvršena. Pokušajte ponovo."
     },
     "mediaFolders": {
       "title": "Mape medija",
@@ -1109,5 +1110,9 @@
       "install": "Instaliraj",
       "cancel": "Otkaži"
     }
+  },
+  "profile": {
+    "avatarUploadError": "Profilna slika nije sačuvana.",
+    "avatarDeleteError": "Profilna slika nije uklonjena."
   }
 }

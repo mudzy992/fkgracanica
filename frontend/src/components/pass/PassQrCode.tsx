@@ -22,12 +22,23 @@ export function PassQrCode({
   const [src, setSrc] = useState<string | null>(null);
   const [largeSrc, setLargeSrc] = useState<string | null>(null);
   const [open, setOpen] = useState(false);
+  const [failed, setFailed] = useState(false);
+  const [largeFailed, setLargeFailed] = useState(false);
 
+  /**
+   * Q-FE06-33: bez `catch`-a odbijeno generisanje je ostavljalo skeleton koji
+   * pulsira zauvijek uz neobrađen rejection. Sada se prikazuje poruka.
+   */
   useEffect(() => {
     let cancelled = false;
-    void qrDataUrl(value, size).then((url) => {
-      if (!cancelled) setSrc(url);
-    });
+    setFailed(false);
+    qrDataUrl(value, size)
+      .then((url) => {
+        if (!cancelled) setSrc(url);
+      })
+      .catch(() => {
+        if (!cancelled) setFailed(true);
+      });
     return () => {
       cancelled = true;
     };
@@ -36,13 +47,32 @@ export function PassQrCode({
   useEffect(() => {
     if (!open) return;
     let cancelled = false;
-    void qrDataUrl(value, enlargeSize).then((url) => {
-      if (!cancelled) setLargeSrc(url);
-    });
+    setLargeFailed(false);
+    qrDataUrl(value, enlargeSize)
+      .then((url) => {
+        if (!cancelled) setLargeSrc(url);
+      })
+      .catch(() => {
+        if (!cancelled) setLargeFailed(true);
+      });
     return () => {
       cancelled = true;
     };
   }, [open, value, enlargeSize]);
+
+  if (failed) {
+    return (
+      <div
+        className={cn(
+          'flex items-center justify-center rounded-lg border border-[var(--border-subtle)] p-2 text-center text-xs text-text-muted',
+          className,
+        )}
+        style={{ width: size, height: size }}
+      >
+        QR kod nije dostupan
+      </div>
+    );
+  }
 
   if (!src) {
     return (
@@ -75,6 +105,8 @@ export function PassQrCode({
         <DialogBody className="flex flex-col items-center gap-3 pb-6">
           {largeSrc ? (
             <img src={largeSrc} alt={label} width={enlargeSize} height={enlargeSize} className="rounded-xl" />
+          ) : largeFailed ? (
+            <p className="text-sm text-text-muted">QR kod nije dostupan</p>
           ) : (
             <div className="h-64 w-64 animate-pulse rounded-xl bg-[var(--border-subtle)]" />
           )}

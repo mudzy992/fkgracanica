@@ -831,7 +831,8 @@
       "namePlaceholder": "Name (optional)"
     },
     "mediaBulk": {
-      "moveTo": "Move to folder…"
+      "moveTo": "Move to folder…",
+      "actionError": "The action failed. Please try again."
     },
     "mediaFolders": {
       "title": "Media folders",
@@ -1109,5 +1110,9 @@
       "install": "Install",
       "cancel": "Cancel"
     }
+  },
+  "profile": {
+    "avatarUploadError": "Profile photo was not saved.",
+    "avatarDeleteError": "Profile photo was not removed."
   }
 }

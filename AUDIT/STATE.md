@@ -15,6 +15,31 @@
 
 ## Šta je urađeno (hronološki)
 
+### Sesija FE-06 — 2026-11-07 (P-FE06-43: Q-FE06-31…36 zatvoreni)
+
+- **Odobreno** (`ask_user`, sve „preporuka“ + brisanje mrtvog CMS koda).
+- **Q-FE06-31:** `MediaBulkActionBar` — `catch` + `getApiErrorMessage` +
+  `role="alert"` (`admin.mediaBulk.actionError`); `onDone()` se ne zove na grešci.
+- **Q-FE06-32:** `ProfileAvatarEditor` — `catch` + poruka
+  (`profile.avatarUploadError` / `profile.avatarDeleteError`); sesija i avatar
+  nepromijenjeni na grešci.
+- **Q-FE06-33:** `PassQrCode`/`MembershipQrCode` — `.catch()` → „QR kod nije
+  dostupan“ umjesto skeletona koji pulsira zauvijek; `PassQrCode` ima odvojena
+  stanja za mali i uvećani kod.
+- **Q-FE06-34 (brisanje):** uklonjeno 6 nekorištenih CMS fajlova (50 stmt) + 2
+  test fajla (22 testa) + 2 testa iz `fe06-visit-teaser-filters`; `registry.ts`
+  nepromijenjen (`ClubActionsWidget`); `MATRIX.md` CTA red ažuriran.
+- **Q-FE06-35:** `unread?.meta?.total ?? unread?.data?.length ?? 0`.
+- **Q-FE06-36:** `NO_PATHS` modulska konstanta umjesto default `[]`.
+- **Registar:** `MediaBulkActionBar:48` uklonjen, `:57` upisan kao `double-guard`
+  → **36 unosa / 29 fajlova**, `dead-guards` exit 0.
+- Provjere: FE **3442/3442** u **421** fajlu; V8 **L 99,97 (8489/8491)** /
+  **S 99,62 (9543/9579)** / **F 100 (3518/3518)** / **B 93,12 (7785/8360)**;
+  ratchet **99,8 / 99,5 / 99,9 / 93,0 %**; matrica **1892**; `check:all` **9/9**;
+  `tsc -b` čist; `oxlint` 0 grešaka; `file-size` OK (2 test fajla razdvojena).
+- Otvoreni nalazi: Q-FE06-31…36 **zatvoreni**; Q-FE06-37 zatvoren u §75.
+- CI run se upisuje nakon provjere pusha.
+
 ### Sesija FE-06 — 2026-11-07 (Q-FE06-37 popravljen; 99,97 % linija, funkcije 100 %)
 
 - **Q-FE06-37 (odobreno: „popravi isDirty“):** `NewsEditorPage` je čitao

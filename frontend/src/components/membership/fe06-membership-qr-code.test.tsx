@@ -70,3 +70,32 @@ describe('MembershipQrCode', () => {
     expect(qr.toDataURL).toHaveBeenCalledTimes(1);
   });
 });
+
+describe('MembershipQrCode — neuspjeh (Q-FE06-33)', () => {
+  it('odbijeno generisanje prikazuje poruku umjesto skeletonа koji pulsira', async () => {
+    qr.toDataURL = vi.fn().mockRejectedValue(new Error('canvas nije dostupan'));
+    const { container } = render(<MembershipQrCode value="FK-9" />);
+    expect(await screen.findByText('QR kod nije dostupan')).toBeInTheDocument();
+    expect(container.querySelector('.animate-pulse')).toBeNull();
+    expect(screen.queryByRole('img')).toBeNull();
+  });
+
+  it('poruka zauzima istu veličinu kao kod', async () => {
+    qr.toDataURL = vi.fn().mockRejectedValue(new Error('x'));
+    render(<MembershipQrCode value="FK-9" size={200} />);
+    const box = await screen.findByText('QR kod nije dostupan');
+    expect((box as HTMLElement).style.width).toBe('200px');
+  });
+
+  it('neuspjeh se ne zadržava kad novi kod uspije', async () => {
+    qr.toDataURL = vi.fn().mockRejectedValueOnce(new Error('x'));
+    const { rerender } = render(<MembershipQrCode value="FK-1" />);
+    await screen.findByText('QR kod nije dostupan');
+    qr.toDataURL = vi.fn().mockResolvedValue('data:image/png;base64,OK');
+    rerender(<MembershipQrCode value="FK-2" />);
+    const img = await screen.findByRole('img');
+    expect(img).toHaveAttribute('src', 'data:image/png;base64,OK');
+    expect(screen.queryByText('QR kod nije dostupan')).toBeNull();
+  });
+});
+

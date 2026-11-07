@@ -99,3 +99,18 @@ describe('MemberHomeStrip', () => {
     expect(screen.getByText('0')).toBeTruthy();
   });
 });
+
+describe('MemberHomeStrip — odgovor bez meta (Q-FE06-35)', () => {
+  it('lista bez meta ne ruši strip i koristi broj stavki', () => {
+    state.unread = { data: [{}, {}, {}] };
+    renderStrip();
+    expect(screen.getByText('3')).toBeTruthy();
+  });
+
+  it('meta bez total pada na broj stavki', () => {
+    state.unread = { data: [{}], meta: {} as { total: number } };
+    renderStrip();
+    expect(screen.getByText('1')).toBeTruthy();
+  });
+});
+

@@ -142,3 +142,47 @@ describe('MediaBulkActionBar — poništi i zauzetost', () => {
     expect(state.update).toHaveBeenCalledTimes(2);
   });
 });
+
+describe('MediaBulkActionBar — greške (Q-FE06-31)', () => {
+  it('neuspjelo brisanje prikazuje poruku i ne javlja završetak', async () => {
+    const user = userEvent.setup();
+    state.remove.mockRejectedValue(new Error('Server je pao'));
+    renderBar();
+    await user.click(screen.getByRole('button', { name: 'Obriši' }));
+    const alert = await screen.findByRole('alert');
+    expect(alert).toHaveTextContent('Server je pao');
+    expect(state.done).toBe(0);
+    expect(screen.getByRole('button', { name: 'Obriši' })).toBeEnabled();
+  });
+
+  it('neuspjelo premještanje prikazuje poruku umjesto tišine', async () => {
+    const user = userEvent.setup();
+    state.update.mockRejectedValue(new Error('Nema dozvole'));
+    renderBar();
+    await user.selectOptions(screen.getByRole('combobox'), 'f1');
+    await user.click(screen.getByRole('button', { name: 'Primijeni' }));
+    expect(await screen.findByRole('alert')).toHaveTextContent('Nema dozvole');
+    expect(state.done).toBe(0);
+  });
+
+  it('bez poruke iz API-ja koristi prijevod kao rezervu', async () => {
+    const user = userEvent.setup();
+    state.remove.mockRejectedValue({});
+    renderBar();
+    await user.click(screen.getByRole('button', { name: 'Obriši' }));
+    expect(await screen.findByRole('alert')).toHaveTextContent('admin.mediaBulk.actionError');
+  });
+
+  it('nova akcija uklanja prethodnu poruku', async () => {
+    const user = userEvent.setup();
+    state.remove.mockRejectedValue(new Error('Prva greška'));
+    renderBar();
+    await user.click(screen.getByRole('button', { name: 'Obriši' }));
+    await screen.findByRole('alert');
+    state.remove.mockResolvedValue({});
+    await user.click(screen.getByRole('button', { name: 'Obriši' }));
+    await waitFor(() => expect(state.done).toBe(1));
+    expect(screen.queryByRole('alert')).toBeNull();
+  });
+});
+

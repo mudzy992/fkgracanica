@@ -6,7 +6,6 @@ import { renderHook } from '@testing-library/react';
 import { useTrackPublicVisit } from './use-track-public-visit';
 import { PlatformStatusTeaser } from '../pages/admin/platform-status/PlatformStatusTeaser';
 import { MuseumFilters } from '../components/public/museum/MuseumFilters';
-import { MembershipCtaWidget } from '../cms/widgets/MembershipCtaWidget';
 
 const state = vi.hoisted(() => ({
   post: vi.fn().mockResolvedValue({}),
@@ -133,29 +132,5 @@ describe('MuseumFilters', () => {
   it('bez kategorija nema drugog reda', () => {
     setup({ categories: [] });
     expect(screen.queryByText('Sve kategorije')).toBeNull();
-  });
-});
-
-describe('MembershipCtaWidget', () => {
-  const wrap = (config: Record<string, unknown>) =>
-    render(
-      <MemoryRouter>
-        <MembershipCtaWidget config={config as never} />
-      </MemoryRouter>,
-    );
-
-  it('koristi prijevode kad nema konfiguracije', () => {
-    wrap({});
-    expect(screen.getByRole('heading', { name: 't:home.membership' })).toBeInTheDocument();
-    expect(screen.getByText('t:home.membershipDesc')).toBeInTheDocument();
-    expect(screen.getByRole('link').getAttribute('href')).toBe('/clanstvo');
-  });
-
-  it('koristi konfiguraciju iz CMS-a', () => {
-    wrap({ title: 'Postani član', text: 'Opis', buttonLabel: 'Učlani se', buttonUrl: '/clan' });
-    expect(screen.getByRole('heading', { name: 'Postani član' })).toBeInTheDocument();
-    expect(screen.getByText('Opis')).toBeInTheDocument();
-    const link = screen.getByRole('link', { name: /Učlani se/ });
-    expect(link.getAttribute('href')).toBe('/clan');
   });
 });

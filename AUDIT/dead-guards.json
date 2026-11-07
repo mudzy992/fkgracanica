@@ -220,9 +220,9 @@
     },
     {
       "file": "frontend/src/pages/admin/media/MediaBulkActionBar.tsx",
-      "line": 48,
-      "kind": "disabled-ui",
-      "why": "Premještanje je `disabled={busy || !targetFolder}`."
+      "line": 57,
+      "kind": "double-guard",
+      "why": "Dugme „Primijeni“ je `disabled={busy || !targetFolder}`, pa se rukovalac bez ciljne mape ne može pokrenuti iz UI-ja."
     }
   ]
 }

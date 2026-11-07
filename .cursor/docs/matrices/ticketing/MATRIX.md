@@ -98,7 +98,7 @@ pending → paid → (refund_requested) → refunded
 ## CTA
 
 - `LivePreMatchShell`: „Kupi ulaznice” za domaću SCHEDULED utakmicu
-- `TicketsCtaWidget` mode `auto`: `HomeNextMatchTicketsBanner` + `useNextHomeMatch`
+- `tickets-cta` widget → `ClubActionsWidget` (kartica ulaznica vodi na `/ulaznice`)
 
 ## Changelog
 

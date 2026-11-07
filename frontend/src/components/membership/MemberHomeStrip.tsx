@@ -17,7 +17,8 @@ export function MemberHomeStrip() {
   const { data: next } = useNextHomeMatch();
   const { data: unread } = useNotifications({ unreadOnly: true });
   const current = pickCurrent(memberships);
-  const unreadCount = unread?.meta.total ?? unread?.data.length ?? 0;
+  // Q-FE06-35: `meta` je opcionalan u odgovoru — bez `?.` list bez `meta` ruši strip.
+  const unreadCount = unread?.meta?.total ?? unread?.data?.length ?? 0;
   const nextHref = next ? `/utakmice/${next.id}` : '/ulaznice';
   const nextLabel = next
     ? `${next.homeClub?.name ?? 'Domaćin'} – ${next.awayClub?.name ?? 'Gost'}`

@@ -55,10 +55,9 @@ const folders = [
 ];
 
 /**
- * Q-FE06-36: bez `selectedPaths` komponenta ulazi u beskonačnu petlju (default `[]`
- * je nova referenca svakog rendera → efekt → setPicked → render → …). Zato testovi
- * uvijek prosljeđuju **stabilan** niz, kao i stvarni pozivaoci (`MediaPicker`,
- * `GalleryPhotoPicker`).
+ * Q-FE06-36 (popravljeno): default je nekad bio `[]` — nova referenca svakog
+ * rendera → efekt → setPicked → render → beskonačna petlja. Sada je modulska
+ * konstanta, pa izostavljanje propa više ne visi (vidi test „bez selectedPaths“).
  */
 const NO_PATHS: string[] = [];
 

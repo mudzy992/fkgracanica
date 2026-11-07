@@ -13,7 +13,7 @@ const state = vi.hoisted(() => ({
 vi.mock('../../lib/pass-qr', () => ({
   qrDataUrl: (value: string, size: number) => {
     state.qr(value, size);
-    if (state.rejects) return new Promise<string>(() => {});
+    if (state.rejects) return Promise.reject(new Error('qr nije izračunat'));
     return new Promise<string>((resolve) => {
       state.resolve.push((url) => resolve(`${url}:${size}`));
     });
@@ -79,11 +79,24 @@ describe('PassQrCode — učitavanje koda', () => {
     expect(screen.getByRole('img', { name: 'Ulaznica' })).toBeInTheDocument();
   });
 
-  it('neuspjelo izračunavanje ostavlja skeleton', async () => {
+  it('neuspjelo izračunavanje prikazuje poruku umjesto skeletona (Q-FE06-33)', async () => {
     state.rejects = true;
     const { container } = render(<PassQrCode value="PASS-5" />);
     expect(state.qr).toHaveBeenCalledWith('PASS-5', 72);
+    expect(await screen.findByText('QR kod nije dostupan')).toBeInTheDocument();
     expect(container.querySelector('img')).toBeNull();
+    expect(container.querySelector('.animate-pulse')).toBeNull();
+  });
+
+  it('neuspjeh se ne zadržava kad novi kod uspije', async () => {
+    state.rejects = true;
+    const { rerender } = render(<PassQrCode value="PASS-8" />);
+    await screen.findByText('QR kod nije dostupan');
+    state.rejects = false;
+    rerender(<PassQrCode value="PASS-9" />);
+    flush();
+    expect(await screen.findByRole('img', { name: 'QR kod' })).toBeInTheDocument();
+    expect(screen.queryByText('QR kod nije dostupan')).toBeNull();
   });
 });
 
@@ -102,6 +115,18 @@ describe('PassQrCode — uvećani prikaz', () => {
       .getAllByRole('img')
       .find((img) => img.getAttribute('width') === '200');
     expect(expanded).toHaveAttribute('src', 'data:qr0:200');
+  });
+
+  it('neuspjeh uvećanog koda prikazuje poruku u dijalogu uz ispravan mali kod', async () => {
+    const user = userEvent.setup();
+    render(<PassQrCode value="PASS-10" />);
+    flush();
+    const button = await screen.findByRole('button', { name: 'Povećaj QR kod' });
+    state.rejects = true;
+    await user.click(button);
+    expect(state.qr).toHaveBeenCalledWith('PASS-10', 280);
+    expect(await screen.findByText('QR kod nije dostupan')).toBeInTheDocument();
+    expect(screen.getByRole('img', { name: 'QR kod' })).toHaveAttribute('src', 'data:qr0:72');
   });
 
   it('zatvaranje dijaloga uklanja uvećani sadržaj', async () => {

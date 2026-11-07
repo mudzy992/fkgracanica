@@ -2,6 +2,7 @@ import { useState } from 'react';
 import type { MediaFolder } from '../../../hooks/use-media-admin';
 import { useDeleteMedia, useUpdateMediaAsset } from '../../../hooks/use-media-admin';
 import { asArray } from '../../../lib/as-array';
+import { getApiErrorMessage } from '../../../lib/api-error';
 import { Button } from '../../../components/ui/button';
 import { useTranslation } from 'react-i18next';
 
@@ -23,6 +24,7 @@ export function MediaBulkActionBar({
   const { t } = useTranslation();
   const [targetFolder, setTargetFolder] = useState('');
   const [busy, setBusy] = useState(false);
+  const [error, setError] = useState('');
   const remove = useDeleteMedia();
   const update = useUpdateMediaAsset();
   const folderList = asArray<MediaFolder>(folders);
@@ -30,15 +32,22 @@ export function MediaBulkActionBar({
 
   if (!count) return null;
 
+  /**
+   * Q-FE06-31: `mutateAsync` odbija na grešci. Bez `catch`-a rejection je bio
+   * neobrađen — traka bi samo ponovo uključila dugmad, bez poruke korisniku.
+   */
   const handleDelete = async () => {
     const ok = await onConfirmDelete(count);
     if (!ok) return;
+    setError('');
     setBusy(true);
     try {
       for (const id of selectedIds) {
         await remove.mutateAsync(id);
       }
       onDone();
+    } catch (err) {
+      setError(getApiErrorMessage(err, t('admin.mediaBulk.actionError')));
     } finally {
       setBusy(false);
     }
@@ -46,12 +55,15 @@ export function MediaBulkActionBar({
 
   const handleMove = async () => {
     if (!targetFolder) return;
+    setError('');
     setBusy(true);
     try {
       for (const id of selectedIds) {
         await update.mutateAsync({ id, folderId: targetFolder });
       }
       onDone();
+    } catch (err) {
+      setError(getApiErrorMessage(err, t('admin.mediaBulk.actionError')));
     } finally {
       setBusy(false);
     }
@@ -95,6 +107,11 @@ export function MediaBulkActionBar({
         <Button type="button" size="sm" variant="ghost" onClick={onClear} disabled={busy}>
           Poništi
         </Button>
+        {error && (
+          <p role="alert" className="w-full text-sm text-danger">
+            {error}
+          </p>
+        )}
       </div>
     </div>
   );
