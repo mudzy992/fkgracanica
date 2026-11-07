@@ -15,6 +15,36 @@
 
 ## Šta je urađeno (hronološki)
 
+### Sesija FE-06 — 2026-11-07 (paket P-FE06-42; 99,97 % linija, funkcije 100 %)
+
+- **Audit mrtvih zaštita:** 43 nepokrivena statementa razvrstana po uzroku —
+  23 `disabled-ui`, 6 `double-guard`, 6 `type-invariant`, 1 `synthetic-event`,
+  1 `latent-defect` (`NewsEditorPage:42`), 5 + 1 fn nedostupna ulazna tačka
+  (`main.tsx`) i 1 mrtva grana bez pokrića u tipovima
+  (`CommentatorClockActions:85`). Sondom dokazano da `NewsEditorPage` potvrda o
+  nesačuvanim izmjenama **nikad ne izlazi** (react-hook-form ne ažurira
+  `isDirty` bez pretplate tokom renderovanja) → **Q-FE06-37** čeka odluku.
+- **Odluke korisnika (`ask_user`):** `main.tsx` → refactor u `bootstrap.tsx` +
+  testovi (ne coverage izuzetak); `CommentatorClockActions:85` → ukloniti;
+  **CI guard** za mrtve zaštite → da; `/* v8 ignore */` → ne.
+- **Implementacija (§74):** novi `frontend/src/bootstrap.tsx` +
+  `bootstrap.test.tsx` (5) + `main.test.tsx` (1) — `main.tsx` sada 3 linije,
+  pokrivenost ulazne tačke **100 %**; `ClockActionKey` unija u `clock-actions.ts`
+  i tipizirani `handlers` u `CommentatorClockActions` (mrtva provjera uklonjena,
+  nepoznat ključ sada ruši `tsc`); novi `AUDIT/dead-guards.json` (**37** unosa,
+  **30** fajlova), `scripts/audit/dead-guards.mjs` + `dead-guards.test.mjs`
+  (4 testa), novi CI korak u `build-test` i poglavlje u `docs/CI.md`.
+- Provjere: FE **3446/3446** u **421** fajla (bilo 3440/419), V8 linije
+  **99,97 % (8513/8515)**, statementi **99,61 % (9564/9601)**, funkcije
+  **100 % (3526/3526)**, grane **93,05 % (7840/8425)** (bilo 99,91 / 99,55 /
+  99,97 / 92,99); ratchet **99,8 / 99,5 / 99,9 / 92,9 %**; nepokrivenih **37**
+  statementa u **30** fajlova, **svi u registru**; matrica **1898**;
+  `check:all` **9/9**; `tsc -b` čist; `test:coverage` **exit 0**;
+  `node --test scripts/audit/dead-guards.test.mjs` **4/4**.
+- Otvoreni nalazi: **Q-FE06-37** (novi, `isDirty` na uređivaču vijesti),
+  **Q-FE06-31…36** nepromijenjeni.
+- CI run se upisuje nakon provjere pusha.
+
 ### Sesija FE-06 — 2026-11-07 (coverage batch 33; 99,91 % linija)
 
 - Coverage batch 33 (§73): posljednji dohvatljivi statementi iz §72 — lib edge

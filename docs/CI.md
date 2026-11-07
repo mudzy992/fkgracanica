@@ -17,7 +17,7 @@
 |-----|----------|-------|
 | `audit-gate` | `node scripts/audit/check-coverage.mjs` | matrica pokrivenosti — svaki izvorni fajl mora imati red (pravilo 4) |
 | `standards` | `node scripts/standards/check-all.mjs` | file-size, console-ban, secrets-ban, layer-deps, docs-links (+ coverage) |
-| `build-test` | `npm ci` → `prisma generate` → `prisma validate` → backend `nest build` → jest unit → backend eslint → frontend `tsc -b && vite build` → bundle budget gate → **vitest + V8 coverage** → scope/gate → oxlint | build + testovi slojeva (frontend testovi od FE-02) |
+| `build-test` | `npm ci` → `prisma generate` → `prisma validate` → backend `nest build` → jest unit → backend eslint → frontend `tsc -b && vite build` → bundle budget gate → **vitest + V8 coverage** → scope/gate → **dead-guards (registar mrtvih zaštita)** → oxlint | build + testovi slojeva (frontend testovi od FE-02) |
 | `browser-fullstack` | zasebni Postgres + Redis, migracije i minimalni sintetički seed, backend health-wait, web build i Playwright smoke | P-FE06-2; stvarni backend, samo testni podaci; trace samo na padu |
 | `browser-mock` | Izolovani API mock i axe | P-FE06-1/3; nije full-stack |
 | `e2e` | `postgres:16` + `redis:7` servisi → `prisma migrate deploy` → `prisma:seed` (RBAC + settings + admin + demo) → `npm run test:e2e` | **BE-09c/P-B09c-4**: e2e suite (8 specova) se prije nije izvršavao nigdje; sada je pokriven u CI-ju |
@@ -147,3 +147,29 @@ prema gore, u koracima 0,1 pp sa 0,1 pp rezerve pri novom podizanju; ne radi
 implicitno u CI. Sniženje ili promjena obuhvata zahtijeva posebnu evidenciju
 i odobrenje; trenutni CI ne dozvoljava sniženje. Cilj je planski povećavati
 stvarne testove, ne smanjivati nazivnik.
+
+## Registar mrtvih zaštita (P-FE06-42)
+
+```sh
+npm run test:coverage -w frontend
+node --test scripts/audit/dead-guards.test.mjs
+node scripts/audit/dead-guards.mjs
+```
+
+Coverage je na plafonu: preostale nepokrivene grane su odbrane koje se kroz UI
+ne mogu izvršiti (dugme je `disabled`, komponenta vraća `null`, funkcija po tipu
+nikad ne vraća praznu vrijednost). Umjesto `/* v8 ignore */` — koji bi sakrio i
+buduće regresije — svaka takva linija je eksplicitno u **`AUDIT/dead-guards.json`**
+sa `file`, `line`, `kind` i objašnjenjem `why`.
+
+Provjera pada ako postoji **nepokriveni statement van registra**, ako unos nema
+obavezna polja, ako fajl ne postoji ili ako linija prelazi dužinu fajla. Zastario
+unos (linija je sada pokrivena ili pomjerena) ispisuje upozorenje, ne ruši job.
+Bez `frontend/coverage/coverage-final.json` provjera se preskače (`SKIP`, exit 0)
+jer je izvještaj gitignored i nastaje tek nakon mjerenja.
+
+Registar se **ne koristi za skrivanje duga**: unos je dozvoljen samo za granu
+koja je stvarno nedostižna. Nova grana se prvo pokušava pokriti testom; ako je
+dostupna samo kroz promjenu vidljivog ponašanja, otvara se nalaz i čeka odluku
+(primjer: `latent-defect` unos za `NewsEditorPage` — Q-FE06-37).
+

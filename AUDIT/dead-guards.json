@@ -1,0 +1,235 @@
+{
+  "version": 1,
+  "description": "Registar mrtvih zaštita (P-FE06-42). Svaki statement koji V8 coverage prijavi kao nepokriven mora biti ovdje; `node scripts/audit/dead-guards.mjs` pada za neupisan statement i upozorava za zastario unos. Linija je početna linija statementa iz `frontend/coverage/coverage-final.json`.",
+  "kinds": {
+    "disabled-ui": "Kontrola koja bi pokrenula ovaj kod je u tom stanju `disabled` ili se ne renderuje, pa grana kroz UI nije dostupna.",
+    "type-invariant": "Pozvana funkcija po tipu nikad ne vraća praznu vrijednost za date ulazе, pa je grana odbrane nemoguća.",
+    "double-guard": "Isti uslov je već provjeren pri renderovanju ili u drugom izrazu, pa je ova grana redundantna.",
+    "synthetic-event": "Grana brani sintetičke događaje; stvarni DOM događaji uvijek nose `Element` kao `target`.",
+    "latent-defect": "Zaštita je mrtva zbog postojećeg defekta; popravka mijenja vidljivo ponašanje i čeka odluku."
+  },
+  "guards": [
+    {
+      "file": "frontend/src/components/admin/AdminFormSheet.tsx",
+      "line": 57,
+      "kind": "synthetic-event",
+      "why": "`noteCustomEdit` prima DOM događaj sa `Element` targetom; grana postoji samo za sintetičke događaje iz testova."
+    },
+    {
+      "file": "frontend/src/components/admin/AdminFormSheet.tsx",
+      "line": 76,
+      "kind": "double-guard",
+      "why": "`hasUnsavedChanges()` je `dirty || (edited && isFormDirty(...))`, pa je `dirty === true` već vraćeno prvim izrazom."
+    },
+    {
+      "file": "frontend/src/components/admin/CustomHtmlEditor.tsx",
+      "line": 38,
+      "kind": "type-invariant",
+      "why": "`insert` pozivaju samo dugmad koja se renderuju uz montiran `ref` na textarea."
+    },
+    {
+      "file": "frontend/src/components/admin/GalleryPhotoPicker.tsx",
+      "line": 31,
+      "kind": "disabled-ui",
+      "why": "Dugme „Dodaj mapu“ je `disabled={!folderId || disabled}`, pa `folderId` u rukovaocu uvijek postoji."
+    },
+    {
+      "file": "frontend/src/components/admin/unsaved-navigation.tsx",
+      "line": 23,
+      "kind": "double-guard",
+      "why": "Effect radi sinhrono: `handling.current` se postavlja i čita u istom prolazu, drugi poziv ne može stići prije `reset/proceed`."
+    },
+    {
+      "file": "frontend/src/components/membership/MembershipCardsBulkExport.tsx",
+      "line": 41,
+      "kind": "disabled-ui",
+      "why": "Oba dugmeta su `disabled` kad je `count === 0`, pa `run` nikad ne starta sa praznom listom."
+    },
+    {
+      "file": "frontend/src/components/news/NewsCommentsSection.tsx",
+      "line": 31,
+      "kind": "disabled-ui",
+      "why": "Dugme „Objavi“ je `disabled={!content.trim() || addComment.isPending}`, pa `onSubmit` nikad ne vidi prazan tekst."
+    },
+    {
+      "file": "frontend/src/components/newsletter/NewsletterCampaignComposer.tsx",
+      "line": 30,
+      "kind": "disabled-ui",
+      "why": "„Pregled“ je `disabled={!ready || preview.isPending}`, a `ready` zahtijeva `subject` i `textBody`."
+    },
+    {
+      "file": "frontend/src/components/newsletter/NewsletterCampaignComposer.tsx",
+      "line": 37,
+      "kind": "disabled-ui",
+      "why": "„Kreiraj“ je `disabled={!ready || create.isPending}` sa istim uslovom kao pregled."
+    },
+    {
+      "file": "frontend/src/hooks/use-dynamic-favicon.ts",
+      "line": 8,
+      "kind": "type-invariant",
+      "why": "`mediaUrl(path, 'thumb')` za truthy putanju uvijek vraća string, pa je `if (!href)` nedostižno."
+    },
+    {
+      "file": "frontend/src/hooks/use-live-stats-popup.ts",
+      "line": 31,
+      "kind": "type-invariant",
+      "why": "`pickRandomStatItem` za nepraznu listu nikad ne vraća `null`; prazna lista se hvata ranije."
+    },
+    {
+      "file": "frontend/src/lib/sanitize-html.ts",
+      "line": 111,
+      "kind": "type-invariant",
+      "why": "`afterSanitizeAttributes` dobija elemente koji uvijek imaju `tagName`."
+    },
+    {
+      "file": "frontend/src/lib/season-pass-document.ts",
+      "line": 49,
+      "kind": "type-invariant",
+      "why": "`mediaUrl(path, 'medium')` za truthy putanju vraća string, pa `if (!url)` ne može pasti."
+    },
+    {
+      "file": "frontend/src/lib/ticket-pass-document.ts",
+      "line": 91,
+      "kind": "type-invariant",
+      "why": "Isto kao `season-pass-document`: `mediaUrl` za truthy putanju vraća string."
+    },
+    {
+      "file": "frontend/src/pages/admin/GalleryAdminPhotos.tsx",
+      "line": 20,
+      "kind": "disabled-ui",
+      "why": "Prvo dugme je `disabled` na indeksu 0, drugo na posljednjem, pa `next` nikad nije van opsega."
+    },
+    {
+      "file": "frontend/src/pages/admin/MediaAssetFormSheet.tsx",
+      "line": 41,
+      "kind": "double-guard",
+      "why": "Komponenta vraća `null` kad `asset` nema (`if (!asset) return null`), pa `onSave` nije ni montiran bez zapisa."
+    },
+    {
+      "file": "frontend/src/pages/admin/NewsAdminPage.tsx",
+      "line": 180,
+      "kind": "disabled-ui",
+      "why": "Potvrda brisanja se prikazuje samo kad je `deleteTarget` postavljen."
+    },
+    {
+      "file": "frontend/src/pages/admin/RolesPage.tsx",
+      "line": 60,
+      "kind": "disabled-ui",
+      "why": "`save` je dostupan samo u panelu za uređivanje uloge, koji se renderuje tek uz `editRole`."
+    },
+    {
+      "file": "frontend/src/pages/admin/SettingsPage.tsx",
+      "line": 73,
+      "kind": "disabled-ui",
+      "why": "Traka za spremanje se renderuje samo uz `canUpdate` i neprazan `draft`."
+    },
+    {
+      "file": "frontend/src/pages/admin/SponsorsAdminPage.tsx",
+      "line": 29,
+      "kind": "disabled-ui",
+      "why": "Pomjeranje ±1 je `disabled` na granicama liste, pa `next` nikad nije van opsega."
+    },
+    {
+      "file": "frontend/src/pages/admin/TimelineAdminPage.tsx",
+      "line": 29,
+      "kind": "disabled-ui",
+      "why": "Pomjeranje ±1 je `disabled` na granicama liste, pa `next` nikad nije van opsega."
+    },
+    {
+      "file": "frontend/src/pages/admin/app-releases/AppReleaseCreateForm.tsx",
+      "line": 39,
+      "kind": "disabled-ui",
+      "why": "Dugme za upload je `disabled={!file || uploading}`."
+    },
+    {
+      "file": "frontend/src/pages/admin/app-releases/AppReleaseCreateForm.tsx",
+      "line": 49,
+      "kind": "disabled-ui",
+      "why": "Kreiranje izdanja je `disabled={!meta || !version || creating}`."
+    },
+    {
+      "file": "frontend/src/pages/admin/club-hub/tabs/ClubFormationTab.tsx",
+      "line": 76,
+      "kind": "disabled-ui",
+      "why": "Birač igrača za dodjelu se renderuje samo uz `activeSlot`."
+    },
+    {
+      "file": "frontend/src/pages/admin/club-hub/tabs/ClubFormationTab.tsx",
+      "line": 81,
+      "kind": "disabled-ui",
+      "why": "Uklanjanje igrača je dostupno samo u panelu otvorenog `activeSlot`-a."
+    },
+    {
+      "file": "frontend/src/pages/admin/cms/CmsPageBuilderPage.tsx",
+      "line": 85,
+      "kind": "disabled-ui",
+      "why": "`onSave` postoji samo u panelu za uređivanje sekcije (uz `editSection`)."
+    },
+    {
+      "file": "frontend/src/pages/admin/cms/CmsPagesList.tsx",
+      "line": 29,
+      "kind": "double-guard",
+      "why": "Dugme za brisanje se renderuje samo kad `canDeletePage(page)`, pa je provjera u rukovaocu redundantna."
+    },
+    {
+      "file": "frontend/src/pages/admin/commentator/CommentatorClockBar.tsx",
+      "line": 25,
+      "kind": "disabled-ui",
+      "why": "Polje za nadoknadu vremena se prikazuje samo uz `half` (`stoppageHalfIndex`), pa je `half` tu uvijek definisan."
+    },
+    {
+      "file": "frontend/src/pages/admin/commentator/CommentatorPenaltiesBoard.tsx",
+      "line": 38,
+      "kind": "disabled-ui",
+      "why": "Oba dugmeta su `disabled={busy || !playerId}`."
+    },
+    {
+      "file": "frontend/src/pages/admin/commentator/CommentatorTeamBoard.tsx",
+      "line": 62,
+      "kind": "disabled-ui",
+      "why": "Brzi događaji su `disabled` bez `playerId` (osim vlastitog gola, koji ide drugom granom)."
+    },
+    {
+      "file": "frontend/src/pages/admin/commentator/CommentatorTeamBoard.tsx",
+      "line": 71,
+      "kind": "disabled-ui",
+      "why": "Izmjena je `disabled={disabled || busy || !subOut || !subIn}`."
+    },
+    {
+      "file": "frontend/src/pages/admin/competition-hub/MatchFormSheet.tsx",
+      "line": 74,
+      "kind": "double-guard",
+      "why": "Završena utakmica se renderuje kao read-only blok (`if (isFinished && edit)`) bez dugmeta za spremanje."
+    },
+    {
+      "file": "frontend/src/pages/admin/competition-hub/MatchFormSheet.tsx",
+      "line": 81,
+      "kind": "disabled-ui",
+      "why": "Dugme je `disabled` bez `scheduledAt`; polje je `datetime-local`, pa neispravan tekst nije moguć kroz UI."
+    },
+    {
+      "file": "frontend/src/pages/admin/competition-hub/MatchFormSheet.tsx",
+      "line": 82,
+      "kind": "disabled-ui",
+      "why": "Isti `parseScheduledAt` guard: `return` poslije poruke o neispravnom datumu."
+    },
+    {
+      "file": "frontend/src/pages/admin/competition-hub/SeasonRoundsPanel.tsx",
+      "line": 58,
+      "kind": "double-guard",
+      "why": "Dijalog kaskadnog brisanja se otvara samo kad `cascadeRound` postoji."
+    },
+    {
+      "file": "frontend/src/pages/admin/media/MediaBulkActionBar.tsx",
+      "line": 48,
+      "kind": "disabled-ui",
+      "why": "Premještanje je `disabled={busy || !targetFolder}`."
+    },
+    {
+      "file": "frontend/src/pages/admin/news/NewsEditorPage.tsx",
+      "line": 42,
+      "kind": "latent-defect",
+      "why": "Q-FE06-37: react-hook-form ažurira `isDirty` samo kad je polje pretplaćeno tokom renderovanja; ovdje se čita samo u rukovaocu, pa je uvijek `false` i potvrda o nesačuvanim izmjenama nikad ne izlazi. Popravka mijenja vidljivo ponašanje → čeka odluku."
+    }
+  ]
+}

@@ -18,7 +18,7 @@ import type { Match } from '../../../types';
 import { Button } from '../../../components/ui/button';
 import { Badge } from '../../../components/ui/badge';
 import { cn } from '../../../lib/utils';
-import { buildClockActions, clockBreakHint } from './clock-actions';
+import { buildClockActions, clockBreakHint, type ClockActionKey } from './clock-actions';
 
 const BTN = 'h-8 px-2.5 text-xs';
 const STYLES = {
@@ -53,7 +53,7 @@ export function CommentatorClockActions({ match }: { match: Match }) {
     finishExtra.isPending ||
     startPenalties.isPending ||
     endPenalties.isPending;
-  const handlers: Record<string, () => Promise<unknown>> = {
+  const handlers: Record<ClockActionKey, () => Promise<unknown>> = {
     start: () => start.mutateAsync(match.id),
     ht: () => halftime.mutateAsync(match.id),
     end: () => end.mutateAsync(match.id),
@@ -69,7 +69,7 @@ export function CommentatorClockActions({ match }: { match: Match }) {
   const actions = buildClockActions(match);
   const hint = clockBreakHint(match);
 
-  const run = async (key: string, needsConfirm: boolean, label: string) => {
+  const run = async (key: ClockActionKey, needsConfirm: boolean, label: string) => {
     if (needsConfirm) {
       const ok = await confirm({
         title: `${label}?`,
@@ -81,9 +81,7 @@ export function CommentatorClockActions({ match }: { match: Match }) {
     }
     try {
       setError('');
-      const action = handlers[key];
-      if (!action) return;
-      await action();
+      await handlers[key]();
     } catch (err) {
       setError(getApiErrorMessage(err, 'Akcija nije uspjela.'));
     }

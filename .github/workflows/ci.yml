@@ -178,6 +178,19 @@ jobs:
             exit 1
           fi
           cat "$RUNNER_TEMP/frontend-coverage-summary.md" >> "$GITHUB_STEP_SUMMARY"
+      # P-FE06-42: coverage je na plafonu, a preostale grane su odbrane koje se
+      # kroz UI ne mogu izvršiti. Svaka takva linija mora biti u registru
+      # `AUDIT/dead-guards.json`; nova nepokrivena linija van registra ruši job.
+      - name: Mrtve zaštite (registar + test skripte)
+        if: ${{ always() && steps.frontend_coverage.outcome == 'success' }}
+        run: |
+          node --test scripts/audit/dead-guards.test.mjs
+          if ! node scripts/audit/dead-guards.mjs > "$RUNNER_TEMP/dead-guards.log" 2>&1; then
+            cat "$RUNNER_TEMP/dead-guards.log"
+            node -e "const t=require('fs').readFileSync(process.env.RUNNER_TEMP+'/dead-guards.log','utf8').slice(0,3200).replaceAll('%','%25').replaceAll('\n','%0A').replaceAll('\r','%0D'); console.log('::error title=dead-guards::'+t)"
+            exit 1
+          fi
+          cat "$RUNNER_TEMP/dead-guards.log"
       - name: Frontend coverage izvještaj
         if: ${{ always() && (steps.frontend_coverage.outcome == 'success' || steps.frontend_coverage.outcome == 'failure') }}
         uses: actions/upload-artifact@v4
