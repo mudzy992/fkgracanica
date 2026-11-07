@@ -36,6 +36,7 @@
 - Mrtve zaštite zabilježene u §68 (iza onemogućenih kontrola) — ne pokrivaju se.
 - CI **`42374111122`** (`931d36e`, dokumentacija batcha 27) = **6/6 success**.
 - CI **`42375382370`** (`4890a00`, coverage batch 28) = **6/6 success**.
+- CI **`42375869571`** (`2cca817`, dokumentacija batcha 28) = **6/6 success**.
 - Otvoreni nalazi nepromijenjeni: **Q-FE06-31** (`MediaBulkActionBar`), **Q-FE06-32** (`ProfileAvatarEditor`),
   **Q-FE06-33** (`PassQrCode`/`MembershipQrCode` bez `.catch()`), **Q-FE06-34** (šest CMS fajlova = mrtav kod),
   **Q-FE06-35** (`MemberHomeStrip` → `unread?.meta.total`), **Q-FE06-36** (`MediaPickerDialog` bez `selectedPaths`).
