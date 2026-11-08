@@ -168,3 +168,23 @@ describe('CompetitionsAdminPage', () => {
     expect(screen.getAllByText(/emptySeasons|emptyCompetitions|Nema/i)).toHaveLength(2);
   });
 });
+
+/** Batch 35 — pokriva `?? []` grane i onOpenChange(true) */
+describe('CompetitionsAdminPage — grane (batch 35)', () => {
+  it('undefined podaci koriste prazne liste bez greške', () => {
+    state.competitions = { data: undefined as unknown as unknown[], isLoading: false };
+    state.seasons = { data: undefined as unknown as unknown[], isLoading: false };
+    renderPage();
+    expect(screen.getAllByText(/emptySeasons|emptyCompetitions|Nema/i)).toHaveLength(2);
+  });
+
+  it('onOpenChange(true) ne resetuje mode', async () => {
+    const user = userEvent.setup();
+    renderPage();
+    await user.click(screen.getAllByRole('button')[0]);
+    expect(screen.getByTestId('sheet')).toBeInTheDocument();
+    const sheet = state.sheet as unknown as { onOpenChange: (open: boolean) => void };
+    sheet.onOpenChange(true);
+    expect(screen.getByTestId('sheet')).toBeInTheDocument();
+  });
+});
