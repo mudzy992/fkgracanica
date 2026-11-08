@@ -54,6 +54,28 @@ beforeEach(() => {
 });
 
 describe('ModeratorHome — varijante posjeta (3 grane ?? 0)', () => {
+  it('kad visitors.data je undefined koristi 0', () => {
+    state.news = { data: [{ id: 'n1', title: 'Vijest' }], isLoading: false, status: '' } as unknown as typeof state.news;
+    state.gallery = { data: [{ id: 'g1', title: 'Galerija' }], isLoading: false } as unknown as typeof state.gallery;
+    state.live = { data: [{ id: 'l1', homeName: 'A', awayName: 'B' }], isLoading: false } as unknown as typeof state.live;
+    state.inbox = { data: { meta: { total: 9 } }, isLoading: false } as unknown as typeof state.inbox;
+    state.visitors = { data: undefined, isLoading: false } as unknown as typeof state.visitors;
+    renderHome();
+    const zeros = screen.getAllByText('0');
+    expect(zeros.length).toBe(3);
+  });
+
+  it('kad visitors.data je null koristi 0', () => {
+    state.news = { data: [{ id: 'n1', title: 'Vijest' }], isLoading: false, status: '' } as unknown as typeof state.news;
+    state.gallery = { data: [{ id: 'g1', title: 'Galerija' }], isLoading: false } as unknown as typeof state.gallery;
+    state.live = { data: [{ id: 'l1', homeName: 'A', awayName: 'B' }], isLoading: false } as unknown as typeof state.live;
+    state.inbox = { data: { meta: { total: 9 } }, isLoading: false } as unknown as typeof state.inbox;
+    state.visitors = { data: null, isLoading: false } as unknown as typeof state.visitors;
+    renderHome();
+    const zeros = screen.getAllByText('0');
+    expect(zeros.length).toBe(3);
+  });
+
   it('kad visitors.data nema web koristi 0', () => {
     state.news = { data: [{ id: 'n1', title: 'Vijest' }], isLoading: false, status: '' } as unknown as typeof state.news;
     state.gallery = { data: [{ id: 'g1', title: 'Galerija' }], isLoading: false } as unknown as typeof state.gallery;

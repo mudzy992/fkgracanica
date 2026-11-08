@@ -117,4 +117,17 @@ describe('HallOfFamePage — sort grane (Number || 0 i localeCompare)', () => {
     expect(legends).toContain('legenda:B');
     expect(legends).toContain('legenda:D');
   });
+
+  it('godina 0 daje 0 i pokriva Number||0 desnu stranu', () => {
+    state.hof.data = [
+      entry({ id: 'a', name: 'Zero', years: '0' }),
+      entry({ id: 'b', name: 'Valid', years: '2020' }),
+      entry({ id: 'c', name: 'Nula2', years: '' }),
+    ];
+    renderPage();
+    expect(screen.getAllByText(/^legenda:/)).toHaveLength(3);
+    // Zero i prazna treba biti u istoj grupi ''/0 -> 0, validna 2020 prva
+    const legends = screen.getAllByText(/^legenda:/).map((n) => n.textContent);
+    expect(legends[0]).toBe('legenda:Valid');
+  });
 });
