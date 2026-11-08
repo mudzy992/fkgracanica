@@ -52,3 +52,35 @@ describe('HeroSectionForm — grane (batch 35)', () => {
     expect(sel.value).toBe('primary');
   });
 });
+
+/** Batch 38 — pokriva 4 grane: buttons ?? [], label ?? '', url ?? '', backgroundDisplay ?? 'all' fallback */
+describe('HeroSectionForm — fallback grane (batch 38)', () => {
+  it('bez foundedYear/subtitle/backgroundImage prikazuje prazno', () => {
+    render(<Harness initial={{ title: 'Naslov' }} />);
+    expect(screen.getByPlaceholderText('admin.cmsWidget.foundedYear')).toHaveProperty('value', '');
+    expect(screen.getByPlaceholderText('admin.cmsWidget.subtitle')).toHaveProperty('value', '');
+    expect(screen.getByTestId('media').textContent).toBe('');
+  });
+
+  it('prazna lista dugmadi nema combobox za varijantu', () => {
+    render(<Harness initial={{}} />);
+    // samo backgroundDisplay combobox
+    const selects = screen.getAllByRole('combobox') as HTMLSelectElement[];
+    expect(selects).toHaveLength(1);
+    expect(selects[0].value).toBe('all');
+  });
+
+  it('dugme sa praznim label/url koristi prazan string fallback', () => {
+    render(<Harness initial={{ buttons: [{} as never] }} />);
+    const inputs = screen.getAllByPlaceholderText('admin.cmsWidget.buttonLabel');
+    expect(inputs[0]).toHaveProperty('value', '');
+    const urlInputs = screen.getAllByPlaceholderText('admin.cmsWidget.buttonUrl');
+    expect(urlInputs[0]).toHaveProperty('value', '');
+  });
+
+  it('backgroundDisplay fallback je all kad nije postavljen', () => {
+    render(<Harness initial={{ backgroundDisplay: undefined } as never} />);
+    const selects = screen.getAllByRole('combobox') as HTMLSelectElement[];
+    expect(selects[0].value).toBe('all');
+  });
+});

@@ -123,3 +123,37 @@ describe('ModeratorHome — varijante posjeta (3 grane ?? 0)', () => {
     expect(zeros.length).toBe(3);
   });
 });
+
+describe('ModeratorHome — varijante reda čekanja (3 grane ??0)', () => {
+  it('kad news/gallery/live nemaju data koristi 0', () => {
+    state.news = { data: undefined, isLoading: false, status: '' } as unknown as typeof state.news;
+    state.gallery = { data: undefined, isLoading: false } as unknown as typeof state.gallery;
+    state.live = { data: undefined, isLoading: false } as unknown as typeof state.live;
+    state.inbox = { data: { meta: { total: 1 } }, isLoading: false } as unknown as typeof state.inbox;
+    state.visitors = { data: { web: 1, mobile: 2, total: 3 }, isLoading: false } as unknown as typeof state.visitors;
+    renderHome();
+    const zeros = screen.getAllByText('0');
+    expect(zeros.length).toBe(3);
+  });
+
+  it('kad data ima null koristi 0', () => {
+    state.news = { data: null, isLoading: false, status: '' } as unknown as typeof state.news;
+    state.gallery = { data: null, isLoading: false } as unknown as typeof state.gallery;
+    state.live = { data: null, isLoading: false } as unknown as typeof state.live;
+    state.inbox = { data: { meta: { total: 1 } }, isLoading: false } as unknown as typeof state.inbox;
+    state.visitors = { data: { web: 1, mobile: 2, total: 3 }, isLoading: false } as unknown as typeof state.visitors;
+    renderHome();
+    const zeros = screen.getAllByText('0');
+    expect(zeros.length).toBe(3);
+  });
+
+  it('kad loading true prikazuje … umjesto broja', () => {
+    state.news = { data: [], isLoading: true, status: '' } as unknown as typeof state.news;
+    state.gallery = { data: [], isLoading: false } as unknown as typeof state.gallery;
+    state.live = { data: [], isLoading: false } as unknown as typeof state.live;
+    state.inbox = { data: { meta: { total: 1 } }, isLoading: false } as unknown as typeof state.inbox;
+    state.visitors = { data: { web: 1, mobile: 2, total: 3 }, isLoading: false } as unknown as typeof state.visitors;
+    renderHome();
+    expect(screen.getAllByText('…').length).toBeGreaterThan(0);
+  });
+});
