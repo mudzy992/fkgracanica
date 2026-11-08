@@ -17,6 +17,7 @@ import { AdminDataTable, AdminPageShell } from '../../components/admin/AdminPage
 import { AdminPagination } from '../../components/admin/AdminPagination';
 import { ContactMessageSheet } from './ContactMessageSheet';
 import type { ContactMessage } from '../../types';
+import { runAction } from '../../lib/action-errors';
 
 interface Props {
   embedded?: boolean;
@@ -41,7 +42,7 @@ export function ContactAdminPage({ embedded = false }: Props) {
 
   const openMessage = (msg: ContactMessage) => {
     setSelected(msg);
-    if (!msg.isRead) void markRead.mutateAsync(msg.id);
+    if (!msg.isRead) void runAction(markRead.mutateAsync(msg.id));
   };
 
   const onDelete = async (msg: ContactMessage, e: MouseEvent) => {
@@ -52,14 +53,14 @@ export function ContactAdminPage({ embedded = false }: Props) {
       variant: 'danger',
       confirmLabel: 'Obriši',
     });
-    if (ok) void remove.mutateAsync(msg.id);
+    if (ok) void runAction(remove.mutateAsync(msg.id));
   };
 
   const markAllAction = (
     <Button
       size="sm"
       variant="outline"
-      onClick={() => void markAllRead.mutateAsync()}
+      onClick={() => void runAction(markAllRead.mutateAsync())}
       disabled={markAllRead.isPending}
     >
       Označi sve pročitanim
@@ -137,7 +138,7 @@ export function ContactAdminPage({ embedded = false }: Props) {
       message={selected}
       open={!!selected}
       onOpenChange={(o) => !o && setSelected(null)}
-      onMarkRead={(id) => void markRead.mutateAsync(id)}
+      onMarkRead={(id) => void runAction(markRead.mutateAsync(id))}
       isMarking={markRead.isPending}
     />
   );

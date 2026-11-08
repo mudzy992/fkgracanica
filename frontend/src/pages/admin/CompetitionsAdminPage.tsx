@@ -19,6 +19,7 @@ import {
   type CompetitionFormMode,
   type Season,
 } from './CompetitionsAdminFormSheet';
+import { runAction } from '../../lib/action-errors';
 
 export function CompetitionsAdminPage() {
   const { t } = useTranslation();
@@ -46,12 +47,12 @@ export function CompetitionsAdminPage() {
 
   const onDeleteComp = async (item: Competition) => {
     const ok = await confirm({ title: 'Obrisati takmičenje?', description: item.name, variant: 'danger', confirmLabel: 'Obriši' });
-    if (ok) void deleteComp.mutateAsync(item.id);
+    if (ok) void runAction(deleteComp.mutateAsync(item.id));
   };
 
   const onDeleteSeason = async (item: Season) => {
     const ok = await confirm({ title: t('admin.competitionsAdmin.deleteSeason'), description: item.name, variant: 'danger', confirmLabel: t('actions.delete') });
-    if (ok) void deleteSeason.mutateAsync(item.id);
+    if (ok) void runAction(deleteSeason.mutateAsync(item.id));
   };
 
   return (

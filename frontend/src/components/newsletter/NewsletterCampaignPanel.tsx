@@ -13,6 +13,7 @@ import { NewsletterCampaignComposer } from './NewsletterCampaignComposer';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
 import { AdminDataTable } from '../admin/AdminPageShell';
+import { runAction } from '../../lib/action-errors';
 
 const STATUS: Record<NewsletterCampaign['status'], string> = {
   DRAFT: 'Nacrt',
@@ -43,7 +44,7 @@ export function NewsletterCampaignPanel() {
       description: row.subject,
       confirmLabel: 'Pošalji',
     });
-    if (ok) void send.mutateAsync(row.id);
+    if (ok) void runAction(send.mutateAsync(row.id));
   };
 
   return (

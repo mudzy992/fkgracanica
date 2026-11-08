@@ -11,6 +11,7 @@ import { Button } from '../../components/ui/button';
 import { AdminDataTable, AdminPageShell } from '../../components/admin/AdminPageShell';
 import { TimelineAdminFormSheet } from './TimelineAdminFormSheet';
 import type { ClubTimelineEvent } from '../../types';
+import { runAction } from '../../lib/action-errors';
 
 export function TimelineAdminPage() {
   const { t } = useTranslation();
@@ -29,7 +30,7 @@ export function TimelineAdminPage() {
     if (next < 0 || next >= rows.length) return;
     const ids = rows.map((r) => r.id);
     [ids[index], ids[next]] = [ids[next], ids[index]];
-    void reorder.mutateAsync(ids);
+    void runAction(reorder.mutateAsync(ids));
   };
 
   const onDelete = async (item: ClubTimelineEvent) => {
@@ -39,7 +40,7 @@ export function TimelineAdminPage() {
       confirmLabel: 'Obriši',
       variant: 'danger',
     });
-    if (ok) void remove.mutateAsync(item.id);
+    if (ok) void runAction(remove.mutateAsync(item.id));
   };
 
   return (

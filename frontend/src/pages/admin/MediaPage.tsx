@@ -28,6 +28,7 @@ import { emptyMediaMessage, copyMediaOriginalUrl } from './media/media-page-help
 import { Seo } from '../../components/seo/Seo';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../lib/auth';
+import { runAction } from '../../lib/action-errors';
 
 export function MediaPage() {
   const { t } = useTranslation();
@@ -90,7 +91,7 @@ export function MediaPage() {
       variant: 'danger',
       confirmLabel: 'Obriši',
     });
-    if (ok) void remove.mutateAsync(id);
+    if (ok) void runAction(remove.mutateAsync(id));
   };
 
   const onFolderDelete = async (id: string, name: string) => {
@@ -101,7 +102,7 @@ export function MediaPage() {
       confirmLabel: 'Obriši',
     });
     if (ok) {
-      void deleteFolder.mutateAsync(id).then(() => folderId === id && setFolderId(undefined));
+      void runAction(deleteFolder.mutateAsync(id)).then(() => folderId === id && setFolderId(undefined));
     }
   };
 
@@ -112,10 +113,10 @@ export function MediaPage() {
     newName: newFolder,
     onNewNameChange: setNewFolder,
     onCreate: canUpload
-      ? () => void createFolder.mutateAsync({ name: newFolder, parentId: folderId }).then(() => setNewFolder(''))
+      ? () => void runAction(createFolder.mutateAsync({ name: newFolder, parentId: folderId })).then(() => setNewFolder(''))
       : undefined,
     isCreating: createFolder.isPending,
-    onRename: canManage ? (id: string, name: string) => void updateFolder.mutateAsync({ id, name }) : undefined,
+    onRename: canManage ? (id: string, name: string) => void runAction(updateFolder.mutateAsync({ id, name })) : undefined,
     onDelete: canManage ? onFolderDelete : undefined,
   };
 
@@ -129,7 +130,7 @@ export function MediaPage() {
         replaceId={replaceId}
         onUpload={uploadChooser.onUpload}
         onReplace={(file) => {
-          if (replaceId) void replace.mutateAsync({ id: replaceId, file }).finally(() => setReplaceId(null));
+          if (replaceId) void runAction(replace.mutateAsync({ id: replaceId, file })).finally(() => setReplaceId(null));
         }}
       />
       <AdminPageShell title={t('admin.media')} isLoading={fl || al}>

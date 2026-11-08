@@ -10,6 +10,7 @@ import { Button } from '../../../components/ui/button';
 import { Input } from '../../../components/ui/input';
 import { Switch } from '../../../components/ui/switch';
 import type { TicketCategory } from '../../../types/ticketing-config';
+import { runAction } from '../../../lib/action-errors';
 
 export function TicketingSettingsTab() {
   const { t } = useTranslation();
@@ -37,7 +38,7 @@ export function TicketingSettingsTab() {
   }, [data]);
 
   const onSave = () => {
-    void save.mutateAsync({
+    void runAction(save.mutateAsync({
       'ticketing.stadiumCapacity': capacity,
       'ticketing.memberDiscountPercent': discount,
       'ticketing.maxBoxOfficeTicketsPerUser': maxPerUser,
@@ -46,7 +47,7 @@ export function TicketingSettingsTab() {
       'ticketing.boxOfficeEnabled': String(boxOffice),
       'ticketing.ticketCardBackground': cardBackground,
       'ticketing.categories': JSON.stringify(categories),
-    });
+    }));
   };
 
   if (isLoading) return <p className="text-sm text-text-muted">{t('admin.common.loading')}</p>;

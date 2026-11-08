@@ -11,6 +11,7 @@ import { Badge } from '../../../components/ui/badge';
 import { CommentatorClockActions } from './CommentatorClockActions';
 import { CommentatorStreamDialog } from './CommentatorStreamDialog';
 import { useTranslation } from 'react-i18next';
+import { runAction } from '../../../lib/action-errors';
 
 export function CommentatorClockBar({ match }: { match: Match }) {
   const { t } = useTranslation();
@@ -23,7 +24,7 @@ export function CommentatorClockBar({ match }: { match: Match }) {
 
   const submitStoppage = () => {
     if (!half) return;
-    void setStoppage.mutateAsync({ matchId: match.id, half, minutes: mins });
+    void runAction(setStoppage.mutateAsync({ matchId: match.id, half, minutes: mins }));
   };
 
   return (

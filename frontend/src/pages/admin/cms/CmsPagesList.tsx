@@ -9,6 +9,7 @@ import { Button } from '../../../components/ui/button';
 import { AdminDataTable, AdminPageShell } from '../../../components/admin/AdminPageShell';
 import { contentStatusLabel } from '../../../lib/content-status-labels';
 import type { CmsPage } from '../../../cms/types';
+import { runAction } from '../../../lib/action-errors';
 
 interface Props {
   onCreate: () => void;
@@ -33,7 +34,7 @@ export function CmsPagesList({ onCreate }: Props) {
       variant: 'danger',
       confirmLabel: 'Obriši',
     });
-    if (ok) void remove.mutateAsync(page.id);
+    if (ok) void runAction(remove.mutateAsync(page.id));
   };
 
   return (

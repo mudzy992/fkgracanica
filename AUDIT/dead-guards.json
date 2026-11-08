@@ -46,19 +46,19 @@
     },
     {
       "file": "frontend/src/components/news/NewsCommentsSection.tsx",
-      "line": 31,
+      "line": 32,
       "kind": "disabled-ui",
       "why": "Dugme „Objavi“ je `disabled={!content.trim() || addComment.isPending}`, pa `onSubmit` nikad ne vidi prazan tekst."
     },
     {
       "file": "frontend/src/components/newsletter/NewsletterCampaignComposer.tsx",
-      "line": 30,
+      "line": 31,
       "kind": "disabled-ui",
       "why": "„Pregled“ je `disabled={!ready || preview.isPending}`, a `ready` zahtijeva `subject` i `textBody`."
     },
     {
       "file": "frontend/src/components/newsletter/NewsletterCampaignComposer.tsx",
-      "line": 37,
+      "line": 39,
       "kind": "disabled-ui",
       "why": "„Kreiraj“ je `disabled={!ready || create.isPending}` sa istim uslovom kao pregled."
     },
@@ -94,7 +94,7 @@
     },
     {
       "file": "frontend/src/pages/admin/GalleryAdminPhotos.tsx",
-      "line": 20,
+      "line": 21,
       "kind": "disabled-ui",
       "why": "Prvo dugme je `disabled` na indeksu 0, drugo na posljednjem, pa `next` nikad nije van opsega."
     },
@@ -106,13 +106,13 @@
     },
     {
       "file": "frontend/src/pages/admin/NewsAdminPage.tsx",
-      "line": 180,
+      "line": 181,
       "kind": "disabled-ui",
       "why": "Potvrda brisanja se prikazuje samo kad je `deleteTarget` postavljen."
     },
     {
       "file": "frontend/src/pages/admin/RolesPage.tsx",
-      "line": 60,
+      "line": 61,
       "kind": "disabled-ui",
       "why": "`save` je dostupan samo u panelu za uređivanje uloge, koji se renderuje tek uz `editRole`."
     },
@@ -124,13 +124,13 @@
     },
     {
       "file": "frontend/src/pages/admin/SponsorsAdminPage.tsx",
-      "line": 29,
+      "line": 30,
       "kind": "disabled-ui",
       "why": "Pomjeranje ±1 je `disabled` na granicama liste, pa `next` nikad nije van opsega."
     },
     {
       "file": "frontend/src/pages/admin/TimelineAdminPage.tsx",
-      "line": 29,
+      "line": 30,
       "kind": "disabled-ui",
       "why": "Pomjeranje ±1 je `disabled` na granicama liste, pa `next` nikad nije van opsega."
     },
@@ -160,37 +160,37 @@
     },
     {
       "file": "frontend/src/pages/admin/cms/CmsPageBuilderPage.tsx",
-      "line": 85,
+      "line": 86,
       "kind": "disabled-ui",
       "why": "`onSave` postoji samo u panelu za uređivanje sekcije (uz `editSection`)."
     },
     {
       "file": "frontend/src/pages/admin/cms/CmsPagesList.tsx",
-      "line": 29,
+      "line": 30,
       "kind": "double-guard",
       "why": "Dugme za brisanje se renderuje samo kad `canDeletePage(page)`, pa je provjera u rukovaocu redundantna."
     },
     {
       "file": "frontend/src/pages/admin/commentator/CommentatorClockBar.tsx",
-      "line": 25,
+      "line": 26,
       "kind": "disabled-ui",
       "why": "Polje za nadoknadu vremena se prikazuje samo uz `half` (`stoppageHalfIndex`), pa je `half` tu uvijek definisan."
     },
     {
       "file": "frontend/src/pages/admin/commentator/CommentatorPenaltiesBoard.tsx",
-      "line": 38,
+      "line": 39,
       "kind": "disabled-ui",
       "why": "Oba dugmeta su `disabled={busy || !playerId}`."
     },
     {
       "file": "frontend/src/pages/admin/commentator/CommentatorTeamBoard.tsx",
-      "line": 62,
+      "line": 63,
       "kind": "disabled-ui",
       "why": "Brzi događaji su `disabled` bez `playerId` (osim vlastitog gola, koji ide drugom granom)."
     },
     {
       "file": "frontend/src/pages/admin/commentator/CommentatorTeamBoard.tsx",
-      "line": 71,
+      "line": 72,
       "kind": "disabled-ui",
       "why": "Izmjena je `disabled={disabled || busy || !subOut || !subIn}`."
     },
@@ -214,7 +214,7 @@
     },
     {
       "file": "frontend/src/pages/admin/competition-hub/SeasonRoundsPanel.tsx",
-      "line": 58,
+      "line": 59,
       "kind": "double-guard",
       "why": "Dijalog kaskadnog brisanja se otvara samo kad `cascadeRound` postoji."
     },

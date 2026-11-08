@@ -14,6 +14,7 @@ import { Button } from '../../components/ui/button';
 import { AdminDataTable, AdminPageShell } from '../../components/admin/AdminPageShell';
 import { ClubsAdminFormSheet } from './ClubsAdminFormSheet';
 import type { Club } from '../../types';
+import { runAction } from '../../lib/action-errors';
 
 export function ClubsAdminPage() {
   const { t } = useTranslation();
@@ -32,7 +33,7 @@ export function ClubsAdminPage() {
       confirmLabel: 'Obriši',
       variant: 'danger',
     });
-    if (ok) void remove.mutateAsync(club.id);
+    if (ok) void runAction(remove.mutateAsync(club.id));
   };
 
   return (

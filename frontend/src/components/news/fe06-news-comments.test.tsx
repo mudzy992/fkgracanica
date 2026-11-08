@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { NewsCommentsSection } from './NewsCommentsSection';
+import { getActionError, resetActionErrorForTests } from '../../lib/action-errors';
 
 const state = vi.hoisted(() => ({
   user: null as { id: string; email: string; firstName?: string | null; lastName?: string | null; permissions?: string[] } | null,
@@ -13,6 +14,7 @@ const state = vi.hoisted(() => ({
   added: [] as string[],
   removed: [] as string[],
   pending: false,
+  addFails: false,
 }));
 
 vi.mock('../../hooks/use-news-comments', () => ({
@@ -20,6 +22,7 @@ vi.mock('../../hooks/use-news-comments', () => ({
   useAddNewsComment: () => ({
     isPending: state.pending,
     mutateAsync: async (text: string) => {
+      if (state.addFails) throw new Error('Komentar nije objavljen');
       state.added.push(text);
     },
   }),
@@ -147,3 +150,27 @@ describe('NewsCommentsSection', () => {
     expect(screen.getByRole('link', { name: 'Prijavite se' }).getAttribute('href')).toBe('/prijava');
   });
 });
+
+describe('NewsCommentsSection — tihe greške (P-FE06-44)', () => {
+  beforeEach(() => {
+    resetActionErrorForTests();
+    state.addFails = false;
+    state.authenticated = true;
+    state.moderate = false;
+    state.pending = false;
+    state.added = [];
+    state.comments = [];
+    state.user = { id: 'u1', email: 'a@b.c', firstName: 'Amar', lastName: 'H' };
+  });
+
+  it('odbijena objava komentara prijavljuje poruku i ne čisti polje', async () => {
+    state.addFails = true;
+    renderSection();
+    const box = screen.getByPlaceholderText(/komentar/i);
+    await userEvent.type(box, 'Novi komentar');
+    await userEvent.click(screen.getByRole('button', { name: /Objavi/i }));
+    expect(getActionError()).toMatchObject({ kind: 'message', message: 'Komentar nije objavljen' });
+    expect(box).toHaveValue('Novi komentar');
+  });
+});
+

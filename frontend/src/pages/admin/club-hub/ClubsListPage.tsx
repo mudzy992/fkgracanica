@@ -14,6 +14,7 @@ import { Button } from '../../../components/ui/button';
 import { AdminDataTable, AdminPageShell } from '../../../components/admin/AdminPageShell';
 import { ClubsCreateSheet } from './ClubsCreateSheet';
 import type { Club } from '../../../types';
+import { runAction } from '../../../lib/action-errors';
 
 type ClubRow = Club & { _count?: { players: number } };
 
@@ -34,7 +35,7 @@ export function ClubsListPage() {
       confirmLabel: 'Obriši',
       variant: 'danger',
     });
-    if (ok) void remove.mutateAsync(club.id);
+    if (ok) void runAction(remove.mutateAsync(club.id));
   };
 
   return (

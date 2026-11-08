@@ -13,6 +13,7 @@ import { AdminDataTable, AdminPageShell } from '../../components/admin/AdminPage
 import { AdminFormSheet } from '../../components/admin/AdminFormSheet';
 import { Skeleton } from '../../components/ui/skeleton';
 import { RolesAdminFormSheet } from './RolesAdminFormSheet';
+import { runAction } from '../../lib/action-errors';
 
 interface Props {
   embedded?: boolean;
@@ -73,7 +74,7 @@ export function RolesPage({ embedded = false }: Props) {
       variant: 'danger',
       confirmLabel: 'Obriši',
     });
-    if (ok) void deleteRole.mutateAsync(role.id);
+    if (ok) void runAction(deleteRole.mutateAsync(role.id));
   };
 
   const createAction = canUpdate ? (

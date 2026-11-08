@@ -20,6 +20,7 @@ import { AdminDataTable, AdminPageShell } from '../../components/admin/AdminPage
 import { NewsCategoriesDialog } from './NewsCategoriesDialog';
 import { contentStatusLabel } from '../../lib/content-status-labels';
 import type { ContentStatus, NewsItem } from '../../types';
+import { runAction } from '../../lib/action-errors';
 
 function statusVariant(status: ContentStatus): 'default' | 'success' | 'muted' {
   if (status === 'PUBLISHED') return 'success';
@@ -45,15 +46,15 @@ export function NewsAdminPage() {
   const [categoriesOpen, setCategoriesOpen] = useState(false);
 
   const publish = (item: NewsItem) => {
-    void updateStatus.mutateAsync({ id: item.id, status: 'PUBLISHED' });
+    void runAction(updateStatus.mutateAsync({ id: item.id, status: 'PUBLISHED' }));
   };
 
   const submit = (item: NewsItem) => {
-    void submitReview.mutateAsync(item.id);
+    void runAction(submitReview.mutateAsync(item.id));
   };
 
   const archive = (item: NewsItem) => {
-    void updateStatus.mutateAsync({ id: item.id, status: 'ARCHIVED' });
+    void runAction(updateStatus.mutateAsync({ id: item.id, status: 'ARCHIVED' }));
   };
 
   return (
@@ -178,7 +179,7 @@ export function NewsAdminPage() {
         isPending={deleteNews.isPending}
         onConfirm={() => {
           if (!deleteTarget) return;
-          void deleteNews.mutateAsync(deleteTarget.id).then(() => setDeleteTarget(null));
+          void runAction(deleteNews.mutateAsync(deleteTarget.id)).then(() => setDeleteTarget(null));
         }}
       />
     </>

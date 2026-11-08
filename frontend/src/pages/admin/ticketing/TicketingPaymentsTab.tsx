@@ -10,6 +10,7 @@ import { Input } from '../../../components/ui/input';
 import { Switch } from '../../../components/ui/switch';
 import { PaymentProviderCard } from './PaymentProviderCard';
 import { PaymentProviderHints } from './PaymentProviderHints';
+import { runAction } from '../../../lib/action-errors';
 
 const PROVIDERS = [
   { id: 'stripe', label: 'Stripe' },
@@ -39,13 +40,13 @@ export function TicketingPaymentsTab() {
   const set = (key: string, value: string) => setSettings((s) => ({ ...s, [key]: value }));
 
   const onSave = () => {
-    void save.mutateAsync({
+    void runAction(save.mutateAsync({
       ...settings,
       'ticketing.onlineEnabled': String(onlineEnabled),
       'membership.onlineEnabled': String(membershipOnline),
       'membership.annualPrice': membershipPrice,
       'payments.defaultProvider': defaultProvider,
-    });
+    }));
   };
 
   if (isLoading || !data)

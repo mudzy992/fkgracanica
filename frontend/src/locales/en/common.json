@@ -874,7 +874,8 @@
     "subject": "Subject",
     "livePushTitle": "Live match push",
     "livePushHint": "Goals, cards and other live actions. Turn off to mute push.",
-    "loadError": "We could not load the data. Check your connection and try again."
+    "loadError": "We could not load the data. Check your connection and try again.",
+    "actionFailed": "The action failed. Please try again."
   },
   "footer": {
     "menu": "Menu",

@@ -20,6 +20,7 @@ import { CmsPreviewPanel } from './CmsPreviewPanel';
 import { CmsSortableSections } from './CmsSortableSections';
 import { CmsPageMetaForm } from './CmsPageMetaForm';
 import { CmsSectionEditDialog } from './CmsSectionEditDialog';
+import { runAction } from '../../../lib/action-errors';
 
 export function CmsPageBuilderPage() {
   const { t } = useTranslation();
@@ -145,13 +146,13 @@ export function CmsPageBuilderPage() {
               sections={sections}
               selectedId={editSection?.id ?? null}
               onSelect={openEdit}
-              onReorder={(ids) => void reorder.mutateAsync(ids)}
+              onReorder={(ids) => void runAction(reorder.mutateAsync(ids))}
               onDelete={(sid) => {
                 const section = sections.find((item) => item.id === sid);
                 void removeSection(sid, section?.widgetType);
               }}
               onToggleEnabled={(sid, enabled) => {
-                void updateSection.mutateAsync({ sectionId: sid, enabled });
+                void runAction(updateSection.mutateAsync({ sectionId: sid, enabled }));
               }}
             />
           ) : (

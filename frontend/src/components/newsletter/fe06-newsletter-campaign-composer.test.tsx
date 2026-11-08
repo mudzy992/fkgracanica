@@ -2,6 +2,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { NewsletterCampaignComposer } from './NewsletterCampaignComposer';
+import { getActionError, resetActionErrorForTests } from '../../lib/action-errors';
 
 const state = vi.hoisted(() => ({
   create: vi.fn(),
@@ -147,3 +148,30 @@ describe('NewsletterCampaignComposer — spremanje nacrta', () => {
     );
   });
 });
+
+describe('NewsletterCampaignComposer — tihe greške (P-FE06-44)', () => {
+  beforeEach(() => {
+    resetActionErrorForTests();
+  });
+
+  it('neuspješan nacrt prijavljuje poruku i ne čisti formu', async () => {
+    const user = userEvent.setup();
+    state.create.mockRejectedValue(new Error('Nacrt nije sačuvan'));
+    render(<NewsletterCampaignComposer />);
+    await fill(user);
+    await user.click(screen.getByRole('button', { name: 'Spremi nacrt' }));
+    expect(getActionError()).toMatchObject({ kind: 'message', message: 'Nacrt nije sačuvan' });
+    expect(screen.getByPlaceholderText('Naslov')).toHaveValue('Novi naslov');
+  });
+
+  it('neuspješan pregled prijavljuje poruku bez pregleda', async () => {
+    const user = userEvent.setup();
+    state.preview.mockRejectedValue(new Error('Pregled nije izrađen'));
+    render(<NewsletterCampaignComposer />);
+    await fill(user);
+    await user.click(screen.getByRole('button', { name: 'Pregled' }));
+    expect(getActionError()).toMatchObject({ kind: 'message', message: 'Pregled nije izrađen' });
+    expect(screen.queryByTitle('Pregled')).toBeNull();
+  });
+});
+

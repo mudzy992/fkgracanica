@@ -874,7 +874,8 @@
     "subject": "Naslov",
     "livePushTitle": "Live push obavijesti",
     "livePushHint": "Golovi, kartoni i ostale akcije uživo. Isključite da utišate push.",
-    "loadError": "Podatke nije moguće učitati. Provjerite vezu i pokušajte ponovo."
+    "loadError": "Podatke nije moguće učitati. Provjerite vezu i pokušajte ponovo.",
+    "actionFailed": "Akcija nije uspjela. Pokušajte ponovo."
   },
   "footer": {
     "menu": "Meni",

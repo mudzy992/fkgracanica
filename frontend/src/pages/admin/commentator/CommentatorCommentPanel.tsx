@@ -5,6 +5,7 @@ import { useAddReportComment } from '../../../hooks/use-live-report';
 import type { LiveComment, Match } from '../../../types';
 import { Button } from '../../../components/ui/button';
 import { Input } from '../../../components/ui/input';
+import { runAction } from '../../../lib/action-errors';
 
 interface Props {
   match: Match;
@@ -23,13 +24,13 @@ export function CommentatorCommentPanel({ match, reportMode, eventMinute = 0 }: 
   const submit = () => {
     if (!message.trim()) return;
     if (reportMode) {
-      void addReport.mutateAsync({
+      void runAction(addReport.mutateAsync({
         matchId: match.id,
         message: message.trim(),
         minute: eventMinute,
-      });
+      }));
     } else {
-      void addLive.mutateAsync({ matchId: match.id, message: message.trim() });
+      void runAction(addLive.mutateAsync({ matchId: match.id, message: message.trim() }));
     }
     setMessage('');
   };

@@ -4,6 +4,7 @@ import { EntitySelect } from '../../../components/admin/EntitySelect';
 import type { Match, MatchLineup } from '../../../types';
 import { Button } from '../../../components/ui/button';
 import { useTranslation } from 'react-i18next';
+import { runAction } from '../../../lib/action-errors';
 
 interface Props {
   match: Match;
@@ -36,7 +37,7 @@ function PenaltySide({
 
   const kick = (type: 'PENALTY_SCORED' | 'PENALTY_MISSED') => {
     if (!playerId) return;
-    void addEvent.mutateAsync({ matchId: match.id, type, teamSide: side, playerId });
+    void runAction(addEvent.mutateAsync({ matchId: match.id, type, teamSide: side, playerId }));
     setPlayerId('');
   };
 

@@ -11,6 +11,7 @@ import { HomeKpiGrid } from './HomeKpiGrid';
 import { HomeQuickActions } from './HomeQuickActions';
 import { RoleHomeShell } from './RoleHomeShell';
 import { matchTitle } from './commentator-desk';
+import { runAction } from '../../../lib/action-errors';
 
 export function ModeratorHome() {
   const { t } = useTranslation();
@@ -37,10 +38,10 @@ export function ModeratorHome() {
   ].slice(0, 8);
 
   const approve = (item: (typeof queue)[number]) => {
-    if (item.kind === 'news') void publishNews.mutateAsync({ id: item.id, status: 'PUBLISHED' });
+    if (item.kind === 'news') void runAction(publishNews.mutateAsync({ id: item.id, status: 'PUBLISHED' }));
     if (item.kind === 'gallery')
-      void publishGallery.mutateAsync({ id: item.id, status: 'PUBLISHED' });
-    if (item.kind === 'live') void approveLive.mutateAsync(item.id);
+      void runAction(publishGallery.mutateAsync({ id: item.id, status: 'PUBLISHED' }));
+    if (item.kind === 'live') void runAction(approveLive.mutateAsync(item.id));
   };
 
   return (

@@ -7,6 +7,7 @@ import { Badge } from '../../../components/ui/badge';
 import { Button } from '../../../components/ui/button';
 import { api } from '../../../lib/api';
 import { AppReleaseCreateForm } from './AppReleaseCreateForm';
+import { runAction } from '../../../lib/action-errors';
 
 type AppRelease = {
   id: string;
@@ -92,7 +93,7 @@ export function AppReleasesAdminPage() {
                   <Button
                     size="sm"
                     disabled={publish.isPending}
-                    onClick={() => void publish.mutateAsync(r.id)}
+                    onClick={() => void runAction(publish.mutateAsync(r.id))}
                   >
                     Objavi
                   </Button>

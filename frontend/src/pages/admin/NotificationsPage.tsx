@@ -12,6 +12,7 @@ import { Seo } from '../../components/seo/Seo';
 import { Button } from '../../components/ui/button';
 import { AdminPageShell } from '../../components/admin/AdminPageShell';
 import { AdminPagination } from '../../components/admin/AdminPagination';
+import { runAction } from '../../lib/action-errors';
 
 const TYPE_ICON = { info: Info, success: CheckCircle, warning: AlertTriangle } as const;
 
@@ -32,7 +33,7 @@ export function NotificationsPage() {
         title={t('notifications.title')}
         isLoading={isLoading}
         actions={
-          <Button variant="outline" size="sm" onClick={() => void markAll.mutateAsync()}>
+          <Button variant="outline" size="sm" onClick={() => void runAction(markAll.mutateAsync())}>
             {t('notifications.markAllRead')}
           </Button>
         }
@@ -70,7 +71,7 @@ export function NotificationsPage() {
                     <Button
                       size="sm"
                       variant="ghost"
-                      onClick={() => void markRead.mutateAsync(n.id)}
+                      onClick={() => void runAction(markRead.mutateAsync(n.id))}
                     >
                       {t('notifications.markRead')}
                     </Button>

@@ -14,6 +14,7 @@ import { AdminDataTable, AdminPageShell } from '../../components/admin/AdminPage
 import { AdminPagination } from '../../components/admin/AdminPagination';
 import { Skeleton } from '../../components/ui/skeleton';
 import { UserAdminFormSheet } from './UserAdminFormSheet';
+import { runAction } from '../../lib/action-errors';
 
 interface Props {
   embedded?: boolean;
@@ -51,7 +52,7 @@ export function UsersPage({ embedded = false }: Props) {
       variant: 'danger',
       confirmLabel: 'Obriši',
     });
-    if (ok) void remove.mutateAsync(item.id);
+    if (ok) void runAction(remove.mutateAsync(item.id));
   };
 
   const createAction = canCreate ? (

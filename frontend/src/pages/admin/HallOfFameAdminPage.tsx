@@ -9,6 +9,7 @@ import { Button } from '../../components/ui/button';
 import { AdminDataTable, AdminPageShell } from '../../components/admin/AdminPageShell';
 import { HallOfFameAdminFormSheet } from './HallOfFameAdminFormSheet';
 import type { HallOfFameEntry } from '../../types';
+import { runAction } from '../../lib/action-errors';
 
 interface Props {
   embedded?: boolean;
@@ -29,7 +30,7 @@ export function HallOfFameAdminPage({ embedded = false }: Props) {
       variant: 'danger',
       confirmLabel: 'Obriši',
     });
-    if (ok) void remove.mutateAsync(item.id);
+    if (ok) void runAction(remove.mutateAsync(item.id));
   };
 
   const createAction = (

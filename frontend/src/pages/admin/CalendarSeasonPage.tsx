@@ -15,6 +15,7 @@ import { AdminDataTable } from '../../components/admin/AdminPageShell';
 import { adminLinkClass } from '../../lib/admin-styles';
 import { type CalendarSeason } from '../../lib/season-utils';
 import { SeasonEditionFormSheet, type SeasonEditionRow } from './SeasonEditionFormSheet';
+import { runAction } from '../../lib/action-errors';
 
 export function CalendarSeasonPage() {
   const { t } = useTranslation();
@@ -37,7 +38,7 @@ export function CalendarSeasonPage() {
       variant: 'danger',
       confirmLabel: 'Ukloni',
     });
-    if (ok) void deleteEdition.mutateAsync({ seasonId, editionId: item.id });
+    if (ok) void runAction(deleteEdition.mutateAsync({ seasonId, editionId: item.id }));
   };
 
   if (isLoading) return <Skeleton className="mx-4 mt-8 h-64" />;

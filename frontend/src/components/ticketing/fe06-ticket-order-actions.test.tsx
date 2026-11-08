@@ -2,6 +2,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { TicketOrderActions } from './TicketOrderActions';
+import { getActionError, resetActionErrorForTests } from '../../lib/action-errors';
 
 const state = vi.hoisted(() => ({
   config: { data: undefined as unknown },
@@ -37,6 +38,7 @@ const config = { readyProviders: ['stripe'] };
 
 describe('TicketOrderActions', () => {
   beforeEach(() => {
+    resetActionErrorForTests();
     state.refund = { mutateAsync: vi.fn(async () => ({})), isPending: false };
     state.cancel = { mutateAsync: vi.fn(async () => ({})), isPending: false };
     state.checkout = {
@@ -146,3 +148,42 @@ describe('TicketOrderActions — preusmjeravanje na plaćanje', () => {
     }
   });
 });
+
+describe('TicketOrderActions — tihe greške (P-FE06-44)', () => {
+  beforeEach(() => {
+    resetActionErrorForTests();
+    state.cancel = { mutateAsync: vi.fn(async () => ({})), isPending: false };
+    state.refund = { mutateAsync: vi.fn(async () => ({})), isPending: false };
+  });
+
+  it('odbijeno otkazivanje prijavljuje poruku umjesto tišine', async () => {
+    state.cancel = {
+      mutateAsync: vi.fn(async () => {
+        throw new Error('Rezervacija je istekla');
+      }),
+      isPending: false,
+    };
+    render(<TicketOrderActions order={order()} config={undefined} />);
+    await userEvent.click(screen.getByRole('button', { name: 'Otkaži rezervaciju' }));
+    expect(getActionError()).toMatchObject({ kind: 'message', message: 'Rezervacija je istekla' });
+  });
+
+  it('odbijeni povrat prijavljuje poruku', async () => {
+    state.refund = {
+      mutateAsync: vi.fn(async () => {
+        throw new Error('Povrat nije odobren');
+      }),
+      isPending: false,
+    };
+    render(<TicketOrderActions order={order({ status: 'paid' })} config={undefined} />);
+    await userEvent.click(screen.getByRole('button', { name: 'Zatraži povrat' }));
+    expect(getActionError()).toMatchObject({ kind: 'message', message: 'Povrat nije odobren' });
+  });
+
+  it('uspješno otkazivanje ne prijavljuje grešku', async () => {
+    render(<TicketOrderActions order={order()} config={undefined} />);
+    await userEvent.click(screen.getByRole('button', { name: 'Otkaži rezervaciju' }));
+    expect(getActionError()).toBeNull();
+  });
+});
+

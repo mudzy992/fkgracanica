@@ -15,6 +15,7 @@ import { Button } from '../../components/ui/button';
 import { AdminDataTable, AdminPageShell } from '../../components/admin/AdminPageShell';
 import { contentStatusLabel } from '../../lib/content-status-labels';
 import type { GalleryItem } from '../../types';
+import { runAction } from '../../lib/action-errors';
 
 export function GalleryAdminPage() {
   const { t } = useTranslation();
@@ -33,7 +34,7 @@ export function GalleryAdminPage() {
       confirmLabel: 'Obriši',
       variant: 'danger',
     });
-    if (ok) void remove.mutateAsync(item.id);
+    if (ok) void runAction(remove.mutateAsync(item.id));
   };
 
   return (
@@ -89,7 +90,7 @@ export function GalleryAdminPage() {
                     <Button
                       size="sm"
                       variant="outline"
-                      onClick={() => void publish.mutateAsync({ id: r.id, status: 'PUBLISHED' })}
+                      onClick={() => void runAction(publish.mutateAsync({ id: r.id, status: 'PUBLISHED' }))}
                     >
                       Objavi
                     </Button>

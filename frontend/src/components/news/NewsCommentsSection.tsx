@@ -8,6 +8,7 @@ import { formatDate } from '../../lib/utils';
 import { Button } from '../ui/button';
 import { Textarea } from '../ui/textarea';
 import { NewsSectionTitle } from './NewsSectionTitle';
+import { runAction } from '../../lib/action-errors';
 
 interface Props {
   newsId: string;
@@ -29,12 +30,13 @@ export function NewsCommentsSection({ newsId }: Props) {
   const onSubmit = async () => {
     const text = content.trim();
     if (!text) return;
-    await addComment.mutateAsync(text);
-    setContent('');
+    const result = await runAction(addComment.mutateAsync(text));
+    // P-FE06-44: na grešci tekst ostaje u polju da korisnik ne izgubi komentar.
+    if (result.ok) setContent('');
   };
 
   const onDelete = (commentId: string) => {
-    if (window.confirm('Obrisati komentar?')) void deleteComment.mutateAsync(commentId);
+    if (window.confirm('Obrisati komentar?')) void runAction(deleteComment.mutateAsync(commentId));
   };
 
   return (

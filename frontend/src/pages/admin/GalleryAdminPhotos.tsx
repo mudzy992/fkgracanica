@@ -4,6 +4,7 @@ import { useRemoveGalleryPhoto, useReorderGalleryPhotos } from '../../hooks/use-
 import { mediaUrl } from '../../lib/media';
 import { Button } from '../../components/ui/button';
 import type { GalleryPhoto } from '../../types';
+import { runAction } from '../../lib/action-errors';
 
 interface Props {
   galleryId: string;
@@ -20,7 +21,7 @@ export function GalleryAdminPhotos({ galleryId, photos }: Props) {
     if (next < 0 || next >= photos.length) return;
     const ids = photos.map((p) => p.id);
     [ids[index], ids[next]] = [ids[next], ids[index]];
-    void reorder.mutateAsync({ galleryId, photoIds: ids });
+    void runAction(reorder.mutateAsync({ galleryId, photoIds: ids }));
   };
 
   if (!photos.length) {
@@ -65,7 +66,7 @@ export function GalleryAdminPhotos({ galleryId, photos }: Props) {
             <Button
               variant="ghost"
               size="icon"
-              onClick={() => void removePhoto.mutateAsync({ galleryId, photoId: p.id })}
+              onClick={() => void runAction(removePhoto.mutateAsync({ galleryId, photoId: p.id }))}
 
               aria-label={t('actions.delete')}
             >

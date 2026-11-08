@@ -15,6 +15,35 @@
 
 ## Šta je urađeno (hronološki)
 
+### Sesija FE-06 — 2026-11-07 (P-FE06-44: 65 tihih akcija dobija poruku)
+
+- **Odluka korisnika:** „idemo na promjene na UI-ja, da kompletiramo sve“ +
+  `ask_user` → plan **UI popravke pa testovi**, obim **svih 66 tihih mjesta**.
+- **Nalaz B-FE06-46:** 65 poziva `void X.mutateAsync(...)` u 41 fajlu; odbijeni
+  zahtjev ostaje neobrađen, korisnik ne dobija poruku. Najosjetljivije: blagajna
+  (otkaži/povrat/plati) i javni komentari.
+- **Rješenje:** `lib/action-errors.ts` (`runAction` → `ActionResult<T>`,
+  diskriminisana unija; bez Reacta i **bez i18n** da ne ruši mockove) +
+  `components/common/ActionErrorAlert.tsx` (globalna traka `role="alert"`,
+  samo-sklanjanje 8 s), montirana u `bootstrap.tsx` iznad `App`.
+  Novi ključ `common.actionFailed` (bs/en).
+- **Zamijenjeno 65 mjesta** u 41 fajlu; dodatno pokriveni `void` rukovaoci:
+  objava komentara (tekst ostaje u polju), pregled/nacrt newslettera (forma se ne
+  čisti) i `payOnline` u blagajni.
+- **Regresije:** +17 testova (10 store, 7 traka) + 6 integracionih (blagajna 3,
+  komentari 1, newsletter 2). FE **3466/3466** u **423** fajla.
+- **Registar:** 15 unosa pomjereno za jednu liniju (novi `import`), usklađeno sa
+  stvarnim statementima; novi statement pokriven testom. **36 unosa / 29 fajlova**.
+- V8: **L 99,97 (8525/8527)** / **S 99,62 (9587/9623)** / **F 100 (3529/3529)** /
+  **B 93,14 (7807/8382)**; ratchet **99,8 / 99,5 / 99,9 / 93,0 %**; matrica
+  **1896**; `check:all` **9/9**; `tsc -b` čist; `oxlint` 0 grešaka.
+- **Audit UI vs. pokrivenost:** od 574 nepokrivene grane 491 (85,5 %) su obični
+  fallbackovi (testovi), 22 `disabled-ui` guarda tražila bi uklanjanje `disabled`
+  (odgođeno, nije dio ovog paketa).
+- Otvoreni nalazi: **B-FE06-46 zatvoren**; ostaje klasa `void <handler>()` u
+  formama koje imaju vlastiti `catch` (nije dirano).
+- CI run se upisuje nakon provjere pusha.
+
 ### Sesija FE-06 — 2026-11-07 (P-FE06-43: Q-FE06-31…36 zatvoreni)
 
 - **Odobreno** (`ask_user`, sve „preporuka“ + brisanje mrtvog CMS koda).

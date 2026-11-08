@@ -10,6 +10,7 @@ import { Button } from '../../../components/ui/button';
 import type { CompetitionRound } from '../../../types';
 import { RoundFormSheet } from './RoundFormSheet';
 import { RoundCascadeDeleteDialog } from './RoundCascadeDeleteDialog';
+import { runAction } from '../../../lib/action-errors';
 
 interface Props {
   seasonId: string;
@@ -38,7 +39,7 @@ export function SeasonRoundsPanel({ seasonId, selectedRoundId, onSelectRound, ca
         variant: 'danger',
         confirmLabel: 'Obriši',
       });
-      if (ok) void remove.mutateAsync({ id: round.id, seasonId });
+      if (ok) void runAction(remove.mutateAsync({ id: round.id, seasonId }));
       return;
     }
     try {

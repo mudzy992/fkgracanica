@@ -18,6 +18,7 @@ import type { Match } from '../../../types';
 import { MatchFormSheet } from './MatchFormSheet';
 import { MatchLineupSheet } from './MatchLineupSheet';
 import { isScheduledMatch, useRoundMatchesSorted } from './round-matches-utils';
+import { runAction } from '../../../lib/action-errors';
 
 interface Props {
   seasonId: string;
@@ -44,7 +45,7 @@ export function RoundMatchesPanel({ seasonId, roundId, canManage }: Props) {
       variant: 'danger',
       confirmLabel: 'Obriši',
     });
-    if (ok) void remove.mutateAsync(match.id);
+    if (ok) void runAction(remove.mutateAsync(match.id));
   };
 
   return (

@@ -6,6 +6,7 @@ import { ThemeProvider } from './lib/theme';
 import './i18n';
 import './index.css';
 import App from './App';
+import { ActionErrorAlert } from './components/common/ActionErrorAlert';
 
 /** P-FE06-42: bootstrap je izdvojen iz `main.tsx` da ga test može izvršiti. */
 export const queryClientDefaults = {
@@ -34,6 +35,8 @@ export function bootstrap(container: HTMLElement = document.getElementById('root
       <QueryClientProvider client={queryClient}>
         <ThemeProvider>
           <AuthProvider>
+            {/* P-FE06-44: globalna traka za greške akcija koje se ne čekaju. */}
+            <ActionErrorAlert />
             <App />
           </AuthProvider>
         </ThemeProvider>

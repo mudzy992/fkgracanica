@@ -12,6 +12,7 @@ import { Button } from '../../components/ui/button';
 import { AdminDataTable, AdminPageShell } from '../../components/admin/AdminPageShell';
 import { TrophiesAdminFormSheet } from './TrophiesAdminFormSheet';
 import type { Trophy } from '../../types';
+import { runAction } from '../../lib/action-errors';
 
 export function TrophiesAdminPage() {
   const { t } = useTranslation();
@@ -30,7 +31,7 @@ export function TrophiesAdminPage() {
       confirmLabel: 'Obriši',
       variant: 'danger',
     });
-    if (ok) void remove.mutateAsync(item.id);
+    if (ok) void runAction(remove.mutateAsync(item.id));
   };
 
   return (

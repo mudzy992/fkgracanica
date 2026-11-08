@@ -14,6 +14,7 @@ import { AdminPagination } from '../../components/admin/AdminPagination';
 import { api } from '../../lib/api';
 import { NewsletterCampaignPanel } from '../../components/newsletter/NewsletterCampaignPanel';
 import { useTranslation } from 'react-i18next';
+import { runAction } from '../../lib/action-errors';
 
 interface Props {
   embedded?: boolean;
@@ -39,7 +40,7 @@ export function NewsletterAdminPage({ embedded = false }: Props) {
       confirmLabel: 'Odjavi',
       variant: 'danger',
     });
-    if (ok) void unsubscribe.mutateAsync(email);
+    if (ok) void runAction(unsubscribe.mutateAsync(email));
   };
 
   const body = (

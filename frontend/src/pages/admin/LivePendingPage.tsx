@@ -6,6 +6,7 @@ import { AdminPageShell, AdminDataTable } from '../../components/admin/AdminPage
 import { Badge } from '../../components/ui/badge';
 import { Button } from '../../components/ui/button';
 import { Seo } from '../../components/seo/Seo';
+import { runAction } from '../../lib/action-errors';
 
 export function LivePendingPage() {
   const { t } = useTranslation();
@@ -55,7 +56,7 @@ export function LivePendingPage() {
                 </Link>
                 <Button
                   size="sm"
-                  onClick={() => void approve.mutateAsync(r.id)}
+                  onClick={() => void runAction(approve.mutateAsync(r.id))}
                   disabled={approve.isPending}
                 >
                   Odobri

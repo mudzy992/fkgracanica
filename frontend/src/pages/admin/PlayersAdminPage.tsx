@@ -13,6 +13,7 @@ import { Button } from '../../components/ui/button';
 import { AdminDataTable, AdminPageShell } from '../../components/admin/AdminPageShell';
 import { PlayersAdminFormSheet } from './PlayersAdminFormSheet';
 import type { Player } from '../../types';
+import { runAction } from '../../lib/action-errors';
 
 export function PlayersAdminPage() {
   const { t } = useTranslation();
@@ -31,7 +32,7 @@ export function PlayersAdminPage() {
       confirmLabel: 'Obriši',
       variant: 'danger',
     });
-    if (ok) void remove.mutateAsync(item.id);
+    if (ok) void runAction(remove.mutateAsync(item.id));
   };
 
   return (

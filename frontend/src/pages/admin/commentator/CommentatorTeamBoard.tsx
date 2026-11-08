@@ -6,6 +6,7 @@ import { EntitySelect } from '../../../components/admin/EntitySelect';
 import type { Match, MatchLineup } from '../../../types';
 import { Button } from '../../../components/ui/button';
 import { MORE_EVENTS, QUICK_EVENTS, eventLabel } from './commentator-events';
+import { runAction } from '../../../lib/action-errors';
 
 interface Props {
   match: Match;
@@ -46,15 +47,15 @@ export function CommentatorTeamColumn({
 
   const fire = (type: string, extra?: { playerId?: string; relatedPlayerId?: string }) => {
     if (reportMode) {
-      void addReport.mutateAsync({
+      void runAction(addReport.mutateAsync({
         matchId: match.id,
         type,
         minute: eventMinute,
         teamSide: side,
         ...extra,
-      });
+      }));
     } else {
-      void addLive.mutateAsync({ matchId: match.id, type, teamSide: side, ...extra });
+      void runAction(addLive.mutateAsync({ matchId: match.id, type, teamSide: side, ...extra }));
     }
   };
 

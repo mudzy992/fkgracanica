@@ -10,6 +10,7 @@ import { Button } from '../../components/ui/button';
 import { Dialog, DialogBody, DialogFooter, DialogHeader } from '../../components/ui/dialog';
 import { Input } from '../../components/ui/input';
 import { useTranslation } from 'react-i18next';
+import { runAction } from '../../lib/action-errors';
 
 interface Props {
   open: boolean;
@@ -40,7 +41,7 @@ export function NewsCategoriesDialog({ open, onOpenChange }: Props) {
 
   const onDelete = (cat: NewsCategory) => {
     if (!window.confirm(`Obrisati kategoriju "${cat.name}"?`)) return;
-    void remove.mutateAsync(cat.id);
+    void runAction(remove.mutateAsync(cat.id));
   };
 
   return (

@@ -10,6 +10,7 @@ import { AdminDataTable, AdminPageShell } from '../../components/admin/AdminPage
 import { MuseumAdminFormSheet } from './MuseumAdminFormSheet';
 import { museumCategoryLabel } from '../../lib/museum-categories';
 import type { MuseumItem } from '../../types';
+import { runAction } from '../../lib/action-errors';
 
 type MuseumRow = MuseumItem & { category?: string };
 
@@ -32,7 +33,7 @@ export function MuseumAdminPage({ embedded = false }: Props) {
       variant: 'danger',
       confirmLabel: 'Obriši',
     });
-    if (ok) void remove.mutateAsync(item.id);
+    if (ok) void runAction(remove.mutateAsync(item.id));
   };
 
   const createAction = (
