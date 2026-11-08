@@ -126,3 +126,42 @@ describe('SearchPage — polje za pretragu', () => {
     await waitFor(() => expect(input()).toHaveValue('bora'));
   });
 });
+
+describe('SearchPage — neispravni i nepotpuni podaci (batch 34)', () => {
+  it('neispravan broj stranice se svodi na prvu', () => {
+    renderPage('/pretraga?q=ana&page=abc');
+    expect(state.calls.at(-1)).toMatchObject({ page: 1 });
+  });
+
+  it('prazan upit uklanja q iz URL-a', async () => {
+    const user = userEvent.setup();
+    renderPage('/pretraga?q=ana');
+    await user.clear(input());
+    await user.keyboard('{Enter}');
+    await waitFor(() => expect(screen.getByTestId('loc')).toHaveTextContent('/pretraga'));
+  });
+
+  it('nula i negativna stranica se svode na prvu', () => {
+    renderPage('/pretraga?q=ana&page=0');
+    expect(state.calls.at(-1)).toMatchObject({ page: 1 });
+    renderPage('/pretraga?q=ana&page=-3');
+    expect(state.calls.at(-1)).toMatchObject({ page: 1 });
+  });
+
+  it('faseti bez broja u odgovoru ne prikazuju dugme i ne ruše stranicu', () => {
+    state.result = {
+      data: searchData({ facets: { news: 2, clubs: undefined } }),
+    };
+    renderPage('/pretraga?q=ana');
+    expect(screen.getByText('Vijesti (2)')).toBeInTheDocument();
+    expect(screen.queryByText(/Klubovi/)).toBeNull();
+    expect(screen.getByText('rezultati:svi')).toBeInTheDocument();
+  });
+
+  it('odgovor bez ijedne liste daje poruku o praznim rezultatima', () => {
+    state.result = { data: { facets: { news: 1 } } };
+    renderPage('/pretraga?q=ana');
+    expect(screen.getByText('prazno:pages.search.empty')).toBeInTheDocument();
+  });
+});
+

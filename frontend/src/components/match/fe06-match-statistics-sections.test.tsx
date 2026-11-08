@@ -150,3 +150,39 @@ describe('MatchStatisticsSection', () => {
     expect(screen.getAllByText('Gosti').length).toBeGreaterThan(0);
   });
 });
+
+describe('MatchStatisticsSection — rezervni nazivi u tabelama igrača (batch 34)', () => {
+  it('bez klubova tabele igrača koriste Domaći i Gosti', () => {
+    const stats = overview({
+      team: { home: teamSide({ goals: 1 }), away: teamSide() },
+      players: {
+        home: [playerStat({ goals: 1 })],
+        away: [playerStat({ playerId: 'p2', firstName: 'Emir', lastName: 'Karić' })],
+      },
+    });
+    render(
+      <MemoryRouter>
+        <MatchStatisticsSection
+          match={match({ homeClub: null, awayClub: null })}
+          stats={stats}
+          loading={false}
+        />
+      </MemoryRouter>,
+    );
+    expect(screen.getAllByText('Domaći').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('Gosti').length).toBeGreaterThan(0);
+  });
+
+  it('posjed koristi domaćina kada protivnik nema vrijednost', () => {
+    const stats = overview({
+      team: {
+        home: teamSide({ goals: 1, possession: 40 }),
+        away: teamSide({ possession: null }),
+      },
+    });
+    render(<MatchStatisticsSection match={match()} stats={stats} loading={false} />);
+    expect(screen.getByText('60%')).toBeTruthy();
+    expect(screen.getByText('40%')).toBeTruthy();
+  });
+});
+

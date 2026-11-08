@@ -111,3 +111,39 @@ describe('LeaguePage — nestanak odabrane sezone', () => {
     );
   });
 });
+
+describe('LeaguePage — nepotpuni podaci (batch 34)', () => {
+  it('sezone bez liste i bez utakmica ne ruše stranicu', () => {
+    state.seasons = { data: undefined as never, isLoading: false };
+    state.matches = { data: undefined as never, isLoading: false };
+    renderInRouter(<LeaguePage />);
+    expect(screen.getByText(/^hero:-:/)).toBeInTheDocument();
+    expect(state.calls).toContainEqual({ hook: 'rounds', args: { seasonId: undefined } });
+  });
+
+  it('tabela bez podataka i bez kola prikazuje prazne liste', () => {
+    state.standings = { data: undefined as never, isLoading: false, isError: false, refetch: () => {} };
+    state.rounds = { data: undefined as never };
+    renderInRouter(<LeaguePage />);
+    expect(screen.getByText(/^hero:2025\/26:/)).toBeInTheDocument();
+    expect(screen.getByText(/^tabela:/)).toBeInTheDocument();
+    expect(screen.getByText(/^filter:1:/)).toBeInTheDocument();
+  });
+
+  it('samo jedno finished kolo nema prethodno kolo za kretanje', () => {
+    state.matches = {
+      data: [{ id: 'm1', status: 'FINISHED', roundRel: { number: 1 } }],
+      isLoading: false,
+    };
+    renderInRouter(<LeaguePage />);
+    // prevRound je null → prevStandings se traži sa `null`
+    expect(state.calls).toContainEqual({ hook: 'standings', args: { editionId: 'ed1', upToRound: null } });
+  });
+
+  it('utakmice bez kola ne daju maksimalno kolo', () => {
+    state.matches = { data: [{ id: 'm2', status: 'FINISHED' }], isLoading: false };
+    renderInRouter(<LeaguePage />);
+    expect(screen.getByText(/^hero:2025\/26:/)).toBeInTheDocument();
+  });
+});
+

@@ -36,9 +36,9 @@ function Probe() {
   return <div data-testid="loc">{useLocation().pathname}</div>;
 }
 
-function GoTo({ to }: { to: string }) {
+function GoTo({ to, label = 'prebaci' }: { to: string; label?: string }) {
   const navigate = useNavigate();
-  return <button onClick={() => navigate(to)}>prebaci</button>;
+  return <button onClick={() => navigate(to)}>{label}</button>;
 }
 
 function Harness({ id }: { id?: string }) {

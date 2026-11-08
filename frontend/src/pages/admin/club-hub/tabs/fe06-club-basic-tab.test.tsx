@@ -139,3 +139,46 @@ describe('ClubBasicTab — izmjena opisa', () => {
     expect(description).toHaveValue('Novi opis');
   });
 });
+
+describe('ClubBasicTab — fallback vrijednosti (batch 34)', () => {
+  it('klub bez grba, logotipa i zastavice počinje prazan i sa isključenim prekidačem', () => {
+    render(
+      <ClubBasicTab
+        club={club({ crestPath: null, logoPath: null, isOwnClub: undefined })}
+      />,
+    );
+    expect(screen.getByText('media:admin.club.crest:-')).toBeInTheDocument();
+    expect(screen.getByRole('switch')).toHaveAttribute('aria-checked', 'false');
+  });
+
+  it('novi objekat bez grba resetuje izbor medija na prazno', () => {
+    const { rerender } = render(<ClubBasicTab club={club()} />);
+    expect(screen.getByText('media:admin.club.crest:mediji/grb.png')).toBeInTheDocument();
+    rerender(
+      <ClubBasicTab
+        club={club({ id: 'c3', crestPath: null, logoPath: null, isOwnClub: undefined })}
+      />,
+    );
+    expect(screen.getByText('media:admin.club.crest:-')).toBeInTheDocument();
+    expect(screen.getByRole('switch')).toHaveAttribute('aria-checked', 'false');
+  });
+
+  it('prazni grad, opis i grb šalju se kao undefined', async () => {
+    const user = userEvent.setup();
+    render(<ClubBasicTab club={club({ crestPath: null, logoPath: null })} />);
+    await user.clear(input('admin.club.city'));
+    await user.clear(input('admin.club.shortNameHint'));
+    await user.clear(screen.getByPlaceholderText('admin.club.descriptionPlaceholder'));
+    await user.click(screen.getByRole('button', { name: 'actions.save' }));
+    expect(state.update).toHaveBeenCalledWith({
+      id: 'c1',
+      name: 'FK Gračanica',
+      shortName: null,
+      city: undefined,
+      description: undefined,
+      crestPath: undefined,
+      isOwnClub: true,
+    });
+  });
+});
+

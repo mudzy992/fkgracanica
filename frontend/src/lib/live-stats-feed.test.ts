@@ -50,3 +50,41 @@ describe('live statistics', () => {
     expect(pickRandomStatItem([items[0]], 'goals')?.id).toBe('goals');
   });
 });
+
+describe('live statistics — rubni podaci (batch 34)', () => {
+  it('bez naziva klubova koristi zamjenske nazive', () => {
+    const player = { clubId: 'home', firstName: 'Test', lastName: 'Igrač' } as MatchEvent['player'];
+    const items = buildLiveStatsFeed({
+      ...match,
+      homeClub: undefined,
+      awayClub: undefined,
+      events: [event('1', 'GOAL', { player })],
+    });
+    expect(items[0]).toMatchObject({ homeClub: 'Domaćin', awayClub: 'Gost' });
+  });
+
+  it('događaji bez strane se preskaču u spiskovima igrača', () => {
+    const player = { clubId: 'unknown', firstName: 'Bez', lastName: 'Strane' } as MatchEvent['player'];
+    const items = buildLiveStatsFeed({
+      ...match,
+      events: [event('1', 'GOAL', { player }), event('2', 'YELLOW_CARD', { teamSide: 'home' })],
+    });
+    const goals = items.find((i) => i.id === 'goals');
+    expect(goals).toMatchObject({ homePlayers: [], awayPlayers: [] });
+    const yellow = items.find((i) => i.id === 'yellow');
+    expect(yellow).toMatchObject({ homePlayers: [{ name: 'Nepoznat' }] });
+  });
+
+  it('indeks van granica vraća null', () => {
+    const items = buildLiveStatsFeed({ ...match, events: [event('1', 'CORNER', { teamSide: 'home' })] });
+    vi.spyOn(Math, 'random').mockReturnValue(1);
+    expect(pickRandomStatItem(items)).toBeNull();
+  });
+
+  it('bez prethodne stavke koristi puni skup', () => {
+    const items = buildLiveStatsFeed({ ...match, events: [event('1', 'CORNER', { teamSide: 'home' })] });
+    vi.spyOn(Math, 'random').mockReturnValue(0);
+    expect(pickRandomStatItem(items)?.id).toBe('corners');
+  });
+});
+

@@ -2,11 +2,13 @@ import { describe, expect, it } from 'vitest';
 import type { Match } from '../../../types';
 import {
   awaitingApproval,
+  deskCtaLabel,
   deskHref,
   deskCounts,
   groupDeskMatches,
   needsReport,
   pickCommentatorDeskMatches,
+  matchTitle,
   pickToday,
   pickUpcoming,
   primaryDeskMatch,
@@ -112,3 +114,46 @@ describe('commentator-desk', () => {
     expect(counts).toEqual({ live: 1, today: 1, drafts: 1, pending: 1 });
   });
 });
+
+describe('commentator-desk — fallback primarne utakmice (batch 34)', () => {
+  it('bez live i današnjih uzima prvu predstojeću', () => {
+    const soon = fixture({
+      id: 'soon',
+      status: 'SCHEDULED',
+      scheduledAt: new Date(2026, 7, 20, 18, 0).toISOString(),
+    });
+    expect(primaryDeskMatch([soon], now)?.id).toBe('soon');
+  });
+
+  it('bez ijedne pogodne utakmice vraća undefined', () => {
+    const finished = fixture({ id: 'f', status: 'FINISHED', reportStatus: 'APPROVED' as never });
+    expect(primaryDeskMatch([finished], now)).toBeUndefined();
+    expect(primaryDeskMatch([], now)).toBeUndefined();
+  });
+
+  it('naslov koristi nazive klubova kad postoje', () => {
+    const match = fixture({
+      id: 'm',
+      status: 'LIVE',
+      homeClub: { name: 'FK Gračanica' } as never,
+      awayClub: { name: 'FK Slavija' } as never,
+    });
+    expect(matchTitle(match)).toBe('FK Gračanica 0:0 FK Slavija');
+  });
+
+  it('naslov bez klubova koristi zamjenske nazive', () => {
+    expect(matchTitle(fixture({ id: 'm2', status: 'LIVE' }))).toBe('Domaćin 0:0 Gost');
+  });
+});
+
+describe('commentator-desk — link i oznaka akcije (batch 34)', () => {
+  it('završena utakmica vodi na izvještaj, ostale na live desk', () => {
+    const finished = fixture({ id: 'f1', status: 'FINISHED' });
+    const live = fixture({ id: 'l1', status: 'LIVE' });
+    expect(deskHref(finished)).toBe('/admin/matches/f1/report');
+    expect(deskHref(live)).toBe('/admin/live/l1');
+    expect(deskCtaLabel(finished)).toBe('Izvještaj');
+    expect(deskCtaLabel(live)).toBe('Desk');
+  });
+});
+

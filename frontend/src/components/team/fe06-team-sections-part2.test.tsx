@@ -45,6 +45,45 @@ describe('PlayerCinematicHero', () => {
     );
     expect(container.querySelector('img')).not.toBeNull();
   });
+
+  it('bez pozicije nema oznake pozicije (batch 34)', () => {
+    wrap(<PlayerCinematicHero player={player({ position: null }) as never} />);
+    expect(screen.queryByText('Napadač')).toBeNull();
+    expect(screen.getByRole('heading', { name: /Amar/ })).toBeInTheDocument();
+  });
+
+  it('nepoznata pozicija prikazuje sirovu oznaku (batch 34)', () => {
+    wrap(<PlayerCinematicHero player={player({ position: 'LIBERO' }) as never} />);
+    expect(screen.getByText('LIBERO')).toBeInTheDocument();
+  });
+
+  it('klub sa slugom vodi na stranicu kluba, bez sluga na id (batch 34)', () => {
+    const { unmount } = wrap(
+      <PlayerCinematicHero
+        player={player({ club: { id: 'c1', name: 'FK Gračanica', slug: 'fk-gracanica' } }) as never}
+      />,
+    );
+    expect(screen.getByRole('link', { name: /FK Gračanica/ })).toHaveAttribute(
+      'href',
+      expect.stringContaining('fk-gracanica'),
+    );
+    unmount();
+    wrap(
+      <PlayerCinematicHero
+        player={player({ club: { id: 'c2', name: 'NK Zenica', slug: null } }) as never}
+      />,
+    );
+    expect(screen.getByRole('link', { name: /NK Zenica/ })).toHaveAttribute(
+      'href',
+      expect.stringContaining('c2'),
+    );
+  });
+
+  it('igrač bez kluba nema link na klub (batch 34)', () => {
+    wrap(<PlayerCinematicHero player={player({ club: null }) as never} />);
+    // ostaje samo link za povratak na tim
+    expect(screen.queryByRole('link', { name: /FK|NK|Klub/i })).toBeNull();
+  });
 });
 
 describe('TeamFormationSection', () => {

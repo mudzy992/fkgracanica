@@ -7,19 +7,24 @@ import { CommentatorDeskList } from './CommentatorDeskList';
 const state = vi.hoisted(() => ({
   news: { DRAFT: [] as unknown[], PENDING: [] as unknown[], PUBLISHED: [] as unknown[] },
   loading: false,
+  undefinedNews: false,
+  undefinedAlbums: false,
 }));
 
 vi.mock('react-i18next', () => ({ useTranslation: () => ({ t: (k: string) => `t:${k}` }) }));
 vi.mock('../../../components/seo/Seo', () => ({ Seo: () => null }));
 vi.mock('../../../hooks', () => ({
   useNewsList: (status: 'DRAFT' | 'PENDING' | 'PUBLISHED') => ({
-    data: state.news[status],
+    data: state.undefinedNews ? undefined : state.news[status],
     isLoading: state.loading,
   }),
   usePublicSettings: () => ({ data: {} }),
 }));
 vi.mock('../../../hooks/use-content-admin', () => ({
-  useGalleryAdminList: () => ({ data: [{ id: 'g1' }, { id: 'g2' }], isLoading: state.loading }),
+  useGalleryAdminList: () => ({
+    data: state.undefinedAlbums ? undefined : [{ id: 'g1' }, { id: 'g2' }],
+    isLoading: state.loading,
+  }),
 }));
 
 const wrap = (node: React.ReactNode) => render(<MemoryRouter>{node}</MemoryRouter>);
@@ -42,6 +47,8 @@ const match = (over: Record<string, unknown> = {}) => ({
 beforeEach(() => {
   state.news = { DRAFT: [], PENDING: [], PUBLISHED: [] };
   state.loading = false;
+  state.undefinedNews = false;
+  state.undefinedAlbums = false;
 });
 
 describe('WriterHome', () => {
@@ -72,6 +79,15 @@ describe('WriterHome', () => {
   it('prazni redovi prikazuju nule i poruku', () => {
     wrap(<WriterHome />);
     expect(screen.getAllByText('0').length).toBeGreaterThanOrEqual(3);
+    expect(screen.getByText('t:admin.content.noDrafts')).toBeInTheDocument();
+  });
+
+  it('nedostajući podaci bez učitavanja prikazuju nule (batch 34)', () => {
+    state.undefinedNews = true;
+    state.undefinedAlbums = true;
+    wrap(<WriterHome />);
+    expect(screen.getAllByText('0').length).toBeGreaterThanOrEqual(4);
+    expect(screen.queryByText('…')).toBeNull();
     expect(screen.getByText('t:admin.content.noDrafts')).toBeInTheDocument();
   });
 });

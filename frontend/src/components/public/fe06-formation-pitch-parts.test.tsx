@@ -137,3 +137,45 @@ describe('ResponsiveFormationPitch', () => {
     expect(screen.getAllByText('A. Hodžić')).toHaveLength(2);
   });
 });
+
+describe('PitchPlayerToken — kompaktni i vertikalni režim (batch 34)', () => {
+  const player = { firstName: 'Amar', lastName: 'Hodžić', number: 9, photoPath: 'igraci/a.jpg' };
+
+  it('kompaktni režim koristi manje klase avatara i imena', () => {
+    const { container } = wrap(
+      <PitchPlayerToken slot={slot({ player }) as never} compact />,
+    );
+    expect(container.querySelector('img')?.className).toContain('h-7');
+    expect(screen.getByText('A. Hodžić').className).toContain('max-w-[3.75rem]');
+  });
+
+  it('bez kompakta koristi veće klase', () => {
+    const { container } = wrap(<PitchPlayerToken slot={slot({ player }) as never} />);
+    expect(container.querySelector('img')?.className).toContain('h-9');
+    expect(screen.getByText('A. Hodžić').className).toContain('max-w-[4.5rem]');
+  });
+
+  it('kompaktni režim mijenja i klasu zamjenskog kruga', () => {
+    const { container } = wrap(<PitchPlayerToken slot={slot() as never} compact />);
+    expect(container.querySelectorAll('div')[2]?.className).toContain('h-7');
+  });
+
+  it('vertikalni režim dodaje klase veličine i pomaka', () => {
+    const { container } = wrap(
+      <PitchPlayerToken slot={slot({ player }) as never} vertical compact />,
+    );
+    expect(container.innerHTML).toContain('size-7');
+    expect(screen.getByText('A. Hodžić').className).toContain('mt-0.5');
+  });
+
+  it('grb bez naziva kluba ima prazan alt', () => {
+    const { container } = wrap(
+      <PitchPlayerToken
+        slot={slot() as never}
+        crestFallback={{ crestPath: 'mediji/grb.png' } as never}
+      />,
+    );
+    expect(container.querySelector('img')).toHaveAttribute('alt', '');
+  });
+});
+

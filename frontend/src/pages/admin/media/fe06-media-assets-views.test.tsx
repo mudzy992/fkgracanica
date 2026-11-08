@@ -76,6 +76,25 @@ describe('MediaAssetsGrid', () => {
     expect(screen.getByTitle('kratko.jpg').textContent).toBe('kratko.jpg');
   });
 
+  it('dugačak naziv bez ekstenzije se skraćuje bez tačke (batch 34)', () => {
+    const long = 'veoma-dugacak-naziv-bez-ekstenzije';
+    render(<MediaAssetsGrid {...gridProps({ assets: [asset('a1', { filename: long })] })} />);
+    const label = screen.getByTitle(long);
+    expect(label.textContent).toContain('…');
+    expect(label.textContent!.endsWith('.')).toBe(false);
+    expect(label.textContent!.length).toBeLessThan(long.length);
+  });
+
+  it('odabrani fajl ima istaknut okvir i kvačicu (batch 34)', () => {
+    const { container } = render(
+      <MediaAssetsGrid
+        {...gridProps({ selectionMode: true, isSelected: (id: string) => id === 'a1' })}
+      />,
+    );
+    expect(container.innerHTML).toContain('ring-2');
+    expect(container.querySelectorAll('svg').length).toBeGreaterThan(0);
+  });
+
   it('u običnom režimu klik na sličicu otvara uređivanje', async () => {
     const onEdit = vi.fn();
     render(<MediaAssetsGrid {...gridProps({ onEdit })} />);

@@ -97,6 +97,19 @@ describe('TicketingSettingsTab — učitavanje', () => {
     expect(screen.getByText('kategorije:0')).toBeInTheDocument();
   });
 
+  it('prazne postavke padaju na podrazumijevane vrijednosti (batch 34)', () => {
+    state.config = config({});
+    renderTab();
+    expect(inputByLabel('admin.ticketingForm.capacity')).toHaveValue('5000');
+    expect(inputByLabel('admin.ticketingForm.memberDiscount')).toHaveValue('10');
+    expect(inputByLabel('admin.ticketingForm.maxPerUser')).toHaveValue('4');
+    expect(inputByLabel('admin.ticketingForm.seasonPrice')).toHaveValue('0');
+    expect(inputByLabel('admin.ticketingForm.seasonLabel')).toHaveValue('Sezonska karta');
+    // prazan string !== 'false' → blagajna ostaje uključena
+    expect(screen.getByRole('switch')).toHaveAttribute('aria-checked', 'true');
+    expect(screen.getByText('pozadina:-')).toBeInTheDocument();
+  });
+
   it('preuzima vrijednosti iz postavki i prekidač blagajne iz "false"', () => {
     renderTab();
     expect(inputByLabel('admin.ticketingForm.capacity')).toHaveValue('8000');

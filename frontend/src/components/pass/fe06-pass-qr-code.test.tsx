@@ -140,3 +140,42 @@ describe('PassQrCode — uvećani prikaz', () => {
     expect(screen.queryByText(/Pokažite ovaj kod/)).toBeNull();
   });
 });
+
+describe('PassQrCode — odgođeni rezultat poslije demontaže (batch 34)', () => {
+  it('uspjeh nakon demontaže ne mijenja stanje', async () => {
+    const { unmount } = render(<PassQrCode value="PASS-11" />);
+    unmount();
+    flush();
+    await Promise.resolve();
+  });
+
+  it('greška nakon demontaže ne mijenja stanje', async () => {
+    state.rejects = true;
+    const { unmount } = render(<PassQrCode value="PASS-12" />);
+    unmount();
+    await Promise.resolve();
+    await Promise.resolve();
+  });
+
+  it('uvećani kod otvoren pa demontiran ne mijenja stanje', async () => {
+    const user = userEvent.setup();
+    const { unmount } = render(<PassQrCode value="PASS-13" />);
+    flush();
+    await user.click(await screen.findByRole('button', { name: 'Povećaj QR kod' }));
+    unmount();
+    flush();
+    await Promise.resolve();
+  });
+
+  it('greška uvećanog koda nakon demontaže ne mijenja stanje', async () => {
+    const user = userEvent.setup();
+    const { unmount } = render(<PassQrCode value="PASS-14" />);
+    flush();
+    await user.click(await screen.findByRole('button', { name: 'Povećaj QR kod' }));
+    state.rejects = true;
+    unmount();
+    await Promise.resolve();
+    await Promise.resolve();
+  });
+});
+

@@ -2,9 +2,13 @@ import type { ReactNode } from 'react';
 
 /** Zajedničko stanje i dvojnici za MediaPage testove (dva fajla). */
 export const mediaPageState = {
-  user: { id: 'u1', permissions: ['media.manage'] as string[] },
+  user: { id: 'u1', permissions: ['media.manage'] as string[] } as
+    | { id: string; permissions: string[] }
+    | undefined,
   folders: [] as Array<{ id: string; name: string; parentId?: string | null }>,
-  assets: { data: [] as Array<Record<string, unknown>>, meta: { total: 5 } as Record<string, unknown> },
+  assets: { data: [] as Array<Record<string, unknown>>, meta: { total: 5 } as Record<string, unknown> } as
+    | { data: Array<Record<string, unknown>>; meta: Record<string, unknown> }
+    | undefined,
   assetsArgs: {} as Record<string, unknown>,
   confirm: async () => true,
   mutate: {

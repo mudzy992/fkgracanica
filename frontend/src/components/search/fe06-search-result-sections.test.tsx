@@ -91,3 +91,25 @@ describe('SearchResultSections', () => {
     expect(container.textContent).toBe('');
   });
 });
+
+describe('SearchResultSections — odgovor bez sekcija (batch 34)', () => {
+  it('izostavljeni ključevi se tretiraju kao prazne liste', () => {
+    const { container } = renderSections({} as SearchResponse);
+    expect(container.querySelectorAll('section')).toHaveLength(0);
+  });
+
+  it('zadati tip bez podataka prikazuje praznu sekciju bez pada', () => {
+    const { container } = renderSections({} as SearchResponse, 'news');
+    expect(container.querySelectorAll('section')).toHaveLength(1);
+    expect(screen.queryByRole('link')).toBeNull();
+  });
+
+  it('svaki tip pojedinačno radi i kad ostali ključevi nedostaju', () => {
+    for (const type of ['news', 'players', 'clubs', 'matches', 'galleries', 'trophies', 'timeline', 'hallOfFame'] as const) {
+      const { container, unmount } = renderSections({} as SearchResponse, type);
+      expect(container.querySelectorAll('section')).toHaveLength(1);
+      unmount();
+    }
+  });
+});
+

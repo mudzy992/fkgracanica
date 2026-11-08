@@ -87,3 +87,31 @@ describe('MatchLineupSheet — rubovi učitavanja postave', () => {
     expect(screen.getByTestId('pitch').textContent).toContain('1 igrača');
   });
 });
+
+describe('MatchLineupSheet — stariji oblik odgovora (batch 34)', () => {
+  it('koristi `lineups` kad nema `lineup` i radi bez izabrane utakmice', () => {
+    state.match = {
+      ...state.match,
+      lineup: undefined,
+      lineups: [{ id: 'row-1', playerId: 'p1', clubId: 'home', isStarter: true }],
+    };
+    state.players = [player('p1', 'home')];
+    open();
+    expect(screen.getByTestId('pitch').textContent).toContain('1 igrača');
+    expect(screen.queryByRole('alert')).toBeNull();
+  });
+
+  it('bez izabrane utakmice (matchId null) prikazuje praznu postavu bez pada', () => {
+    state.match = null;
+    render(<MatchLineupSheet matchId={null} open onOpenChange={vi.fn()} />);
+    expect(screen.getByTestId('pitch').textContent).toContain('0 slotova');
+  });
+
+  it('utakmica bez `lineup`, `lineups` i klubova koristi prazan predložak bez sukoba', () => {
+    state.match = { id: 'm1', status: 'SCHEDULED' };
+    render(<MatchLineupSheet matchId="m1" open onOpenChange={vi.fn()} />);
+    expect(screen.getByTestId('pitch').textContent).toContain('0 igrača');
+    expect(screen.queryByRole('alert')).toBeNull();
+  });
+});
+

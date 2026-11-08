@@ -131,6 +131,37 @@ describe('LiveScoreboardExpanded', () => {
     fireEvent.keyDown(screen.getByRole('button'), { key: 'Enter' });
     expect(onToggle).toHaveBeenCalledTimes(1);
   });
+
+  it('Space aktivira toggle, drugi taster ne (batch 34)', () => {
+    const onToggle = vi.fn();
+    render(<LiveScoreboardExpanded match={match() as never} clock={null} onToggle={onToggle} />);
+    const button = screen.getByRole('button');
+    fireEvent.keyDown(button, { key: ' ' });
+    expect(onToggle).toHaveBeenCalledTimes(1);
+    fireEvent.keyDown(button, { key: 'ArrowDown' });
+    expect(onToggle).toHaveBeenCalledTimes(1);
+  });
+
+  it('bez klubova koristi zamjenske nazive i nule za penale (batch 34)', () => {
+    render(
+      <LiveScoreboardExpanded
+        match={
+          match({
+            matchPeriod: 'PENALTIES',
+            homeClub: null,
+            awayClub: null,
+            penaltyHomeScore: null,
+            penaltyAwayScore: null,
+          }) as never
+        }
+        clock={null}
+        onToggle={vi.fn()}
+      />,
+    );
+    expect(screen.getByText('(0:0 pen)')).toBeInTheDocument();
+    expect(screen.getByText('Gost')).toBeInTheDocument();
+    expect(screen.getByText('Domaćin')).toBeInTheDocument();
+  });
 });
 
 describe('LiveScoreboardOverlay', () => {
