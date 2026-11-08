@@ -111,12 +111,6 @@
       "why": "Potvrda brisanja se prikazuje samo kad je `deleteTarget` postavljen."
     },
     {
-      "file": "frontend/src/pages/admin/RolesPage.tsx",
-      "line": 61,
-      "kind": "disabled-ui",
-      "why": "`save` je dostupan samo u panelu za uređivanje uloge, koji se renderuje tek uz `editRole`."
-    },
-    {
       "file": "frontend/src/pages/admin/SettingsPage.tsx",
       "line": 73,
       "kind": "disabled-ui",
@@ -157,12 +151,6 @@
       "line": 81,
       "kind": "disabled-ui",
       "why": "Uklanjanje igrača je dostupno samo u panelu otvorenog `activeSlot`-a."
-    },
-    {
-      "file": "frontend/src/pages/admin/cms/CmsPageBuilderPage.tsx",
-      "line": 86,
-      "kind": "disabled-ui",
-      "why": "`onSave` postoji samo u panelu za uređivanje sekcije (uz `editSection`)."
     },
     {
       "file": "frontend/src/pages/admin/cms/CmsPagesList.tsx",
@@ -211,12 +199,6 @@
       "line": 82,
       "kind": "disabled-ui",
       "why": "Isti `parseScheduledAt` guard: `return` poslije poruke o neispravnom datumu."
-    },
-    {
-      "file": "frontend/src/pages/admin/competition-hub/SeasonRoundsPanel.tsx",
-      "line": 59,
-      "kind": "double-guard",
-      "why": "Dijalog kaskadnog brisanja se otvara samo kad `cascadeRound` postoji."
     },
     {
       "file": "frontend/src/pages/admin/media/MediaBulkActionBar.tsx",

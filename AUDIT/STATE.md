@@ -15,6 +15,13 @@
 
 ## Šta je urađeno (hronološki)
 
+### Sesija FE-06 — 2026-11-08 (coverage batch 41; 96,68 % grana)
+
+- Nastavak faze B P-FE06-44: još 5 novih test fajlova / 28 testova, bez ponašajne promjene. Pokriveni RolesPage (?? [] / ?? 0 / if (!editRole)), PublicUserMenu (mobile puno ime sa oba/nepoznatim poljem), CmsPageBuilderPage (widgetType ? fallback, editSection?.id===sectionId mismatch, config ?? {}, !editSection, page?.title ?? preko isLoading), SeasonRoundsPanel (_count?.matches ?? 0, rounds ?? [], !cascadeRound, !o, onOpenChange), ClubFormationTab (players ?? [] oba, p ? : '' , if (assignments) kroz prazan source/nevažeći over). Registar očišćen za 3 pokrivene linije -> 33/33.
+- Provjere: FE 3779/3779 u 483 fajla (bilo 3751/3751 u 478). V8: linije 99,97 % (8526/8528), statementi 99,65 % (9591/9624) (bilo 99,62 -> +3), funkcije 100 % (3529/3529), grane 96,68 % (8104/8382) (bilo 96,37 -> +26 grana, +0,31 pp). Ratchet 99,8/99,5/99,9/96,5 (nikad ne snižava). Nepokrivenih ~278 / ~190 (83 REG + ~195 obične). Matrica 1956 (inventory.mjs, +5), check:all 9/9, tsc -b čist (TS2554 popravljen castom), file-size OK, dead-guards 33/33 (36->33).
+- Ispravke tipova: CmsPageBuilder state.confirm cast, dead-guards 3 zastarjela uklonjena (RolesPage:61, CmsPageBuilder:86, SeasonRounds:59).
+- CI PENDING (batch 41) — 6/6 success očekivan; lokalno check:all 9/9 i dead-guards 33/33.
+
 ### Sesija FE-06 — 2026-11-08 (coverage batch 40; 96,37 % grana)
 
 - Nastavak faze B P-FE06-44: još **8 novih test fajlova / 23 testa**, bez ponašajne promjene. Pokriveni `SponsorsWidget` (skeleton, title fallback, filtered vs korisnički), `AdminFormSheet` (dirty, close/save, dirty block), `ConfirmDialog` (title, cancel/confirm, X), `PublicUserMenu` staff (inactives, `isBusy`, staff links), `TeamStatsUtils` (formationLabel, statsByPlayerId, topScorers, squadCounts, spotlightPlayers), `html-content` (sanitize, `urlToDataUrl`, `downloadHtml`), `ticket-pass-document` i `season-pass-document` (print/download varijante).
@@ -2090,7 +2097,7 @@ preporuci slažem se" → odobreni **P-B09c-1…10 + P-B09c-12**, uz P-B08-6, P-
 
 ## Šta je sljedeće (tačan sljedeći korak)
 
-1. Coverage batch 40 (§84) je potvrđen u CI-ju (`tsc -b` čist, `check:all` 9/9, V8 L 99,97 / S 99,62 / F 100 / B **96,37** `42517135474` 6/6). Stanje: FE **3751/3751** u **478** fajla, V8 grane **96,37 % (8078/8382)**, ratchet **99,8/99,5/99,9/96,2**, fajlova na 0 % **13** tipska + `main.tsx` (5 stmt), nepokrivenih grana **~304 / ~185 fajlova** (83 REG + ~221 obične). Novi batch je 8 novih fajlova (SponsorsWidget `skeleton`/`filtered`, AdminFormSheet `dirty`/`X`, ConfirmDialog `title`/`cancel`, PublicUserMenu staff, TeamStatsUtils, html-content, ticket-pass/season-pass). Sljedeći korak: **coverage batch 41** nad preostalih ~304 grane — cilj 96,8–97,5 % (5-grane i 4-grane), bez diranja 22 `disabled-ui` guarda; CI potvrda + `STATE`/`FE-06` upis slijede.
+1. Coverage batch 41 (§85) je lokalno potvrđen (`tsc -b` čist, `check:all` 9/9, V8 L 99,97 / S 99,65 / F 100 / B **96,68** 8104/8382, 3779/3779 u 483 fajla, matrica 1956, dead-guards 33/33). Batch 41: 5 fajlova / 28 testova (RolesPage, PublicUserMenu, CmsPageBuilder, SeasonRoundsPanel, ClubFormationTab) + čišćenje 3 dead-guarda. Sljedeći korak: push `arena/290a6f13-fkgracanica` + CI potvrda (očekivano 6/6) + upis CI ID-a u STATE/FE-06, zatim **coverage batch 42** nad preostalih ~278 grana / ~190 fajlova (83 REG + ~195 obične) — cilj 97–97,5 % (3-grane i 2-grane), bez diranja 22 `disabled-ui` guarda.
    FE-06 ostaje otvoren; završene utakmice read-only uz ručni pregled.
 2. Zatim nastaviti backend/frontend backlog **P-B08-6**, P-B06-1/2, P-B02-1/2/3,
    P-B03-1, B-07-10…13, **P-CI04-1** te shared `lib/`/`hooks/`; coverage
