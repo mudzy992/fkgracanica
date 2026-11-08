@@ -632,7 +632,7 @@
 "frontend/src/components/layout/fe06-public-layout-sheet.test.tsx","frontend","src","87","nepregledano","","",""
 "frontend/src/components/layout/fe06-public-layout.test.tsx","frontend","src","199","pokriveno testom","FE-06 coverage batch 11: 11 testova PublicLayout (navigacija, moduli, footer, mobilni meni, skrol)","FE-06","2026-11-05"
 "frontend/src/components/layout/fe06-public-nav.test.tsx","frontend","src","84","pokriveno testom","","FE-06","2026-11-05"
-"frontend/src/components/layout/fe06-public-user-menu-variants.test.tsx","frontend","src","54","pokriveno testom","FE-06 batch 23: novi test fajl (vitest)","FE-06","2026-11-06"
+"frontend/src/components/layout/fe06-public-user-menu-variants.test.tsx","frontend","src","104","pokriveno testom","FE-06 batch 23: novi test fajl (vitest)","FE-06","2026-11-06"
 "frontend/src/components/layout/FooterAppDownloadCta.tsx","frontend","src","22","nepregledano","","",""
 "frontend/src/components/layout/LanguageSwitcher.test.tsx","frontend","src","57","pokriveno testom","P-FE06-4: regresija dostupnog imena","FE-06","2026-11-04"
 "frontend/src/components/layout/LanguageSwitcher.tsx","frontend","src","27","popravljeno","FE-04c: i18n admina (batch 1: shared komponente + role homes) | B-FE06-04: dostupni naziv Jezik ne sadrži vidljivi EN/BS | P-FE06-4: dostupno ime sadrži vidljivi ciljni jezik","FE-06","2026-11-04"

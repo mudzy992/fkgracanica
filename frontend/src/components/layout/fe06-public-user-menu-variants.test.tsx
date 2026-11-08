@@ -50,4 +50,54 @@ describe('PublicUserMenu — varijante (3 grane)', () => {
     );
     expect(container).toBeEmptyDOMElement();
   });
+
+  it('klik van menija zatvara ga', async () => {
+    state.user = { id: 'u1', email: 'a@b.test', firstName: 'Test', lastName: 'User', permissions: [] };
+    const user = userEvent.setup();
+    render(
+      <MemoryRouter>
+        <PublicUserMenu />
+      </MemoryRouter>,
+    );
+    const btn = screen.getByRole('button', { name: 'Moj račun: TU' });
+    await user.click(btn);
+    expect(btn).toHaveAttribute('aria-expanded', 'true');
+    // pointerdown outside
+    await user.click(document.body);
+    expect(btn).toHaveAttribute('aria-expanded', 'false');
+  });
+
+  it('klik na stavku poziva onNavigate i zatvara meni', async () => {
+    state.user = { id: 'u1', email: 'a@b.test', firstName: 'Test', lastName: 'User', permissions: [] };
+    const onNavigate = vi.fn();
+    const user = userEvent.setup();
+    render(
+      <MemoryRouter>
+        <PublicUserMenu onNavigate={onNavigate} />
+      </MemoryRouter>,
+    );
+    const btn = screen.getByRole('button', { name: 'Moj račun: TU' });
+    await user.click(btn);
+    expect(btn).toHaveAttribute('aria-expanded', 'true');
+    await user.click(screen.getByRole('menuitem', { name: 'Moj račun' }));
+    expect(onNavigate).toHaveBeenCalled();
+    expect(btn).toHaveAttribute('aria-expanded', 'false');
+  });
+
+  it('odjava poziva logout pa zatvara meni', async () => {
+    state.user = { id: 'u1', email: 'a@b.test', firstName: 'Test', lastName: 'User', permissions: [] };
+    state.logout.mockClear();
+    const user = userEvent.setup();
+    render(
+      <MemoryRouter>
+        <PublicUserMenu />
+      </MemoryRouter>,
+    );
+    const btn = screen.getByRole('button', { name: 'Moj račun: TU' });
+    await user.click(btn);
+    await user.click(screen.getByRole('menuitem', { name: /Odjav/ }));
+    expect(state.logout).toHaveBeenCalled();
+    // close is called after logout resolves
+    await vi.waitFor(() => expect(btn).toHaveAttribute('aria-expanded', 'false'));
+  });
 });
