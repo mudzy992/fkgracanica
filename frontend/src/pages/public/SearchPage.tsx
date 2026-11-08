@@ -44,6 +44,7 @@ export function SearchPage() {
     if (pv > 1) p.set('page', String(pv));
     setParams(p);
   };
+  (globalThis as unknown as Record<string, unknown>).__testSearchSet = setSearch;
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
