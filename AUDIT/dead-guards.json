@@ -9,34 +9,10 @@
   },
   "guards": [
     {
-      "file": "frontend/src/components/admin/AdminFormSheet.tsx",
-      "line": 57,
-      "kind": "synthetic-event",
-      "why": "`noteCustomEdit` prima DOM događaj sa `Element` targetom; grana postoji samo za sintetičke događaje iz testova."
-    },
-    {
-      "file": "frontend/src/components/admin/AdminFormSheet.tsx",
-      "line": 76,
-      "kind": "double-guard",
-      "why": "`hasUnsavedChanges()` je `dirty || (edited && isFormDirty(...))`, pa je `dirty === true` već vraćeno prvim izrazom."
-    },
-    {
-      "file": "frontend/src/components/admin/CustomHtmlEditor.tsx",
-      "line": 38,
-      "kind": "type-invariant",
-      "why": "`insert` pozivaju samo dugmad koja se renderuju uz montiran `ref` na textarea."
-    },
-    {
       "file": "frontend/src/components/admin/GalleryPhotoPicker.tsx",
       "line": 31,
       "kind": "disabled-ui",
       "why": "Dugme „Dodaj mapu“ je `disabled={!folderId || disabled}`, pa `folderId` u rukovaocu uvijek postoji."
-    },
-    {
-      "file": "frontend/src/components/admin/unsaved-navigation.tsx",
-      "line": 23,
-      "kind": "double-guard",
-      "why": "Effect radi sinhrono: `handling.current` se postavlja i čita u istom prolazu, drugi poziv ne može stići prije `reset/proceed`."
     },
     {
       "file": "frontend/src/components/membership/MembershipCardsBulkExport.tsx",
@@ -63,40 +39,10 @@
       "why": "„Kreiraj“ je `disabled={!ready || create.isPending}` sa istim uslovom kao pregled."
     },
     {
-      "file": "frontend/src/hooks/use-dynamic-favicon.ts",
-      "line": 8,
-      "kind": "type-invariant",
-      "why": "`mediaUrl(path, 'thumb')` za truthy putanju uvijek vraća string, pa je `if (!href)` nedostižno."
-    },
-    {
-      "file": "frontend/src/hooks/use-live-stats-popup.ts",
-      "line": 31,
-      "kind": "type-invariant",
-      "why": "`pickRandomStatItem` za nepraznu listu nikad ne vraća `null`; prazna lista se hvata ranije."
-    },
-    {
-      "file": "frontend/src/lib/sanitize-html.ts",
-      "line": 111,
-      "kind": "type-invariant",
-      "why": "`afterSanitizeAttributes` dobija elemente koji uvijek imaju `tagName`."
-    },
-    {
-      "file": "frontend/src/lib/season-pass-document.ts",
-      "line": 49,
-      "kind": "type-invariant",
-      "why": "`mediaUrl(path, 'medium')` za truthy putanju vraća string, pa `if (!url)` ne može pasti."
-    },
-    {
       "file": "frontend/src/pages/admin/GalleryAdminPhotos.tsx",
       "line": 21,
       "kind": "disabled-ui",
       "why": "Prvo dugme je `disabled` na indeksu 0, drugo na posljednjem, pa `next` nikad nije van opsega."
-    },
-    {
-      "file": "frontend/src/pages/admin/MediaAssetFormSheet.tsx",
-      "line": 41,
-      "kind": "double-guard",
-      "why": "Komponenta vraća `null` kad `asset` nema (`if (!asset) return null`), pa `onSave` nije ni montiran bez zapisa."
     },
     {
       "file": "frontend/src/pages/admin/NewsAdminPage.tsx",
@@ -147,12 +93,6 @@
       "why": "Uklanjanje igrača je dostupno samo u panelu otvorenog `activeSlot`-a."
     },
     {
-      "file": "frontend/src/pages/admin/cms/CmsPagesList.tsx",
-      "line": 30,
-      "kind": "double-guard",
-      "why": "Dugme za brisanje se renderuje samo kad `canDeletePage(page)`, pa je provjera u rukovaocu redundantna."
-    },
-    {
       "file": "frontend/src/pages/admin/commentator/CommentatorClockBar.tsx",
       "line": 26,
       "kind": "disabled-ui",
@@ -178,27 +118,15 @@
     },
     {
       "file": "frontend/src/pages/admin/competition-hub/MatchFormSheet.tsx",
-      "line": 74,
-      "kind": "double-guard",
-      "why": "Završena utakmica se renderuje kao read-only blok (`if (isFinished && edit)`) bez dugmeta za spremanje."
-    },
-    {
-      "file": "frontend/src/pages/admin/competition-hub/MatchFormSheet.tsx",
-      "line": 81,
+      "line": 80,
       "kind": "disabled-ui",
       "why": "Dugme je `disabled` bez `scheduledAt`; polje je `datetime-local`, pa neispravan tekst nije moguć kroz UI."
     },
     {
       "file": "frontend/src/pages/admin/competition-hub/MatchFormSheet.tsx",
-      "line": 82,
+      "line": 81,
       "kind": "disabled-ui",
       "why": "Isti `parseScheduledAt` guard: `return` poslije poruke o neispravnom datumu."
-    },
-    {
-      "file": "frontend/src/pages/admin/media/MediaBulkActionBar.tsx",
-      "line": 57,
-      "kind": "double-guard",
-      "why": "Dugme „Primijeni“ je `disabled={busy || !targetFolder}`, pa se rukovalac bez ciljne mape ne može pokrenuti iz UI-ja."
     }
   ]
 }

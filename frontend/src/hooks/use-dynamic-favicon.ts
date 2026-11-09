@@ -5,7 +5,6 @@ export function useDynamicFavicon(crestPath?: string) {
   useEffect(() => {
     if (!crestPath) return;
     const href = mediaUrl(crestPath, 'thumb');
-    if (!href) return;
     let link = document.querySelector<HTMLLinkElement>("link[rel='icon']");
     if (!link) {
       link = document.createElement('link');

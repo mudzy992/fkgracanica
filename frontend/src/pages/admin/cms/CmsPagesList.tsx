@@ -27,7 +27,6 @@ export function CmsPagesList({ onCreate }: Props) {
   const { confirm, dialog } = useConfirm();
 
   const onDelete = async (page: CmsPage) => {
-    if (!canDeletePage(page)) return;
     const ok = await confirm({
       title: 'Obrisati stranicu?',
       description: `${page.title} (${page.slug}) — samo nacrti se mogu obrisati.`,

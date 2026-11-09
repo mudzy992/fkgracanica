@@ -34,8 +34,7 @@ export function CustomHtmlEditor({ value, onChange, className }: Props) {
   const ref = useRef<HTMLTextAreaElement>(null);
 
   const insert = (open: string, close: string) => {
-    const el = ref.current;
-    if (!el) return;
+    const el = ref.current!;
     const start = el.selectionStart;
     const end = el.selectionEnd;
     const { next, cursor } = applyTag(value, start, end, open, close);

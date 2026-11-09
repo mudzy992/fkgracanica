@@ -20,7 +20,6 @@ export function UnsavedNavigationProvider({ children }: { children: ReactNode })
       handling.current = false;
       return;
     }
-    if (handling.current) return;
     handling.current = true;
     if (window.confirm(t('admin.unsavedNavigation'))) blocker.proceed();
     else blocker.reset();

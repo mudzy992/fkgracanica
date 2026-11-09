@@ -54,8 +54,7 @@ export function AdminFormSheet({
     if (event.currentTarget.contains(event.target as Node)) editedRef.current = true;
   };
   const noteCustomEdit = (event: SyntheticEvent<HTMLDivElement>) => {
-    if (!(event.target instanceof Element)) return;
-    const control = event.target.closest('[role="switch"], [role="checkbox"], [aria-pressed], [data-dirty-change]');
+    const control = (event.target as Element).closest('[role="switch"], [role="checkbox"], [aria-pressed], [data-dirty-change]');
     if (control && event.currentTarget.contains(control)) editedRef.current = true;
   };
 
@@ -73,7 +72,6 @@ export function AdminFormSheet({
   }, [open]);
 
   const confirmDiscard = () => {
-    if (dirty) return true;
     if (!hasUnsavedChanges()) return true;
     return window.confirm(
       t('admin.unsavedChanges', 'Ima nesačuvanih izmjena. Zatvoriti bez spremanja?'),

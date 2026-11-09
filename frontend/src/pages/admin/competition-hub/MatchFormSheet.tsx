@@ -71,7 +71,6 @@ export function MatchFormSheet({ open, onOpenChange, edit, seasonId, roundId }: 
   }, [open, edit, isLiveLocked]);
 
   const save = async () => {
-    if (isFinished) return;
     if (homeClubId === awayClubId) {
       setError('Domaći i gosti moraju biti različiti klubovi.');
       return;

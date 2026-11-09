@@ -107,9 +107,8 @@ function allowedByAttribute(tag: string, attribute: string, value: string): bool
 function harden(root: typeof DOMPurify): void {
   root.addHook('afterSanitizeAttributes', (node: Element) => {
     const el = node;
-    const tag = el.tagName?.toLowerCase();
-    if (!tag) return;
-    for (const attr of Array.from(el.attributes ?? [])) {
+    const tag = el.tagName.toLowerCase();
+    for (const attr of Array.from(el.attributes)) {
       if (!allowedByAttribute(tag, attr.name, attr.value)) el.removeAttribute(attr.name);
     }
     if (tag === 'iframe') {

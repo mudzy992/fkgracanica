@@ -54,7 +54,6 @@ export function MediaBulkActionBar({
   };
 
   const handleMove = async () => {
-    if (!targetFolder) return;
     setError('');
     setBusy(true);
     try {

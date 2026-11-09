@@ -38,11 +38,10 @@ export function MediaAssetFormSheet({ asset, open, onOpenChange }: Props) {
    * sačuvana.
    */
   const onSave = async () => {
-    if (!asset) return;
     setError('');
     try {
       await update.mutateAsync({
-        id: asset.id,
+        id: asset!.id,
         filename,
         tags,
         folderId: folderId || null,
