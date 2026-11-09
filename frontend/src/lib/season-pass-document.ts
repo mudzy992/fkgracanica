@@ -45,7 +45,7 @@ const CSS = `
 
 async function crestSrc(path?: string): Promise<string | undefined> {
   if (!path) return undefined;
-  const url = path.startsWith('http') ? path : mediaUrl(path, 'medium');
+  const url = path.startsWith('http') ? path : mediaUrl(path, 'medium')!;
   return (await urlToDataUrl(url)) ?? url;
 }
 
