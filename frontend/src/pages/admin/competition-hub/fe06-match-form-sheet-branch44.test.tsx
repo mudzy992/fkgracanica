@@ -58,7 +58,6 @@ describe('MatchFormSheet — branch44 (6 preostalih grana)', () => {
 
   it('clubs null fallback: clubOptions prazno i odabir ne puca', async () => {
     state.clubs = null as never;
-    const user = userEvent.setup();
     render(
       <MemoryRouter>
         <MatchFormSheet open onOpenChange={state.onOpenChange} edit={null} seasonId="s1" roundId="r1" />
@@ -74,7 +73,6 @@ describe('MatchFormSheet — branch44 (6 preostalih grana)', () => {
 
   it('defaultVenue sa praznim clubs: onHomeClubChange ne postavlja venue', async () => {
     state.clubs = [] as never;
-    const user = userEvent.setup();
     render(
       <MemoryRouter>
         <MatchFormSheet open onOpenChange={state.onOpenChange} edit={null} seasonId="s1" roundId="r1" />

@@ -4,7 +4,6 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { CommentatorTeamColumn } from './CommentatorTeamBoard';
 import {
   boardMatch as match,
-  boardLineup as lineup,
   boardState as state,
   resetBoardState,
 } from '../../../test/doubles/commentator-team-board-doubles';

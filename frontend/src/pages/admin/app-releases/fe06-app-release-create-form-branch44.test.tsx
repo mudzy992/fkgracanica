@@ -58,7 +58,7 @@ describe('AppReleaseCreateForm — branch44 (3 grane)', () => {
     // ostavi notes prazno
     await user.click(screen.getByRole('button', { name: 'Kreiraj draft' }));
     await waitFor(() => expect(onCreate).toHaveBeenCalled());
-    const body = onCreate.mock.calls[0][0] as Record<string, unknown>;
+    const body = (onCreate.mock.calls[0] as unknown as [Record<string, unknown>])[0];
     expect(body.releaseNotes).toBeUndefined();
     expect(body.version).toBe('1.2.3');
   });
