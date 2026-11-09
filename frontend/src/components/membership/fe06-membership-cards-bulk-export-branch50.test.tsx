@@ -18,11 +18,11 @@ vi.mock('../../lib/media', () => ({
   mediaUrl: (u: string, _p: string) => state.mediaUrl(u),
 }));
 vi.mock('../../lib/membership-card-document', () => ({
-  buildMembershipCardsHtml: (...args: unknown[]) => state.buildHtml(...args),
+  buildMembershipCardsHtml: (...args: unknown[]) => (state.buildHtml as (...a: unknown[]) => unknown)(...args),
 }));
 vi.mock('../../lib/pass-print', () => ({
-  openPrintHtml: (...args: unknown[]) => state.openPrint(...args),
-  downloadHtml: (...args: unknown[]) => state.download(...args),
+  openPrintHtml: (...args: unknown[]) => (state.openPrint as (...a: unknown[]) => unknown)(...args),
+  downloadHtml: (...args: unknown[]) => (state.download as (...a: unknown[]) => unknown)(...args),
 }));
 vi.mock('../../lib/utils', async () => {
   const actual = await vi.importActual<typeof import('../../lib/utils')>('../../lib/utils');

@@ -8,7 +8,7 @@ const state = vi.hoisted(() => ({
   isLoading: false,
   isAuthenticated: true,
   user: { id: 'u1', permissions: [] as string[] },
-  addMutate: vi.fn(async (t: string) => ({ ok: true })),
+  addMutate: vi.fn(async (_t: string) => ({ ok: true })),
   deleteMutate: vi.fn(async () => ({ ok: true })),
   hasPerm: vi.fn(() => false),
   runAction: vi.fn(async (p: Promise<unknown>) => {
@@ -30,14 +30,14 @@ vi.mock('../../lib/auth', () => ({
   useAuth: () => ({ user: state.user, isAuthenticated: state.isAuthenticated }),
 }));
 vi.mock('../../lib/permissions', () => ({
-  hasPermission: (...args: unknown[]) => state.hasPerm(...args),
+  hasPermission: (...args: unknown[]) => (state.hasPerm as (...a: unknown[]) => unknown)(...args),
 }));
 vi.mock('../../lib/utils', async () => {
   const actual = await vi.importActual<typeof import('../../lib/utils')>('../../lib/utils');
   return { ...actual, formatDate: (s: string) => `fmt:${s}` };
 });
 vi.mock('../../lib/action-errors', () => ({
-  runAction: (...args: unknown[]) => state.runAction(...args),
+  runAction: (...args: unknown[]) => (state.runAction as (...a: unknown[]) => unknown)(...args),
 }));
 vi.mock('./NewsSectionTitle', () => ({
   NewsSectionTitle: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,

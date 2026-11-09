@@ -29,7 +29,6 @@ describe('NewsletterCampaignComposer — branch51 (early return)', () => {
   it('onCreate early return kada textBody prazan', async () => {
     render(<NewsletterCampaignComposer />);
     // popunimo samo subject, ostavimo textBody prazan
-    const inputs = screen.getAllByPlaceholderText(/Naslov|Tekst poruke|https/);
     const subj = screen.getByPlaceholderText('Naslov') as HTMLInputElement;
     fireEvent.change(subj, { target: { value: 'Subj' } });
     const btn = screen.getByText('Spremi nacrt') as HTMLButtonElement;
