@@ -53,7 +53,6 @@ beforeEach(() => {
 
 describe('ClubsAdminPage — branch47 (2 grane ?? i if !o)', () => {
   it('data ?? [] fallback kada je data undefined prikazuje praznu tabelu', () => {
-    // @ts-expect-error undefined
     state.clubs = { data: undefined, isLoading: false, isError: false } as never;
     render(<ClubsAdminPage />);
     expect(screen.queryAllByTestId(/^row-/)).toHaveLength(0);

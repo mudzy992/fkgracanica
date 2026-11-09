@@ -46,7 +46,6 @@ beforeEach(() => {
 
 describe('TeamSeasonStatsSection — branch47 (2 grane ?? i || fallback)', () => {
   it('participations ?? [] fallback kada je undefined ne puca i prikazuje praznu statistiku', async () => {
-    // @ts-expect-error undefined test
     state.participations = undefined;
     state.stats = undefined;
     render(<TeamSeasonStatsSection clubId="club-1" />);

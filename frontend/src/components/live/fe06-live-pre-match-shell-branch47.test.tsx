@@ -24,7 +24,7 @@ vi.mock('../../hooks/use-club-hub', () => ({
   useClubSquad: (id?: string) => (id === 'home' ? state.homeSquad : state.awaySquad),
 }));
 vi.mock('../../lib/match-lineup-from-squad', () => ({
-  resolvePublicMatchLineup: (a: unknown, _b: unknown, _c: unknown) => {
+  resolvePublicMatchLineup: (_a: unknown, _b: unknown, _c: unknown) => {
     // record input to verify fallback?
     // return lineup from state
     // also capture that a is [] when both lineup/lineups undefined
@@ -70,12 +70,11 @@ describe('LivePreMatchShell — branch47 (2 grane ?? fallback)', () => {
     // both lineup and lineups undefined => expression should take [] (third branch)
     const m = mkMatch({ lineup: undefined, lineups: undefined });
     // ensure lineup property is undefined, not empty array
-    // @ts-expect-error test wants undefined
-    delete (m as Record<string, unknown>).lineup;
-    delete (m as Record<string, unknown>).lineups;
+    delete (m as unknown as Record<string, unknown>).lineup;
+    delete (m as unknown as Record<string, unknown>).lineups;
     // explicitly set undefined to trigger ??
-    (m as Record<string, unknown>).lineup = undefined;
-    (m as Record<string, unknown>).lineups = undefined;
+    (m as unknown as Record<string, unknown>).lineup = undefined;
+    (m as unknown as Record<string, unknown>).lineups = undefined;
     render(<MemoryRouter><LivePreMatchShell match={m} /></MemoryRouter>);
     expect(screen.getByText('FK Graca')).toBeInTheDocument();
     // nema postave jer je lineup prazan
@@ -89,8 +88,7 @@ describe('LivePreMatchShell — branch47 (2 grane ?? fallback)', () => {
   });
 
   it('sponsors ?? [] fallback kada je sponsors undefined prikazuje Nema sponzora', () => {
-    // @ts-expect-error sponsors undefined
-    state.sponsors = { data: undefined, isLoading: false } as never;
+    state.sponsors = { data: undefined, isLoading: false } as unknown as { data: unknown; isLoading: boolean };
     render(<MemoryRouter><LivePreMatchShell match={mkMatch({ lineup: undefined, lineups: undefined })} /></MemoryRouter>);
     expect(screen.getByText('Nema sponzora.')).toBeInTheDocument();
     expect(screen.queryByText('marquee')).toBeNull();

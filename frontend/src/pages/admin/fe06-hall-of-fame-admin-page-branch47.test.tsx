@@ -2,7 +2,6 @@ import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi, beforeEach } from 'vitest';
 import { HallOfFameAdminPage } from './HallOfFameAdminPage';
-import { adminShellState } from '../../test/doubles/admin-shell-doubles';
 import { hallOfFameState as state, resetHallOfFameState } from '../../test/doubles/heritage-admin-doubles';
 
 vi.mock('react-i18next', () => ({ useTranslation: () => ({ t: (k: string) => k }) }));
@@ -25,7 +24,6 @@ beforeEach(() => {
 describe('HallOfFameAdminPage — branch47 (2 grane ?? i if !o)', () => {
   it('data ?? [] fallback kada je data undefined prikazuje praznu poruku', () => {
     resetHallOfFameState([]);
-    // @ts-expect-error force undefined
     state.data = undefined;
     render(<HallOfFameAdminPage embedded />);
     expect(screen.getByText('Nema unosa u Hall of Fame.')).toBeInTheDocument();

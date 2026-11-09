@@ -62,7 +62,6 @@ beforeEach(() => {
 
 describe('CalendarSeasonPage — branch47 (2 grane ?? i if !o)', () => {
   it('seasons ?? [] fallback kada je seasons undefined prikazuje seasonNotFound', () => {
-    // @ts-expect-error undefined
     state.seasons = undefined;
     renderPage();
     expect(screen.getByText('admin.calendar.seasonNotFound')).toBeInTheDocument();
