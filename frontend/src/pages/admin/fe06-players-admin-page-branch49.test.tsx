@@ -1,7 +1,6 @@
 import { render, screen, within } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { PlayersAdminPage } from './PlayersAdminPage';
-import { adminShellState } from '../../test/doubles/admin-shell-doubles';
 
 const state = vi.hoisted(() => ({
   players: { data: undefined as unknown, isLoading: false, isError: false },

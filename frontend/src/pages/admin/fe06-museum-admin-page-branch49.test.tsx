@@ -2,7 +2,6 @@ import { render, screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { MuseumAdminPage } from './MuseumAdminPage';
 import { museumState, resetMuseumState } from '../../test/doubles/heritage-admin-doubles';
-import { adminShellState } from '../../test/doubles/admin-shell-doubles';
 
 vi.mock('react-i18next', () => ({ useTranslation: () => ({ t: (k: string) => k }) }));
 vi.mock('../../hooks', async () => (await import('../../test/doubles/heritage-admin-doubles')).heritageHooksModule());
