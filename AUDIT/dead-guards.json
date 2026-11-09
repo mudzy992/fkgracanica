@@ -87,12 +87,6 @@
       "why": "`mediaUrl(path, 'medium')` za truthy putanju vraća string, pa `if (!url)` ne može pasti."
     },
     {
-      "file": "frontend/src/lib/ticket-pass-document.ts",
-      "line": 91,
-      "kind": "type-invariant",
-      "why": "Isto kao `season-pass-document`: `mediaUrl` za truthy putanju vraća string."
-    },
-    {
       "file": "frontend/src/pages/admin/GalleryAdminPhotos.tsx",
       "line": 21,
       "kind": "disabled-ui",
