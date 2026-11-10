@@ -15,7 +15,7 @@ const state = vi.hoisted(() => ({
 vi.mock('react-i18next', () => ({ useTranslation: () => ({ t: (k: string) => k }) }));
 vi.mock('../../lib/auth', () => ({ useAuth: () => state.auth }));
 vi.mock('../../hooks', () => ({
-  useMatch: (id: string) => {
+  useMatch: (_id: string) => {
     // record id to verify ?? '' fallback not needed, but we test events fallback
     return state.match;
   },

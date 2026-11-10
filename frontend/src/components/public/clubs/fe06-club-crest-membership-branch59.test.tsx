@@ -42,7 +42,7 @@ describe('MediaFolderPicker branch59 _count?.assets ?? 0', () => {
   it('folder without _count → 0', async () => {
     const { MediaFolderPicker } = await import('../../admin/MediaFolderPicker');
     const folders = [{ id: '1', name: 'F', parentId: null, _count: undefined } as any];
-    const { container } = render(<MemoryRouter><MediaFolderPicker folders={folders} selectedId={null} onSelect={vi.fn()} /></MemoryRouter>);
+    const { container } = render(<MemoryRouter><MediaFolderPicker folders={folders} selectedId={undefined} onSelect={vi.fn()} /></MemoryRouter>);
     expect(container.textContent).toContain('0');
   });
 });

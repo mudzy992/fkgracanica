@@ -7,12 +7,12 @@ vi.mock('react-i18next', () => ({ useTranslation: () => ({ t: (k: string) => k }
 describe('AdminPagination branch59 if meta.totalPages <=1', () => {
   it('totalPages 1 → return null (if true)', async () => {
     const { AdminPagination } = await import('./AdminPagination');
-    const { container } = render(<MemoryRouter><AdminPagination meta={{ totalPages: 1, page: 1 } as any} onPageChange={vi.fn()} /></MemoryRouter>);
+    const { container } = render(<MemoryRouter><AdminPagination meta={{ totalPages: 1 } as any} page={1} onPageChange={vi.fn()} /></MemoryRouter>);
     expect(container.innerHTML).toBe('');
   });
   it('totalPages 2 → render (if false)', async () => {
     const { AdminPagination } = await import('./AdminPagination');
-    const { container } = render(<MemoryRouter><AdminPagination meta={{ totalPages: 2, page: 1 } as any} onPageChange={vi.fn()} /></MemoryRouter>);
+    const { container } = render(<MemoryRouter><AdminPagination meta={{ totalPages: 2 } as any} page={1} onPageChange={vi.fn()} /></MemoryRouter>);
     expect(container.innerHTML).not.toBe('');
   });
 });
