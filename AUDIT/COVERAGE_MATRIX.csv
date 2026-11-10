@@ -648,6 +648,7 @@
 "frontend/src/components/fe06-batch66f.test.tsx","frontend","src","70","nepregledano","","",""
 "frontend/src/components/fe06-batch66o.test.tsx","frontend","src","68","nepregledano","","",""
 "frontend/src/components/fe06-batch66t.test.tsx","frontend","src","92","nepregledano","","",""
+"frontend/src/components/fe06-batch66u.test.tsx","frontend","src","67","nepregledano","","",""
 "frontend/src/components/fe06-reduce-motion-branch45.test.tsx","frontend","src","80","nepregledano","","",""
 "frontend/src/components/gallery/fe06-gallery-list-bento-variants.test.tsx","frontend","src","43","nepregledano","","",""
 "frontend/src/components/gallery/fe06-gallery-list-bento.test.tsx","frontend","src","70","pokriveno testom","FE-06 coverage batch 19–22: novi test fajl (vitest)","FE-06","2026-11-06"
