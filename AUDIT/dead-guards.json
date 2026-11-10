@@ -1,132 +1,30 @@
 {
-  "version": 1,
-  "description": "Registar mrtvih zaštita (P-FE06-42). Svaki statement koji V8 coverage prijavi kao nepokriven mora biti ovdje; `node scripts/audit/dead-guards.mjs` pada za neupisan statement i upozorava za zastario unos. Linija je početna linija statementa iz `frontend/coverage/coverage-final.json`. Unos se uklanja čim grana postane dostupna (primjer: Q-FE06-37, `NewsEditorPage`).",
-  "kinds": {
-    "disabled-ui": "Kontrola koja bi pokrenula ovaj kod je u tom stanju `disabled` ili se ne renderuje, pa grana kroz UI nije dostupna.",
-    "type-invariant": "Pozvana funkcija po tipu nikad ne vraća praznu vrijednost za date ulazе, pa je grana odbrane nemoguća.",
-    "double-guard": "Isti uslov je već provjeren pri renderovanju ili u drugom izrazu, pa je ova grana redundantna.",
-    "synthetic-event": "Grana brani sintetičke događaje; stvarni DOM događaji uvijek nose `Element` kao `target`."
-  },
-  "guards": [
-    {
-      "file": "frontend/src/components/admin/GalleryPhotoPicker.tsx",
-      "line": 31,
-      "kind": "disabled-ui",
-      "why": "Dugme „Dodaj mapu“ je `disabled={!folderId || disabled}`, pa `folderId` u rukovaocu uvijek postoji."
+    "version": 1,
+    "description": "Registar mrtvih zaštita (P-FE06-42). Svaki statement koji V8 coverage prijavi kao nepokriven mora biti ovdje; `node scripts/audit/dead-guards.mjs` pada za neupisan statement i upozorava za zastario unos. Linija je početna linija statementa iz `frontend/coverage/coverage-final.json`. Unos se uklanja čim grana postane dostupna (primjer: Q-FE06-37, `NewsEditorPage`).",
+    "kinds": {
+        "disabled-ui": "Kontrola koja bi pokrenula ovaj kod je u tom stanju `disabled` ili se ne renderuje, pa grana kroz UI nije dostupna.",
+        "type-invariant": "Pozvana funkcija po tipu nikad ne vraća praznu vrijednost za date ulazе, pa je grana odbrane nemoguća.",
+        "double-guard": "Isti uslov je već provjeren pri renderovanju ili u drugom izrazu, pa je ova grana redundantna.",
+        "synthetic-event": "Grana brani sintetičke događaje; stvarni DOM događaji uvijek nose `Element` kao `target`."
     },
-    {
-      "file": "frontend/src/components/membership/MembershipCardsBulkExport.tsx",
-      "line": 41,
-      "kind": "disabled-ui",
-      "why": "Oba dugmeta su `disabled` kad je `count === 0`, pa `run` nikad ne starta sa praznom listom."
-    },
-    {
-      "file": "frontend/src/components/news/NewsCommentsSection.tsx",
-      "line": 32,
-      "kind": "disabled-ui",
-      "why": "Dugme „Objavi“ je `disabled={!content.trim() || addComment.isPending}`, pa `onSubmit` nikad ne vidi prazan tekst."
-    },
-    {
-      "file": "frontend/src/components/newsletter/NewsletterCampaignComposer.tsx",
-      "line": 31,
-      "kind": "disabled-ui",
-      "why": "„Pregled“ je `disabled={!ready || preview.isPending}`, a `ready` zahtijeva `subject` i `textBody`."
-    },
-    {
-      "file": "frontend/src/components/newsletter/NewsletterCampaignComposer.tsx",
-      "line": 39,
-      "kind": "disabled-ui",
-      "why": "„Kreiraj“ je `disabled={!ready || create.isPending}` sa istim uslovom kao pregled."
-    },
-    {
-      "file": "frontend/src/pages/admin/GalleryAdminPhotos.tsx",
-      "line": 21,
-      "kind": "disabled-ui",
-      "why": "Prvo dugme je `disabled` na indeksu 0, drugo na posljednjem, pa `next` nikad nije van opsega."
-    },
-    {
-      "file": "frontend/src/pages/admin/NewsAdminPage.tsx",
-      "line": 181,
-      "kind": "disabled-ui",
-      "why": "Potvrda brisanja se prikazuje samo kad je `deleteTarget` postavljen."
-    },
-    {
-      "file": "frontend/src/pages/admin/SettingsPage.tsx",
-      "line": 73,
-      "kind": "disabled-ui",
-      "why": "Traka za spremanje se renderuje samo uz `canUpdate` i neprazan `draft`."
-    },
-    {
-      "file": "frontend/src/pages/admin/SponsorsAdminPage.tsx",
-      "line": 30,
-      "kind": "disabled-ui",
-      "why": "Pomjeranje ±1 je `disabled` na granicama liste, pa `next` nikad nije van opsega."
-    },
-    {
-      "file": "frontend/src/pages/admin/TimelineAdminPage.tsx",
-      "line": 30,
-      "kind": "disabled-ui",
-      "why": "Pomjeranje ±1 je `disabled` na granicama liste, pa `next` nikad nije van opsega."
-    },
-    {
-      "file": "frontend/src/pages/admin/app-releases/AppReleaseCreateForm.tsx",
-      "line": 39,
-      "kind": "disabled-ui",
-      "why": "Dugme za upload je `disabled={!file || uploading}`."
-    },
-    {
-      "file": "frontend/src/pages/admin/app-releases/AppReleaseCreateForm.tsx",
-      "line": 49,
-      "kind": "disabled-ui",
-      "why": "Kreiranje izdanja je `disabled={!meta || !version || creating}`."
-    },
-    {
-      "file": "frontend/src/pages/admin/club-hub/tabs/ClubFormationTab.tsx",
-      "line": 76,
-      "kind": "disabled-ui",
-      "why": "Birač igrača za dodjelu se renderuje samo uz `activeSlot`."
-    },
-    {
-      "file": "frontend/src/pages/admin/club-hub/tabs/ClubFormationTab.tsx",
-      "line": 81,
-      "kind": "disabled-ui",
-      "why": "Uklanjanje igrača je dostupno samo u panelu otvorenog `activeSlot`-a."
-    },
-    {
-      "file": "frontend/src/pages/admin/commentator/CommentatorClockBar.tsx",
-      "line": 26,
-      "kind": "disabled-ui",
-      "why": "Polje za nadoknadu vremena se prikazuje samo uz `half` (`stoppageHalfIndex`), pa je `half` tu uvijek definisan."
-    },
-    {
-      "file": "frontend/src/pages/admin/commentator/CommentatorPenaltiesBoard.tsx",
-      "line": 39,
-      "kind": "disabled-ui",
-      "why": "Oba dugmeta su `disabled={busy || !playerId}`."
-    },
-    {
-      "file": "frontend/src/pages/admin/commentator/CommentatorTeamBoard.tsx",
-      "line": 63,
-      "kind": "disabled-ui",
-      "why": "Brzi događaji su `disabled` bez `playerId` (osim vlastitog gola, koji ide drugom granom)."
-    },
-    {
-      "file": "frontend/src/pages/admin/commentator/CommentatorTeamBoard.tsx",
-      "line": 72,
-      "kind": "disabled-ui",
-      "why": "Izmjena je `disabled={disabled || busy || !subOut || !subIn}`."
-    },
-    {
-      "file": "frontend/src/pages/admin/competition-hub/MatchFormSheet.tsx",
-      "line": 80,
-      "kind": "disabled-ui",
-      "why": "Dugme je `disabled` bez `scheduledAt`; polje je `datetime-local`, pa neispravan tekst nije moguć kroz UI."
-    },
-    {
-      "file": "frontend/src/pages/admin/competition-hub/MatchFormSheet.tsx",
-      "line": 81,
-      "kind": "disabled-ui",
-      "why": "Isti `parseScheduledAt` guard: `return` poslije poruke o neispravnom datumu."
-    }
-  ]
+    "guards": [
+        {
+            "file": "frontend/src/pages/admin/NewsAdminPage.tsx",
+            "line": 181,
+            "kind": "disabled-ui",
+            "why": "Potvrda brisanja se prikazuje samo kad je `deleteTarget` postavljen."
+        },
+        {
+            "file": "frontend/src/pages/admin/competition-hub/MatchFormSheet.tsx",
+            "line": 80,
+            "kind": "disabled-ui",
+            "why": "Dugme je `disabled` bez `scheduledAt`; polje je `datetime-local`, pa neispravan tekst nije moguć kroz UI."
+        },
+        {
+            "file": "frontend/src/pages/admin/competition-hub/MatchFormSheet.tsx",
+            "line": 81,
+            "kind": "disabled-ui",
+            "why": "Isti `parseScheduledAt` guard: `return` poslije poruke o neispravnom datumu."
+        }
+    ]
 }

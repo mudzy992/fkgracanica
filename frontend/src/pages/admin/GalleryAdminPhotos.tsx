@@ -18,7 +18,6 @@ export function GalleryAdminPhotos({ galleryId, photos }: Props) {
 
   const move = (index: number, dir: -1 | 1) => {
     const next = index + dir;
-    if (next < 0 || next >= photos.length) return;
     const ids = photos.map((p) => p.id);
     [ids[index], ids[next]] = [ids[next], ids[index]];
     void runAction(reorder.mutateAsync({ galleryId, photoIds: ids }));

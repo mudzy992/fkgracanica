@@ -36,8 +36,7 @@ function PenaltySide({
   const busy = addEvent.isPending;
 
   const kick = (type: 'PENALTY_SCORED' | 'PENALTY_MISSED') => {
-    if (!playerId) return;
-    void runAction(addEvent.mutateAsync({ matchId: match.id, type, teamSide: side, playerId }));
+    void runAction(addEvent.mutateAsync({ matchId: match.id, type, teamSide: side, playerId: playerId! }));
     setPlayerId('');
   };
 

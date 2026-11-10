@@ -60,8 +60,7 @@ export function CommentatorTeamColumn({
   };
 
   const fireWithPlayer = (type: string, withAssist = false) => {
-    if (!playerId) return;
-    const extra: { playerId: string; relatedPlayerId?: string } = { playerId };
+    const extra: { playerId: string; relatedPlayerId?: string } = { playerId: playerId! };
     if (withAssist && assistId && assistId !== playerId) extra.relatedPlayerId = assistId;
     fire(type, extra);
     setPlayerId('');
@@ -69,8 +68,7 @@ export function CommentatorTeamColumn({
   };
 
   const doSub = () => {
-    if (!subOut || !subIn) return;
-    fire('SUBSTITUTION', { playerId: subOut, relatedPlayerId: subIn });
+    fire('SUBSTITUTION', { playerId: subOut!, relatedPlayerId: subIn! });
     setSubOut('');
     setSubIn('');
   };

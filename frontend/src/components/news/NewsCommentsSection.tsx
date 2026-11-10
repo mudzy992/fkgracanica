@@ -29,7 +29,6 @@ export function NewsCommentsSection({ newsId }: Props) {
 
   const onSubmit = async () => {
     const text = content.trim();
-    if (!text) return;
     const result = await runAction(addComment.mutateAsync(text));
     // P-FE06-44: na grešci tekst ostaje u polju da korisnik ne izgubi komentar.
     if (result.ok) setContent('');

@@ -23,8 +23,7 @@ export function CommentatorClockBar({ match }: { match: Match }) {
   const half = stoppageHalfIndex(match.matchPeriod);
 
   const submitStoppage = () => {
-    if (!half) return;
-    void runAction(setStoppage.mutateAsync({ matchId: match.id, half, minutes: mins }));
+    void runAction(setStoppage.mutateAsync({ matchId: match.id, half: half!, minutes: mins }));
   };
 
   return (

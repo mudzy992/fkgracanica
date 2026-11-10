@@ -27,7 +27,6 @@ export function SponsorsAdminPage() {
 
   const move = (index: number, dir: -1 | 1) => {
     const next = index + dir;
-    if (next < 0 || next >= rows.length) return;
     const ids = rows.map((r) => r.id);
     [ids[index], ids[next]] = [ids[next], ids[index]];
     void runAction(reorder.mutateAsync(ids));

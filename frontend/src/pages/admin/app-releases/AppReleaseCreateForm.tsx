@@ -36,17 +36,15 @@ export function AppReleaseCreateForm({ uploading, creating, onUpload, onCreate }
   const [error, setError] = useState('');
 
   const handleUpload = async () => {
-    if (!file) return;
     setError('');
     try {
-      setMeta(await onUpload(file));
+      setMeta(await onUpload(file!));
     } catch (err) {
       setError(getApiErrorMessage(err, 'Upload APK-a nije uspio.'));
     }
   };
 
   const handleCreate = async () => {
-    if (!meta) return;
     setError('');
     try {
       await onCreate({
@@ -54,7 +52,7 @@ export function AppReleaseCreateForm({ uploading, creating, onUpload, onCreate }
         versionCode: Number(versionCode),
         minSupportedVersionCode: Number(minCode),
         forceUpdate,
-        ...meta,
+        ...meta!,
         releaseNotes: notes || undefined,
       });
       setFile(null);

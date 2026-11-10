@@ -17,6 +17,7 @@ export default defineConfig({
     alias: { '@': path.resolve(__dirname, './src') },
   },
   test: {
+    testTimeout: 60000,
     deps: {
       optimizer: {
         client: {

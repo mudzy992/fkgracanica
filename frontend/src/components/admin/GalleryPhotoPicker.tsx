@@ -28,8 +28,7 @@ export function GalleryPhotoPicker({ galleryId, existingPaths }: Props) {
   const message = state.notice ? t(`admin.galleryBatch.${state.notice}`) : '';
 
   const addFromFolder = () => {
-    if (!folderId) return;
-    const id = folderId;
+    const id = folderId!;
     setFolderOpen(false);
     setFolderId(undefined);
     void add({ folderId: id });

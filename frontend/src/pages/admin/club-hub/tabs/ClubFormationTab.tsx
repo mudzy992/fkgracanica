@@ -73,14 +73,12 @@ export function ClubFormationTab({ clubId }: { clubId: string }) {
   };
 
   const assignPlayer = (playerId: string) => {
-    if (!activeSlot) return;
-    void runAssign(buildSwapAssignments(data.slots, activeSlot, playerId));
+    void runAssign(buildSwapAssignments(data.slots, activeSlot!, playerId));
   };
 
   const removePlayer = () => {
-    if (!activeSlot) return;
     void runAssign([
-      { slotIndex: activeSlot.slotIndex, isBench: activeSlot.isBench, playerId: null },
+      { slotIndex: activeSlot!.slotIndex, isBench: activeSlot!.isBench, playerId: null },
     ]);
   };
 

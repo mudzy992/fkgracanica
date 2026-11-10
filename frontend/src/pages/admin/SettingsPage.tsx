@@ -70,7 +70,6 @@ export function SettingsPage() {
   };
 
   const handleSave = async () => {
-    if (!canUpdate || !Object.keys(draft).length) return;
     if (scope === 'private' && !window.confirm('Spremiti privatne postavke?')) return;
     if (scope === 'public' && isInvalidChangedYouTubeUrl(draft['live.prematchAudioUrl'], publicData?.['live.prematchAudioUrl'])) {
       setAudioError(t('video.invalidInput'));

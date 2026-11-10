@@ -28,7 +28,6 @@ export function NewsletterCampaignComposer() {
 
   const onPreview = async () => {
     const body = payload();
-    if (!body.subject || !body.textBody) return;
     // P-FE06-44: rukovaoci se pozivaju sa `void`, pa greška ne smije pobjeći.
     const result = await runAction(preview.mutateAsync(body));
     if (result.ok) setHtml(result.value.html);
@@ -36,7 +35,6 @@ export function NewsletterCampaignComposer() {
 
   const onCreate = async () => {
     const body = payload();
-    if (!body.subject || !body.textBody) return;
     const result = await runAction(create.mutateAsync(body));
     if (!result.ok) return;
     setSubject('');
