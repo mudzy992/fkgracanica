@@ -1,4 +1,5 @@
 import { MemoryRouter } from 'react-router-dom';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { NewsAdminPage } from './NewsAdminPage';
@@ -21,7 +22,7 @@ vi.mock('../../hooks', async () => {
 });
 vi.mock('../../hooks/use-news-admin', async () => {
   const actual = await vi.importActual<typeof import('../../hooks/use-news-admin')>('../../hooks/use-news-admin');
-  return { ...actual, useDeleteNews: () => ({ mutateAsync: state.deleteMutate, isPending: state.isPending }), useNewsCategories: () => ({ data: [] }) };
+  return { ...actual, useDeleteNews: () => ({ mutateAsync: state.deleteMutate, isPending: state.isPending }), useNewsCategories: () => ({ data: [] }), useUpdateNewsStatus: () => ({ mutateAsync: vi.fn(async () => ({})), isPending: false }) };
 });
 vi.mock('../../components/admin/AdminPageShell', async () => {
   const d = await import('../../test/doubles/admin-shell-doubles');
@@ -47,7 +48,8 @@ describe('NewsAdminPage — deleteTarget guard (branch59) removeAttribute trik',
   });
 
   it('onConfirm sa !deleteTarget (open=false) ne poziva delete', async () => {
-    render(<MemoryRouter><NewsAdminPage /></MemoryRouter>);
+    const qc = new QueryClient();
+    render(<QueryClientProvider client={qc}><MemoryRouter><NewsAdminPage /></MemoryRouter></QueryClientProvider>);
     const btn = screen.getByTestId('confirm-btn');
     expect(btn.textContent).toBe('confirm-false');
     fireEvent.click(btn);
@@ -55,9 +57,10 @@ describe('NewsAdminPage — deleteTarget guard (branch59) removeAttribute trik',
   });
 
   it('onConfirm sa deleteTarget postavljenim poziva delete', async () => {
-    render(<MemoryRouter><NewsAdminPage /></MemoryRouter>);
-    // Otvori brisanje preko tablice
-    const delBtn = screen.getByRole('button', { name: 'actions.delete' });
+    const qc = new QueryClient();
+    render(<QueryClientProvider client={qc}><MemoryRouter><NewsAdminPage /></MemoryRouter></QueryClientProvider>);
+    // Find delete button by text "Obriši" (the actual button text)
+    const delBtn = screen.getByRole('button', { name: 'Obriši' });
     fireEvent.click(delBtn);
     const btn = screen.getByTestId('confirm-btn');
     expect(btn.textContent).toBe('confirm-true');
