@@ -18,8 +18,8 @@ describe('batch62 catalog', () => {
 
   it('MobileSection related fallback', async () => {
     const { MobileSection } = await import('./MobileSection');
-    const section: any = { id: 's1', moduleIds: undefined };
-    const { container } = render(<MobileSection section={section} />);
+    const section: any = { id: 's1', title: 'T', body: 'B', moduleIds: undefined, bullets: [] };
+    const { container } = render(<MobileSection section={section} modules={[]} index={0} />);
     expect(container.textContent).toBeDefined();
   });
 

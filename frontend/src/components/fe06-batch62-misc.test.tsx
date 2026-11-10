@@ -3,18 +3,19 @@ import { describe, expect, it, vi } from 'vitest';
 import { MemoryRouter } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
-vi.mock('react-i18next', () => ({ useTranslation: () => ({ t: (k: string, v?: any) => k }) }));
+vi.mock('react-i18next', () => ({ useTranslation: () => ({ t: (k: string) => k }) }));
 
 describe('batch62 misc', () => {
   it('LeagueRoundPicker empty and value', async () => {
     const { LeagueRoundPicker } = await import('./public/league/LeagueRoundPicker');
     const onChange = vi.fn();
-    const { container: c1 } = render(<LeagueRoundPicker rounds={[{ number: 1, label: '1' }]} value={null} onChange={onChange} />);
+    const rounds: any = [{ id: 'r1', number: 1, name: 'Kolo 1' }];
+    const { container: c1 } = render(<LeagueRoundPicker rounds={rounds} value={null} onChange={onChange} />);
     const select = c1.querySelector('select') as HTMLSelectElement;
     expect(select.value).toBe('');
     fireEvent.change(select, { target: { value: '1' } });
     expect(onChange).toHaveBeenCalledWith(1);
-    const { container: c2 } = render(<LeagueRoundPicker rounds={[{ number: 1, label: '1' }]} value={1} onChange={onChange} />);
+    const { container: c2 } = render(<LeagueRoundPicker rounds={rounds} value={1} onChange={onChange} />);
     expect((c2.querySelector('select') as HTMLSelectElement).value).toBe('1');
     fireEvent.change(c2.querySelector('select')!, { target: { value: '' } });
     expect(onChange).toHaveBeenCalledWith(null);
@@ -46,9 +47,9 @@ describe('batch62 misc', () => {
     const { Seo } = await import('./seo/Seo');
     const qc = new QueryClient();
     const wrap = ({ children }: any) => <QueryClientProvider client={qc}><MemoryRouter>{children}</MemoryRouter></QueryClientProvider>;
-    const { container: c1 } = render(<Seo title="Naslov" description="Opis" />, { wrapper: wrap });
+    render(<Seo title="Naslov" description="Opis" />, { wrapper: wrap });
     expect(document.title).toBeDefined();
-    const { container: c2 } = render(<Seo title="Naslov2" />, { wrapper: wrap });
+    render(<Seo title="Naslov2" />, { wrapper: wrap });
     expect(document.title).toBeDefined();
   });
 });

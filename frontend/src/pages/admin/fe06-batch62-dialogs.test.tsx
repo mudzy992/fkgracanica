@@ -1,4 +1,4 @@
-import { render, fireEvent } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import { describe, expect, it, vi, beforeEach } from 'vitest';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { MemoryRouter } from 'react-router-dom';
@@ -11,7 +11,6 @@ let museumProps: any = null;
 let playersProps: any = null;
 let trophiesProps: any = null;
 let clubPlayersProps: any = null;
-let roundCascadeProps: any = null;
 
 vi.mock('./HallOfFameAdminFormSheet', () => ({
   HallOfFameAdminFormSheet: (p: any) => { hallProps = p; return <div><button onClick={() => p.onOpenChange(false)}>close</button><button onClick={() => p.onOpenChange(true)}>open</button></div>; },
@@ -66,7 +65,7 @@ const qc = new QueryClient();
 const wrap = (ui: React.ReactNode) => <QueryClientProvider client={qc}><MemoryRouter>{ui}</MemoryRouter></QueryClientProvider>;
 
 describe('batch62 dialogs — if (!o) both branches', () => {
-  beforeEach(() => { hallProps = museumProps = playersProps = trophiesProps = clubPlayersProps = roundCascadeProps = null; });
+  beforeEach(() => { hallProps = museumProps = playersProps = trophiesProps = clubPlayersProps = null; });
 
   it('HallOfFameAdminPage', async () => {
     const { HallOfFameAdminPage } = await import('./HallOfFameAdminPage');

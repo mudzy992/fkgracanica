@@ -1,7 +1,6 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { renderHook, waitFor } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
-import React from 'react';
 
 vi.mock('../lib/api', () => ({ api: { get: vi.fn(async () => ({ data: [] })), post: vi.fn(async () => ({ data: {} })), patch: vi.fn(async () => ({ data: {} })), delete: vi.fn(async () => ({ data: {} })), put: vi.fn(async () => ({ data: {} })) } }));
 
@@ -11,7 +10,7 @@ describe('batch62 hooks', () => {
     const qc1 = new QueryClient();
     const wrapper1 = ({ children }: any) => <QueryClientProvider client={qc1}>{children}</QueryClientProvider>;
     const { result: r1 } = renderHook(() => useStandings(undefined), { wrapper: wrapper1 });
-    expect(r1.current.isLoading ?? r1.current.fetchStatus).toBeDefined();
+    expect(r1.current.isLoading).toBeDefined();
     const qc2 = new QueryClient();
     const wrapper2 = ({ children }: any) => <QueryClientProvider client={qc2}>{children}</QueryClientProvider>;
     const { result: r2 } = renderHook(() => useStandings('season-1', 5), { wrapper: wrapper2 });
