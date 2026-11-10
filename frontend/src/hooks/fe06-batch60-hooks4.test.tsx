@@ -1,17 +1,17 @@
 import { renderHook } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it } from 'vitest';
 
 describe('batch60 hooks4 — useClearPaymentParams 28 [2,0]', () => {
   it('clears paid param and hits q falsy branch', async () => {
     const { useClearPaymentParams } = await import('./use-clear-payment-params');
-    const Wrapper = ({ children, initial }: any) => <MemoryRouter initialEntries={[initial]}>{children}</MemoryRouter>;
-    const { rerender } = renderHook(({ done, initial }) => useClearPaymentParams(done), {
-      wrapper: ({ children }: any) => <Wrapper initial="/test?paid=1&session_id=abc">{children}</Wrapper>,
-      initialProps: { done: false, initial: '/test?paid=1' },
+    const Wrapper = ({ children }: any) => <MemoryRouter initialEntries={['/test?paid=1&session_id=abc']}>{children}</MemoryRouter>;
+    const { rerender } = renderHook(({ done }) => useClearPaymentParams(done), {
+      wrapper: ({ children }: any) => <Wrapper>{children}</Wrapper>,
+      initialProps: { done: false },
     });
     // trigger done true -> should clear and navigate with q=''
-    rerender({ done: true, initial: '/test?paid=1' });
+    rerender({ done: true });
     await new Promise((r) => setTimeout(r, 10));
     expect(true).toBe(true);
   });

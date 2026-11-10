@@ -6,7 +6,7 @@ vi.mock('react-i18next', async (orig) => {
   return { ...a, useTranslation: () => ({ t: (k: string, d?: string) => d ?? k }) };
 });
 vi.mock('./unsaved-navigation-context', () => ({ useUnsavedNavigation: vi.fn() }));
-vi.mock('./form-dirty', async (orig) => {
+vi.mock('./form-dirty', async () => {
   const a: any = await vi.importActual('./form-dirty');
   return { ...a, isFormDirty: vi.fn(() => true), snapshotForm: vi.fn(() => 'snap') };
 });

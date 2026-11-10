@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { groupTicketsByMatch } from './group-tickets-by-match';
 import { getModuleToggleBlockReason } from './module-settings-rules';
 import { groupMatchesByRound } from './round-utils';
@@ -44,19 +44,7 @@ describe('batch60 lib — module-settings-rules reqDef?.label ?? missing [2,0]',
 
 describe('batch60 lib — round-utils groupMatchesByRound fallback [30,0]', () => {
   it('without roundRel uses `${key}. kolo`', () => {
-    const matches = [
-      { id: 'm1', roundRel: null, scheduledAt: '2026-05-01T00:00:00.000Z' },
-      { id: 'm2', roundRel: null, scheduledAt: '2026-05-02T00:00:00.000Z' },
-    ] as any;
-    // Need to set round numbers via matchRoundNumber? That uses roundRel?.number so null => not grouped, so map empty, no fallback?
-    // Instead use groupMatchesByRound directly with roundRel null but matchRoundNumber will be null, so not grouped.
-    // To hit fallback, we need matches with round number but without roundRel object
-    // Use a custom match where roundRel is undefined but we need to test groupMatchesByRound's label fallback
-    // Actually groupMatchesByRound uses matchRoundNumber which checks roundRel?.number, so if roundRel null, it skips.
-    // So to hit fallback, need matches where n != null but roundRel is null? But n is derived from roundRel, so if roundRel null, n null, skipped.
-    // The fallback is for when items[0]?.roundRel is falsy but key exists. How can key exist without roundRel?
-    // groupMatchesByRound groups by matchRoundNumber which requires roundRel, so if all matches have no roundRel, map will be empty, no label fallback.
-    // Let's test the other path: items with roundRel but name null?
+    // To hit fallback, key exists but roundRel falsy is dead (n derived from roundRel), so test the name-null path
     const matches2 = [
       { id: 'm1', roundRel: { number: 5, name: null }, scheduledAt: '2026-05-01T00:00:00.000Z' },
     ] as any;

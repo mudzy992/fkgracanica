@@ -44,7 +44,7 @@ describe('batch60 hooks — use-competition-admin seasonId [2,0]', () => {
     const { useStandings } = await import('./use-competition-admin');
     vi.mocked(api.get).mockClear();
     vi.mocked(api.get).mockResolvedValue({ data: [] } as any);
-    const { result } = renderHook(() => useStandings('s1', null), { wrapper });
+    renderHook(() => useStandings('s1', null), { wrapper });
     await waitFor(() => expect(api.get).toHaveBeenCalled());
     const call = vi.mocked(api.get).mock.calls[0] as any;
     expect(call[1].params.seasonId).toBe('s1');

@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { describe, expect, it, vi } from 'vitest';
@@ -78,7 +78,7 @@ describe('batch60 admin — CommsAdminPage user?.permissions ?? [] [17,0]', () =
   it('user undefined → perms [] → email-log tab', async () => {
     const { CommsAdminPage } = await import('./CommsAdminPage');
     commsState.user = undefined;
-    commsState.moduleFlags = {};
+    commsState.moduleFlags = {} as any;
     const { container } = render(wrap(<CommsAdminPage />));
     // with no perms, only email-log (requires settings.read) also false, so no tab → Navigate to /admin, but we render MemoryRouter with / 
     // It should render Navigate, but we can check it doesn't crash
@@ -87,7 +87,7 @@ describe('batch60 admin — CommsAdminPage user?.permissions ?? [] [17,0]', () =
   it('user with permissions → contact tab', async () => {
     const { CommsAdminPage } = await import('./CommsAdminPage');
     commsState.user = { permissions: ['contact.read', 'newsletter.read', 'settings.read'] } as any;
-    commsState.moduleFlags = { 'modules.contact': true, 'modules.newsletter': true };
+    commsState.moduleFlags = { 'modules.contact': true, 'modules.newsletter': true } as any;
     const { container } = render(wrap(<CommsAdminPage />));
     expect(container.textContent).toContain('Kontakt');
   });

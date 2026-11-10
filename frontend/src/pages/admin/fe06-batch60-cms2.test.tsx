@@ -27,7 +27,7 @@ describe('batch60 cms — coverable fallbacks', () => {
   });
   it('AnalyticsVisitorsPanel geo ?? []', async () => {
     // mock hooks to avoid loading
-    vi.doMock('../../hooks/use-analytics', async (orig: any) => {
+    vi.doMock('../../hooks/use-analytics', async () => {
       const a: any = await vi.importActual('../../hooks/use-analytics');
       return { ...a, useVisitorGeo: () => ({ data: undefined, isLoading: false }), useVisitorTrend: () => ({ data: [], isLoading: false }), useVisitorTotals: () => ({ data: { web: 1, mobile: 2, total: 3 }, isLoading: false }) };
     });

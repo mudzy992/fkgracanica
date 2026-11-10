@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { describe, expect, it, vi } from 'vitest';
 
@@ -74,8 +74,6 @@ describe('batch60 public — FormResultChips isHome false [1,0]', () => {
   it('away fixtureLine uses opponent vs club', async () => {
     const { FormResultChips } = await import('./league/FormResultChips');
     const entry = { result: 'W', matchId: 'm1', scheduledAt: '2026-05-01T17:00:00.000Z', isHome: false, goalsFor: 1, goalsAgainst: 0, opponentName: 'Slavija', opponentSlug: 'slavija' } as any;
-    const { container } = render(<MemoryRouter><FormResultChips formMatches={[entry]} clubName="FKG" /></MemoryRouter>);
-    // tooltip contains fixtureLine "Slavija vs FKG"
     const { container: c2 } = render(<MemoryRouter><FormResultChips formMatches={[entry]} clubName="FKG" /></MemoryRouter>);
     // hover not needed; we can check fixtureScore via tooltip text? Instead test FormResultChips renders chip
     expect(c2.textContent).toContain('W');
