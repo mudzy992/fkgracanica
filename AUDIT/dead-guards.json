@@ -7,24 +7,5 @@
         "double-guard": "Isti uslov je već provjeren pri renderovanju ili u drugom izrazu, pa je ova grana redundantna.",
         "synthetic-event": "Grana brani sintetičke događaje; stvarni DOM događaji uvijek nose `Element` kao `target`."
     },
-    "guards": [
-        {
-            "file": "frontend/src/pages/admin/NewsAdminPage.tsx",
-            "line": 181,
-            "kind": "disabled-ui",
-            "why": "Potvrda brisanja se prikazuje samo kad je `deleteTarget` postavljen."
-        },
-        {
-            "file": "frontend/src/pages/admin/competition-hub/MatchFormSheet.tsx",
-            "line": 80,
-            "kind": "disabled-ui",
-            "why": "Dugme je `disabled` bez `scheduledAt`; polje je `datetime-local`, pa neispravan tekst nije moguć kroz UI."
-        },
-        {
-            "file": "frontend/src/pages/admin/competition-hub/MatchFormSheet.tsx",
-            "line": 81,
-            "kind": "disabled-ui",
-            "why": "Isti `parseScheduledAt` guard: `return` poslije poruke o neispravnom datumu."
-        }
-    ]
+    "guards": []
 }
