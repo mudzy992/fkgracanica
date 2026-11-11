@@ -60,7 +60,7 @@ export function MatchFormSheet({ open, onOpenChange, edit, seasonId, roundId }: 
     setError('');
     setHomeClubId(edit?.homeClubId ?? edit?.homeClub?.id ?? '');
     setAwayClubId(edit?.awayClubId ?? edit?.awayClub?.id ?? '');
-    setVenue(edit?.venue ?? resolveClubVenue(edit?.homeClub) ?? '');
+    setVenue(edit?.venue ?? resolveClubVenue(edit?.homeClub));
     setScheduledAt(toLocalDatetime(edit?.scheduledAt) || toLocalDatetime(new Date().toISOString()));
     if (edit?.status && editableStatuses.includes(edit.status)) setStatus(edit.status);
     else if (isLiveLocked) setStatus(edit!.status);
