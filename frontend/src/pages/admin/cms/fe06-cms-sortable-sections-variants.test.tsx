@@ -69,8 +69,8 @@ describe('CmsSortableSections — varijante (3 grane)', () => {
     const switches = screen.getAllByRole('switch');
     expect(switches[0].getAttribute('aria-checked')).toBe('false');
     expect(switches[1].getAttribute('aria-checked')).toBe('true');
-    expect(switches[0].className).toContain('bg-text-muted');
-    expect(switches[1].className).toContain('bg-success');
+    expect(switches[0].className).toContain('bg-[var(--border-subtle)]');
+    expect(switches[1].className).toContain('bg-primary');
   });
 
   it('bez selectedId nema border-primary', () => {

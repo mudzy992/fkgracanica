@@ -104,19 +104,25 @@ export function SeasonRoundsPanel({ seasonId, selectedRoundId, onSelectRound, ca
           </Button>
         )}
       </div>
-      <div className="divide-y divide-slate-100">
+      <div className="divide-y divide-[var(--border-subtle)]/50">
         {isLoading && <p className="p-4 text-sm text-text-muted">{t('admin.common.loading')}</p>}
         {!isLoading && !(rounds ?? []).length && (
           <p className="p-4 text-sm text-text-muted">{t('admin.roundsPanel.empty')}</p>
         )}
         {(rounds ?? []).map((round) => (
-          <Button
+          <div
             key={round.id}
-            type="button"
-            variant="ghost"
+            role="button"
+            tabIndex={0}
             onClick={() => onSelectRound(round.id)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                onSelectRound(round.id);
+              }
+            }}
             className={cn(
-              'flex h-auto w-full justify-between rounded-none px-4 py-3 text-left text-sm font-normal',
+              'flex w-full items-center justify-between px-4 py-3 text-left text-sm hover:bg-surface focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent',
               selectedRoundId === round.id && 'bg-primary/5',
             )}
           >
@@ -147,7 +153,7 @@ export function SeasonRoundsPanel({ seasonId, selectedRoundId, onSelectRound, ca
                 </Button>
               </span>
             )}
-          </Button>
+          </div>
         ))}
       </div>
       <RoundFormSheet
