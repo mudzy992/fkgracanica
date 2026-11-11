@@ -21,7 +21,7 @@ vi.mock('../components/admin/AdminFormSheet', () => ({
   ),
 }));
 vi.mock('../components/ui/input', () => ({
-  Input: (p: Record<string, unknown>) => <input {...(p as never)} />,
+  Input: (p: any) => <input {...p} />,
 }));
 vi.mock('../components/ui/switch', () => ({
   Switch: () => <button>switch</button>,
