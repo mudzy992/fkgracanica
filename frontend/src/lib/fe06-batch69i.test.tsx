@@ -20,15 +20,7 @@ vi.mock('../lib/auth', () => ({
 }));
 vi.mock('../hooks', async () => {
   const a = await vi.importActual<typeof import('../hooks')>('../hooks');
-  return { ...a, useMatch: () => ({ data: state.match }), useMatches: () => ({ data: [], isLoading: false }) };
-});
-vi.mock('../hooks/use-museum', async () => {
-  const a = await vi.importActual<typeof import('../hooks/use-museum')>('../hooks/use-museum');
-  return { ...a, useMuseum: () => ({ data: state.museum, isLoading: false, refetch: vi.fn() }) };
-});
-vi.mock('../hooks/use-news', async () => {
-  const a = await vi.importActual<typeof import('../hooks/use-news')>('../hooks/use-news');
-  return { ...a, useNewsItem: () => ({ data: { seoDesc: undefined, excerpt: undefined, title: 't', coverPath: 'a', slug: 's' } as never, isLoading: false }) };
+  return { ...a, useMatch: () => ({ data: state.match }), useMatches: () => ({ data: [], isLoading: false }), useMuseum: () => ({ data: state.museum, isLoading: false, refetch: vi.fn() } as never), useNewsItem: () => ({ data: { seoDesc: undefined, excerpt: undefined, title: 't', coverPath: 'a', slug: 's' } as never, isLoading: false } as never), useMuseumList: () => ({ data: state.museum, isLoading: false } as never) };
 });
 vi.mock('../hooks/use-competition-admin', async () => {
   const a = await vi.importActual<typeof import('../hooks/use-competition-admin')>('../hooks/use-competition-admin');
@@ -51,9 +43,7 @@ vi.mock('../hooks/use-rounds', () => ({
 vi.mock('../hooks/use-ticketing', () => ({
   useTicketingPublicConfig: () => ({ data: {} }),
 }));
-vi.mock('../hooks/use-public-web', () => ({
-  useMuseumList: () => ({ data: state.museum, isLoading: false }),
-}));
+
 vi.mock('../lib/media', async () => {
   const a = await vi.importActual('../lib/media') as Record<string, unknown>;
   return { ...a, mediaUrl: () => 'http://example.com/a.jpg' };
@@ -64,7 +54,6 @@ import { CompetitionsAdminPage } from '../pages/admin/CompetitionsAdminPage';
 import { ClubStadiumTab } from '../pages/admin/club-hub/tabs/ClubStadiumTab';
 import { CommentatorStreamDialog } from '../pages/admin/commentator/CommentatorStreamDialog';
 import { RoundMatchesPanel } from '../pages/admin/competition-hub/RoundMatchesPanel';
-import { GalleryEditorPage } from '../pages/admin/gallery/GalleryEditorPage';
 import { TicketingPaymentsTab } from '../pages/admin/ticketing/TicketingPaymentsTab';
 import { LiveMatchPage } from '../pages/public/LiveMatchPage';
 import { MuseumPage } from '../pages/public/MuseumPage';
