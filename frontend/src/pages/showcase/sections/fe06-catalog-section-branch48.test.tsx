@@ -48,10 +48,12 @@ describe('CatalogSection — branch48 (2 grane visual)', () => {
     expect(screen.getByText('a')).toBeInTheDocument();
   });
 
-  it('sa nepoznatim id visual je i dalje JSX element (dead guarda) — nema lg:col-span-2', () => {
+  it('sa nepoznatim id nema visual — full width (hasVisual false)', () => {
     const { container } = render(<CatalogSection section={sectionBase({ id: 'unknown', moduleIds: [] })} modules={[]} index={2} />);
-    // SectionVisual vraća null ali <SectionVisual/> JSX je uvijek truthy, pa visual nikad nije falsy
-    expect(container.querySelector('.lg\\:col-span-2')).toBeNull();
+    // nakon popravke dead guarda hasVisual je false za unknown -> lg:col-span-2 i nema visual wrapper
+    expect(container.querySelector('.lg\\:col-span-2')).not.toBeNull();
+    expect(screen.queryByTestId('visual')).toBeNull();
+    expect(container.querySelector('.lg\\:pl-4')).toBeNull();
     // related empty -> ne prikazuje flex-wrap
     expect(container.querySelector('.flex-wrap')).toBeNull();
   });
