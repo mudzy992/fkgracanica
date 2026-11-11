@@ -89,14 +89,16 @@ export function MediaPageToolbar({
             className="pl-9 pr-9"
           />
           {search && (
-            <button
+            <Button
               type="button"
-              className="absolute right-2 top-1/2 -translate-y-1/2 rounded p-1 text-text-muted hover:text-text"
+              variant="ghost"
+              size="icon"
+              className="absolute right-1 top-1/2 h-6 w-6 -translate-y-1/2"
               onClick={() => onSearchChange('')}
               aria-label={t('admin.mediaToolbar.clearSearch')}
             >
               <X className="h-4 w-4" />
-            </button>
+            </Button>
           )}
         </div>
         <div className="flex flex-wrap items-center gap-2">

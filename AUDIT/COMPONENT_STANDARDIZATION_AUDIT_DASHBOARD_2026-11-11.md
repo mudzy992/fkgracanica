@@ -1,15 +1,17 @@
 # Audit standardizacije komponenti — Dashboard (admin)
-**FK Gračanica platforma** · `arena/290a6f13-fkgracanica` @ `1664f40` → `97e328c`  
+**FK Gračanica platforma** · `arena/290a6f13-fkgracanica` @ `1664f40` → `97e328c` → `aa18d15` → `9be7da7`  
 **Datum:** 2026-11-11 · **Autor:** Agent Mode (Arena) · **Standard:** **Dizajn sistem (FE-01) + UI Kit konzistentnost** — `token-check (FE-01)` + `FE-04a/b` + `FE-05` + `docs/CONVENTIONS.md` / `docs/FRONTEND.md`  
-**Opseg:** `frontend/src/pages/admin/**` (147 fajlova), `frontend/src/components/admin/**` (22 + 18 test-helpera), `frontend/src/components/ui/**` (9 komponenti), `frontend/src/components/layout/**`
+**Opseg:** `frontend/src/pages/admin/**` (147 fajlova), `frontend/src/components/admin/**` (22 + 18 test-helpera), `frontend/src/components/ui/**` (11 komponenti: +Select, +Table), `frontend/src/components/layout/**`
 
-> **Pitanje korisnika:** „ne znam tačno kako se zove taj standard, ali da su svi inputi identični, dugma primary i ostale varijante, tabele, i sve ostalo” — to je **FE-01 Dizajn tokeni + UI Kit** (jedan izvor istine za boje/razmake + 9 baznih komponenti). Ovaj audit provjerava da dashboard nigdje ne koristi „hardcode” komponente van kita.
+> **Pitanje korisnika:** „ne znam tačno kako se zove taj standard, ali da su svi inputi identični, dugma primary i ostale varijante, tabele, i sve ostalo” — to je **FE-01 Dizajn tokeni + UI Kit** (jedan izvor istine za boje/razmake + 9→11 baznih komponenti). Ovaj audit provjerava da dashboard nigdje ne koristi „hardcode” komponente van kita.
+
+> **UPDATE 2026-11-11 — Val1 (aa18d15, kontrast P0 + textarea) + Val2 P1 (9be7da7, select+table+tab) + Val2 P2 (Button 100% + Card + token 352):** `token-check 352/352 OK` (405→393→352, -53 `border-slate-200` → `border-[var(--border-subtle)]`), `check:all 9/9`, `vite build 0.94s (3115 modula)`. **Textarea 2→14 kit / 16→0 raw (100%)**, **Select 0→20 kit / 20→0 raw (100%)**, **Table 0→3 kit / 3→0 raw (100% admin)**, **Button 213→~225 kit / 17→0 raw (100% admin, 0 `<button>` bez kita)** — `FinanceProviderChip`, `FinanceFiltersForm`, `SeasonRoundsPanel` w-full row, `CmsSortableSections` dnd+switch, `CmsMenuSortableList` drag, `MediaAssetsGrid/UploadZone`, `AnalyticsPage` tabs, `MatchLineupSheet` tabs, `MediaPageToolbar`/`MediaAssetsTable`/`NewsEditorPage`/`UserAdminFormSheet` svi na `<Button>`/`Switch`. **Card 6 migracija** (`NotificationsPage` → `<Card>`, `CmsMenuPreviewBar`, `TicketingOrderSheet`, `PaymentProviderCard/Hints`, `TicketingPaymentsTab`) + `border-slate-200` → `border-subtle` u 15 fajlova (`CmsPageMetaForm`, `CmsPreviewPanel`, `SeasonRoundsPanel`, `CustomHtmlEditor`, `RichTextEditor`, ...). `label border-slate-200` za `Switch` redove (4×) ostaju izuzetak (form row, ne kartica). **Dashboard 99.5% standardizovan; preostaje ~6 Card (`ClubHubPanel`, `AnalyticsH2hPanel` itd.) P2.**
 
 ---
 
 ## 1. Sažetak (1 strana)
 
-**Ocjena: 7.9 / 10 — dashboard je većinski standardizovan, bez kritičnih hardcode boja, ali sa 3 sistemska propusta u konzistentnosti.**
+**Ocjena: 7.9 / 10 → 8.9 / 10 nakon Val1+Val2 P1 — dashboard je 98% standardizovan, preostalo 2% su specijalizovani obrasci (dnd, switch, rounded-full chip) koji ne krše FE-01.**
 
 - **Tokeni:** `token-check 417/417 OK` — **0 hardkodiranih boja** (`bg-[#...]`, `#hex`) van `index.css` allowliste (print/PDF, QR, showcase). Svi `var(--color-*)` definisani u `@theme`. `dark:` varijante ispravno vezane na `.dark` (dark-only app).
 - **Komponente:** 9 baznih u `components/ui` (`Button`/`Input`/`Textarea`/`Card`/`Badge`/`Dialog`/`Sheet`/`Switch`/`Skeleton`) + 5 admin (`AdminPageShell`/`AdminFormSheet`/`AdminPagination`/`ConfirmDialog`/`RichTextEditor`). **Upotreba u produkciji (bez testova):**

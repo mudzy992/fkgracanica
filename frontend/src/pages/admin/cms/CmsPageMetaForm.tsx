@@ -21,7 +21,7 @@ interface Props {
 export function CmsPageMetaForm({ page, meta, onChange, onSave, isPending }: Props) {
   const { t } = useTranslation();
   return (
-    <div className="space-y-3 rounded-lg border border-slate-200 p-4">
+    <div className="space-y-3 rounded-lg border border-[var(--border-subtle)] p-4">
       <h1 className="text-xl font-bold">{t('admin.cmsMeta.editTitle', { title: page.title })}</h1>
       <div className="grid gap-2 md:grid-cols-3">
         <Input

@@ -137,19 +137,16 @@ export function UserAdminFormSheet({ open, onOpenChange, user, canCreate, canUpd
           <p className="mb-2 text-sm font-medium">{t('admin.userForm.roles')}</p>
           <div className="flex flex-wrap gap-2">
             {roleList.map((r) => (
-              <button
+              <Button
                 key={r.id}
                 type="button"
+                size="sm"
+                variant={roleIds.includes(r.id) ? 'default' : 'outline'}
                 aria-pressed={roleIds.includes(r.id)}
                 onClick={() => toggleRole(r.id)}
-                className={`rounded-lg border px-2 py-1 text-xs ${
-                  roleIds.includes(r.id)
-                    ? 'border-primary bg-primary text-white'
-                    : 'border-slate-200'
-                }`}
               >
                 {r.name}
-              </button>
+              </Button>
             ))}
           </div>
         </div>

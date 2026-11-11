@@ -5,7 +5,7 @@ export function ClubHubPanel({ children, className }: { children: ReactNode; cla
   return (
     <div
       className={cn(
-        'rounded-2xl border border-slate-200/80 bg-surface/90 p-5 shadow-sm md:p-8',
+        'rounded-2xl border border-[var(--border-subtle)]/80 bg-surface/90 p-5 shadow-sm md:p-8',
         className,
       )}
     >

@@ -51,7 +51,7 @@ export function RoundMatchesPanel({ seasonId, roundId, canManage }: Props) {
   return (
     <>
       {dialog}
-      <div className="flex items-center justify-between border-b border-slate-200 px-4 py-3">
+      <div className="flex items-center justify-between border-b border-[var(--border-subtle)] px-4 py-3">
         <h3 className="text-sm font-semibold">{t('admin.roundMatches.title')}</h3>
         {canManage && (
           <Button

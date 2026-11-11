@@ -62,7 +62,7 @@ export function NewsCategoriesDialog({ open, onOpenChange }: Props) {
           </Button>
         </div>
         {error && <p className="text-sm text-danger">{error}</p>}
-        <ul className="divide-y divide-slate-100 rounded-lg border border-slate-200">
+        <ul className="divide-y divide-slate-100 rounded-lg border border-[var(--border-subtle)]">
           {categories.length === 0 && (
             <li className="p-3 text-sm text-text-muted">{t('admin.newsCategories.empty')}</li>
           )}

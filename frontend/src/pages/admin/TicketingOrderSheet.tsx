@@ -20,6 +20,7 @@ import { AdminFormSheet } from '../../components/admin/AdminFormSheet';
 import { MembershipQrCode } from '../../components/membership/MembershipQrCode';
 import { Badge } from '../../components/ui/badge';
 import { Button } from '../../components/ui/button';
+import { Card } from '../../components/ui/card';
 import type { TicketingAdminOrder } from '../../hooks/use-ticketing-admin';
 
 interface Props {
@@ -89,7 +90,7 @@ export function TicketingOrderSheet({ order, open, onOpenChange, canManage }: Pr
           <div className="mt-4 space-y-4">
             <p className="text-sm font-medium text-text-muted">Ulaznice ({o.tickets.length})</p>
             {o.tickets.map((t) => (
-              <div key={t.id} className="rounded-lg border border-[var(--border-subtle)] p-3">
+              <Card key={t.id} className="p-3">
                 <p className="font-medium">{matchLabel(t.match)}</p>
                 <p className="text-sm text-text-muted">
                   {t.category} · {String(t.price)} KM
@@ -102,7 +103,7 @@ export function TicketingOrderSheet({ order, open, onOpenChange, canManage }: Pr
                     <MembershipQrCode value={t.qrCode} size={120} />
                   </div>
                 )}
-              </div>
+              </Card>
             ))}
           </div>
         )}

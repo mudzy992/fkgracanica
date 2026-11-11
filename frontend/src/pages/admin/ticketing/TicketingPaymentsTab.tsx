@@ -6,6 +6,7 @@ import {
 } from '../../../hooks/use-ticketing-admin';
 import { Badge } from '../../../components/ui/badge';
 import { Button } from '../../../components/ui/button';
+import { Card } from '../../../components/ui/card';
 import { Select } from '../../../components/ui/select';
 import { Input } from '../../../components/ui/input';
 import { Switch } from '../../../components/ui/switch';
@@ -62,12 +63,12 @@ export function TicketingPaymentsTab() {
 
   return (
     <div className="space-y-6 p-4">
-      <div className="rounded-lg border border-[var(--border-subtle)] p-4">
+      <Card className="p-4">
         <p className="text-sm font-medium">{t('admin.ticketingPayments.status')}</p>
         <Badge className="mt-2" variant={data.onlineReady ? 'success' : 'muted'}>
           {data.onlineReady ? 'Spremno' : 'Nije konfigurisano'}
         </Badge>
-      </div>
+      </Card>
 
       <PaymentProviderHints />
 

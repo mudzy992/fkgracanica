@@ -50,7 +50,7 @@ export function RichTextToolbar({ editor, onInsertImage }: Props) {
 
   return (
     <>
-      <div className="flex flex-wrap gap-1 border-b border-slate-200 p-2">
+      <div className="flex flex-wrap gap-1 border-b border-[var(--border-subtle)] p-2">
         {tool('B', () => editor.chain().focus().toggleBold().run(), editor.isActive('bold'))}
         {tool('I', () => editor.chain().focus().toggleItalic().run(), editor.isActive('italic'))}
         {tool(

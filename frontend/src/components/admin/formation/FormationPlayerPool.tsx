@@ -18,7 +18,7 @@ function DraggableChip({ player }: { player: Player }) {
       type="button"
       style={style}
       className={cn(
-        'cursor-grab rounded-full border border-slate-200 bg-background px-3 py-1.5 text-xs font-medium shadow-sm',
+        'cursor-grab rounded-full border border-[var(--border-subtle)] bg-background px-3 py-1.5 text-xs font-medium shadow-sm',
         isDragging && 'z-50 opacity-60 ring-2 ring-primary',
       )}
       {...listeners}

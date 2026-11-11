@@ -117,7 +117,7 @@ export function MediaFolderTree({
   const roots = asArray<MediaFolder>(folders).filter((f) => !f.parentId);
 
   return (
-    <div className={cn('space-y-3 border-r border-slate-200 p-4', className)}>
+    <div className={cn('space-y-3 border-r border-[var(--border-subtle)] p-4', className)}>
       <button
         type="button"
         onClick={() => onSelect(undefined)}

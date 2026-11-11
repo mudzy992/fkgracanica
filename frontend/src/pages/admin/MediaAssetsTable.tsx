@@ -1,7 +1,6 @@
 import { Check, Copy } from 'lucide-react';
 import type { MediaAsset } from '../../hooks/use-media-admin';
 import { mediaUrl } from '../../lib/media';
-import { cn } from '../../lib/utils';
 import { Button } from '../../components/ui/button';
 import { AdminDataTable } from '../../components/admin/AdminPageShell';
 
@@ -37,17 +36,16 @@ export function MediaAssetsTable({
             key: 'select',
             header: '',
             render: (r: MediaAsset) => (
-              <button
+              <Button
                 type="button"
+                size="icon"
+                variant={isSelected(r.id) ? 'default' : 'outline'}
+                className="h-5 w-5 rounded"
                 onClick={() => onToggleSelect(r.id)}
-                className={cn(
-                  'flex h-5 w-5 items-center justify-center rounded border',
-                  isSelected(r.id) ? 'border-primary bg-primary text-white' : 'border-slate-300',
-                )}
                 aria-label={isSelected(r.id) ? 'Poništi odabir' : 'Odaberi'}
               >
                 {isSelected(r.id) && <Check className="h-3 w-3" />}
-              </button>
+              </Button>
             ),
           },
         ]

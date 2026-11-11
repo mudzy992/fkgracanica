@@ -49,12 +49,13 @@ export function MediaAssetsGrid({
             key={asset.id}
             className={cn(
               'overflow-hidden rounded-lg border bg-background',
-              selected ? 'border-primary ring-2 ring-primary/30' : 'border-slate-200',
+              selected ? 'border-primary ring-2 ring-primary/30' : 'border-[var(--border-subtle)]',
             )}
           >
-            <button
+            <Button
               type="button"
-              className="relative block w-full"
+              variant="ghost"
+              className="relative block h-auto w-full p-0"
               onClick={() => (selectionMode ? onToggleSelect(asset.id) : onEdit?.(asset))}
             >
               <img
@@ -72,7 +73,7 @@ export function MediaAssetsGrid({
                   {selected && <Check className="h-3 w-3" />}
                 </span>
               )}
-            </button>
+            </Button>
             <div className="space-y-1 p-2">
               <p className="truncate text-xs font-medium" title={asset.filename}>
                 {truncateName(asset.filename)}

@@ -106,7 +106,7 @@ export function RichTextEditor({ value, onChange, className, tall }: Props) {
   if (!editor) return null;
 
   return (
-    <div className={cn('rounded-lg border border-slate-200', className)}>
+    <div className={cn('rounded-lg border border-[var(--border-subtle)]', className)}>
       <RichTextToolbar editor={editor} onInsertImage={() => setMediaOpen(true)} />
       {pasteUnavailable && (
         <p role="alert" className="px-3 py-1 text-sm text-danger">
@@ -126,7 +126,7 @@ export function RichTextEditor({ value, onChange, className, tall }: Props) {
                 key={a.id}
                 type="button"
                 onClick={() => insertImage(a.originalPath)}
-                className="overflow-hidden rounded-lg border border-slate-200 hover:border-primary"
+                className="overflow-hidden rounded-lg border border-[var(--border-subtle)] hover:border-primary"
               >
                 <img
                   src={mediaUrl(a.thumbPath ?? a.originalPath, 'thumb')}

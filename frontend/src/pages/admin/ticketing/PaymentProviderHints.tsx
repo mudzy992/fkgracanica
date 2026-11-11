@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Card } from '../../../components/ui/card';
 
 export function PaymentProviderHints() {
   const { t } = useTranslation();
@@ -23,9 +24,9 @@ export function PaymentProviderHints() {
 
 function Hint({ title, children }: { title: string; children: ReactNode }) {
   return (
-    <div className="rounded-lg border border-[var(--border-subtle)] bg-surface/50 p-4 text-sm text-text-muted">
+    <Card className="bg-surface/50 p-4 text-sm text-text-muted">
       <p className="font-medium text-text">{title}</p>
       <p className="mt-2">{children}</p>
-    </div>
+    </Card>
   );
 }

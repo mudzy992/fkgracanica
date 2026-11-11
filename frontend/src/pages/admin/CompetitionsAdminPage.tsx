@@ -79,7 +79,7 @@ export function CompetitionsAdminPage() {
           ) : undefined
         }
       >
-        <h2 className="border-b border-slate-200 px-4 py-3 text-sm font-semibold">{t('admin.competitionsAdmin.seasons')}</h2>
+        <h2 className="border-b border-[var(--border-subtle)] px-4 py-3 text-sm font-semibold">{t('admin.competitionsAdmin.seasons')}</h2>
         <AdminDataTable
           rows={seasonList}
           empty={t('admin.competitionsAdmin.emptySeasons')}
@@ -126,7 +126,7 @@ export function CompetitionsAdminPage() {
               : []),
           ]}
         />
-        <h2 className="border-b border-t border-slate-200 px-4 py-3 text-sm font-semibold">{t('admin.competitionsAdmin.catalog')}</h2>
+        <h2 className="border-b border-t border-[var(--border-subtle)] px-4 py-3 text-sm font-semibold">{t('admin.competitionsAdmin.catalog')}</h2>
         <AdminDataTable
           rows={compList}
           empty={t('admin.competitionsAdmin.emptyCompetitions')}

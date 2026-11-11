@@ -9,7 +9,6 @@ import { AdminFormSheet } from '../../../components/admin/AdminFormSheet';
 import { FormationPitch } from '../../../components/admin/FormationPitch';
 import { Button } from '../../../components/ui/button';
 import { Skeleton } from '../../../components/ui/skeleton';
-import { cn } from '../../../lib/utils';
 import { getApiErrorMessage } from '../../../lib/api-error';
 import {
   buildClubMatchLineup,
@@ -152,17 +151,16 @@ export function MatchLineupSheet({ matchId, open, onOpenChange }: Props) {
           )}
           <div className="flex gap-2">
             {(['home', 'away'] as const).map((s) => (
-              <button
+              <Button
                 key={s}
                 type="button"
+                variant={side === s ? 'default' : 'outline'}
+                size="sm"
+                className="flex-1"
                 onClick={() => setSide(s)}
-                className={cn(
-                  'flex-1 rounded-lg border px-3 py-2 text-sm font-medium',
-                  side === s ? 'border-primary bg-primary/10 text-primary' : 'border-slate-200',
-                )}
               >
                 {s === 'home' ? match?.homeClub?.name ?? 'Domaći' : match?.awayClub?.name ?? 'Gosti'}
-              </button>
+              </Button>
             ))}
           </div>
           <div data-dirty-ignore>

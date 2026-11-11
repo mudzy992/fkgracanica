@@ -65,15 +65,22 @@ function SortableMenuRow({
           ? 'border-amber-500/40 bg-amber-500/5'
           : item.isSystem
             ? 'border-primary/20 bg-primary/5'
-            : 'border-slate-200 bg-background',
+            : 'border-[var(--border-subtle)] bg-background',
         !item.enabled && 'opacity-50',
         isDragging && 'shadow-md',
       )}
     >
       <div className="mb-2 flex items-center gap-2">
-        <button type="button" className="cursor-grab text-text-muted" {...attributes} {...listeners}>
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          className="h-7 w-7 shrink-0 cursor-grab text-text-muted"
+          {...attributes}
+          {...listeners}
+        >
           <GripVertical className="h-4 w-4" />
-        </button>
+        </Button>
         {item.isSystem ? (
           <Badge variant="default" className="gap-1">
             <Lock className="h-3 w-3" /> Sistemska

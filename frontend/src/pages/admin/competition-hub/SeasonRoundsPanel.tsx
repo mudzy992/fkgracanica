@@ -88,7 +88,7 @@ export function SeasonRoundsPanel({ seasonId, selectedRoundId, onSelectRound, ca
         }}
         onConfirm={() => void onCascadeConfirm()}
       />
-      <div className="flex items-center justify-between border-b border-slate-200 px-4 py-3">
+      <div className="flex items-center justify-between border-b border-[var(--border-subtle)] px-4 py-3">
         <h3 className="text-sm font-semibold">{t('admin.roundsPanel.rounds')}</h3>
         {canManage && (
           <Button
@@ -110,12 +110,13 @@ export function SeasonRoundsPanel({ seasonId, selectedRoundId, onSelectRound, ca
           <p className="p-4 text-sm text-text-muted">{t('admin.roundsPanel.empty')}</p>
         )}
         {(rounds ?? []).map((round) => (
-          <button
+          <Button
             key={round.id}
             type="button"
+            variant="ghost"
             onClick={() => onSelectRound(round.id)}
             className={cn(
-              'flex w-full items-center justify-between px-4 py-3 text-left text-sm hover:bg-surface',
+              'flex h-auto w-full justify-between rounded-none px-4 py-3 text-left text-sm font-normal',
               selectedRoundId === round.id && 'bg-primary/5',
             )}
           >
@@ -146,7 +147,7 @@ export function SeasonRoundsPanel({ seasonId, selectedRoundId, onSelectRound, ca
                 </Button>
               </span>
             )}
-          </button>
+          </Button>
         ))}
       </div>
       <RoundFormSheet

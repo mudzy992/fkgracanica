@@ -35,7 +35,7 @@ export function EntitySelect<T extends object>(props: StaticProps | AsyncProps<T
         <select
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          className="w-full rounded-lg border border-slate-200 bg-background px-3 py-2 text-sm"
+          className="w-full rounded-lg border border-[var(--border-subtle)] bg-background px-3 py-2 text-sm"
         >
           <option value="">{placeholder ?? t('admin.common.select')}</option>
           {options.map((o) => (
@@ -86,7 +86,7 @@ function AsyncEntitySelect<T extends object>(props: AsyncProps<T>) {
   if (isLoading) return <p className="text-sm text-text-muted">{t('admin.common.loading')}</p>;
 
   return (
-    <div className="flex max-h-36 flex-wrap gap-2 overflow-y-auto rounded-lg border border-slate-200 p-2">
+    <div className="flex max-h-36 flex-wrap gap-2 overflow-y-auto rounded-lg border border-[var(--border-subtle)] p-2">
       {data.length === 0 && (
         <span className="text-sm text-text-muted">{placeholder ?? t('admin.common.select')}</span>
       )}
@@ -100,7 +100,7 @@ function AsyncEntitySelect<T extends object>(props: AsyncProps<T>) {
             onClick={() => toggle(id)}
             className={cn(
               'rounded-lg border px-2 py-1 text-xs',
-              active ? 'border-primary bg-primary text-white' : 'border-slate-200',
+              active ? 'border-primary bg-primary text-white' : 'border-[var(--border-subtle)]',
             )}
           >
             {labelOf(item)}

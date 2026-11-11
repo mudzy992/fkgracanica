@@ -78,9 +78,15 @@ export function NewsEditorPage() {
       <Seo title={isEdit ? 'Uredi vijest' : 'Nova vijest'} />
       <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
         <div>
-          <button type="button" onClick={requestBack} className="text-xs text-text-muted hover:underline">
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            onClick={requestBack}
+            className="h-auto p-0 text-xs text-text-muted hover:bg-transparent hover:text-text hover:underline"
+          >
             ← Vijesti
-          </button>
+          </Button>
           <h1 className="text-2xl font-bold text-text">{isEdit ? 'Uredi vijest' : 'Nova vijest'}</h1>
         </div>
         <div className="flex gap-2">

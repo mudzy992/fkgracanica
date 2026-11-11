@@ -143,7 +143,7 @@ export function MediaPickerDialog({
                         'relative overflow-hidden rounded-lg border transition',
                         selected
                           ? 'border-primary-light ring-2 ring-primary-light/40'
-                          : 'border-slate-200 hover:border-primary-light/50',
+                          : 'border-[var(--border-subtle)] hover:border-primary-light/50',
                       )}
                     >
                       <img

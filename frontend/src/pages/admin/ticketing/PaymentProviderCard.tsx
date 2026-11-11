@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Badge } from '../../../components/ui/badge';
+import { Card } from '../../../components/ui/card';
 import { Input } from '../../../components/ui/input';
 import { Select } from '../../../components/ui/select';
 import { Switch } from '../../../components/ui/switch';
@@ -22,7 +23,7 @@ export function PaymentProviderCard({ id, label, gate, settings, onSet }: Props)
   const badge = providerGateBadge(gate);
   const prefix = `payments.${id}`;
   return (
-    <div className="rounded-lg border border-[var(--border-subtle)] p-4">
+    <Card className="p-4">
       <div className="mb-3 flex items-center justify-between">
         <h3 className="font-medium">{label}</h3>
         <Badge variant={badge.variant}>{badge.label}</Badge>
@@ -37,7 +38,7 @@ export function PaymentProviderCard({ id, label, gate, settings, onSet }: Props)
       {id === 'stripe' && <StripeFields settings={settings} onSet={onSet} />}
       {id === 'paypal' && <PaypalFields settings={settings} onSet={onSet} />}
       {id === 'monri' && <MonriFields settings={settings} onSet={onSet} />}
-    </div>
+    </Card>
   );
 }
 

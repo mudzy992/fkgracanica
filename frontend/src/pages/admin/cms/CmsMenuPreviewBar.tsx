@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { AlertTriangle } from 'lucide-react';
+import { Card } from '../../../components/ui/card';
 import type { MenuDraftItem } from './menu-utils';
 import { menuHref } from './menu-utils';
 import { findBlockedMenuItems } from './menu-module-warnings';
@@ -18,7 +19,7 @@ export function CmsMenuPreviewBar({ items, moduleFlags }: Props) {
 
   return (
     <div className="space-y-3">
-      <div className="rounded-lg border border-slate-200 bg-background p-4">
+      <Card className="p-4">
         <p className="mb-3 text-xs font-medium uppercase tracking-wide text-text-muted">
           Pregled menija
         </p>
@@ -54,7 +55,7 @@ export function CmsMenuPreviewBar({ items, moduleFlags }: Props) {
             })
           )}
         </div>
-      </div>
+      </Card>
 
       {blocked.length > 0 && (
         <div

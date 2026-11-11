@@ -46,8 +46,8 @@ export function CustomHtmlEditor({ value, onChange, className }: Props) {
   };
 
   return (
-    <div className={cn('rounded-lg border border-slate-200', className)}>
-      <div className="flex flex-wrap gap-1 border-b border-slate-200 p-2">
+    <div className={cn('rounded-lg border border-[var(--border-subtle)]', className)}>
+      <div className="flex flex-wrap gap-1 border-b border-[var(--border-subtle)] p-2">
         {TAG_ACTIONS.map((tag) => (
           <Button
             key={tag.label}

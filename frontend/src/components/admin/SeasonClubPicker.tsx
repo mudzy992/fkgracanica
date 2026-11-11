@@ -37,7 +37,7 @@ export function SeasonClubPicker({ clubs, value, onChange, className }: Props) {
           </button>
         </div>
       </div>
-      <div className="max-h-48 space-y-2 overflow-y-auto rounded-xl border border-slate-200 p-3">
+      <div className="max-h-48 space-y-2 overflow-y-auto rounded-xl border border-[var(--border-subtle)] p-3">
         {clubs.map((club) => (
           <label
             key={club.id}

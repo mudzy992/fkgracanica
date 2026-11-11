@@ -77,9 +77,9 @@ export function UsersPage({ embedded = false }: Props) {
   ) : (
     <>
       {embedded && createAction && (
-        <div className="flex justify-end border-b border-slate-200 p-4">{createAction}</div>
+        <div className="flex justify-end border-b border-[var(--border-subtle)] p-4">{createAction}</div>
       )}
-      <div className={`border-b border-slate-200 p-4 ${embedded && createAction ? 'pt-0' : ''}`}>
+      <div className={`border-b border-[var(--border-subtle)] p-4 ${embedded && createAction ? 'pt-0' : ''}`}>
         <Input
           className="max-w-xs"
           placeholder={t('admin.usersAdmin.search')}

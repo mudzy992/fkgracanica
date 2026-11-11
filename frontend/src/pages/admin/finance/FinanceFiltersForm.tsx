@@ -60,18 +60,20 @@ export function FinanceFiltersForm({
       <div>
         <p className="mb-2 text-sm text-text-muted">{t('admin.financeFilters.method')}</p>
         <div className="flex flex-wrap gap-2">
-          <button
+          <Button
             type="button"
+            variant="ghost"
+            size="sm"
             aria-pressed={!draft.provider}
             onClick={() => setDraft({ ...draft, provider: '' })}
-            className={`rounded-full px-2.5 py-1 text-xs font-semibold ${
+            className={`h-auto rounded-full px-2.5 py-1 text-xs font-semibold ${
               !draft.provider
                 ? 'bg-text text-background ring-2 ring-accent ring-offset-2 ring-offset-background'
                 : 'bg-surface text-text-muted hover:text-text'
             }`}
           >
             Svi načini
-          </button>
+          </Button>
           {PROVIDERS.map((id) => (
             <FinanceProviderChip
               key={id}

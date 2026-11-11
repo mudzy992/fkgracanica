@@ -50,18 +50,20 @@ export function AnalyticsPage() {
 
       <div className="mb-5 flex gap-2 border-b border-[var(--border-subtle)]">
         {TABS.map(({ id, labelKey }) => (
-          <button
+          <Button
             key={id}
+            variant="ghost"
+            size="sm"
             onClick={() => setTab(id)}
             className={[
-              'pb-2 text-sm font-medium transition-colors',
+              'h-auto rounded-none border-b-2 px-1 pb-2 text-sm font-medium',
               tab === id
-                ? 'border-b-2 border-primary text-text'
-                : 'text-text-muted hover:text-text',
+                ? 'border-primary text-text'
+                : 'border-transparent text-text-muted hover:text-text',
             ].join(' ')}
           >
             {t(labelKey)}
-          </button>
+          </Button>
         ))}
       </div>
 

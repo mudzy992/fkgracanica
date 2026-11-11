@@ -67,7 +67,7 @@ export function SeasonHubPage() {
       </div>
 
       <div className="grid gap-6 lg:grid-cols-5">
-        <div className="overflow-hidden rounded-2xl border border-slate-200 bg-background lg:col-span-2">
+        <div className="overflow-hidden rounded-2xl border border-[var(--border-subtle)] bg-background lg:col-span-2">
           <SeasonRoundsPanel
             seasonId={editionKey}
             selectedRoundId={selectedRoundId}
@@ -75,7 +75,7 @@ export function SeasonHubPage() {
             canManage={canManage}
           />
         </div>
-        <div className="overflow-hidden rounded-2xl border border-slate-200 bg-background lg:col-span-3">
+        <div className="overflow-hidden rounded-2xl border border-[var(--border-subtle)] bg-background lg:col-span-3">
           {selectedRoundId ? (
             <RoundMatchesPanel
               seasonId={editionKey}

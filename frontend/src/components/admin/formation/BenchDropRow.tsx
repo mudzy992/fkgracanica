@@ -30,7 +30,7 @@ export function BenchDropRow({ slot, active, onSelect }: Props) {
       className={cn(
         'flex w-full items-center justify-between rounded-lg border px-3 py-2 text-sm hover:bg-surface',
         slot.playerId && 'cursor-grab',
-        active || isOver ? 'border-primary bg-primary/5' : 'border-slate-200',
+        active || isOver ? 'border-primary bg-primary/5' : 'border-[var(--border-subtle)]',
         drag.isDragging && 'opacity-50',
       )}
     >

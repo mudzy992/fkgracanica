@@ -78,7 +78,7 @@ export function CalendarSeasonPage() {
           </Button>
         )}
       </div>
-      <div className="overflow-hidden rounded-2xl border border-slate-200 bg-background">
+      <div className="overflow-hidden rounded-2xl border border-[var(--border-subtle)] bg-background">
         <AdminDataTable
           rows={rows}
           empty="Nema takmičenja u ovoj sezoni."

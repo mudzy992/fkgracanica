@@ -62,7 +62,7 @@ export function ClubHubPage() {
           </p>
         </div>
       </div>
-      <div className="flex flex-wrap gap-2 border-b border-slate-200/80 pb-3">
+      <div className="flex flex-wrap gap-2 border-b border-[var(--border-subtle)]/80 pb-3">
         {TABS.map((t) => (
           <Button
             key={t.id}

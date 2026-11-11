@@ -41,7 +41,7 @@ function PenaltySide({
   };
 
   return (
-    <div className="rounded-xl border border-slate-200 bg-surface/50 p-4">
+    <div className="rounded-xl border border-[var(--border-subtle)] bg-surface/50 p-4">
       <h3 className="mb-2 text-center font-semibold">{clubName}</h3>
       <EntitySelect
         label={t('admin.commentatorBoard.player')}

@@ -92,7 +92,7 @@ export function RolesPage({ embedded = false }: Props) {
   ) : (
     <>
       {embedded && createAction && (
-        <div className="flex justify-end border-b border-slate-200 p-4">{createAction}</div>
+        <div className="flex justify-end border-b border-[var(--border-subtle)] p-4">{createAction}</div>
       )}
       <AdminDataTable
         rows={roleList}

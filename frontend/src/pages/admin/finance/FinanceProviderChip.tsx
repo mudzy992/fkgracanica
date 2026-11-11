@@ -1,5 +1,6 @@
 import { PaymentProviderLogo } from '../../../components/payments/PaymentProviderLogo';
 import type { PaymentProviderId } from '../../../types/payment-provider';
+import { Button } from '../../../components/ui/button';
 import { PROVIDER_META, isFinanceProvider } from './finance-labels';
 
 const ONLINE: PaymentProviderId[] = ['stripe', 'paypal', 'monri'];
@@ -32,9 +33,16 @@ export function FinanceProviderChip({
   );
   if (onClick) {
     return (
-      <button type="button" className={className} onClick={onClick} aria-pressed={!!selected}>
+      <Button
+        type="button"
+        variant="ghost"
+        size="sm"
+        className={`${className} h-auto rounded-full`}
+        onClick={onClick}
+        aria-pressed={!!selected}
+      >
         {inner}
-      </button>
+      </Button>
     );
   }
   return <span className={className}>{inner}</span>;
