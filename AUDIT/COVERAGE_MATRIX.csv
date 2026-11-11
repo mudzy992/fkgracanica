@@ -1431,7 +1431,7 @@
 "frontend/src/pages/admin/competition-hub/RoundMatchesPanel.tsx","frontend","src","190","popravljeno","FE-04b: aria-label na icon-only dugmad ; FE-04c: i18n batch 7 (utakmice u kolu)","FE-04b","2026-11-03"
 "frontend/src/pages/admin/competition-hub/SeasonHubPage.tsx","frontend","src","95","popravljeno","FE-05: breadcrumbs ; FE-04c: i18n batch 6 (season hub)","FE-05","2026-11-03"
 "frontend/src/pages/admin/competition-hub/SeasonRoundsPanel.tsx","frontend","src","164","popravljeno","FE-04b: aria-label na icon-only dugmad ; FE-04c: i18n batch 4 (kola)","FE-04b","2026-11-03"
-"frontend/src/pages/admin/CompetitionsAdminFormSheet.tsx","frontend","src","150","popravljeno","FE-04c: i18n batch 4 (forma takmičenja/sezone)","FE-04c","2026-11-03"
+"frontend/src/pages/admin/CompetitionsAdminFormSheet.tsx","frontend","src","151","popravljeno","FE-04c: i18n batch 4 (forma takmičenja/sezone)","FE-04c","2026-11-03"
 "frontend/src/pages/admin/CompetitionsAdminPage.tsx","frontend","src","171","popravljeno","FE-04b: aria-label na icon-only dugmad ; FE-04c: i18n batch 2 (tabela sezona/katalog, potvrda brisanja) ; FE-04c: i18n batch 8 (admin, baseline 74 → 0)","FE-04b","2026-11-03"
 "frontend/src/pages/admin/ContactAdminPage.tsx","frontend","src","173","popravljeno","FE-04b: aria-label na icon-only dugmad ; FE-04c: i18n batch 5 (kontakt poruke)","FE-04b","2026-11-03"
 "frontend/src/pages/admin/ContactMessageSheet.tsx","frontend","src","58","popravljeno","FE-04c: i18n batch 8 (admin, baseline 74 → 0)","FE-04c","2026-11-03"
