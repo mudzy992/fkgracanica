@@ -9,7 +9,7 @@ export function useStandings(seasonId?: string, upToRound?: number | null) {
     queryFn: async () =>
       (await api.get<StandingRow[]>('/statistics/standings', {
         params: {
-          ...(seasonId ? { seasonId } : {}),
+          seasonId,
           ...(upToRound != null ? { upToRound } : {}),
         },
       })).data,

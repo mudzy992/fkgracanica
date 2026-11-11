@@ -49,7 +49,7 @@ export function RichTextEditor({ value, onChange, className, tall }: Props) {
             // Let ProseMirror reconcile through its normal selection observer before pasting,
             // preserving real node/text selections as well as pending DOM changes.
             const doc = view.dom.ownerDocument;
-            doc.dispatchEvent(new (doc.defaultView?.Event ?? Event)('selectionchange'));
+            doc.dispatchEvent(new Event('selectionchange'));
           }
           let html = '';
           let text = '';

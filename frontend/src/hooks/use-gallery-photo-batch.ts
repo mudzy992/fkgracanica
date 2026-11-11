@@ -43,7 +43,7 @@ export function useGalleryPhotoBatch(galleryId: string) {
     enabled: false, staleTime: Infinity, gcTime: Infinity,
   });
   const set = (next: BatchState) => client.setQueryData(key, next);
-  const current = () => client.getQueryData<BatchState>(key) ?? initial;
+  const current = () => client.getQueryData<BatchState>(key)!;
 
   const add = async (source: Source) => {
     // Sinhroni cache lock štiti i od dvostrukog klika i od dvije montirane komponente.
