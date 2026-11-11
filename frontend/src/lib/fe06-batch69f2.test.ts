@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { buildFormationSlots, FORMATION_SLOTS } from './formation-slots';
+import { buildFormationSlots } from './formation-slots';
 import { pickFeaturedTrophy, splitFeaturedTrophy } from './trophy-utils';
 import { groupSponsorsByTier, SPONSOR_TIER_ORDER } from './sponsor-tiers';
 import { userInitials } from './user-initials';
