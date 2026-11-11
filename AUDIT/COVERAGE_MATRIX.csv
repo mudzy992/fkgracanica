@@ -1435,6 +1435,7 @@
 "frontend/src/pages/admin/fe06-batch66p.test.tsx","frontend","src","75","nepregledano","","",""
 "frontend/src/pages/admin/fe06-batch67c.test.tsx","frontend","src","68","nepregledano","","",""
 "frontend/src/pages/admin/fe06-batch67d.test.tsx","frontend","src","29","nepregledano","","",""
+"frontend/src/pages/admin/fe06-batch68b.test.tsx","frontend","src","93","nepregledano","","",""
 "frontend/src/pages/admin/fe06-calendar-season-actions.test.tsx","frontend","src","134","pokriveno testom","FE-06 coverage batch 14: 5 testova akcija sezone (nove izmjene, brisanje uz potvrdu)","FE-06","2026-11-05"
 "frontend/src/pages/admin/fe06-calendar-season-page-branch47.test.tsx","frontend","src","92","nepregledano","","",""
 "frontend/src/pages/admin/fe06-calendar-season-page-branch53.test.tsx","frontend","src","40","nepregledano","","",""
