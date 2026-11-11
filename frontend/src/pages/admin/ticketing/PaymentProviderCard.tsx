@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Badge } from '../../../components/ui/badge';
 import { Input } from '../../../components/ui/input';
+import { Select } from '../../../components/ui/select';
 import { Switch } from '../../../components/ui/switch';
 import type { ProviderGate } from '../../../types/ticketing-config';
 import { providerGateBadge } from './provider-gate.util';
@@ -107,14 +108,13 @@ function PaypalFields({
         />
       </Field>
       <Field label={t('admin.payments.mode.label')}>
-        <select
-          className="flex h-10 w-full rounded-lg border border-[var(--border-subtle)] bg-background px-3 text-sm"
+        <Select
           value={settings['payments.paypal.mode'] || 'sandbox'}
           onChange={(e) => onSet('payments.paypal.mode', e.target.value)}
         >
           <option value="sandbox">{t('admin.payments.mode.sandbox')}</option>
           <option value="live">{t('admin.payments.mode.live')}</option>
-        </select>
+        </Select>
       </Field>
       <Field label={t('admin.payments.paypal.currency')}>
         <Input
@@ -156,14 +156,13 @@ function MonriFields({
         />
       </Field>
       <Field label={t('admin.payments.mode.label')}>
-        <select
-          className="flex h-10 w-full rounded-lg border border-[var(--border-subtle)] bg-background px-3 text-sm"
+        <Select
           value={settings['payments.monri.mode'] || 'test'}
           onChange={(e) => onSet('payments.monri.mode', e.target.value)}
         >
           <option value="test">{t('admin.payments.mode.test')}</option>
           <option value="live">{t('admin.payments.mode.live')}</option>
-        </select>
+        </Select>
       </Field>
     </div>
   );

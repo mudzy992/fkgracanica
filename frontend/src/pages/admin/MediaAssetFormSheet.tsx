@@ -6,6 +6,7 @@ import { asArray } from '../../lib/as-array';
 import { AdminFormSheet } from '../../components/admin/AdminFormSheet';
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
+import { Select } from '../../components/ui/select';
 import { mediaUrl } from '../../lib/media';
 import { getApiErrorMessage } from '../../lib/api-error';
 
@@ -90,10 +91,9 @@ export function MediaAssetFormSheet({ asset, open, onOpenChange }: Props) {
         </div>
         <div>
           <label className="mb-1 block text-sm font-medium">{t('admin.mediaAsset.folder')}</label>
-          <select
+          <Select
             value={folderId}
             onChange={(e) => setFolderId(e.target.value)}
-            className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
           >
             <option value="">{t('admin.mediaAsset.noFolder')}</option>
             {folders.map((f) => (
@@ -101,7 +101,7 @@ export function MediaAssetFormSheet({ asset, open, onOpenChange }: Props) {
                 {f.name}
               </option>
             ))}
-          </select>
+          </Select>
         </div>
         {error && (
           <p role="alert" className="text-sm text-danger">

@@ -7,7 +7,6 @@ import { AdminBreadcrumbs } from '../../../components/admin/AdminBreadcrumbs';
 import { Badge } from '../../../components/ui/badge';
 import { Button } from '../../../components/ui/button';
 import { Skeleton } from '../../../components/ui/skeleton';
-import { cn } from '../../../lib/utils';
 import { ClubHubPanel } from './ClubHubPanel';
 import { ClubBasicTab } from './tabs/ClubBasicTab';
 import { ClubStadiumTab } from './tabs/ClubStadiumTab';
@@ -65,17 +64,15 @@ export function ClubHubPage() {
       </div>
       <div className="flex flex-wrap gap-2 border-b border-slate-200/80 pb-3">
         {TABS.map((t) => (
-          <button
+          <Button
             key={t.id}
             type="button"
+            variant={tab === t.id ? 'default' : 'ghost'}
+            size="sm"
             onClick={() => setParams({ tab: t.id })}
-            className={cn(
-              'rounded-lg px-3 py-1.5 text-sm font-medium transition-colors',
-              tab === t.id ? 'bg-primary text-white' : 'text-text-muted hover:bg-surface',
-            )}
           >
             {t.label}
-          </button>
+          </Button>
         ))}
       </div>
       <ClubHubPanel>

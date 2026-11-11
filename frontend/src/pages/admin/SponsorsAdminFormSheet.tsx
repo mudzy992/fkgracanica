@@ -4,6 +4,7 @@ import { useCreateSponsor, useUpdateSponsor } from '../../hooks/use-content-admi
 import { AdminFormSheet } from '../../components/admin/AdminFormSheet';
 import { MediaPicker } from '../../components/admin/MediaPicker';
 import { Button } from '../../components/ui/button';
+import { Select } from '../../components/ui/select';
 import { Input } from '../../components/ui/input';
 import type { Sponsor } from '../../types';
 
@@ -62,17 +63,16 @@ export function SponsorsAdminFormSheet({ open, onOpenChange, edit }: Props) {
           onChange={(e) => setName(e.target.value)}
           placeholder={t('admin.rolesForm.name')}
         />
-        <select
+        <Select
           value={tier}
           onChange={(e) => setTier(e.target.value)}
-          className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
         >
           {TIERS.map((t) => (
             <option key={t} value={t}>
               {t}
             </option>
           ))}
-        </select>
+        </Select>
         <Input
           value={url}
           onChange={(e) => setUrl(e.target.value)}

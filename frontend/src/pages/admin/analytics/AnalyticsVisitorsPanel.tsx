@@ -1,4 +1,5 @@
 import { useVisitorGeo, useVisitorTrend, useVisitorTotals } from '../../../hooks/use-analytics';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../../../components/ui/table';
 import { useTranslation } from 'react-i18next';
 import { AnalyticsGeoPanel } from './AnalyticsGeoPanel';
 import { AnalyticsVisitorsTrendChart } from './AnalyticsVisitorsTrendChart';
@@ -46,32 +47,32 @@ export function AnalyticsVisitorsPanel() {
             {t('admin.analyticsPanel.table')}
           </h3>
           <div className="overflow-x-auto rounded-xl border border-[var(--border-subtle)]">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-[var(--border-subtle)] text-left text-xs text-text-muted">
-                  <th className="px-4 py-2">{t('admin.analyticsPanel.date')}</th>
-                  <th className="px-4 py-2 text-right">{t('admin.visitors.web')}</th>
-                  <th className="px-4 py-2 text-right">{t('admin.visitors.mobile')}</th>
-                  <th className="px-4 py-2 text-right">{t('admin.visitors.total')}</th>
-                </tr>
-              </thead>
-              <tbody>
+            <Table className="w-full text-sm">
+              <TableHeader>
+                <TableRow className="border-b border-[var(--border-subtle)] text-left text-xs text-text-muted">
+                  <TableHead className="px-4 py-2">{t('admin.analyticsPanel.date')}</TableHead>
+                  <TableHead className="px-4 py-2 text-right">{t('admin.visitors.web')}</TableHead>
+                  <TableHead className="px-4 py-2 text-right">{t('admin.visitors.mobile')}</TableHead>
+                  <TableHead className="px-4 py-2 text-right">{t('admin.visitors.total')}</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
                 {trend
                   .slice()
                   .reverse()
                   .map((row) => (
-                    <tr
+                    <TableRow
                       key={row.date}
                       className="border-b border-[var(--border-subtle)] last:border-0"
                     >
-                      <td className="px-4 py-2 text-text-muted">{row.date}</td>
-                      <td className="px-4 py-2 text-right tabular-nums">{row.web}</td>
-                      <td className="px-4 py-2 text-right tabular-nums">{row.mobile}</td>
-                      <td className="px-4 py-2 text-right tabular-nums font-medium">{row.total}</td>
-                    </tr>
+                      <TableCell className="px-4 py-2 text-text-muted">{row.date}</TableCell>
+                      <TableCell className="px-4 py-2 text-right tabular-nums">{row.web}</TableCell>
+                      <TableCell className="px-4 py-2 text-right tabular-nums">{row.mobile}</TableCell>
+                      <TableCell className="px-4 py-2 text-right tabular-nums font-medium">{row.total}</TableCell>
+                    </TableRow>
                   ))}
-              </tbody>
-            </table>
+              </TableBody>
+            </Table>
           </div>
         </div>
       )}

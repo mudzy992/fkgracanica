@@ -19,6 +19,7 @@ import { Link } from 'react-router-dom';
 import { AlertTriangle, GripVertical, Lock } from 'lucide-react';
 import { Badge } from '../../../components/ui/badge';
 import { Button } from '../../../components/ui/button';
+import { Select } from '../../../components/ui/select';
 import { Input } from '../../../components/ui/input';
 import { Switch } from '../../../components/ui/switch';
 import type { CmsPage } from '../../../cms/types';
@@ -110,8 +111,7 @@ function SortableMenuRow({
         <div className="grid gap-2 md:grid-cols-2">
           <Input value={item.label} onChange={(e) => onPatch({ label: e.target.value })} placeholder={t('admin.cmsMenu.label')} />
           <Input value={item.path} onChange={(e) => onPatch({ path: e.target.value })} placeholder={t('admin.cmsMenu.path')} />
-          <select
-            className="rounded-lg border border-slate-200 bg-background px-2 py-2 text-sm md:col-span-2"
+          <Select className="md:col-span-2"
             value={item.pageId ?? ''}
             onChange={(e) => {
               const pageId = e.target.value || undefined;
@@ -128,7 +128,7 @@ function SortableMenuRow({
                 {p.title}
               </option>
             ))}
-          </select>
+          </Select>
           <Button variant="outline" size="sm" className="text-danger md:col-span-2" onClick={onRemove}>
             Obriši stavku
           </Button>

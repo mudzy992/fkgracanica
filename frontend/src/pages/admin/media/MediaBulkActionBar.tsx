@@ -4,6 +4,7 @@ import { useDeleteMedia, useUpdateMediaAsset } from '../../../hooks/use-media-ad
 import { asArray } from '../../../lib/as-array';
 import { getApiErrorMessage } from '../../../lib/api-error';
 import { Button } from '../../../components/ui/button';
+import { Select } from '../../../components/ui/select';
 import { useTranslation } from 'react-i18next';
 
 interface Props {
@@ -72,10 +73,9 @@ export function MediaBulkActionBar({
     <div className="fixed inset-x-0 bottom-0 z-40 border-t border-[var(--border-subtle)] bg-background/95 p-3 shadow-lg backdrop-blur sm:static sm:border-t-0 sm:bg-transparent sm:p-0 sm:shadow-none sm:backdrop-blur-none">
       <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-2">
         <span className="text-sm font-medium">{count} odabrano</span>
-        <select
+        <Select
           value={targetFolder}
-          onChange={(e) => setTargetFolder(e.target.value)}
-          className="min-w-0 flex-1 rounded-lg border border-slate-200 px-2 py-1.5 text-sm sm:max-w-[200px] sm:flex-none"
+          onChange={(e) => setTargetFolder(e.target.value)} className="min-w-0 flex-1 sm:max-w-[200px] sm:flex-none"
           disabled={busy}
         >
           <option value="">{t('admin.mediaBulk.moveTo')}</option>
@@ -84,7 +84,7 @@ export function MediaBulkActionBar({
               {f.name}
             </option>
           ))}
-        </select>
+        </Select>
         <Button
           type="button"
           size="sm"

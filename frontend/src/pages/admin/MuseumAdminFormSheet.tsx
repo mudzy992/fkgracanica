@@ -6,6 +6,7 @@ import { MUSEUM_CATEGORIES } from '../../lib/museum-categories';
 import { AdminFormSheet } from '../../components/admin/AdminFormSheet';
 import { MediaPicker } from '../../components/admin/MediaPicker';
 import { Button } from '../../components/ui/button';
+import { Select } from '../../components/ui/select';
 import { Input } from '../../components/ui/input';
 import { Textarea } from '../../components/ui/textarea';
 import type { MuseumItem } from '../../types';
@@ -70,17 +71,16 @@ export function MuseumAdminFormSheet({ open, onOpenChange, edit }: Props) {
         />
         <div>
           <label className="mb-1 block text-sm font-medium">{t('admin.newsForm.category')}</label>
-          <select
+          <Select
             value={category}
             onChange={(e) => setCategory(e.target.value)}
-            className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
           >
             {CATEGORIES.map((c) => (
               <option key={c.value} value={c.value}>
                 {c.label}
               </option>
             ))}
-          </select>
+          </Select>
         </div>
         <Input
           type="number"

@@ -6,6 +6,7 @@ import { AdminFormSheet } from '../../components/admin/AdminFormSheet';
 import { EntitySelect } from '../../components/admin/EntitySelect';
 import { MediaPicker } from '../../components/admin/MediaPicker';
 import { Button } from '../../components/ui/button';
+import { Select } from '../../components/ui/select';
 import { Input } from '../../components/ui/input';
 import { Textarea } from '../../components/ui/textarea';
 import { Switch } from '../../components/ui/switch';
@@ -104,17 +105,16 @@ export function PlayersAdminFormSheet({ open, onOpenChange, edit, clubId: fixedC
             placeholder={t('admin.playerForm.selectClub')}
           />
         )}
-        <select
+        <Select
           value={position}
           onChange={(e) => setPosition(e.target.value)}
-          className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
         >
           {POSITIONS.map((p) => (
             <option key={p} value={p}>
               {playerPositionLabel(p)}
             </option>
           ))}
-        </select>
+        </Select>
         <Input
           type="number"
           value={number}

@@ -1,3 +1,4 @@
+import { Select } from '../../../components/ui/select';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useClubs } from '../../../hooks';
@@ -35,8 +36,7 @@ export function AnalyticsH2hPanel() {
   return (
     <div className="space-y-5">
       <div className="grid gap-3 sm:grid-cols-2">
-        <select
-          className="h-10 rounded-lg border border-[var(--border-subtle)] bg-background px-3 text-sm"
+        <Select
           value={a}
           onChange={(e) => setA(e.target.value)}
         >
@@ -46,9 +46,8 @@ export function AnalyticsH2hPanel() {
               {c.name}
             </option>
           ))}
-        </select>
-        <select
-          className="h-10 rounded-lg border border-[var(--border-subtle)] bg-background px-3 text-sm"
+        </Select>
+        <Select
           value={b}
           onChange={(e) => setB(e.target.value)}
         >
@@ -58,7 +57,7 @@ export function AnalyticsH2hPanel() {
               {c.name}
             </option>
           ))}
-        </select>
+        </Select>
       </div>
 
       {isFetching && <p className="text-sm text-text-muted">{t('admin.common.loading')}</p>}

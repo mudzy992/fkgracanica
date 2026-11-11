@@ -1,4 +1,12 @@
 import { Badge } from '../../../components/ui/badge';
+import {
+  Table as UITable,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '../../../components/ui/table';
 import { useTranslation } from 'react-i18next';
 import type { FinanceBucket, FinanceSummary } from '../../../hooks/use-finance-summary';
 import { FinanceProviderChip } from './FinanceProviderChip';
@@ -24,29 +32,29 @@ function Table({
       <p className="border-b border-[var(--border-subtle)] px-4 py-2 text-sm font-medium">
         {title}
       </p>
-      <table className="w-full text-sm">
-        <thead>
-          <tr className="text-left text-text-muted">
-            <th className="px-4 py-2 font-medium">
+      <UITable className="w-full text-sm">
+        <TableHeader>
+          <TableRow className="text-left text-text-muted">
+            <TableHead className="px-4 py-2 font-medium">
               {kind === 'provider'
                 ? t('admin.orderSheet.paymentMethod')
                 : t('admin.membershipForm.status')}
-            </th>
-            <th className="px-4 py-2 font-medium">{t('admin.financeBuckets.count')}</th>
-            <th className="px-4 py-2 font-medium">{t('admin.orderSheet.amount')}</th>
-          </tr>
-        </thead>
-        <tbody>
+            </TableHead>
+            <TableHead className="px-4 py-2 font-medium">{t('admin.financeBuckets.count')}</TableHead>
+            <TableHead className="px-4 py-2 font-medium">{t('admin.orderSheet.amount')}</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
           {rows.length === 0 ? (
-            <tr>
-              <td className="px-4 py-3 text-text-muted" colSpan={3}>
+            <TableRow>
+              <TableCell className="px-4 py-3 text-text-muted" colSpan={3}>
                 {t('admin.financeBuckets.empty')}
-              </td>
-            </tr>
+              </TableCell>
+            </TableRow>
           ) : (
             rows.map((row) => (
-              <tr key={row.key} className="border-t border-[var(--border-subtle)]">
-                <td className="px-4 py-2">
+              <TableRow key={row.key} className="border-t border-[var(--border-subtle)]">
+                <TableCell className="px-4 py-2">
                   {kind === 'provider' && isFinanceProvider(row.key) ? (
                     <FinanceProviderChip id={row.key} />
                   ) : (
@@ -54,14 +62,14 @@ function Table({
                       {paymentStatusLabel(row.key)}
                     </Badge>
                   )}
-                </td>
-                <td className="px-4 py-2 tabular-nums">{row.count}</td>
-                <td className="px-4 py-2 tabular-nums">{formatKm(row.sum)}</td>
-              </tr>
+                </TableCell>
+                <TableCell className="px-4 py-2 tabular-nums">{row.count}</TableCell>
+                <TableCell className="px-4 py-2 tabular-nums">{formatKm(row.sum)}</TableCell>
+              </TableRow>
             ))
           )}
-        </tbody>
-      </table>
+        </TableBody>
+      </UITable>
     </div>
   );
 }

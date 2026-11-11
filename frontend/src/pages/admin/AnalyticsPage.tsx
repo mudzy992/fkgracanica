@@ -4,6 +4,7 @@ import { useSeasons } from '../../hooks';
 import { asArray } from '../../lib/as-array';
 import { Seo } from '../../components/seo/Seo';
 import { Button } from '../../components/ui/button';
+import { Select } from '../../components/ui/select';
 import { useTeamAnalytics } from '../../hooks/use-analytics';
 import { AnalyticsTeamPanel } from './analytics/AnalyticsTeamPanel';
 import { AnalyticsH2hPanel } from './analytics/AnalyticsH2hPanel';
@@ -33,8 +34,7 @@ export function AnalyticsPage() {
       <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
         <h1 className="text-2xl font-bold">{t('admin.analytics')}</h1>
         {tab === 'team' && (
-          <select
-            className="h-10 rounded-lg border border-[var(--border-subtle)] bg-background px-3 text-sm"
+          <Select
             value={seasonId}
             onChange={(e) => setSeasonId(e.target.value)}
           >
@@ -44,7 +44,7 @@ export function AnalyticsPage() {
                 {s.name}
               </option>
             ))}
-          </select>
+          </Select>
         )}
       </div>
 

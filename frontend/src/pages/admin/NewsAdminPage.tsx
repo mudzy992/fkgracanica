@@ -16,6 +16,7 @@ import { ConfirmDialog } from '../../components/admin/ConfirmDialog';
 import { Seo } from '../../components/seo/Seo';
 import { Badge } from '../../components/ui/badge';
 import { Button } from '../../components/ui/button';
+import { Select } from '../../components/ui/select';
 import { AdminDataTable, AdminPageShell } from '../../components/admin/AdminPageShell';
 import { NewsCategoriesDialog } from './NewsCategoriesDialog';
 import { contentStatusLabel } from '../../lib/content-status-labels';
@@ -67,8 +68,7 @@ export function NewsAdminPage() {
         isLoading={isLoading}
         actions={
           <div className="flex flex-wrap items-center gap-2">
-            <select
-              className="rounded-lg border border-slate-200 bg-background px-3 py-2 text-sm"
+            <Select className="w-auto"
               value={categoryId}
               onChange={(e) => setCategoryId(e.target.value)}
             >
@@ -78,7 +78,7 @@ export function NewsAdminPage() {
                   {c.name}
                 </option>
               ))}
-            </select>
+            </Select>
             {canManage && (
               <Button variant="outline" onClick={() => setCategoriesOpen(true)}>
                 {t('admin.newsAdmin.categories')}

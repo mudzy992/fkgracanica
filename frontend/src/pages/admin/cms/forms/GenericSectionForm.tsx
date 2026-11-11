@@ -1,3 +1,4 @@
+import { Select } from '../../../../components/ui/select';
 import { EntitySelect } from '../../../../components/admin/EntitySelect';
 import { useTranslation } from 'react-i18next';
 import { Input } from '../../../../components/ui/input';
@@ -34,14 +35,13 @@ export function GenericSectionForm({ widgetType, config, onChange }: Props) {
         placeholder={t('admin.cmsWidget.sectionTitle')}
       />
       {widgetType === 'gallery' && (
-        <select
+        <Select
           value={galleryMode}
           onChange={(e) => patch({ mode: e.target.value })}
-          className="w-full rounded-lg border border-slate-200 bg-background px-3 py-2 text-sm"
         >
           <option value="latest">{t('admin.cmsWidget.galleryLatest')}</option>
           <option value="single">{t('admin.cmsWidget.gallerySingle')}</option>
-        </select>
+        </Select>
       )}
       {widgetType === 'gallery' && galleryMode === 'single' && (
         <EntitySelect<GalleryItem>

@@ -16,7 +16,6 @@ import { Button } from '../../components/ui/button';
 import { AdminPageShell } from '../../components/admin/AdminPageShell';
 import { SettingsModuleSection } from './settings/SettingsModuleSection';
 import { hasSettingsFieldGroup, SettingsFieldGroupPanel } from './settings/SettingsFieldGroupPanel';
-import { cn } from '../../lib/utils';
 import { useTranslation } from 'react-i18next';
 
 type Scope = 'public' | 'private';
@@ -117,19 +116,16 @@ export function SettingsPage() {
         <div className="border-b border-[var(--border-subtle)] bg-surface/40 px-3 py-2 sm:px-4">
           <div className="flex gap-1 overflow-x-auto pb-0.5">
             {tabs.map((tab) => (
-              <button
+              <Button
                 key={tab.id}
                 type="button"
+                variant={activeTab?.id === tab.id ? 'default' : 'ghost'}
+                size="sm"
                 onClick={() => setGroupTab(tab.id)}
-                className={cn(
-                  'shrink-0 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
-                  activeTab?.id === tab.id
-                    ? 'bg-primary text-white'
-                    : 'text-text-muted hover:bg-surface hover:text-text',
-                )}
+                className="shrink-0"
               >
                 {tab.title}
-              </button>
+              </Button>
             ))}
           </div>
         </div>

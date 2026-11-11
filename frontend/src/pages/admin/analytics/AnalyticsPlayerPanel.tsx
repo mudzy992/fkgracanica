@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Select } from '../../../components/ui/select';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../../../components/ui/table';
 import { usePlayers, useSeasons } from '../../../hooks';
 import { asArray } from '../../../lib/as-array';
 import type { Player } from '../../../types';
@@ -17,8 +19,7 @@ export function AnalyticsPlayerPanel() {
 
   return (
     <div className="space-y-4">
-      <select
-        className="h-10 rounded-lg border border-[var(--border-subtle)] bg-background px-3 text-sm"
+      <Select
         value={id}
         onChange={(e) => setId(e.target.value)}
       >
@@ -28,7 +29,7 @@ export function AnalyticsPlayerPanel() {
             {p.firstName} {p.lastName}
           </option>
         ))}
-      </select>
+      </Select>
 
       {isFetching && <p className="text-sm text-text-muted">{t('admin.common.loading')}</p>}
 
@@ -54,35 +55,35 @@ export function AnalyticsPlayerPanel() {
           </div>
 
           <div className="overflow-x-auto rounded-xl border border-[var(--border-subtle)]">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-[var(--border-subtle)] text-left text-xs text-text-muted">
-                  <th className="px-4 py-2">{t('admin.playerPanel.season')}</th>
-                  <th className="px-4 py-2 text-right">N</th>
-                  <th className="px-4 py-2 text-right">G</th>
-                  <th className="px-4 py-2 text-right">A</th>
-                  <th className="px-4 py-2 text-right">{t('admin.playerPanel.minutes')}</th>
-                  <th className="px-4 py-2 text-right">🟨</th>
-                  <th className="px-4 py-2 text-right">🟥</th>
-                </tr>
-              </thead>
-              <tbody>
+            <Table className="w-full text-sm">
+              <TableHeader>
+                <TableRow className="border-b border-[var(--border-subtle)] text-left text-xs text-text-muted">
+                  <TableHead className="px-4 py-2">{t('admin.playerPanel.season')}</TableHead>
+                  <TableHead className="px-4 py-2 text-right">N</TableHead>
+                  <TableHead className="px-4 py-2 text-right">G</TableHead>
+                  <TableHead className="px-4 py-2 text-right">A</TableHead>
+                  <TableHead className="px-4 py-2 text-right">{t('admin.playerPanel.minutes')}</TableHead>
+                  <TableHead className="px-4 py-2 text-right">🟨</TableHead>
+                  <TableHead className="px-4 py-2 text-right">🟥</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
                 {data.seasons.map((row) => (
-                  <tr
+                  <TableRow
                     key={row.seasonId}
                     className="border-b border-[var(--border-subtle)] last:border-0"
                   >
-                    <td className="px-4 py-2">{seasonName(row.seasonId)}</td>
-                    <td className="px-4 py-2 text-right tabular-nums">{row.appearances}</td>
-                    <td className="px-4 py-2 text-right tabular-nums">{row.goals}</td>
-                    <td className="px-4 py-2 text-right tabular-nums">{row.assists}</td>
-                    <td className="px-4 py-2 text-right tabular-nums">{row.minutes}</td>
-                    <td className="px-4 py-2 text-right tabular-nums">{row.yellowCards}</td>
-                    <td className="px-4 py-2 text-right tabular-nums">{row.redCards}</td>
-                  </tr>
+                    <TableCell className="px-4 py-2">{seasonName(row.seasonId)}</TableCell>
+                    <TableCell className="px-4 py-2 text-right tabular-nums">{row.appearances}</TableCell>
+                    <TableCell className="px-4 py-2 text-right tabular-nums">{row.goals}</TableCell>
+                    <TableCell className="px-4 py-2 text-right tabular-nums">{row.assists}</TableCell>
+                    <TableCell className="px-4 py-2 text-right tabular-nums">{row.minutes}</TableCell>
+                    <TableCell className="px-4 py-2 text-right tabular-nums">{row.yellowCards}</TableCell>
+                    <TableCell className="px-4 py-2 text-right tabular-nums">{row.redCards}</TableCell>
+                  </TableRow>
                 ))}
-              </tbody>
-            </table>
+              </TableBody>
+            </Table>
           </div>
         </div>
       )}

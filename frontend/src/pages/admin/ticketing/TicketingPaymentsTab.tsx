@@ -6,6 +6,7 @@ import {
 } from '../../../hooks/use-ticketing-admin';
 import { Badge } from '../../../components/ui/badge';
 import { Button } from '../../../components/ui/button';
+import { Select } from '../../../components/ui/select';
 import { Input } from '../../../components/ui/input';
 import { Switch } from '../../../components/ui/switch';
 import { PaymentProviderCard } from './PaymentProviderCard';
@@ -104,8 +105,7 @@ export function TicketingPaymentsTab() {
         <label className="mb-1 block text-sm text-text-muted">
           {t('admin.ticketingPayments.defaultProvider')}
         </label>
-        <select
-          className="flex h-10 w-full rounded-lg border border-[var(--border-subtle)] bg-background px-3 text-sm"
+        <Select
           value={defaultProvider}
           onChange={(e) => setDefaultProvider(e.target.value)}
         >
@@ -114,7 +114,7 @@ export function TicketingPaymentsTab() {
               {p.label}
             </option>
           ))}
-        </select>
+        </Select>
       </div>
 
       {PROVIDERS.map((p) => (

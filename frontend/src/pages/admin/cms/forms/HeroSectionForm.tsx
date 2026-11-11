@@ -1,4 +1,5 @@
 import { Button } from '../../../../components/ui/button';
+import { Select } from '../../../../components/ui/select';
 import { useTranslation } from 'react-i18next';
 import { Input } from '../../../../components/ui/input';
 import { MediaPicker } from '../../../../components/admin/MediaPicker';
@@ -62,8 +63,7 @@ export function HeroSectionForm({ config, onChange }: Props) {
         <span className="mb-1 block font-medium text-text">
           {t('admin.cmsWidget.backgroundDisplay')}
         </span>
-        <select
-          className="w-full rounded-lg border border-slate-200 bg-background px-3 py-2 text-sm"
+        <Select
           value={hero.backgroundDisplay ?? 'all'}
           onChange={(e) =>
             patch({ backgroundDisplay: e.target.value as HeroConfig['backgroundDisplay'] })
@@ -73,7 +73,7 @@ export function HeroSectionForm({ config, onChange }: Props) {
           <option value="desktop">{t('admin.cmsWidget.bg.desktop')}</option>
           <option value="mobile">{t('admin.cmsWidget.bg.mobile')}</option>
           <option value="none">{t('admin.cmsWidget.bg.none')}</option>
-        </select>
+        </Select>
       </label>
       <label className="flex items-center gap-2 text-sm text-text-muted">
         <input
@@ -107,14 +107,13 @@ export function HeroSectionForm({ config, onChange }: Props) {
               placeholder={t('admin.cmsWidget.buttonUrl')}
               className="flex-1"
             />
-            <select
-              className="rounded-lg border border-slate-200 px-2 text-sm"
+            <Select className="w-auto"
               value={btn.variant ?? 'primary'}
               onChange={(e) => setButton(i, 'variant', e.target.value)}
             >
               <option value="primary">{t('admin.cmsWidget.variant.primary')}</option>
               <option value="outline">{t('admin.cmsWidget.variant.outline')}</option>
-            </select>
+            </Select>
             <Button
               type="button"
               variant="outline"

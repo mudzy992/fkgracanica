@@ -1,4 +1,5 @@
 import { Button } from '../../../components/ui/button';
+import { Select } from '../../../components/ui/select';
 import { useTranslation } from 'react-i18next';
 import { Input } from '../../../components/ui/input';
 import type { CmsPage } from '../../../cms/types';
@@ -34,14 +35,13 @@ export function CmsPageMetaForm({ page, meta, onChange, onSave, isPending }: Pro
           placeholder={t('admin.slug.label')}
           disabled={page.isSystem}
         />
-        <select
-          className="rounded-lg border border-slate-200 bg-background px-3 py-2 text-sm"
+        <Select
           value={meta.status}
           onChange={(e) => onChange({ ...meta, status: e.target.value })}
         >
           <option value="DRAFT">{t('admin.cmsMeta.draft')}</option>
           <option value="PUBLISHED">{t('admin.cmsMeta.published')}</option>
-        </select>
+        </Select>
       </div>
       <Button size="sm" onClick={onSave} disabled={isPending}>
         {t('admin.cmsMeta.save')}

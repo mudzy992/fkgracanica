@@ -6,6 +6,7 @@ import { EntitySelect } from '../../../components/admin/EntitySelect';
 import { SlugField } from '../../../components/admin/SlugField';
 import { useNewsCategories, type NewsCategory } from '../../../hooks/use-news-admin';
 import { Input } from '../../../components/ui/input';
+import { Select } from '../../../components/ui/select';
 import { Textarea } from '../../../components/ui/textarea';
 import { formatDate } from '../../../lib/utils';
 import type { GalleryItem, Match, Player } from '../../../types';
@@ -24,8 +25,7 @@ export function NewsEditorMeta({ register, control, watch, setValue, errors }: N
       <SlugField title={title} value={watch('slug')} onChange={(v) => setValue('slug', v)} />
       <div>
         <label className="mb-1 block text-sm font-medium">{t('admin.newsForm.category')}</label>
-        <select
-          className="w-full rounded-lg border border-slate-200 bg-background px-3 py-2 text-sm"
+        <Select
           {...register('categoryId')}
         >
           <option value="">{t('admin.newsForm.noCategory')}</option>
@@ -34,7 +34,7 @@ export function NewsEditorMeta({ register, control, watch, setValue, errors }: N
               {c.name}
             </option>
           ))}
-        </select>
+        </Select>
       </div>
       <div>
         <label className="mb-1 block text-sm font-medium">{t('admin.newsForm.tags')}</label>

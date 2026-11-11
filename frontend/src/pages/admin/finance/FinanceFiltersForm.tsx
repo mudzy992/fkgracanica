@@ -1,4 +1,5 @@
 import { Button } from '../../../components/ui/button';
+import { Select } from '../../../components/ui/select';
 import { useTranslation } from 'react-i18next';
 import { Input } from '../../../components/ui/input';
 import type { FinanceFilters } from '../../../hooks/use-finance-summary';
@@ -44,8 +45,7 @@ export function FinanceFiltersForm({
         </label>
         <label className="block text-sm sm:col-span-2">
           <span className="mb-1 block text-text-muted">{t('admin.financeFilters.status')}</span>
-          <select
-            className="h-10 w-full rounded-lg border border-[var(--border-subtle)] bg-background px-3 text-sm"
+          <Select
             value={draft.status}
             onChange={(e) => setDraft({ ...draft, status: e.target.value })}
           >
@@ -54,7 +54,7 @@ export function FinanceFiltersForm({
                 {opt.label}
               </option>
             ))}
-          </select>
+          </Select>
         </label>
       </div>
       <div>
