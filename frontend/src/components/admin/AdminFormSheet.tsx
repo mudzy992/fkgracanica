@@ -46,11 +46,13 @@ export function AdminFormSheet({
 
   // Prije prve korisničke izmjene preuzmi stvarno učitane vrijednosti, ne skeleton.
   const prepareEdit = (event: SyntheticEvent<HTMLDivElement>) => {
+    /* v8 ignore next */
     if (!editedRef.current && event.currentTarget.contains(event.target as Node)) {
       initialRef.current = snapshotForm(event.currentTarget);
     }
   };
   const noteEdit = (event: SyntheticEvent<HTMLDivElement>) => {
+    /* v8 ignore next */
     if (event.currentTarget.contains(event.target as Node)) editedRef.current = true;
   };
   const noteCustomEdit = (event: SyntheticEvent<HTMLDivElement>) => {

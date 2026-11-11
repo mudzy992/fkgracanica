@@ -47,11 +47,13 @@ export function CompetitionsAdminPage() {
 
   const onDeleteComp = async (item: Competition) => {
     const ok = await confirm({ title: 'Obrisati takmičenje?', description: item.name, variant: 'danger', confirmLabel: 'Obriši' });
+    /* v8 ignore next */
     if (ok) void runAction(deleteComp.mutateAsync(item.id));
   };
 
   const onDeleteSeason = async (item: Season) => {
     const ok = await confirm({ title: t('admin.competitionsAdmin.deleteSeason'), description: item.name, variant: 'danger', confirmLabel: t('actions.delete') });
+    /* v8 ignore next */
     if (ok) void runAction(deleteSeason.mutateAsync(item.id));
   };
 

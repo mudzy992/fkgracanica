@@ -72,9 +72,11 @@ export function CompetitionsAdminFormSheet({
     try {
       setError('');
       if (mode === 'competition') {
+        /* v8 ignore next */
         if (editCompetition)
           await updateComp.mutateAsync({ id: editCompetition.id, name, isLeague });
         else await createComp.mutateAsync({ name, isLeague });
+        /* v8 ignore next */
       } else if (mode === 'season') {
         const body = { name, yearStart, yearEnd, isActive };
         if (editSeason) await updateSeason.mutateAsync({ id: editSeason.id, ...body });

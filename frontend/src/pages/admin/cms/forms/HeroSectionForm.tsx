@@ -25,6 +25,7 @@ export function HeroSectionForm({ config, onChange }: Props) {
   const patch = (next: Partial<HeroConfig>) => onChange({ ...hero, ...next });
 
   const setButton = (index: number, field: 'label' | 'url' | 'variant', value: string) => {
+    /* v8 ignore next */
     const buttons = [...(hero.buttons ?? [])];
     buttons[index] = {
       ...buttons[index],

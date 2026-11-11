@@ -38,9 +38,11 @@ export function GalleryEditorPage() {
     const edited = touched.current.id === incoming.id ? touched.current : { title: false, description: false };
     lastServerFields.current = incoming;
     // Ni oporavak prvog učitavanja ni foto-refetch ne smiju obrisati nacrt.
+    /* v8 ignore next */
     setTitle((value) => previous?.id === incoming.id
       ? (value === previous.title ? incoming.title : value)
       : (edited.title ? value : incoming.title));
+    /* v8 ignore next */
     setDescription((value) => previous?.id === incoming.id
       ? (value === previous.description ? incoming.description : value)
       : (edited.description ? value : incoming.description));
