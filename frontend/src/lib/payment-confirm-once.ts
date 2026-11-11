@@ -13,7 +13,7 @@ export function confirmPaymentOnce<T>(key: string, confirm: () => Promise<T>): P
   }
   inFlight.set(key, request);
   const remove = () => {
-    if (inFlight.get(key) === request) inFlight.delete(key);
+    inFlight.delete(key);
   };
   void request.then(remove, remove);
   return request;

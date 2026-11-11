@@ -81,7 +81,7 @@ export function UserAdminFormSheet({ open, onOpenChange, user, canCreate, canUpd
     }
   }, [user, reset, open]);
 
-  const roleIds = watch('roleIds') ?? [];
+  const roleIds = watch('roleIds') as string[];
   const roleList = roles ?? [];
   const mutationError = create.error ?? update.error;
 
@@ -127,7 +127,7 @@ export function UserAdminFormSheet({ open, onOpenChange, user, canCreate, canUpd
         {isEdit && (
           <label className="flex items-center gap-2 text-sm">
             <Switch
-              checked={watch('isActive') ?? true}
+              checked={watch('isActive') as boolean}
               onCheckedChange={(v) => setValue('isActive', v)}
             />
             {t('admin.userForm.active')}

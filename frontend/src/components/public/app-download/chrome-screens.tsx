@@ -8,7 +8,7 @@ function apkName(version: string) {
 }
 
 export function ChromePageScreen({ version, t, highlight }: Props & { highlight?: boolean }) {
-  const host = typeof window !== 'undefined' ? window.location.host : 'fkgracanica.ba';
+  const host = window.location.host;
 
   return (
     <div className="flex h-[calc(100%-1.5rem)] flex-col bg-white px-2 pb-5 pt-1">

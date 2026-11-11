@@ -32,7 +32,7 @@ export function groupMatchesByRound<
     .sort(([a], [b]) => b - a)
     .map(([key, items]) => ({
       key,
-      label: items[0]?.roundRel ? roundLabel(items[0].roundRel) : `${key}. kolo`,
+      label: roundLabel(items[0].roundRel!),
       matches: items.sort(
         (a, b) => new Date(b.scheduledAt).getTime() - new Date(a.scheduledAt).getTime(),
       ),
