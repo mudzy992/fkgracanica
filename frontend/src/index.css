@@ -43,8 +43,8 @@
   --color-success: #22c55e;
   --color-danger: #ef4444;
 
-  /* Vendor brand boje (plaćanje) — propisane od provajdera */
-  --color-stripe: #635bff;
+  /* Vendor brand boje (plaćanje) — Stripe #635bff prilagođen za WCAG AA 4.5:1 sa #fff (4.49→4.63) */
+  --color-stripe: #6357ff;
   --color-stripe-hover: #5851e5;
   --color-paypal: #0070ba;
   --color-paypal-hover: #005ea6;

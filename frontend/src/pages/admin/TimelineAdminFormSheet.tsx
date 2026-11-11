@@ -5,6 +5,7 @@ import { AdminFormSheet } from '../../components/admin/AdminFormSheet';
 import { MediaPicker } from '../../components/admin/MediaPicker';
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
+import { Textarea } from '../../components/ui/textarea';
 import type { ClubTimelineEvent } from '../../types';
 
 interface Props {
@@ -69,11 +70,10 @@ export function TimelineAdminFormSheet({ open, onOpenChange, edit }: Props) {
           onChange={(e) => setTitle(e.target.value)}
           placeholder={t('admin.cmsWidget.titleRequired')}
         />
-        <textarea
+        <Textarea
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           rows={4}
-          className="w-full rounded-lg border border-slate-200 p-2 text-sm"
           placeholder={t('admin.cmsWidget.description')}
         />
         <MediaPicker

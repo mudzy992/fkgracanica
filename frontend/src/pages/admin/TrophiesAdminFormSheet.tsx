@@ -5,6 +5,7 @@ import { AdminFormSheet } from '../../components/admin/AdminFormSheet';
 import { MediaPicker } from '../../components/admin/MediaPicker';
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
+import { Textarea } from '../../components/ui/textarea';
 import { Switch } from '../../components/ui/switch';
 import type { Trophy } from '../../types';
 
@@ -81,11 +82,10 @@ export function TrophiesAdminFormSheet({ open, onOpenChange, edit }: Props) {
           onChange={(e) => setCompetition(e.target.value)}
           placeholder={t('admin.calendar.competition')}
         />
-        <textarea
+        <Textarea
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           rows={4}
-          className="w-full rounded-lg border border-slate-200 p-2 text-sm"
           placeholder={t('admin.trophyForm.description')}
         />
         <MediaPicker

@@ -8,6 +8,7 @@ import { NextMatchSectionForm } from './NextMatchSectionForm';
 import { GenericSectionForm } from './GenericSectionForm';
 import { ClubAboutCtaSectionForm } from './ClubAboutCtaSectionForm';
 import { useTranslation } from 'react-i18next';
+import { Textarea } from '../../../../components/ui/textarea';
 
 interface Props {
   widgetType: string;
@@ -62,11 +63,10 @@ function RichTextSectionForm({ config, onChange }: Pick<Props, 'config' | 'onCha
 function FooterAboutForm({ config, onChange }: Pick<Props, 'config' | 'onChange'>) {
   const { t } = useTranslation();
   return (
-    <textarea
+    <Textarea
       value={String(config.text ?? '')}
       onChange={(e) => onChange({ text: e.target.value })}
       rows={4}
-      className="w-full rounded-lg border border-slate-200 bg-background p-2 text-sm"
       placeholder={t('admin.cmsSection.aboutPlaceholder')}
     />
   );

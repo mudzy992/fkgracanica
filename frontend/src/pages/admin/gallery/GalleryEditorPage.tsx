@@ -5,6 +5,7 @@ import { Seo } from '../../../components/seo/Seo';
 import { GalleryPhotoPicker } from '../../../components/admin/GalleryPhotoPicker';
 import { Button } from '../../../components/ui/button';
 import { Input } from '../../../components/ui/input';
+import { Textarea } from '../../../components/ui/textarea';
 import { Skeleton } from '../../../components/ui/skeleton';
 import {
   useCreateGallery,
@@ -100,11 +101,10 @@ export function GalleryEditorPage() {
           onChange={(e) => { markTouched('title'); setTitle(e.target.value); }}
           placeholder={t('admin.galleryEditor.titleRequired')}
         />
-        <textarea
+        <Textarea
           value={description}
           onChange={(e) => { markTouched('description'); setDescription(e.target.value); }}
           rows={2}
-          className="w-full rounded-lg border border-slate-200 bg-background p-2 text-sm"
           placeholder={t('admin.galleryEditor.descriptionOptional')}
         />
       </div>

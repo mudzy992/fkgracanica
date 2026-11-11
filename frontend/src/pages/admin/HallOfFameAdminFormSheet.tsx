@@ -6,6 +6,7 @@ import { AdminFormSheet } from '../../components/admin/AdminFormSheet';
 import { MediaPicker } from '../../components/admin/MediaPicker';
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
+import { Textarea } from '../../components/ui/textarea';
 import type { HallOfFameEntry } from '../../types';
 
 interface Props {
@@ -72,11 +73,10 @@ export function HallOfFameAdminFormSheet({ open, onOpenChange, edit }: Props) {
           onChange={(e) => setYears(e.target.value)}
           placeholder={t('admin.hofForm.years')}
         />
-        <textarea
+        <Textarea
           value={bio}
           onChange={(e) => setBio(e.target.value)}
           rows={4}
-          className="w-full rounded-lg border border-slate-200 p-2 text-sm"
           placeholder={t('admin.hofForm.bio')}
         />
         <MediaPicker value={imagePath} onChange={setImagePath} />

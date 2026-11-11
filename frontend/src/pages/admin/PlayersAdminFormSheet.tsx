@@ -7,6 +7,7 @@ import { EntitySelect } from '../../components/admin/EntitySelect';
 import { MediaPicker } from '../../components/admin/MediaPicker';
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
+import { Textarea } from '../../components/ui/textarea';
 import { Switch } from '../../components/ui/switch';
 import { playerPositionLabel } from '../../lib/player-utils';
 import type { Player } from '../../types';
@@ -125,11 +126,10 @@ export function PlayersAdminFormSheet({ open, onOpenChange, edit, clubId: fixedC
           onChange={setPhotoPath}
           label={t('admin.playerForm.photo')}
         />
-        <textarea
+        <Textarea
           value={bio}
           onChange={(e) => setBio(e.target.value)}
           rows={3}
-          className="w-full rounded-lg border border-slate-200 p-2 text-sm"
           placeholder={t('admin.playerForm.bio')}
         />
         <label className="flex items-center justify-between gap-3 rounded-lg border border-slate-200 p-3">

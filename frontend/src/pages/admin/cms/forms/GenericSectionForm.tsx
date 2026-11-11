@@ -1,6 +1,7 @@
 import { EntitySelect } from '../../../../components/admin/EntitySelect';
 import { useTranslation } from 'react-i18next';
 import { Input } from '../../../../components/ui/input';
+import { Textarea } from '../../../../components/ui/textarea';
 import type { GalleryItem } from '../../../../types';
 
 const LIMIT_WIDGETS = new Set(['news-feed', 'gallery', 'sponsors', 'featured-players', 'trophies']);
@@ -70,11 +71,10 @@ export function GenericSectionForm({ widgetType, config, onChange }: Props) {
       )}
       {isCta && (
         <>
-          <textarea
+          <Textarea
             value={text}
             onChange={(e) => patch({ text: e.target.value })}
             rows={3}
-            className="w-full rounded-lg border border-slate-200 p-2 text-sm"
             placeholder={t('admin.cmsWidget.description')}
           />
           <Input
@@ -90,11 +90,10 @@ export function GenericSectionForm({ widgetType, config, onChange }: Props) {
         </>
       )}
       {widgetType === 'newsletter' && (
-        <textarea
+        <Textarea
           value={text}
           onChange={(e) => patch({ text: e.target.value, description: e.target.value })}
           rows={2}
-          className="w-full rounded-lg border border-slate-200 p-2 text-sm"
           placeholder={t('admin.cmsWidget.description')}
         />
       )}

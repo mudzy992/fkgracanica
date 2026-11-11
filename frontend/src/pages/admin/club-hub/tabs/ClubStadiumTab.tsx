@@ -4,6 +4,7 @@ import { useClubStadium, useUpsertClubStadium } from '../../../../hooks/use-club
 import { MediaPicker } from '../../../../components/admin/MediaPicker';
 import { Button } from '../../../../components/ui/button';
 import { Input } from '../../../../components/ui/input';
+import { Textarea } from '../../../../components/ui/textarea';
 import { Skeleton } from '../../../../components/ui/skeleton';
 
 export function ClubStadiumTab({ clubId }: { clubId: string }) {
@@ -62,11 +63,10 @@ export function ClubStadiumTab({ clubId }: { clubId: string }) {
         onChange={(e) => setCapacity(e.target.value)}
         placeholder={t('admin.stadium.capacity')}
       />
-      <textarea
+      <Textarea
         value={description}
         onChange={(e) => setDescription(e.target.value)}
         rows={3}
-        className="w-full rounded-lg border border-slate-200 p-2 text-sm"
         placeholder={t('admin.stadium.description')}
       />
       <MediaPicker value={imagePath} onChange={setImagePath} label={t('admin.stadium.image')} />

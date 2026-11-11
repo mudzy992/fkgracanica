@@ -6,6 +6,7 @@ import { hasPermission } from '../../../../lib/permissions';
 import { MediaPicker } from '../../../../components/admin/MediaPicker';
 import { Button } from '../../../../components/ui/button';
 import { Input } from '../../../../components/ui/input';
+import { Textarea } from '../../../../components/ui/textarea';
 import { Switch } from '../../../../components/ui/switch';
 import type { Club } from '../../../../types';
 
@@ -80,11 +81,10 @@ export function ClubBasicTab({ club }: { club: Club }) {
         onChange={(e) => setCity(e.target.value)}
         placeholder={t('admin.club.city')}
       />
-      <textarea
+      <Textarea
         value={description}
         onChange={(e) => setDescription(e.target.value)}
         rows={4}
-        className="w-full rounded-lg border border-slate-200 p-2 text-sm"
         placeholder={t('admin.club.descriptionPlaceholder')}
       />
       <MediaPicker value={crestPath} onChange={setCrestPath} label={t('admin.club.crest')} />
