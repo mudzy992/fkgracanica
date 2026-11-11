@@ -1354,6 +1354,7 @@
 "frontend/src/pages/admin/commentator/CommentatorStreamDialog.test.tsx","frontend","src","59","pokriveno testom","P-FE06-20: stream editor, greške, legacy, uklanjanje | CI ✅ 41908944135","FE-06","2026-11-04"
 "frontend/src/pages/admin/commentator/CommentatorStreamDialog.tsx","frontend","src","89","popravljeno","FE-04c: i18n batch 8 (admin, baseline 74 → 0) | B-FE06-23: dodatni editor streama za odluku | P-FE06-20: validacija, greške, no-op za legacy i ručno uklanjanje | CI ✅ 41908944135","FE-06","2026-11-04"
 "frontend/src/pages/admin/commentator/CommentatorTeamBoard.tsx","frontend","src","159","popravljeno","FE-04c: i18n batch 3 (komentator board)","FE-04c","2026-11-03"
+"frontend/src/pages/admin/commentator/fe06-batch68d.test.tsx","frontend","src","40","nepregledano","","",""
 "frontend/src/pages/admin/commentator/fe06-clock-actions-branch48.test.ts","frontend","src","109","nepregledano","","",""
 "frontend/src/pages/admin/commentator/fe06-clock-actions-phases.test.tsx","frontend","src","88","nepregledano","","",""
 "frontend/src/pages/admin/commentator/fe06-clock-actions.test.tsx","frontend","src","154","pokriveno testom","FE-06 coverage batch 6: 12 testova clock-actions/CommentatorClockActions (faze sata, potvrde, greške, zaključana dugmad)","FE-06","2026-11-05"
