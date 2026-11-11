@@ -1150,6 +1150,8 @@
 "frontend/src/lib/fe06-batch69i.test.tsx","frontend","src","127","nepregledano","","",""
 "frontend/src/lib/fe06-batch69j.test.tsx","frontend","src","126","nepregledano","","",""
 "frontend/src/lib/fe06-batch69k.test.tsx","frontend","src","138","nepregledano","","",""
+"frontend/src/lib/fe06-batch69l.test.tsx","frontend","src","119","nepregledano","","",""
+"frontend/src/lib/fe06-batch69m.test.tsx","frontend","src","104","nepregledano","","",""
 "frontend/src/lib/fe06-html-content-variants.test.ts","frontend","src","41","pokriveno testom","FE-06 batch 40: 23 testa — varijante pokriva fallback grane bez promjene ponašanja","FE-06","2026-11-08"
 "frontend/src/lib/fe06-i18n-lang.test.ts","frontend","src","34","pokriveno testom","`storedLanguage`/`persistLanguage` — default bs, en iz localStorage, normalizacija; 3 testa.","FE-06","2026-11-06"
 "frontend/src/lib/fe06-lib-core.test.ts","frontend","src","115","pokriveno testom","FE-06 coverage batch 19–22: novi test fajl (vitest)","FE-06","2026-11-06"
