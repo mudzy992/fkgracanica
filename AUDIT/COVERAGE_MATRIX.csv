@@ -1516,6 +1516,7 @@
 "frontend/src/pages/admin/finance/FinanceKpiGrid.tsx","frontend","src","47","popravljeno","FE-04c: i18n batch 4 (finansije KPI)","FE-04c","2026-11-03"
 "frontend/src/pages/admin/finance/FinanceProviderChip.tsx","frontend","src","42","nepregledano","","",""
 "frontend/src/pages/admin/FinanceAdminPage.tsx","frontend","src","67","popravljeno","FE-04c: i18n batch 8 (admin, baseline 74 → 0)","FE-04c","2026-11-03"
+"frontend/src/pages/admin/gallery/fe06-batch66w.test.tsx","frontend","src","101","nepregledano","","",""
 "frontend/src/pages/admin/gallery/fe06-gallery-editor-page-branch47.test.tsx","frontend","src","84","nepregledano","","",""
 "frontend/src/pages/admin/gallery/fe06-gallery-editor-page-edges.test.tsx","frontend","src","95","nepregledano","","",""
 "frontend/src/pages/admin/gallery/fe06-gallery-editor-page-variants.test.tsx","frontend","src","114","nepregledano","","",""
