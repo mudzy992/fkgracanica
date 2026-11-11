@@ -997,6 +997,7 @@
 "frontend/src/hooks/fe06-batch60-hooks3.test.tsx","frontend","src","48","nepregledano","","",""
 "frontend/src/hooks/fe06-batch60-hooks4.test.tsx","frontend","src","31","nepregledano","","",""
 "frontend/src/hooks/fe06-batch62-hooks.test.tsx","frontend","src","41","nepregledano","","",""
+"frontend/src/hooks/fe06-batch66x.test.tsx","frontend","src","69","nepregledano","","",""
 "frontend/src/hooks/fe06-checkout-and-clock.test.tsx","frontend","src","116","pokriveno testom","FE-06 coverage batch 19–22: novi test fajl (vitest)","FE-06","2026-11-06"
 "frontend/src/hooks/fe06-club-newsletter.test.tsx","frontend","src","158","pokriveno testom","FE-06 coverage batch 2: 11 testova klupskog huba (postava/stadion/statistika) i newsletter kampanja + realtime","FE-06","2026-11-05"
 "frontend/src/hooks/fe06-cms-heritage-admin.test.tsx","frontend","src","122","pokriveno testom","FE-06 coverage batch 2: 21 test CMS stranica/menija i naslijeđa; javni vs admin pozivi, sekcije, reorder","FE-06","2026-11-05"
