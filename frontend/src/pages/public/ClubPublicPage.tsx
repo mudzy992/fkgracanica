@@ -78,7 +78,7 @@ export function ClubPublicPage() {
         )}
 
         {showCompetition && (
-          <ClubCompetitionTabs clubId={club.id} participations={data.participations ?? []} />
+          <ClubCompetitionTabs clubId={club.id} participations={data.participations!} />
         )}
 
         <TeamSeasonStats stats={seasonStats} />

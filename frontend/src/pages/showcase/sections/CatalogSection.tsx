@@ -14,12 +14,13 @@ export function CatalogSection({ section, modules, index }: Props) {
   const related = (section.moduleIds ?? [])
     .map((id) => modules.find((m) => m.id === id))
     .filter((m): m is ShowcaseModule => !!m);
+  const hasVisual = ['identity', 'competition', 'membership-tickets', 'content', 'admin'].includes(section.id);
   const visual = <SectionVisual id={section.id} />;
 
   return (
     <AnimatedSection index={index} className="py-16 sm:py-24">
       <div className="mx-auto grid max-w-6xl items-center gap-10 px-4 sm:px-6 lg:grid-cols-2">
-        <div className={visual ? '' : 'lg:col-span-2'}>
+        <div className={hasVisual ? '' : 'lg:col-span-2'}>
           <SectionIntro kicker="Platforma" title={section.title} body={section.body} chapter={index} />
           {section.bullets?.length ? (
             <ul className="mt-8 grid gap-3 sm:grid-cols-2">
@@ -47,7 +48,7 @@ export function CatalogSection({ section, modules, index }: Props) {
             </div>
           ) : null}
         </div>
-        {visual ? <div className="lg:pl-4">{visual}</div> : null}
+        {hasVisual ? <div className="lg:pl-4">{visual}</div> : null}
       </div>
     </AnimatedSection>
   );
