@@ -411,7 +411,8 @@
       "newMember": "New member",
       "userEmail": "User email",
       "emailPlaceholder": "user@email.ba",
-      "accountRequired": "The user must have a registered account."
+      "accountRequired": "The user must have a registered account.",
+      "activateNow": "Activate immediately (after payment at the box office)"
     },
     "playerForm": {
       "edit": "Edit player",

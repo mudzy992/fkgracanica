@@ -65,7 +65,7 @@ export function MembershipAdminFormSheet({ open, onOpenChange }: Props) {
           </p>
         </div>
         <label className="flex cursor-pointer items-center justify-between gap-3 rounded-lg border border-[var(--border-subtle)] p-3">
-          <span className="text-sm font-medium">Aktiviraj odmah (nakon uplate na blagajni)</span>
+          <span className="text-sm font-medium">{t('admin.membershipForm.activateNow')}</span>
           <Switch checked={activate} onCheckedChange={setActivate} />
         </label>
         {error && <p className="text-sm text-danger">{error}</p>}

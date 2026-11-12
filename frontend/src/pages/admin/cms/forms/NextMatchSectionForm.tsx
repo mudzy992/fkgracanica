@@ -29,7 +29,7 @@ export function NextMatchSectionForm({ config, onChange }: Props) {
         label={t('admin.cmsNextMatch.stadiumBackground')}
       />
       <label className="flex items-center justify-between gap-3 rounded-lg border border-[var(--border-subtle)] p-3">
-        <span className="text-sm font-medium">Prikaži zadnji rezultat (suptilno)</span>
+        <span className="text-sm font-medium">{t('admin.cmsWidget.showLastResult')}</span>
         <Switch checked={c.showLastResult !== false} onCheckedChange={(v) => patch({ showLastResult: v })} />
       </label>
     </div>

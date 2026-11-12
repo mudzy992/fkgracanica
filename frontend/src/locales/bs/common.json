@@ -411,7 +411,8 @@
       "newMember": "Novi član",
       "userEmail": "Email korisnika",
       "emailPlaceholder": "korisnik@email.ba",
-      "accountRequired": "Korisnik mora imati registrirani račun."
+      "accountRequired": "Korisnik mora imati registrirani račun.",
+      "activateNow": "Aktiviraj odmah (nakon uplate na blagajni)"
     },
     "playerForm": {
       "edit": "Uredi igrača",
