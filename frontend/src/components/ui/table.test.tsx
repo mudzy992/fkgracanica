@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from './table';
+import { Table, TableBody, TableCaption, TableCell, TableFooter, TableHead, TableHeader, TableRow } from './table';
 
 describe('Table (FE-01)', () => {
   it('renderuje header i redove sa standardnim klasama', () => {
@@ -54,13 +54,21 @@ describe('Table (FE-01)', () => {
   it('podržava caption i footer', () => {
     render(
       <Table aria-label="t3">
+        <TableCaption>Oznaka</TableCaption>
         <TableBody>
           <TableRow>
             <TableCell>X</TableCell>
           </TableRow>
         </TableBody>
+        <TableFooter>
+          <TableRow>
+            <TableCell>Footer</TableCell>
+          </TableRow>
+        </TableFooter>
       </Table>,
     );
-    expect(screen.getByText('X')).toBeInTheDocument();
+    expect(screen.getByText('Oznaka')).toBeInTheDocument();
+    expect(screen.getByText('Footer')).toBeInTheDocument();
+    expect(screen.getByText('Oznaka').tagName).toBe('CAPTION');
   });
 });
