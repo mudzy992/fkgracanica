@@ -11,6 +11,7 @@ import { AdminFormSheet } from '../../../components/admin/AdminFormSheet';
 import { EntitySelect } from '../../../components/admin/EntitySelect';
 import { Button } from '../../../components/ui/button';
 import { Input } from '../../../components/ui/input';
+import { Switch } from '../../../components/ui/switch';
 
 import type { Match, MatchStatus } from '../../../types';
 import { isPastDatetime } from '../../../lib/match-retrospective';
@@ -144,14 +145,9 @@ export function MatchFormSheet({ open, onOpenChange, edit, seasonId, roundId }: 
         </div>
         {!edit && (
           <>
-            <label className="flex cursor-pointer items-center gap-2 text-sm">
-              <input
-                type="checkbox"
-                checked={isPastMatch}
-                onChange={(e) => setIsPastMatch(e.target.checked)}
-                className="h-4 w-4 rounded border-slate-300"
-              />
-              {t('admin.matchForm.pastMatch')}
+            <label className="flex cursor-pointer items-center justify-between gap-3 rounded-lg border border-[var(--border-subtle)] p-3">
+              <span className="text-sm font-medium">{t('admin.matchForm.pastMatch')}</span>
+              <Switch checked={isPastMatch} onCheckedChange={setIsPastMatch} />
             </label>
             {isPastMatch && (
               <MatchScoreInputs

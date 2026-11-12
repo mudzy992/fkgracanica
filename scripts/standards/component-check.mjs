@@ -4,15 +4,15 @@
  *
  *   node scripts/standards/component-check.mjs
  *
- * Provjerava da u `frontend/src/pages/admin/**` i `frontend/src/components/admin/**`
- * nema previše raw HTML elemenata van kita. Prag: raw/(raw+kit) <= 10% za Button/Input,
- * Textarea/Select/Table moraju biti 0 raw (100% kit) jer kit postoji.
+ * Provjerava da u `frontend/src/pages/admin/**` nema raw HTML elemenata van kita.
+ * Svi kit elementi (Button/Input/Textarea/Select/Table) moraju biti 100% kroz kit
+ * (prag 0% raw, izuzetak samo hidden/file).
  *
  * Izuzeci (ne broje se kao hardcode):
  *   - `<input type="hidden"` — serijalizacija JSON-a
  *   - `<input type="file"` — file picker (namerno van Input varijante)
- *   - `<input type="checkbox"` / `radio` — nativni checkbox/radio (Input je za text-like; za toggle se koristi <Switch>)
  *   - `phone-frame`, `hidden`, `sr-only` showcase/helpers
+ * Za checkbox/radio koristi <Switch> — raw se broji kao greška (0% prag).
  *
  * Izlaz: OK ili FAIL sa lokacijama.
  */
@@ -22,7 +22,7 @@ import { fileURLToPath } from 'node:url';
 
 const ROOT = resolve(join(new URL('.', import.meta.url).pathname, '../..'));
 const ROOTS = ['frontend/src/pages/admin']; // audit opseg 147 fajlova, components/admin ima opravdane izuzetke (hidden/file, showcase)
-const THRESHOLD = 0.10;
+const THRESHOLD = 0; // strogo 0% — nakon migracije sve je kroz kit (Button/Input/Textarea/Select/Table), izuzetak samo hidden/file
 
 function files(dir) {
   const full = join(ROOT, dir);
@@ -52,7 +52,7 @@ function countInFile(file) {
   const rawInputMatches = [...text.matchAll(/<input\b[^>]*>/g)];
   const rawInput = rawInputMatches.filter(m => {
     const s = m[0].toLowerCase();
-    return !s.includes('type="hidden"') && !s.includes("type='hidden'") && !s.includes('type="file"') && !s.includes("type='file'") && !s.includes('type="checkbox"') && !s.includes("type='checkbox'") && !s.includes('type="radio"') && !s.includes("type='radio'");
+    return !s.includes('type="hidden"') && !s.includes("type='hidden'") && !s.includes('type="file"') && !s.includes("type='file'");
   }).length;
   const rawTextarea = (text.match(/<textarea\b/g) || []).length;
   const rawSelect = (text.match(/<select\b/g) || []).length;

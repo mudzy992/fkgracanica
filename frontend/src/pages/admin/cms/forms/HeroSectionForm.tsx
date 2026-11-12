@@ -1,5 +1,6 @@
 import { Card } from '../../../../components/ui/card';
 import { Button } from '../../../../components/ui/button';
+import { Switch } from '../../../../components/ui/switch';
 import { Select } from '../../../../components/ui/select';
 import { useTranslation } from 'react-i18next';
 import { Input } from '../../../../components/ui/input';
@@ -76,21 +77,13 @@ export function HeroSectionForm({ config, onChange }: Props) {
           <option value="none">{t('admin.cmsWidget.bg.none')}</option>
         </Select>
       </label>
-      <label className="flex items-center gap-2 text-sm text-text-muted">
-        <input
-          type="checkbox"
-          checked={hero.showMatches !== false}
-          onChange={(e) => patch({ showMatches: e.target.checked })}
-        />
-        {t('admin.cmsWidget.showNextMatch')}
+      <label className="flex items-center justify-between gap-3 rounded-lg border border-[var(--border-subtle)] p-3">
+        <span className="text-sm font-medium">{t('admin.cmsWidget.showNextMatch')}</span>
+        <Switch checked={hero.showMatches !== false} onCheckedChange={(v) => patch({ showMatches: v })} />
       </label>
-      <label className="flex items-center gap-2 text-sm text-text-muted">
-        <input
-          type="checkbox"
-          checked={hero.showLastResult !== false}
-          onChange={(e) => patch({ showLastResult: e.target.checked })}
-        />
-        {t('admin.cmsWidget.showLastResult')}
+      <label className="flex items-center justify-between gap-3 rounded-lg border border-[var(--border-subtle)] p-3">
+        <span className="text-sm font-medium">{t('admin.cmsWidget.showLastResult')}</span>
+        <Switch checked={hero.showLastResult !== false} onCheckedChange={(v) => patch({ showLastResult: v })} />
       </label>
       <Card className="space-y-2 p-3">
         <p className="text-sm font-medium">{t('admin.cmsWidget.buttons')}</p>

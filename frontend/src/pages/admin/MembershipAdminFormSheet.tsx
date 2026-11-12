@@ -4,6 +4,7 @@ import { useCreateMembershipAdmin } from '../../hooks/use-membership';
 import { AdminFormSheet } from '../../components/admin/AdminFormSheet';
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
+import { Switch } from '../../components/ui/switch';
 
 interface Props {
   open: boolean;
@@ -63,14 +64,9 @@ export function MembershipAdminFormSheet({ open, onOpenChange }: Props) {
             {t('admin.membershipForm.accountRequired')}
           </p>
         </div>
-        <label className="flex cursor-pointer items-center gap-2 text-sm">
-          <input
-            type="checkbox"
-            checked={activate}
-            onChange={(e) => setActivate(e.target.checked)}
-            className="h-4 w-4 rounded border-[var(--border-subtle)]"
-          />
-          Aktiviraj odmah (nakon uplate na blagajni)
+        <label className="flex cursor-pointer items-center justify-between gap-3 rounded-lg border border-[var(--border-subtle)] p-3">
+          <span className="text-sm font-medium">Aktiviraj odmah (nakon uplate na blagajni)</span>
+          <Switch checked={activate} onCheckedChange={setActivate} />
         </label>
         {error && <p className="text-sm text-danger">{error}</p>}
         <Button className="w-full" disabled={create.isPending} onClick={() => void onSubmit()}>

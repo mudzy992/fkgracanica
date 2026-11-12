@@ -12,6 +12,7 @@ import { Button } from '../../components/ui/button';
 import { AdminDataTable, AdminPageShell } from '../../components/admin/AdminPageShell';
 import { AdminFormSheet } from '../../components/admin/AdminFormSheet';
 import { Skeleton } from '../../components/ui/skeleton';
+import { Switch } from '../../components/ui/switch';
 import { RolesAdminFormSheet } from './RolesAdminFormSheet';
 import { runAction } from '../../lib/action-errors';
 
@@ -138,14 +139,9 @@ export function RolesPage({ embedded = false }: Props) {
       >
         <div className="max-h-[60vh] space-y-2 overflow-y-auto">
           {permList.map((p) => (
-            <label key={p.key} className="flex cursor-pointer items-start gap-2 text-sm">
-              <input
-                type="checkbox"
-                checked={selected.includes(p.key)}
-                onChange={() => toggle(p.key)}
-                className="mt-1"
-              />
-              <span className="font-medium">{p.description ?? p.key}</span>
+            <label key={p.key} className="flex cursor-pointer items-center justify-between gap-3 rounded-lg border border-[var(--border-subtle)] p-3">
+              <span className="text-sm font-medium">{p.description ?? p.key}</span>
+              <Switch checked={selected.includes(p.key)} onCheckedChange={() => toggle(p.key)} />
             </label>
           ))}
         </div>

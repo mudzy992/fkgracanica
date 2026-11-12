@@ -117,16 +117,16 @@ export function SeasonRoundsPanel({ seasonId, selectedRoundId, onSelectRound, ca
               selectedRoundId === round.id && 'bg-primary/5',
             )}
           >
-            <button
-              type="button"
+            <Button
+              variant="ghost"
               onClick={() => onSelectRound(round.id)}
-              className="flex flex-1 items-center justify-between text-left hover:bg-transparent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+              className="flex flex-1 items-center justify-between rounded-none px-0 text-left font-normal hover:bg-transparent h-auto py-0 focus-visible:ring-2 focus-visible:ring-accent"
             >
               <span className="font-medium">{roundLabel(round)}</span>
               <span className="text-text-muted">
                 {t('admin.roundsPanel.matches', { count: round._count?.matches ?? 0 })}
               </span>
-            </button>
+            </Button>
             {canManage && (
               <span className="ml-2 flex shrink-0 gap-1">
                 <Button

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ConfirmDialog } from '../../../components/admin/ConfirmDialog';
+import { Switch } from '../../../components/ui/switch';
 import type { RoundDeleteImpact } from '../../../hooks/use-rounds';
 
 interface Props {
@@ -45,14 +46,9 @@ export function RoundCascadeDeleteDialog({
             <li>{impact.ticketCount} ulaznica</li>
           </ul>
           <p className="text-danger">{t('admin.roundCascade.irreversible')}</p>
-          <label className="flex cursor-pointer items-start gap-2">
-            <input
-              type="checkbox"
-              checked={ack}
-              onChange={(e) => setAck(e.target.checked)}
-              className="mt-0.5 h-4 w-4 rounded border-slate-300"
-            />
-            <span>{t('admin.roundCascade.ack')}</span>
+          <label className="flex cursor-pointer items-center justify-between gap-3 rounded-lg border border-[var(--border-subtle)] p-3">
+            <span className="text-sm">{t('admin.roundCascade.ack')}</span>
+            <Switch checked={ack} onCheckedChange={setAck} />
           </label>
         </div>
       }
