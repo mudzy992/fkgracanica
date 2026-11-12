@@ -107,7 +107,7 @@ describe('RoundCascadeDeleteDialog', () => {
     expect(screen.getByText('100 ulaznica')).toBeInTheDocument();
     const confirmBtn = screen.getByRole('button', { name: 'potvrdi' });
     expect(confirmBtn).toBeDisabled();
-    await userEvent.click(screen.getByRole('checkbox'));
+    await userEvent.click(screen.getByRole('switch'));
     expect(confirmBtn).toBeEnabled();
     await userEvent.click(confirmBtn);
     expect(onConfirm).toHaveBeenCalled();
@@ -125,7 +125,7 @@ describe('RoundCascadeDeleteDialog', () => {
         onConfirm={vi.fn()}
       />,
     );
-    await userEvent.click(screen.getByRole('checkbox'));
+    await userEvent.click(screen.getByRole('switch'));
     await userEvent.click(screen.getByRole('button', { name: 'zatvori' }));
     expect(onOpenChange).toHaveBeenCalledWith(false);
   });

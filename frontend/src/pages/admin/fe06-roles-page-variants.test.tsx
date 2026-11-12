@@ -101,8 +101,8 @@ describe('RolesPage — varijante pokrivanja grana (5 grana)', () => {
     expect(within(screen.getByTestId('row-BezPerm')).getAllByText('0').length).toBe(2);
     await user.click(screen.getByRole('button', { name: 'Uredi dozvole' }));
     const sheet = screen.getByRole('region', { name: 'Dozvole: BezPerm' });
-    const boxes = within(sheet).getAllByRole('checkbox') as HTMLInputElement[];
-    expect(boxes.every((b) => !b.checked)).toBe(true);
+    const switches = within(sheet).getAllByRole('switch');
+    expect(switches.every((b) => b.getAttribute('aria-checked') === 'false')).toBe(true);
     await user.click(within(sheet).getByRole('button', { name: 'Sačuvaj dozvole' }));
     await waitFor(() => expect(state.updatePerms.mutateAsync).toHaveBeenCalledWith({ roleId: 'rx', permissionKeys: [] }));
   });

@@ -124,7 +124,7 @@ describe('MatchFormSheet — kreiranje', () => {
     const dateInput = screen.getByDisplayValue(/^\d{4}-/);
     await user.clear(dateInput);
     await user.type(dateInput, '2020-06-01T10:00');
-    await user.click(screen.getByRole('checkbox'));
+    await user.click(screen.getByRole('switch'));
     expect(state.scoreArgs.labeled).toBe(true);
     await user.click(screen.getByRole('button', { name: 'home-plus' }));
     await user.click(screen.getByRole('button', { name: 'away-plus' }));

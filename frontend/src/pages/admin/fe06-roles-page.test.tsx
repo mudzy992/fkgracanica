@@ -115,13 +115,13 @@ describe('RolesPage', () => {
     render(<RolesPage embedded />);
     await user.click(screen.getByRole('button', { name: /editPermissions|Dozvole/i }));
     const sheet = screen.getByRole('region', { name: /Dozvole: Editor/ });
-    const checked = within(sheet).getAllByRole('checkbox') as HTMLInputElement[];
-    expect(checked[0].checked).toBe(true);
-    expect(checked[1].checked).toBe(false);
+    const switches = within(sheet).getAllByRole('switch');
+    expect(switches[0]).toHaveAttribute('aria-checked', 'true');
+    expect(switches[1]).toHaveAttribute('aria-checked', 'false');
     expect(within(sheet).getByText('Upravljanje vijestima')).toBeInTheDocument();
     expect(within(sheet).getByText('rbac.update')).toBeInTheDocument();
-    await user.click(checked[0]);
-    await user.click(checked[1]);
+    await user.click(switches[0]);
+    await user.click(switches[1]);
     await user.click(within(sheet).getByRole('button', { name: 'Sačuvaj dozvole' }).closest('button')!);
     await waitFor(() => expect(state.updatePerms.mutateAsync).toHaveBeenCalledWith({ roleId: 'r1', permissionKeys: ['rbac.update'] }));
     await waitFor(() => expect(screen.queryByRole('region', { name: /Dozvole: Editor/ })).toBeNull());

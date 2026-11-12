@@ -54,7 +54,7 @@ describe('MembershipAdminFormSheet', () => {
     const onOpenChange = vi.fn();
     render(<MembershipAdminFormSheet open onOpenChange={onOpenChange} />);
     await userEvent.type(emailInput(), '  clan@example.com  ');
-    await userEvent.click(screen.getByRole('checkbox'));
+    await userEvent.click(screen.getByRole('switch'));
     await userEvent.click(submitButton());
     expect(state.create.mutateAsync).toHaveBeenCalledWith({ email: 'clan@example.com', activate: true });
     expect(onOpenChange).toHaveBeenCalledWith(false);
@@ -91,10 +91,10 @@ describe('MembershipAdminFormSheet', () => {
   it('zatvaranje resetuje polja i grešku', async () => {
     const { rerender } = render(<MembershipAdminFormSheet open onOpenChange={() => {}} />);
     await userEvent.type(emailInput(), 'clan@example.com');
-    await userEvent.click(screen.getByRole('checkbox'));
+    await userEvent.click(screen.getByRole('switch'));
     await userEvent.click(screen.getByRole('button', { name: 'zatvori-sheet' }));
     rerender(<MembershipAdminFormSheet open onOpenChange={() => {}} />);
     expect(emailInput().value).toBe('');
-    expect((screen.getByRole('checkbox') as HTMLInputElement).checked).toBe(false);
+    expect(screen.getByRole('switch')).toHaveAttribute('aria-checked', 'false');
   });
 });

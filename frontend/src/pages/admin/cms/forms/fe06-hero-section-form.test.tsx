@@ -51,8 +51,8 @@ describe('HeroSectionForm', () => {
     expect(screen.getByRole('button', { name: 'pick-media' })).toBeTruthy();
     expect(state.media[0]).toMatchObject({ value: '', label: 'admin.cmsWidget.background' });
     expect(screen.getByRole('combobox')).toHaveProperty('value', 'all');
-    expect(screen.getAllByRole('checkbox')[0]).toHaveProperty('checked', true);
-    expect(screen.getAllByRole('checkbox')[1]).toHaveProperty('checked', true);
+    expect(screen.getAllByRole('switch')[0]).toHaveAttribute('aria-checked', 'true');
+    expect(screen.getAllByRole('switch')[1]).toHaveAttribute('aria-checked', 'true');
     expect(screen.getByText('+ Dugme')).toBeTruthy();
   });
 
@@ -77,7 +77,7 @@ describe('HeroSectionForm', () => {
 
   it('isključivanje prikaza utakmica i rezultata', async () => {
     renderForm();
-    const [matches, result] = screen.getAllByRole('checkbox');
+    const [matches, result] = screen.getAllByRole('switch');
     await userEvent.click(matches);
     expect(last()).toMatchObject({ showMatches: false });
     await userEvent.click(result);
@@ -86,8 +86,8 @@ describe('HeroSectionForm', () => {
 
   it('poništava polja koja su u configu eksplicitno false', () => {
     renderForm({ showMatches: false, showLastResult: false, backgroundDisplay: 'none' });
-    expect(screen.getAllByRole('checkbox')[0]).toHaveProperty('checked', false);
-    expect(screen.getAllByRole('checkbox')[1]).toHaveProperty('checked', false);
+    expect(screen.getAllByRole('switch')[0]).toHaveAttribute('aria-checked', 'false');
+    expect(screen.getAllByRole('switch')[1]).toHaveAttribute('aria-checked', 'false');
     expect(screen.getByRole('combobox')).toHaveProperty('value', 'none');
   });
 

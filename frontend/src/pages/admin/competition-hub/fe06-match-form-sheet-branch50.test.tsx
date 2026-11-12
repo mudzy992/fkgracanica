@@ -112,9 +112,9 @@ describe('MatchFormSheet — branch50 (roundId fallback, venue null, canSendManu
     const dateInput = screen.getByDisplayValue(/^2026-/) as HTMLInputElement;
     await user.clear(dateInput);
     await user.type(dateInput, past);
-    const checkbox = screen.getByLabelText('admin.matchForm.pastMatch') as HTMLInputElement;
-    await user.click(checkbox);
-    expect(checkbox.checked).toBe(true);
+    const toggle = screen.getByRole('switch', { name: 'admin.matchForm.pastMatch' });
+    await user.click(toggle);
+    expect(toggle).toHaveAttribute('aria-checked', 'true');
     // sada isPastMatch true, pojavljuje se score inputs
     expect(screen.getByText('score:0:0')).toBeInTheDocument();
     await user.click(screen.getByText('home-plus'));

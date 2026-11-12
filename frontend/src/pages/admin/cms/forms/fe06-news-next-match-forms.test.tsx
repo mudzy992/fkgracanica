@@ -82,7 +82,7 @@ describe('NextMatchSectionForm', () => {
     render(<Harness Comp={NextMatchSectionForm} initial={{ title: 'Sljedeća' }} />);
     expect(screen.getByDisplayValue('Sljedeća')).toBeTruthy();
     expect(state.media[0]).toMatchObject({ value: '', label: 'admin.cmsNextMatch.stadiumBackground' });
-    expect(screen.getByRole('checkbox')).toHaveProperty('checked', true);
+    expect(screen.getByRole('switch')).toHaveAttribute('aria-checked', 'true');
   });
 
   it('birač medija upisuje pozadinu', async () => {
@@ -93,13 +93,13 @@ describe('NextMatchSectionForm', () => {
 
   it('isključivanje zadnjeg rezultata upisuje false', async () => {
     render(<Harness Comp={NextMatchSectionForm} initial={{}} />);
-    await userEvent.click(screen.getByRole('checkbox'));
+    await userEvent.click(screen.getByRole('switch'));
     expect(last()).toMatchObject({ showLastResult: false });
   });
 
   it('eksplicitno false ostaje isključeno', () => {
     render(<Harness Comp={NextMatchSectionForm} initial={{ showLastResult: false }} />);
-    expect(screen.getByRole('checkbox')).toHaveProperty('checked', false);
+    expect(screen.getByRole('switch')).toHaveAttribute('aria-checked', 'false');
   });
 });
 
