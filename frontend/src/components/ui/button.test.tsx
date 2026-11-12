@@ -18,7 +18,9 @@ describe('Button (FE-02)', () => {
       </Button>,
     );
     const el = screen.getByRole('button', { name: 'Obriši' });
-    expect(el).toHaveClass('bg-danger', 'h-9', 'w-full');
+    // AAA responsive: sm je h-8 na bazi, lg:h-9 na 1024+ — u jsdom je h-8
+    expect(el).toHaveClass('bg-danger', 'h-8', 'w-full');
+    expect(el).toHaveClass('lg:h-9');
     expect(el).not.toHaveClass('bg-primary');
   });
 

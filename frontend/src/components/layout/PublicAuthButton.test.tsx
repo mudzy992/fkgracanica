@@ -23,7 +23,9 @@ describe('PublicAuthButton accessibility', () => {
     render(<MemoryRouter><PublicAuthButton /></MemoryRouter>);
     const link = screen.getByRole('link', { name: 'Prijavi se' });
     expect(link).toHaveAttribute('href', '/prijava');
-    expect(link).toHaveClass('h-9');
+    // AAA responsive sm: h-8 na bazi + lg:h-9 — jsdom vidi h-8, lg:h-9 kao klasu
+    expect(link).toHaveClass('h-8');
+    expect(link).toHaveClass('lg:h-9');
     expect(link.querySelector('button')).toBeNull();
   });
 

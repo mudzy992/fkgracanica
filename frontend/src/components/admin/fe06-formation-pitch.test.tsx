@@ -17,6 +17,7 @@ vi.mock('@dnd-kit/core', () => ({
   useDroppable: () => ({ setNodeRef: vi.fn(), isOver: false }),
 }));
 vi.mock('@dnd-kit/utilities', () => ({ CSS: { Translate: { toString: () => '' } } }));
+vi.mock('react-i18next', () => ({ useTranslation: () => ({ t: (k: string) => ({ 'admin.formation.emptySpot': 'Prazno mjesto' } as Record<string, string>)[k] ?? k }) }));
 
 const player = (over: Partial<Player> = {}): Player =>
   ({
