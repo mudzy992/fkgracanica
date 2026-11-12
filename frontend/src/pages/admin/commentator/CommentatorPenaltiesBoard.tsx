@@ -5,6 +5,7 @@ import type { Match, MatchLineup } from '../../../types';
 import { Button } from '../../../components/ui/button';
 import { useTranslation } from 'react-i18next';
 import { runAction } from '../../../lib/action-errors';
+import { Card } from "../../../components/ui/card";
 
 interface Props {
   match: Match;
@@ -41,7 +42,7 @@ function PenaltySide({
   };
 
   return (
-    <div className="rounded-xl border border-[var(--border-subtle)] bg-surface/50 p-4">
+    <Card className="rounded-xl border border-[var(--border-subtle)] bg-surface/50 p-4">
       <h3 className="mb-2 text-center font-semibold">{clubName}</h3>
       <EntitySelect
         label={t('admin.commentatorBoard.player')}
@@ -62,7 +63,7 @@ function PenaltySide({
           Promašaj
         </Button>
       </div>
-    </div>
+    </Card>
   );
 }
 
@@ -72,7 +73,7 @@ export function CommentatorPenaltiesBoard({ match }: Props) {
   const awayPen = match.penaltyAwayScore ?? 0;
 
   return (
-    <div className="space-y-4 rounded-xl border border-primary/30 bg-primary/5 p-4">
+    <Card className="space-y-4 rounded-xl border border-primary/30 bg-primary/5 p-4">
       <div className="text-center">
         <p className="text-xs font-semibold uppercase tracking-widest text-primary">
           {t('admin.penalties.title')}
@@ -98,6 +99,6 @@ export function CommentatorPenaltiesBoard({ match }: Props) {
           clubId={match.awayClubId}
         />
       </div>
-    </div>
+    </Card>
   );
 }

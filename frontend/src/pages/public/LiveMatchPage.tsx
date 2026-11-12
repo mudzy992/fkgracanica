@@ -56,7 +56,7 @@ export function LiveMatchPage() {
   if (!data) {
     return (
       <div className="flex min-h-dvh flex-col items-center justify-center gap-4 bg-slate-950 p-8 text-white">
-        <p className="text-white/70">{t('pages.live.notFound')}</p>
+        <p className="text-white/80">{t('pages.live.notFound')}</p>
         <Link to="/liga" className="text-sm text-amber-300 hover:underline">
           {t('pages.live.backToLeague')}
         </Link>
@@ -110,7 +110,7 @@ export function LiveMatchPage() {
           </span>
           <ClubCrest club={data.awayClub} size="sm" />
         </div>
-        <p className="mt-4 text-sm text-white/60">
+        <p className="mt-4 text-sm text-white/80">
           {data.homeClub?.name} — {data.awayClub?.name}
         </p>
         <p className="mt-2 text-sm text-white/40">{t('pages.live.notLive')}</p>

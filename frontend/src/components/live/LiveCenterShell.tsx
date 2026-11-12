@@ -100,10 +100,10 @@ export function LiveCenterShell({ match, clock }: Props) {
                     <div className="min-w-0">
                       <p className="font-medium">{matchEventLabel(ev.type)}</p>
                       {formatEventPlayers(ev) && (
-                        <p className="mt-0.5 text-white/70">{formatEventPlayers(ev)}</p>
+                        <p className="mt-0.5 text-white/80">{formatEventPlayers(ev)}</p>
                       )}
                       {ev.description && !formatEventPlayers(ev) && (
-                        <p className="mt-0.5 text-white/70">{ev.description}</p>
+                        <p className="mt-0.5 text-white/80">{ev.description}</p>
                       )}
                     </div>
                   </li>

@@ -117,7 +117,7 @@ export function NewsFeaturedCard({ item }: { item: NewsItem }) {
             <h3 className="font-display mb-4 text-2xl font-bold uppercase leading-tight text-white group-hover:text-primary-light md:text-3xl">
               {item.title}
             </h3>
-            <p className="mb-4 line-clamp-2 text-white/60">{stripHtml(item.excerpt ?? '')}</p>
+            <p className="mb-4 line-clamp-2 text-white/80">{stripHtml(item.excerpt ?? '')}</p>
             <span className="inline-flex items-center gap-2 font-semibold text-primary-light">
               {t('news.readMore')} <ArrowUpRight size={16} />
             </span>

@@ -7,6 +7,7 @@ import { Badge } from '../../../components/ui/badge';
 import { useRealtimeConnected } from '../../../hooks/use-realtime-connected';
 import { matchStatusLabel, matchStatusTone } from '../../../lib/match-status-label';
 import type { Match } from '../../../types';
+import { Card } from "../../../components/ui/card";
 
 function matchMeta(match: Match): string {
   const round = match.roundRel?.name ?? null;
@@ -43,7 +44,7 @@ export function CommentatorDeskHeader({
           <Link to={publicHref} target="_blank" rel="noreferrer" className={cn(buttonVariants({variant: "outline", size: "sm"}))}>{publicLabel}</Link>
         </div>
       </div>
-      <div className="flex items-center justify-between gap-3 rounded-2xl border border-[var(--border-subtle)] bg-surface/50 px-4 py-3">
+      <Card className="flex items-center justify-between gap-3 rounded-2xl border border-[var(--border-subtle)] bg-surface/50 px-4 py-3">
         <div className="flex min-w-0 flex-1 items-center gap-2">
           <ClubCrest club={match.homeClub} size="sm" />
           <p className="truncate text-sm font-semibold">{match.homeClub?.name ?? 'Domaćin'}</p>
@@ -57,7 +58,7 @@ export function CommentatorDeskHeader({
           </p>
           <ClubCrest club={match.awayClub} size="sm" />
         </div>
-      </div>
+      </Card>
     </div>
   );
 }

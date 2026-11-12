@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { Card } from "../../../../components/ui/card";
 
 interface Props {
   config: Record<string, unknown>;
@@ -11,9 +12,9 @@ export function ClubAboutCtaSectionForm({ config, onChange }: Props) {
   }, [config, onChange]);
 
   return (
-    <div className="rounded-xl border border-[var(--border-subtle)] bg-surface p-4 text-sm text-text-muted">
+    <Card className="rounded-xl border border-[var(--border-subtle)] bg-surface p-4 text-sm text-text-muted">
       Ovaj widget je potpuno automatizovan. Sam preuzima slike i tekst iz `O klubu`, `Hall of Fame` i osnovnih
       klupskih podataka, bez ručnog CMS unosa.
-    </div>
+    </Card>
   );
 }

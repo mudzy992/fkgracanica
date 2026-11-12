@@ -145,7 +145,7 @@ export function LeagueResultsRound({ matches, loading }: Props) {
           type="button"
           disabled={!hasPrev}
           onClick={() => hasPrev && setSelectedKey(groups[idx + 1].key)}
-          className="rounded-full p-2 text-white/60 transition hover:bg-white/10 hover:text-white disabled:opacity-30"
+          className="rounded-full p-2 text-white/80 transition hover:bg-white/10 hover:text-white disabled:opacity-30"
           aria-label="Prethodno kolo"
         >
           <ChevronLeft className="h-5 w-5" />
@@ -158,7 +158,7 @@ export function LeagueResultsRound({ matches, loading }: Props) {
           type="button"
           disabled={!hasNext}
           onClick={() => hasNext && setSelectedKey(groups[idx - 1].key)}
-          className="rounded-full p-2 text-white/60 transition hover:bg-white/10 hover:text-white disabled:opacity-30"
+          className="rounded-full p-2 text-white/80 transition hover:bg-white/10 hover:text-white disabled:opacity-30"
           aria-label="Sljedeće kolo"
         >
           <ChevronRight className="h-5 w-5" />

@@ -114,11 +114,11 @@ describe('batch60 public — LeagueNextMatch matchRoundLabel falsy [2,0]', () =>
 });
 
 describe('batch60 public — LeagueStandingsTable gd 0 [1,0]', () => {
-  it('gd 0 uses text-white/60', async () => {
+  it('gd 0 uses text-white/80', async () => {
     const { LeagueStandingsTable } = await import('./league/LeagueStandingsTable');
     const rows = [{ clubId: 'c1', clubName: 'FKG', clubSlug: 'fkg', played: 1, won: 0, drawn: 1, lost: 0, goalsFor: 1, goalsAgainst: 1, goalDifference: 0, points: 1, form: 'D' } as any];
     const { container } = render(<MemoryRouter><LeagueStandingsTable rows={rows} /></MemoryRouter>);
-    expect(container.innerHTML).toContain('text-white/60');
+    expect(container.innerHTML).toContain('text-white/80');
   });
   it('gd 2 uses text-success', async () => {
     const { LeagueStandingsTable } = await import('./league/LeagueStandingsTable');

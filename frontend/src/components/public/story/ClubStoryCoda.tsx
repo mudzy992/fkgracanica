@@ -32,7 +32,7 @@ export function ClubStoryCoda({ storyImages, heritageImage }: Props) {
           <h2 className="font-display mt-3 text-3xl font-bold tracking-tight text-white sm:text-4xl md:text-5xl">
             Priča se nastavlja
           </h2>
-          <p className="mx-auto mt-4 max-w-lg text-base text-white/60 sm:text-lg">
+          <p className="mx-auto mt-4 max-w-lg text-base text-white/80 sm:text-lg">
             Ista strast. Nova generacija. Uđi u sljedeće poglavlje — na terenu ili u tribinama.
           </p>
           <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
@@ -59,7 +59,7 @@ export function ClubStoryCoda({ storyImages, heritageImage }: Props) {
                   {leadImage ? (
                     <img loading="lazy" decoding="async" src={leadImage} alt="" className="h-full min-h-[17rem] w-full object-cover" />
                   ) : (
-                    <div className="flex h-full min-h-[17rem] items-center justify-center bg-[linear-gradient(140deg,#0f172a,#1d4ed8)] text-xs font-semibold uppercase tracking-[0.32em] text-white/70">
+                    <div className="flex h-full min-h-[17rem] items-center justify-center bg-[linear-gradient(140deg,#0f172a,#1d4ed8)] text-xs font-semibold uppercase tracking-[0.32em] text-white/80">
                       O klubu
                     </div>
                   )}
@@ -69,7 +69,7 @@ export function ClubStoryCoda({ storyImages, heritageImage }: Props) {
                     {supportImage ? (
                       <img loading="lazy" decoding="async" src={supportImage} alt="" className="h-32 w-full object-cover sm:h-full sm:min-h-[8rem]" />
                     ) : (
-                      <div className="flex h-32 items-center justify-center bg-[linear-gradient(180deg,#0f172a,#1e293b)] text-[11px] font-semibold uppercase tracking-[0.28em] text-white/60 sm:h-full sm:min-h-[8rem]">
+                      <div className="flex h-32 items-center justify-center bg-[linear-gradient(180deg,#0f172a,#1e293b)] text-[11px] font-semibold uppercase tracking-[0.28em] text-white/80 sm:h-full sm:min-h-[8rem]">
                         Era
                       </div>
                     )}
@@ -93,7 +93,7 @@ export function ClubStoryCoda({ storyImages, heritageImage }: Props) {
                 <h3 className="font-display mt-4 text-2xl font-bold tracking-tight text-white sm:text-3xl">
                   Otključaj Kuću slavnih
                 </h3>
-                <p className="mt-3 text-sm leading-relaxed text-white/70 sm:text-base">
+                <p className="mt-3 text-sm leading-relaxed text-white/80 sm:text-base">
                   Završetak priče vodi u prostor posvećen legendama kluba, njihovim licima, erama i tragovima koje su ostavili.
                 </p>
                 <div className="mt-5 inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.2em] text-amber-100">

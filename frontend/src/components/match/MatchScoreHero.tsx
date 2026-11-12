@@ -80,7 +80,7 @@ export function MatchScoreHero({
               </span>
             )}
             {statusLabel && !live && (
-              <span className="rounded-full bg-white/10 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.2em] text-white/70">
+              <span className="rounded-full bg-white/10 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.2em] text-white/80">
                 {statusLabel}
               </span>
             )}

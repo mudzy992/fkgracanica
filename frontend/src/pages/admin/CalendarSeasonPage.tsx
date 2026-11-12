@@ -18,6 +18,7 @@ import { adminLinkClass } from '../../lib/admin-styles';
 import { type CalendarSeason } from '../../lib/season-utils';
 import { SeasonEditionFormSheet, type SeasonEditionRow } from './SeasonEditionFormSheet';
 import { runAction } from '../../lib/action-errors';
+import { Card } from "../../components/ui/card";
 
 export function CalendarSeasonPage() {
   const { t } = useTranslation();
@@ -76,7 +77,7 @@ export function CalendarSeasonPage() {
           </Button>
         )}
       </div>
-      <div className="overflow-hidden rounded-2xl border border-[var(--border-subtle)] bg-background">
+      <Card className="overflow-hidden rounded-2xl border border-[var(--border-subtle)] bg-background">
         <AdminDataTable
           rows={rows}
           empty="Nema takmičenja u ovoj sezoni."
@@ -146,7 +147,7 @@ export function CalendarSeasonPage() {
               : []),
           ]}
         />
-      </div>
+      </Card>
       <SeasonEditionFormSheet
         open={open}
         onOpenChange={(o) => {

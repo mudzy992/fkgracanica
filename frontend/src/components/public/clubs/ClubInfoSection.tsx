@@ -32,7 +32,7 @@ export function ClubInfoSection({ stadium }: Props) {
           )}
         </div>
         {stadium.description && (
-          <p className="mt-6 border-t border-white/10 pt-6 text-sm leading-relaxed text-white/60">
+          <p className="mt-6 border-t border-white/10 pt-6 text-sm leading-relaxed text-white/80">
             {stadium.description}
           </p>
         )}

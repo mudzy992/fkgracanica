@@ -1,14 +1,15 @@
 import type { FinanceSummary } from '../../../hooks/use-finance-summary';
 import { useTranslation } from 'react-i18next';
 import { formatDay, formatKm } from './finance-labels';
+import { Card } from "../../../components/ui/card";
 
 function Stat({ label, hint, value }: { label: string; hint: string; value: string }) {
   return (
-    <div className="rounded-xl border border-[var(--border-subtle)] bg-surface/50 px-4 py-3">
+    <Card className="rounded-xl border border-[var(--border-subtle)] bg-surface/50 px-4 py-3">
       <p className="text-xs text-text-muted">{label}</p>
       <p className="mt-1 font-display text-2xl font-bold tabular-nums">{value}</p>
       <p className="mt-1 text-xs text-text-muted">{hint}</p>
-    </div>
+    </Card>
   );
 }
 

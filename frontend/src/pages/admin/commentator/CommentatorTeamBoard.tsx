@@ -7,6 +7,7 @@ import type { Match, MatchLineup } from '../../../types';
 import { Button } from '../../../components/ui/button';
 import { MORE_EVENTS, QUICK_EVENTS, eventLabel } from './commentator-events';
 import { runAction } from '../../../lib/action-errors';
+import { Card } from "../../../components/ui/card";
 
 interface Props {
   match: Match;
@@ -74,7 +75,7 @@ export function CommentatorTeamColumn({
   };
 
   return (
-    <div className="rounded-lg border border-[var(--border-subtle)] bg-surface/50 p-3">
+    <Card className="rounded-lg border border-[var(--border-subtle)] bg-surface/50 p-3">
       <h3 className="mb-2 text-center text-sm font-semibold">{clubName}</h3>
       <EntitySelect
         label={t('admin.commentatorBoard.player')}
@@ -153,6 +154,6 @@ export function CommentatorTeamColumn({
           </Button>
         </div>
       </details>
-    </div>
+    </Card>
   );
 }

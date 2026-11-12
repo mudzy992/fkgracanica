@@ -58,7 +58,7 @@ export function CmsMenuPreviewBar({ items, moduleFlags }: Props) {
       </Card>
 
       {blocked.length > 0 && (
-        <div
+        <Card
           role="status"
           className="flex gap-3 rounded-lg border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-sm text-amber-950"
         >
@@ -84,7 +84,7 @@ export function CmsMenuPreviewBar({ items, moduleFlags }: Props) {
               , ili ugasite stavku ovdje.
             </p>
           </div>
-        </div>
+        </Card>
       )}
     </div>
   );

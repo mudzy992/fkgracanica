@@ -6,6 +6,7 @@ import { Button } from '../../../components/ui/button';
 import { Input } from '../../../components/ui/input';
 import { AdminDataTable } from '../../../components/admin/AdminPageShell';
 import { useTranslation } from 'react-i18next';
+import { Card } from "../../../components/ui/card";
 
 export function TicketingSeasonTab() {
   const { t } = useTranslation();
@@ -26,7 +27,7 @@ export function TicketingSeasonTab() {
 
   return (
     <div className="space-y-4 p-4">
-      <div className="rounded-xl border border-[var(--border-subtle)] bg-background p-4">
+      <Card className="rounded-xl border border-[var(--border-subtle)] bg-background p-4">
         <h2 className="text-sm font-semibold">{t('admin.seasonTicket.issueTitle')}</h2>
         <div className="mt-3 flex flex-wrap gap-2">
           <Input
@@ -40,7 +41,7 @@ export function TicketingSeasonTab() {
           </Button>
         </div>
         {error && <p className="mt-2 text-sm text-danger">{error}</p>}
-      </div>
+      </Card>
       {isLoading ? (
         <p className="text-sm text-text-muted">{t('admin.common.loading')}</p>
       ) : (

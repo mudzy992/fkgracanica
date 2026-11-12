@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import type { UploadQueueState } from '../../../hooks/use-media-upload-queue';
 import { Button } from '../../../components/ui/button';
+import { Card } from "../../../components/ui/card";
 
 interface Props {
   progress: UploadQueueState;
@@ -38,28 +39,28 @@ export function MediaUploadProgress({ progress, onRetryRefresh, onClear }: Props
         <p role="status" className="text-sm text-text">{t('admin.mediaUpload.summary', counts)}</p>
       ) : null}
       {failedFiles.length > 0 ? (
-        <div role="alert" className="rounded-lg border border-danger/40 bg-danger/10 px-3 py-2 text-sm text-text">
+        <Card role="alert" className="rounded-lg border border-danger/40 bg-danger/10 px-3 py-2 text-sm text-text">
           <p>{t('admin.mediaUpload.failed')}</p>
           <ul className="list-inside list-disc">
             {failedFiles.map((file) => <li key={file.id}>{file.name} — {file.folderName ?? file.folderId} — {t(`admin.mediaUpload.${file.reason}`)}</li>)}
           </ul>
-        </div>
+        </Card>
       ) : null}
       {rejectedFiles.length > 0 ? (
-        <div role="alert" className="rounded-lg border border-danger/40 bg-danger/10 px-3 py-2 text-sm text-text">
+        <Card role="alert" className="rounded-lg border border-danger/40 bg-danger/10 px-3 py-2 text-sm text-text">
           <p>{t('admin.mediaUpload.rejected')}</p>
           <ul className="list-inside list-disc">
             {rejectedFiles.map((file) => <li key={file.id}>{file.name} — {t(`admin.mediaUpload.${file.reason}`)}</li>)}
           </ul>
-        </div>
+        </Card>
       ) : null}
       {refreshFailed && !isRunning ? (
-        <div role="alert" className="space-y-2 rounded-lg border border-danger/40 bg-danger/10 px-3 py-2 text-sm text-text">
+        <Card role="alert" className="space-y-2 rounded-lg border border-danger/40 bg-danger/10 px-3 py-2 text-sm text-text">
           <p>{t('admin.mediaUpload.refreshFailed')}</p>
           <Button type="button" variant="outline" size="sm" onClick={onRetryRefresh}>
             {t('admin.mediaUpload.retryRefresh')}
           </Button>
-        </div>
+        </Card>
       ) : null}
       {!isRunning ? (
         <Button type="button" variant="ghost" size="sm" onClick={onClear}>{t('admin.mediaUpload.clearReport')}</Button>

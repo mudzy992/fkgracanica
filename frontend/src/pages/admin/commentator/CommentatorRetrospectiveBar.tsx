@@ -7,6 +7,7 @@ import { Button } from '../../../components/ui/button';
 import { Input } from '../../../components/ui/input';
 import { Badge } from '../../../components/ui/badge';
 import { useTranslation } from 'react-i18next';
+import { Card } from "../../../components/ui/card";
 
 interface Props {
   match: Match;
@@ -30,7 +31,7 @@ export function CommentatorRetrospectiveBar({ match, minute, onMinuteChange }: P
   };
 
   return (
-    <div className="rounded-xl border border-[var(--border-subtle)] bg-gradient-to-r from-slate-900 to-slate-800 p-3 text-white sm:p-4">
+    <Card className="rounded-xl border border-[var(--border-subtle)] bg-gradient-to-r from-slate-900 to-slate-800 p-3 text-white sm:p-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <p className="text-[10px] uppercase tracking-widest text-slate-400">
@@ -73,6 +74,6 @@ export function CommentatorRetrospectiveBar({ match, minute, onMinuteChange }: P
         </div>
       )}
       {error && <p className="mt-2 text-xs text-red-300">{error}</p>}
-    </div>
+    </Card>
   );
 }

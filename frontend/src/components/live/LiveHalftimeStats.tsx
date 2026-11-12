@@ -30,7 +30,7 @@ export function LiveHalftimeStats({ match, stats, loading }: Props) {
 
   return (
     <div className="space-y-3 rounded-xl border border-white/10 bg-white/5 p-4 backdrop-blur-sm sm:p-5">
-      <div className="grid grid-cols-3 text-xs font-medium text-white/60">
+      <div className="grid grid-cols-3 text-xs font-medium text-white/80">
         <span className="truncate text-right">{homeName}</span>
         <span className="text-center">1. poluvrijeme</span>
         <span className="truncate">{awayName}</span>

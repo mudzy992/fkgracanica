@@ -78,7 +78,7 @@ export function ClubStoryProgress({ events, activeId, onSelect }: Props) {
                   'rounded-full px-3 py-1.5 text-[11px] font-semibold tracking-wider transition',
                   event.id === activeId
                     ? 'bg-primary text-white'
-                    : 'glass-premium text-white/70',
+                    : 'glass-premium text-white/80',
                 )}
               >
                 {event.year}

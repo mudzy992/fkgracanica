@@ -44,7 +44,7 @@ export function ClubStoryChapter({ event }: Props) {
             {event.description && (
               <ExpandableRichContent
                 html={event.description}
-                className="mt-4 text-base text-white/70 sm:text-lg"
+                className="mt-4 text-base text-white/80 sm:text-lg"
               />
             )}
           </motion.div>

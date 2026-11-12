@@ -125,10 +125,10 @@ export function TeamSeasonStats({ stats }: { stats?: ClubSeasonStats | null }) {
                     <td className="p-4">
                       <PlayerLink id={p.id} name={`${p.firstName} ${p.lastName}`} />
                     </td>
-                    <td className="p-4 text-white/70">{p.stats?.appearances ?? 0}</td>
+                    <td className="p-4 text-white/80">{p.stats?.appearances ?? 0}</td>
                     <td className="p-4 font-display font-bold text-primary-light">{p.stats?.goals ?? 0}</td>
-                    <td className="p-4 text-white/70">{p.stats?.assists ?? 0}</td>
-                    <td className="p-4 text-white/70">
+                    <td className="p-4 text-white/80">{p.stats?.assists ?? 0}</td>
+                    <td className="p-4 text-white/80">
                       {p.stats?.yellowCards ?? 0}/{p.stats?.redCards ?? 0}
                     </td>
                   </tr>

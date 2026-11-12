@@ -1,6 +1,7 @@
 import type { Player } from '../../../types';
 import type { ClubSquadSlot } from '../../../types/club-hub';
 import { Button } from '../../ui/button';
+import { Card } from "../../ui/card";
 
 interface Props {
   slot: ClubSquadSlot;
@@ -14,7 +15,7 @@ export function FormationSlotPanel({ slot, players, onPick, onRemove, onClose }:
   const role = slot.isBench ? 'klupu' : 'poziciju';
 
   return (
-    <div className="rounded-xl border border-primary/30 bg-primary/5 p-4">
+    <Card className="rounded-xl border border-primary/30 bg-primary/5 p-4">
       <div className="mb-3 flex items-start justify-between gap-2">
         <div>
           <p className="text-sm font-medium">
@@ -48,6 +49,6 @@ export function FormationSlotPanel({ slot, players, onPick, onRemove, onClose }:
           </Button>
         ))}
       </div>
-    </div>
+    </Card>
   );
 }

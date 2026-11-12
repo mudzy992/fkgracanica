@@ -8,12 +8,13 @@ import { Badge } from '../../../components/ui/badge';
 import { matchStatusLabel, matchStatusTone } from '../../../lib/match-status-label';
 import type { Match } from '../../../types';
 import { deskHref } from './commentator-desk';
+import { Card } from "../../../components/ui/card";
 
 export function CommentatorLiveHero({ match }: { match: Match }) {
   const { t } = useTranslation();
   const live = match.status === 'LIVE';
   return (
-    <div className="rounded-2xl border border-[var(--border-subtle)] bg-gradient-to-r from-slate-900 to-slate-800 p-5 text-white">
+    <Card className="rounded-2xl border border-[var(--border-subtle)] bg-gradient-to-r from-slate-900 to-slate-800 p-5 text-white">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <Badge
           variant={matchStatusTone(match.status)}
@@ -48,6 +49,6 @@ export function CommentatorLiveHero({ match }: { match: Match }) {
         <Link to={deskHref(match)} className={cn(buttonVariants({size: "sm"}))}>{t('admin.commentator.openDesk')}</Link>
         <Link to={`/live/${match.id}`} target="_blank" rel="noreferrer" className={cn(buttonVariants({variant: "outline", size: "sm"}), "border-white/25 bg-white/10 text-white hover:bg-white/20")}>{t('admin.commentator.publicLive')}</Link>
       </div>
-    </div>
+    </Card>
   );
 }

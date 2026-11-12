@@ -135,7 +135,7 @@ export function MatchLineupSheet({ matchId, open, onOpenChange }: Props) {
             </p>
           )}
           {fromSquadHint && (
-            <p className="rounded-lg border border-primary/20 bg-primary/5 px-3 py-2 text-xs text-text-muted">
+            <p className="rounded-lg border border-primary/20 bg-primary/5 px-3 py-2 text-xs text-text">
               Igrači su učitani iz klupske postave kao predložak. Možete ga prilagoditi i sačuvati za ovu utakmicu.
             </p>
           )}

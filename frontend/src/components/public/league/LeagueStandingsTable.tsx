@@ -53,7 +53,7 @@ export function LeagueStandingsTable({ rows, compact, highlightClubId, positionC
                 : 'border-b border-white/5 last:border-0 hover:bg-white/[0.03]'
             }
           >
-            <td className="px-4 py-3.5 font-display font-bold text-white/60">{i + 1}</td>
+            <td className="px-4 py-3.5 font-display font-bold text-white/80">{i + 1}</td>
             {showMovement && (
               <td className="px-2 py-3.5 text-center">
                 <LeaguePositionBadge change={positionChanges.get(row.clubId)} />
@@ -69,15 +69,15 @@ export function LeagueStandingsTable({ rows, compact, highlightClubId, positionC
             {!compact && (
               <>
                 <td className="hidden px-3 py-3.5 text-center text-success md:table-cell">{row.won}</td>
-                <td className="hidden px-3 py-3.5 text-center text-white/60 md:table-cell">{row.drawn}</td>
+                <td className="hidden px-3 py-3.5 text-center text-white/80 md:table-cell">{row.drawn}</td>
                 <td className="hidden px-3 py-3.5 text-center text-danger md:table-cell">{row.lost}</td>
               </>
             )}
-            <td className="hidden px-3 py-3.5 text-center text-white/60 lg:table-cell">{row.goalsFor}</td>
-            <td className="hidden px-3 py-3.5 text-center text-white/60 lg:table-cell">{row.goalsAgainst}</td>
+            <td className="hidden px-3 py-3.5 text-center text-white/80 lg:table-cell">{row.goalsFor}</td>
+            <td className="hidden px-3 py-3.5 text-center text-white/80 lg:table-cell">{row.goalsAgainst}</td>
             <td
               className={`px-3 py-3.5 text-center tabular-nums ${
-                row.goalDifference > 0 ? 'text-success' : row.goalDifference < 0 ? 'text-danger' : 'text-white/60'
+                row.goalDifference > 0 ? 'text-success' : row.goalDifference < 0 ? 'text-danger' : 'text-white/80'
               }`}
             >
               {formatGoalDifference(row.goalDifference)}

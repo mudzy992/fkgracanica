@@ -26,7 +26,7 @@ export function SeasonPassVisual({ data }: { data: SeasonPassVisualData }) {
           )}
           <div className="relative z-10 flex h-full flex-col justify-between p-4 sm:p-5">
             <div className="flex items-start justify-between gap-2">
-              <p className="text-[9px] font-semibold uppercase tracking-[0.2em] text-white/60">
+              <p className="text-[9px] font-semibold uppercase tracking-[0.2em] text-white/80">
                 {data.clubName}
               </p>
               <span className="shrink-0 border border-amber-300/70 bg-amber-400/15 px-2 py-0.5 text-[9px] font-bold uppercase tracking-[0.14em] text-amber-100">

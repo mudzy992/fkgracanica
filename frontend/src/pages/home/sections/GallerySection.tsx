@@ -37,7 +37,7 @@ export function GallerySection() {
                           className="aspect-square object-cover"
                         />
                       ) : (
-                        <div className="flex aspect-square items-center justify-center bg-primary/5 text-sm text-text-muted">
+                        <div className="flex aspect-square items-center justify-center bg-primary/5 text-sm text-text">
                           {g.title}
                         </div>
                       )}

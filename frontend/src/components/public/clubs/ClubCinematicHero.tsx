@@ -67,7 +67,7 @@ export function ClubCinematicHero({ club, stadium, squad, stats }: Props) {
             {club.name}
           </h1>
           {club.description && (
-            <p className="mt-4 max-w-2xl text-base text-white/60 sm:text-lg">{club.description}</p>
+            <p className="mt-4 max-w-2xl text-base text-white/80 sm:text-lg">{club.description}</p>
           )}
 
           {location && (
@@ -80,7 +80,7 @@ export function ClubCinematicHero({ club, stadium, squad, stats }: Props) {
           {club.isOwnClub && (
             <Link
               to="/tim"
-              className="mt-5 inline-flex items-center gap-2 rounded-full border border-white/10 px-4 py-2 text-xs font-semibold uppercase tracking-wider text-white/70 transition hover:border-primary/30 hover:text-white"
+              className="mt-5 inline-flex items-center gap-2 rounded-full border border-white/10 px-4 py-2 text-xs font-semibold uppercase tracking-wider text-white/80 transition hover:border-primary/30 hover:text-white"
             >
               <Shield size={14} />
               Stranica prvog tima

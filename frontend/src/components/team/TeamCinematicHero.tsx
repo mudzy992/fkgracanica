@@ -76,7 +76,7 @@ export function TeamCinematicHero({ club, squad, stats, stadiumName, city }: Pro
           {club?.slug && (
             <Link
               to={`/klub/${club.slug}`}
-              className="mt-5 inline-flex items-center gap-2 rounded-full border border-white/10 px-4 py-2 text-xs font-semibold uppercase tracking-wider text-white/70 transition hover:border-primary/30 hover:text-white"
+              className="mt-5 inline-flex items-center gap-2 rounded-full border border-white/10 px-4 py-2 text-xs font-semibold uppercase tracking-wider text-white/80 transition hover:border-primary/30 hover:text-white"
             >
               <Shield size={14} />
               Profil kluba

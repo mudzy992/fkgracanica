@@ -45,7 +45,7 @@ export function ClubOwnTeamLink() {
     <section>
       <NewsSectionTitle>Naš klub</NewsSectionTitle>
       <div className="glass-premium rounded-2xl p-6 text-center sm:p-8">
-        <p className="text-sm text-white/60">
+        <p className="text-sm text-white/80">
           Kompletan uvid u prvi tim, formaciju i sezonske statistike.
         </p>
         <Link

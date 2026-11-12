@@ -50,7 +50,7 @@ export function GalleryListBento({ items }: Props) {
                   className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
                 />
               ) : (
-                <div className="absolute inset-0 flex items-center justify-center bg-primary/10 p-4 text-center text-sm text-text-muted">
+                <div className="absolute inset-0 flex items-center justify-center bg-primary/10 p-4 text-center text-sm text-text">
                   {g.title}
                 </div>
               )}

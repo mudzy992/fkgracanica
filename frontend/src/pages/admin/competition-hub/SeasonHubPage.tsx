@@ -14,6 +14,7 @@ import { Badge } from '../../../components/ui/badge';
 import { Skeleton } from '../../../components/ui/skeleton';
 import { RoundMatchesPanel } from './RoundMatchesPanel';
 import { SeasonRoundsPanel } from './SeasonRoundsPanel';
+import { Card } from "../../../components/ui/card";
 
 export function SeasonHubPage() {
   const { t } = useTranslation();
@@ -65,15 +66,15 @@ export function SeasonHubPage() {
       </div>
 
       <div className="grid gap-6 lg:grid-cols-5">
-        <div className="overflow-hidden rounded-2xl border border-[var(--border-subtle)] bg-background lg:col-span-2">
+        <Card className="overflow-hidden rounded-2xl border border-[var(--border-subtle)] bg-background lg:col-span-2">
           <SeasonRoundsPanel
             seasonId={editionKey}
             selectedRoundId={selectedRoundId}
             onSelectRound={(id) => (id ? setParams({ roundId: id }) : setParams({}))}
             canManage={canManage}
           />
-        </div>
-        <div className="overflow-hidden rounded-2xl border border-[var(--border-subtle)] bg-background lg:col-span-3">
+        </Card>
+        <Card className="overflow-hidden rounded-2xl border border-[var(--border-subtle)] bg-background lg:col-span-3">
           {selectedRoundId ? (
             <RoundMatchesPanel
               seasonId={editionKey}
@@ -85,7 +86,7 @@ export function SeasonHubPage() {
               Odaberite kolo za upravljanje utakmicama.
             </p>
           )}
-        </div>
+        </Card>
       </div>
     </div>
   );

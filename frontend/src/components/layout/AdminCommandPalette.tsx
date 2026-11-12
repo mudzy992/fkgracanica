@@ -163,7 +163,7 @@ export function AdminCommandPalette({
                 <span
                   className={cn(
                     'flex shrink-0 items-center gap-1 text-[11px]',
-                    index === active ? 'text-white/70' : 'text-text-muted',
+                    index === active ? 'text-white/80' : 'text-text-muted',
                   )}
                 >
                   {command.group}

@@ -71,7 +71,7 @@ export function PlayerCinematicHero({ player }: Props) {
             {player.club && (
               <Link
                 to={clubPath(player.club.slug ?? player.club.id)}
-                className="inline-flex items-center gap-2 text-sm text-white/60 transition hover:text-primary-light"
+                className="inline-flex items-center gap-2 text-sm text-white/80 transition hover:text-primary-light"
               >
                 <ClubCrest club={player.club} size="sm" />
                 {player.club.name}

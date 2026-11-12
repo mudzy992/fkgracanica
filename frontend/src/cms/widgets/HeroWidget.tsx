@@ -60,7 +60,7 @@ export function HeroWidget({ config }: Props) {
 
             {config.subtitle && (
               <motion.p
-                className="mt-3 max-w-[11.5rem] font-display text-sm uppercase tracking-[0.12em] text-white/70 sm:mt-4 sm:max-w-sm sm:text-base md:max-w-xl md:text-lg"
+                className="mt-3 max-w-[11.5rem] font-display text-sm uppercase tracking-[0.12em] text-white/80 sm:mt-4 sm:max-w-sm sm:text-base md:max-w-xl md:text-lg"
                 variants={fadeUp}
                 initial={reduce ? false : 'hidden'}
                 animate="visible"

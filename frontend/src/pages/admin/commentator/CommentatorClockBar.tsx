@@ -12,6 +12,7 @@ import { CommentatorClockActions } from './CommentatorClockActions';
 import { CommentatorStreamDialog } from './CommentatorStreamDialog';
 import { useTranslation } from 'react-i18next';
 import { runAction } from '../../../lib/action-errors';
+import { Card } from "../../../components/ui/card";
 
 export function CommentatorClockBar({ match }: { match: Match }) {
   const { t } = useTranslation();
@@ -27,7 +28,7 @@ export function CommentatorClockBar({ match }: { match: Match }) {
   };
 
   return (
-    <div className="rounded-xl border border-white/10 bg-gradient-to-r from-slate-900 to-slate-800 p-3 text-white sm:p-4">
+    <Card className="rounded-xl border border-white/10 bg-gradient-to-r from-slate-900 to-slate-800 p-3 text-white sm:p-4">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
           <p className="text-[10px] uppercase tracking-widest text-slate-400">
@@ -77,6 +78,6 @@ export function CommentatorClockBar({ match }: { match: Match }) {
           </Button>
         </div>
       )}
-    </div>
+    </Card>
   );
 }

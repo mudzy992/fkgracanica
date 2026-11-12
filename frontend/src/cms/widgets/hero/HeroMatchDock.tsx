@@ -67,7 +67,7 @@ export function HeroMatchDock({ showLast }: Props) {
             >
               <div className="min-w-0 flex-1 text-left">
                 <p className="text-[9px] font-semibold uppercase tracking-widest text-white/35">Zadnji rezultat</p>
-                <p className="truncate text-xs text-white/60">
+                <p className="truncate text-xs text-white/80">
                   {last.homeClub?.shortName ?? last.homeClub?.name} — {last.awayClub?.shortName ?? last.awayClub?.name}
                 </p>
               </div>

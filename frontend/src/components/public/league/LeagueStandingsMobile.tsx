@@ -28,7 +28,7 @@ export function LeagueStandingsMobile({ rows, positionChanges, highlightClubId }
         >
           <div className="flex items-center gap-3">
             <div className="flex w-10 shrink-0 flex-col items-center">
-              <span className="font-display text-sm font-bold text-white/60">{i + 1}</span>
+              <span className="font-display text-sm font-bold text-white/80">{i + 1}</span>
               {showMovement && (
                 <LeaguePositionBadge change={positionChanges.get(row.clubId)} className="mt-0.5" />
               )}

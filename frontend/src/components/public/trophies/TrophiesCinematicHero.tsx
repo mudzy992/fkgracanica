@@ -39,7 +39,7 @@ export function TrophiesCinematicHero({ totalCount, featuredYear, competitionCou
           <h1 className="font-display mt-3 text-4xl font-bold tracking-tight text-gradient-club sm:text-5xl md:text-6xl">
             Trofeji i titule
           </h1>
-          <p className="mx-auto mt-4 max-w-xl text-base text-white/60 sm:text-lg">
+          <p className="mx-auto mt-4 max-w-xl text-base text-white/80 sm:text-lg">
             Pregled najznačajnijih uspjeha kroz historiju kluba.
           </p>
 

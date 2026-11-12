@@ -57,7 +57,7 @@ export function ClubAboutCtaWidget({ config: _config }: Props) {
               {storyImage ? (
                 <img loading="lazy" decoding="async" src={storyImage} alt="" className="h-80 w-full object-cover sm:h-[26rem]" />
               ) : (
-                <div className="flex h-80 items-center justify-center bg-[linear-gradient(160deg,#0f172a,#1d4ed8)] text-sm font-semibold uppercase tracking-[0.3em] text-white/70 sm:h-[26rem]">
+                <div className="flex h-80 items-center justify-center bg-[linear-gradient(160deg,#0f172a,#1d4ed8)] text-sm font-semibold uppercase tracking-[0.3em] text-white/80 sm:h-[26rem]">
                   O klubu
                 </div>
               )}

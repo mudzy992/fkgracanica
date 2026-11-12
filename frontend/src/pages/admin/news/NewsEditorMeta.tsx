@@ -11,6 +11,7 @@ import { Textarea } from '../../../components/ui/textarea';
 import { formatDate } from '../../../lib/utils';
 import type { GalleryItem, Match, Player } from '../../../types';
 import type { NewsEditorFieldsProps } from '../news-form-utils';
+import { Card } from "../../../components/ui/card";
 
 export function NewsEditorMeta({ register, control, watch, setValue, errors }: NewsEditorFieldsProps) {
   const { t } = useTranslation();
@@ -21,7 +22,7 @@ export function NewsEditorMeta({ register, control, watch, setValue, errors }: N
   const title = watch('title');
 
   return (
-    <aside className="space-y-4 rounded-2xl border border-[var(--border-subtle)] bg-surface/40 p-4 lg:sticky lg:top-4">
+    <Card className="space-y-4 rounded-2xl border border-[var(--border-subtle)] bg-surface/40 p-4 lg:sticky lg:top-4">
       <SlugField title={title} value={watch('slug')} onChange={(v) => setValue('slug', v)} />
       <div>
         <label className="mb-1 block text-sm font-medium">{t('admin.newsForm.category')}</label>
@@ -121,6 +122,6 @@ export function NewsEditorMeta({ register, control, watch, setValue, errors }: N
           )}
         />
       </div>
-    </aside>
+    </Card>
   );
 }
