@@ -50,7 +50,7 @@ describe('FormationEditablePitch — branch48 (isOver + fallback ?)', () => {
       />,
     );
     const btn = container.querySelector('button') as HTMLButtonElement;
-    expect(btn.className).not.toMatch(/ring-2/);
+    expect(btn.className).not.toMatch(/ring-yellow-300/);
   });
 
   it('sa isOver true pokriva bid2 [0,14] ring-2', () => {
@@ -74,7 +74,7 @@ describe('FormationEditablePitch — branch48 (isOver + fallback ?)', () => {
       />,
     );
     const btn = container.querySelector('button') as HTMLButtonElement;
-    expect(btn.className).toMatch(/ring-2/);
+    expect(btn.className).toMatch(/ring-yellow-300/);
   });
 
   it('activeSlot true također daje ring (isOver false ali active true)', () => {
@@ -93,7 +93,7 @@ describe('FormationEditablePitch — branch48 (isOver + fallback ?)', () => {
       <FormationEditablePitch slots={[slot]} activeSlot={{ slotIndex: 2, isBench: false } as never} onSlotClick={vi.fn()} />,
     );
     const btn = container.querySelector('button') as HTMLButtonElement;
-    expect(btn.className).toMatch(/ring-2/);
+    expect(btn.className).toMatch(/ring-yellow-300/);
   });
 
   it('fallback "?" kada je number null i lineRole nepoznat (bid6 [14,0])', () => {
