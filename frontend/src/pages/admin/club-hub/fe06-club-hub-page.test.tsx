@@ -145,7 +145,7 @@ describe('ClubHubPage', () => {
     renderPage();
     const back = document.querySelector('a[href="/admin/clubs"]');
     expect(back).toBeTruthy();
-    expect(screen.getByRole('button', { name: 'actions.back' })).toBeTruthy();
+    expect(screen.getByRole('link', { name: 'actions.back' })).toBeTruthy();
   });
 });
 
