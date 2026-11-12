@@ -16,7 +16,7 @@ vi.mock('@dnd-kit/core', () => ({
 }));
 vi.mock('@dnd-kit/utilities', () => ({ CSS: { Translate: { toString: () => '' } } }));
 vi.mock('react-i18next', () => {
-  const m: Record<string, string> = { 'admin.formation.apply': 'Primijeni', 'admin.formation.choosePreset': ' — odaberi preset ili prilagodi ručno', 'admin.formation.preset': 'Preset', 'admin.formation.custom': 'Prilagođeno', 'admin.formation.selectFormation': 'Odaberi formaciju' };
+  const m: Record<string, string> = { 'admin.formation.apply': 'Primijeni', 'admin.formation.choosePreset': ' — odaberi preset ili prilagodi ručno', 'admin.formation.preset': 'Preset', 'admin.formation.custom': 'Prilagođeno', 'admin.formation.selectFormation': 'Odaberi formaciju', 'admin.formation.def': 'ODB', 'admin.formation.mid': 'VEZ', 'admin.formation.fwd': 'NAP', 'admin.formation.allAssigned': 'admin.formation.allAssigned', 'admin.formation.pool': 'admin.formation.pool', 'admin.formation.emptyPosition': 'Prazna pozicija', 'admin.formation.emptySpot': 'Prazno mjesto', 'admin.formation.pickForPosition': 'Odaberi igrača za poziciju', 'admin.formation.pickForBench': 'Odaberi igrača za klupu', 'admin.formation.remove': 'Ukloni', 'admin.formation.close': 'Zatvori' };
   return { useTranslation: () => ({ t: (k: string, o?: Record<string, unknown>) => (k === 'admin.formation.sumMustBe' && o ? `Zbroj ODB+VEZ+NAP mora biti ${String((o as Record<string, unknown>).total)} (trenutno: ${String((o as Record<string, unknown>).sum)})` : (m[k] ?? (o ? `${k}:${JSON.stringify(o)}` : k))) }) };
 });
 

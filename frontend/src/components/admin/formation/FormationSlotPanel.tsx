@@ -1,7 +1,8 @@
+import { useTranslation } from 'react-i18next';
 import type { Player } from '../../../types';
 import type { ClubSquadSlot } from '../../../types/club-hub';
 import { Button } from '../../ui/button';
-import { Card } from "../../ui/card";
+import { Card } from '../../ui/card';
 
 interface Props {
   slot: ClubSquadSlot;
@@ -12,7 +13,8 @@ interface Props {
 }
 
 export function FormationSlotPanel({ slot, players, onPick, onRemove, onClose }: Props) {
-  const role = slot.isBench ? 'klupu' : 'poziciju';
+  const { t } = useTranslation();
+  const roleText = slot.isBench ? t('admin.formation.pickForBench') : t('admin.formation.pickForPosition');
 
   return (
     <Card className="rounded-xl border border-primary/30 bg-primary/5 p-4">
@@ -21,18 +23,18 @@ export function FormationSlotPanel({ slot, players, onPick, onRemove, onClose }:
           <p className="text-sm font-medium">
             {slot.player
               ? `${slot.player.firstName} ${slot.player.lastName}`
-              : 'Prazna pozicija'}
+              : t('admin.formation.emptyPosition')}
           </p>
-          <p className="text-xs text-text-muted">Odaberi igrača za {role}</p>
+          <p className="text-xs text-text-muted">{roleText}</p>
         </div>
         <div className="flex gap-1">
           {slot.playerId && (
             <Button size="sm" variant="outline" className="text-danger" onClick={onRemove}>
-              Ukloni
+              {t('admin.formation.remove')}
             </Button>
           )}
           <Button size="sm" variant="ghost" onClick={onClose}>
-            Zatvori
+            {t('admin.formation.close')}
           </Button>
         </div>
       </div>

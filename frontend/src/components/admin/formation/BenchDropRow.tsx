@@ -1,4 +1,5 @@
 import { useDraggable, useDroppable } from '@dnd-kit/core';
+import { useTranslation } from 'react-i18next';
 import type { ClubSquadSlot } from '../../../types/club-hub';
 import { playerDndId, squadSlotDndId } from '../../../lib/formation-dnd';
 import { cn } from '../../../lib/utils';
@@ -11,6 +12,7 @@ interface Props {
 }
 
 export function BenchDropRow({ slot, active, onSelect }: Props) {
+  const { t } = useTranslation();
   const { setNodeRef: setDropRef, isOver } = useDroppable({ id: squadSlotDndId(slot) });
   const drag = useDraggable({
     id: slot.playerId ? playerDndId(slot.playerId) : `empty-bench-${slot.id}`,
@@ -36,7 +38,7 @@ export function BenchDropRow({ slot, active, onSelect }: Props) {
         drag.isDragging && 'opacity-50',
       )}
     >
-      <span>{slot.player ? `${slot.player.firstName} ${slot.player.lastName}` : 'Prazno mjesto'}</span>
+      <span>{slot.player ? `${slot.player.firstName} ${slot.player.lastName}` : t('admin.formation.emptySpot')}</span>
       <span className="text-text-muted">#{slot.benchOrder ?? slot.slotIndex + 1}</span>
     </Button>
   );

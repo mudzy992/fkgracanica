@@ -31,15 +31,15 @@ export function validateFormation(counts: FormationCounts): FormationCounts {
       'Svaka linija (odbrana, veznjaci, napad) mora imati najmanje 1 igrača.',
     );
   }
-  if (def + mid + fwd > 10) {
+  if (def + mid + fwd !== 10) {
     throw new BadRequestException(
-      'Zbroj odbrane, veznjaka i napada ne smije biti veći od 10 (uz golmana).',
+      'Zbroj odbrane, veznjaka i napada mora biti 10 (uz golmana 11).',
     );
   }
   return { def, mid, fwd };
 }
 
-/** Centers N players within LINE_GRID_SLOTS (e.g. 2 → slots 2 & 3 of 4). */
+/** Centers N players within LINE_GRID_SLOTS (e.g. 2 → slots 2 & 3 of 4). Za 5+ igrača širi preko cijele širine (12–88) da ne ispadne van terena. */
 export function lineYCentered(
   indexInLine: number,
   countInLine: number,
@@ -47,6 +47,10 @@ export function lineYCentered(
   if (countInLine === 1) return 50;
   if (countInLine === 3) {
     return [12, 50, 88][indexInLine] ?? 50;
+  }
+  if (countInLine > LINE_GRID_SLOTS) {
+    // 5 veznjaka npr. 3-5-2 / 4-5-1 / 4-2-3-1 -> 12,31,50,69,88 (ranije -13 van terena)
+    return 12 + (76 / (countInLine - 1)) * indexInLine;
   }
   const start = Math.floor((LINE_GRID_SLOTS - countInLine) / 2);
   const slot = start + indexInLine;

@@ -28,6 +28,7 @@ import { FormationPlayerPool } from '../../../../components/admin/formation/Form
 import { FormationSlotPanel } from '../../../../components/admin/formation/FormationSlotPanel';
 import { BenchDropRow } from '../../../../components/admin/formation/BenchDropRow';
 import { useTranslation } from 'react-i18next';
+import { runAction } from '../../../../lib/action-errors';
 
 export function ClubFormationTab({ clubId }: { clubId: string }) {
   const { t } = useTranslation();
@@ -73,13 +74,13 @@ export function ClubFormationTab({ clubId }: { clubId: string }) {
   };
 
   const assignPlayer = (playerId: string) => {
-    void runAssign(buildSwapAssignments(data.slots, activeSlot!, playerId));
+    void runAction(runAssign(buildSwapAssignments(data.slots, activeSlot!, playerId)));
   };
 
   const removePlayer = () => {
-    void runAssign([
-      { slotIndex: activeSlot!.slotIndex, isBench: activeSlot!.isBench, playerId: null },
-    ]);
+    void runAction(
+      runAssign([{ slotIndex: activeSlot!.slotIndex, isBench: activeSlot!.isBench, playerId: null }]),
+    );
   };
 
   const onDragStart = (event: DragStartEvent) => {
@@ -98,7 +99,7 @@ export function ClubFormationTab({ clubId }: { clubId: string }) {
     const { active, over } = event;
     if (!over) return;
     const assignments = resolveDragAssignments(data.slots, String(active.id), String(over.id));
-    if (assignments) void runAssign(assignments);
+    if (assignments) void runAction(runAssign(assignments));
   };
 
   return (
@@ -112,7 +113,7 @@ export function ClubFormationTab({ clubId }: { clubId: string }) {
             onDef={setDef}
             onMid={setMid}
             onFwd={setFwd}
-            onApply={() => void applyFormation()}
+            onApply={() => void runAction(applyFormation())}
             applying={updateFormation.isPending}
           />
           <ResponsiveFormationEditablePitch

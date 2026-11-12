@@ -213,7 +213,16 @@
       "selectFormation": "Odaberi formaciju",
       "apply": "Primijeni",
       "sumMustBe": "Zbroj ODB+VEZ+NAP mora biti {{total}} (trenutno: {{sum}})",
-      "choosePreset": " — odaberi preset ili prilagodi ručno"
+      "choosePreset": " — odaberi preset ili prilagodi ručno",
+      "def": "ODB",
+      "mid": "VEZ",
+      "fwd": "NAP",
+      "emptyPosition": "Prazna pozicija",
+      "emptySpot": "Prazno mjesto",
+      "pickForPosition": "Odaberi igrača za poziciju",
+      "pickForBench": "Odaberi igrača za klupu",
+      "remove": "Ukloni",
+      "close": "Zatvori"
     },
     "home": {
       "metaTitle": "Kontrolna tabla",

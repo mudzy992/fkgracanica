@@ -213,7 +213,16 @@
       "selectFormation": "Select formation",
       "apply": "Apply",
       "sumMustBe": "Outfield sum must be {{total}} (currently: {{sum}})",
-      "choosePreset": " — choose a preset or adjust manually"
+      "choosePreset": " — choose a preset or adjust manually",
+      "def": "DEF",
+      "mid": "MID",
+      "fwd": "FWD",
+      "emptyPosition": "Empty position",
+      "emptySpot": "Empty spot",
+      "pickForPosition": "Pick player for position",
+      "pickForBench": "Pick player for bench",
+      "remove": "Remove",
+      "close": "Close"
     },
     "home": {
       "metaTitle": "Dashboard",
