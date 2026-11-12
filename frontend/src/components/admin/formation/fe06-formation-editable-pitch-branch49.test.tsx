@@ -59,7 +59,7 @@ describe('FormationEditablePitch — branch49 (preostale grane transform, isDrag
     // bez playerId nema cursor-grab
     expect(btn.className).not.toMatch(/cursor-grab/);
     // bez player nema ring? isOver false i active false
-    expect(btn.className).not.toMatch(/ring-yellow-300/);
+    expect(btn.className).not.toMatch(/ring-yellow/);
     // fallback "?" za nepoznat lineRole? GK je poznat, ali testira drugi slot sa UNKNOWN
   });
 
