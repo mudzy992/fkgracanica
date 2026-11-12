@@ -207,7 +207,13 @@
       "allAssigned": "All players are placed.",
       "pool": "Available players (drag onto the pitch)",
       "pickPosition": "Pick a position on the pitch or bench.",
-      "bench": "Bench"
+      "bench": "Bench",
+      "preset": "Preset",
+      "custom": "Custom",
+      "selectFormation": "Select formation",
+      "apply": "Apply",
+      "sumMustBe": "Outfield sum must be {{total}} (currently: {{sum}})",
+      "choosePreset": " — choose a preset or adjust manually"
     },
     "home": {
       "metaTitle": "Dashboard",

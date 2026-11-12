@@ -15,11 +15,10 @@ vi.mock('@dnd-kit/core', () => ({
   }),
 }));
 vi.mock('@dnd-kit/utilities', () => ({ CSS: { Translate: { toString: () => '' } } }));
-vi.mock('react-i18next', () => ({
-  useTranslation: () => ({
-    t: (k: string, o?: Record<string, unknown>) => (o ? `${k}:${JSON.stringify(o)}` : k),
-  }),
-}));
+vi.mock('react-i18next', () => {
+  const m: Record<string, string> = { 'admin.formation.apply': 'Primijeni', 'admin.formation.choosePreset': ' — odaberi preset ili prilagodi ručno', 'admin.formation.preset': 'Preset', 'admin.formation.custom': 'Prilagođeno', 'admin.formation.selectFormation': 'Odaberi formaciju' };
+  return { useTranslation: () => ({ t: (k: string, o?: Record<string, unknown>) => (k === 'admin.formation.sumMustBe' && o ? `Zbroj ODB+VEZ+NAP mora biti ${String((o as Record<string, unknown>).total)} (trenutno: ${String((o as Record<string, unknown>).sum)})` : (m[k] ?? (o ? `${k}:${JSON.stringify(o)}` : k))) }) };
+});
 
 const player = (over: Record<string, unknown> = {}) => ({
   id: 'p1',

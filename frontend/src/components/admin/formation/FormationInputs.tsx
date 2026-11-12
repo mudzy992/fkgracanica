@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { Button } from '../../ui/button';
 import { Card } from '../../ui/card';
 import { Input } from '../../ui/input';
@@ -33,6 +34,7 @@ const fields = [
 ];
 
 export function FormationInputs({ def, mid, fwd, onDef, onMid, onFwd, onApply, applying }: Props) {
+  const { t } = useTranslation();
   const values = { def, mid, fwd };
   const setters = { def: onDef, mid: onMid, fwd: onFwd };
   const sum = formationOutfieldSum(def, mid, fwd);
@@ -44,7 +46,7 @@ export function FormationInputs({ def, mid, fwd, onDef, onMid, onFwd, onApply, a
     <Card className="space-y-3 bg-surface p-3">
       <div className="flex flex-wrap items-center gap-3">
         <label className="flex items-center gap-2 text-sm">
-          <span className="font-medium text-text-muted">Preset</span>
+          <span className="font-medium text-text-muted">{t('admin.formation.preset')}</span>
           <Select
             value={presetValue}
             onChange={(e) => {
@@ -56,9 +58,9 @@ export function FormationInputs({ def, mid, fwd, onDef, onMid, onFwd, onApply, a
               }
             }}
             className="h-9 w-28"
-            aria-label="Odaberi formaciju"
+            aria-label={t('admin.formation.selectFormation')}
           >
-            <option value="">Prilagođeno</option>
+            <option value="">{t('admin.formation.custom')}</option>
             {PRESETS.map((pr) => (
               <option key={pr.label} value={pr.label}>
                 {pr.label}
@@ -84,12 +86,12 @@ export function FormationInputs({ def, mid, fwd, onDef, onMid, onFwd, onApply, a
           ))}
         </div>
         <Button size="sm" onClick={onApply} disabled={!valid || applying} className="ml-auto">
-          Primijeni
+          {t('admin.formation.apply')}
         </Button>
       </div>
       <p className={cn('text-xs', valid ? 'text-text-muted' : 'text-danger')}>
-        Zbroj ODB+VEZ+NAP mora biti {FORMATION_OUTFIELD_TOTAL} (trenutno: {sum})
-        {!valid && ' — odaberi preset ili prilagodi ručno'}
+        {t('admin.formation.sumMustBe', { total: FORMATION_OUTFIELD_TOTAL, sum })}
+        {!valid && t('admin.formation.choosePreset')}
       </p>
     </Card>
   );

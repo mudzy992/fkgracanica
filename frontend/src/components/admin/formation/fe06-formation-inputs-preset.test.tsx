@@ -3,6 +3,11 @@ import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 import { FormationInputs } from './FormationInputs';
 
+vi.mock('react-i18next', () => {
+  const m: Record<string, string> = { 'admin.formation.apply': 'Primijeni', 'admin.formation.choosePreset': ' — odaberi preset ili prilagodi ručno', 'admin.formation.preset': 'Preset', 'admin.formation.custom': 'Prilagođeno', 'admin.formation.selectFormation': 'Odaberi formaciju' };
+  return { useTranslation: () => ({ t: (k: string, o?: Record<string, unknown>) => (k === 'admin.formation.sumMustBe' && o ? `Zbroj ODB+VEZ+NAP mora biti ${String((o as Record<string, unknown>).total)} (trenutno: ${String((o as Record<string, unknown>).sum)})` : (m[k] ?? (o ? `${k}:${JSON.stringify(o)}` : k))) }) };
+});
+
 describe('FormationInputs — preset AAA profesjonalni refaktor', () => {
   const props = (over: Record<string, unknown> = {}) => ({
     def: '4',

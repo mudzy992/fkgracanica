@@ -207,7 +207,13 @@
       "allAssigned": "Svi igrači su raspoređeni.",
       "pool": "Dostupni igrači (povuci na teren)",
       "pickPosition": "Odaberite poziciju na terenu ili klupi.",
-      "bench": "Klupa"
+      "bench": "Klupa",
+      "preset": "Preset",
+      "custom": "Prilagođeno",
+      "selectFormation": "Odaberi formaciju",
+      "apply": "Primijeni",
+      "sumMustBe": "Zbroj ODB+VEZ+NAP mora biti {{total}} (trenutno: {{sum}})",
+      "choosePreset": " — odaberi preset ili prilagodi ručno"
     },
     "home": {
       "metaTitle": "Kontrolna tabla",
