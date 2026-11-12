@@ -1,4 +1,5 @@
 import { useVisitorGeo, useVisitorTrend, useVisitorTotals } from '../../../hooks/use-analytics';
+import { Card } from '../../../components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../../../components/ui/table';
 import { useTranslation } from 'react-i18next';
 import { AnalyticsGeoPanel } from './AnalyticsGeoPanel';
@@ -22,13 +23,13 @@ export function AnalyticsVisitorsPanel() {
           { label: t('admin.analyticsPanel.mobile30'), value: totals?.mobile ?? 0 },
           { label: t('admin.analyticsPanel.total30'), value: totals?.total ?? 0 },
         ].map((item) => (
-          <div
+          <Card
             key={item.label}
-            className="rounded-xl border border-[var(--border-subtle)] bg-surface/50 p-4"
+            className="bg-surface/50 p-4"
           >
             <p className="text-sm text-text-muted">{item.label}</p>
             <p className="mt-1 text-3xl font-bold tabular-nums text-primary-light">{item.value}</p>
-          </div>
+          </Card>
         ))}
       </div>
 
@@ -46,34 +47,36 @@ export function AnalyticsVisitorsPanel() {
           <h3 className="mb-3 text-sm font-semibold text-text-muted">
             {t('admin.analyticsPanel.table')}
           </h3>
-          <div className="overflow-x-auto rounded-xl border border-[var(--border-subtle)]">
-            <Table className="w-full text-sm">
-              <TableHeader>
-                <TableRow className="border-b border-[var(--border-subtle)] text-left text-xs text-text-muted">
-                  <TableHead className="px-4 py-2">{t('admin.analyticsPanel.date')}</TableHead>
-                  <TableHead className="px-4 py-2 text-right">{t('admin.visitors.web')}</TableHead>
-                  <TableHead className="px-4 py-2 text-right">{t('admin.visitors.mobile')}</TableHead>
-                  <TableHead className="px-4 py-2 text-right">{t('admin.visitors.total')}</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {trend
-                  .slice()
-                  .reverse()
-                  .map((row) => (
-                    <TableRow
-                      key={row.date}
-                      className="border-b border-[var(--border-subtle)] last:border-0"
-                    >
-                      <TableCell className="px-4 py-2 text-text-muted">{row.date}</TableCell>
-                      <TableCell className="px-4 py-2 text-right tabular-nums">{row.web}</TableCell>
-                      <TableCell className="px-4 py-2 text-right tabular-nums">{row.mobile}</TableCell>
-                      <TableCell className="px-4 py-2 text-right tabular-nums font-medium">{row.total}</TableCell>
-                    </TableRow>
-                  ))}
-              </TableBody>
-            </Table>
-          </div>
+          <Card className="overflow-hidden p-0">
+            <div className="overflow-x-auto">
+              <Table className="w-full text-sm">
+                <TableHeader>
+                  <TableRow className="border-b border-[var(--border-subtle)] text-left text-xs text-text-muted">
+                    <TableHead className="px-4 py-2">{t('admin.analyticsPanel.date')}</TableHead>
+                    <TableHead className="px-4 py-2 text-right">{t('admin.visitors.web')}</TableHead>
+                    <TableHead className="px-4 py-2 text-right">{t('admin.visitors.mobile')}</TableHead>
+                    <TableHead className="px-4 py-2 text-right">{t('admin.visitors.total')}</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {trend
+                    .slice()
+                    .reverse()
+                    .map((row) => (
+                      <TableRow
+                        key={row.date}
+                        className="border-b border-[var(--border-subtle)] last:border-0"
+                      >
+                        <TableCell className="px-4 py-2 text-text-muted">{row.date}</TableCell>
+                        <TableCell className="px-4 py-2 text-right tabular-nums">{row.web}</TableCell>
+                        <TableCell className="px-4 py-2 text-right tabular-nums">{row.mobile}</TableCell>
+                        <TableCell className="px-4 py-2 text-right tabular-nums font-medium">{row.total}</TableCell>
+                      </TableRow>
+                    ))}
+                </TableBody>
+              </Table>
+            </div>
+          </Card>
         </div>
       )}
 

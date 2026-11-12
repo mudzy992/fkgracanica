@@ -1,3 +1,4 @@
+import { Card } from '../../../components/ui/card';
 import type { CmsPageSection } from '../../../cms/types';
 import { WidgetRenderer } from '../../../cms/WidgetRenderer';
 import { useTranslation } from 'react-i18next';
@@ -16,7 +17,7 @@ export function CmsPreviewPanel({ sections, editingId, draftConfig, highlightId 
     .map((s) => (s.id === editingId && draftConfig ? { ...s, config: draftConfig } : s));
 
   return (
-    <div className="flex h-full flex-col rounded-lg border border-[var(--border-subtle)] bg-surface">
+    <Card className="flex h-full flex-col bg-surface p-0 overflow-hidden">
       <div className="border-b border-[var(--border-subtle)] px-3 py-2 text-sm font-medium text-text-muted">
         {t('admin.cmsPreview.livePreview')}
       </div>
@@ -38,6 +39,6 @@ export function CmsPreviewPanel({ sections, editingId, draftConfig, highlightId 
           ))
         )}
       </div>
-    </div>
+    </Card>
   );
 }

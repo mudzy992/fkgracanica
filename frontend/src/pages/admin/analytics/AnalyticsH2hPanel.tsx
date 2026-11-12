@@ -1,3 +1,4 @@
+import { Card } from '../../../components/ui/card';
 import { Select } from '../../../components/ui/select';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -8,10 +9,10 @@ import type { Club } from '../../../types';
 
 function StatPill({ label, value }: { label: string; value: number }) {
   return (
-    <div className="flex flex-col items-center rounded-lg border border-[var(--border-subtle)] bg-surface/50 px-4 py-2 text-center">
+    <Card className="flex flex-col items-center bg-surface/50 px-4 py-2 text-center">
       <span className="text-xl font-bold tabular-nums">{value}</span>
       <span className="text-xs text-text-muted">{label}</span>
-    </div>
+    </Card>
   );
 }
 
@@ -86,7 +87,8 @@ export function AnalyticsH2hPanel() {
             </div>
           </div>
 
-          <ul className="divide-y divide-[var(--border-subtle)] rounded-xl border border-[var(--border-subtle)] text-sm">
+          <Card className="p-0 overflow-hidden">
+            <ul className="divide-y divide-[var(--border-subtle)] text-sm">
             {data.matches.map((m: H2HAnalytics['matches'][number]) => (
               <li key={m.id} className="flex items-center justify-between px-4 py-2.5">
                 <span className="w-[38%] truncate text-right text-text-muted">{m.home}</span>

@@ -17,6 +17,7 @@ import {
 import { CSS } from '@dnd-kit/utilities';
 import { Link } from 'react-router-dom';
 import { AlertTriangle, GripVertical, Lock } from 'lucide-react';
+import { Card } from '../../../components/ui/card';
 import { Badge } from '../../../components/ui/badge';
 import { Button } from '../../../components/ui/button';
 import { Select } from '../../../components/ui/select';
@@ -56,11 +57,11 @@ function SortableMenuRow({
   });
 
   return (
-    <div
+    <Card
       ref={setNodeRef}
       style={{ transform: CSS.Transform.toString(transform), transition }}
       className={cn(
-        'rounded-lg border p-3',
+        'p-3',
         blocked
           ? 'border-amber-500/40 bg-amber-500/5'
           : item.isSystem
@@ -141,7 +142,7 @@ function SortableMenuRow({
           </Button>
         </div>
       )}
-    </div>
+    </Card>
   );
 }
 

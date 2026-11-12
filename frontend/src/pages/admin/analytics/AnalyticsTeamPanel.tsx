@@ -10,10 +10,10 @@ const FORM_STYLE: Record<string, string> = {
 
 function Stat({ label, value }: { label: string; value: number | string }) {
   return (
-    <div className="rounded-xl border border-[var(--border-subtle)] bg-surface/50 px-4 py-3">
+    <Card className="bg-surface/50 px-4 py-3">
       <p className="text-xs text-text-muted">{label}</p>
       <p className="mt-1 font-display text-2xl font-bold tabular-nums">{value}</p>
-    </div>
+    </Card>
   );
 }
 

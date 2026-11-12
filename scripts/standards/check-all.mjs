@@ -29,6 +29,7 @@ const CHECKS = [
   { name: 'file-size', script: join(HERE, 'file-size.mjs') },
   { name: 'console-ban', script: join(HERE, 'console-ban.mjs') },
   { name: 'token-check', script: join(HERE, 'token-check.mjs') },
+  { name: 'component-check', script: join(HERE, 'component-check.mjs') },
   { name: 'secrets-ban', script: join(HERE, 'secrets-ban.mjs') },
   { name: 'layer-deps', script: join(HERE, 'layer-deps.mjs') },
   { name: 'docs-links', script: join(HERE, 'docs-links.mjs') },

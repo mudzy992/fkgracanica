@@ -1,3 +1,4 @@
+import { Card } from '../../../../components/ui/card';
 import { Button } from '../../../../components/ui/button';
 import { Select } from '../../../../components/ui/select';
 import { useTranslation } from 'react-i18next';
@@ -91,7 +92,7 @@ export function HeroSectionForm({ config, onChange }: Props) {
         />
         {t('admin.cmsWidget.showLastResult')}
       </label>
-      <div className="space-y-2 rounded-lg border border-[var(--border-subtle)] p-3">
+      <Card className="space-y-2 p-3">
         <p className="text-sm font-medium">{t('admin.cmsWidget.buttons')}</p>
         {(hero.buttons ?? []).map((btn, i) => (
           <div key={i} className="flex flex-wrap gap-2">
@@ -136,7 +137,7 @@ export function HeroSectionForm({ config, onChange }: Props) {
         >
           + Dugme
         </Button>
-      </div>
+      </Card>
     </div>
   );
 }

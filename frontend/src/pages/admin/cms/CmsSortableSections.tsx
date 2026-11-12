@@ -15,6 +15,7 @@ import {
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { GripVertical } from 'lucide-react';
+import { Card } from '../../../components/ui/card';
 import { Badge } from '../../../components/ui/badge';
 import { Button } from '../../../components/ui/button';
 import { Switch } from '../../../components/ui/switch';
@@ -50,11 +51,11 @@ function SortableRow({
   const label = widgetMeta[section.widgetType as keyof typeof widgetMeta]?.label ?? section.widgetType;
 
   return (
-    <div
+    <Card
       ref={setNodeRef}
       style={{ transform: CSS.Transform.toString(transform), transition }}
       className={cn(
-        'flex items-center gap-2 rounded-lg border p-2',
+        'flex items-center gap-2 p-2',
         selected ? 'border-primary bg-primary/5' : 'border-[var(--border-subtle)] bg-background',
         isDragging && 'opacity-60 shadow-md',
       )}
@@ -84,7 +85,7 @@ function SortableRow({
       <Button size="sm" variant="outline" className="text-danger" onClick={onDelete}>
         Obriši
       </Button>
-    </div>
+    </Card>
   );
 }
 

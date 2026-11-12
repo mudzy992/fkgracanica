@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Card } from '../../../components/ui/card';
 import { Select } from '../../../components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../../../components/ui/table';
 import { usePlayers, useSeasons } from '../../../hooks';
@@ -44,18 +45,19 @@ export function AnalyticsPlayerPanel() {
               { label: '🟨', value: data.totals.yellowCards },
               { label: '🟥', value: data.totals.redCards },
             ].map((s) => (
-              <div
+              <Card
                 key={s.label}
-                className="rounded-xl border border-[var(--border-subtle)] bg-surface/50 px-3 py-2"
+                className="bg-surface/50 px-3 py-2 text-center"
               >
                 <p className="text-xs text-text-muted">{s.label}</p>
                 <p className="mt-1 text-xl font-bold tabular-nums">{s.value}</p>
-              </div>
+              </Card>
             ))}
           </div>
 
-          <div className="overflow-x-auto rounded-xl border border-[var(--border-subtle)]">
-            <Table className="w-full text-sm">
+          <Card className="overflow-hidden p-0">
+            <div className="overflow-x-auto">
+              <Table className="w-full text-sm">
               <TableHeader>
                 <TableRow className="border-b border-[var(--border-subtle)] text-left text-xs text-text-muted">
                   <TableHead className="px-4 py-2">{t('admin.playerPanel.season')}</TableHead>
@@ -83,8 +85,9 @@ export function AnalyticsPlayerPanel() {
                   </TableRow>
                 ))}
               </TableBody>
-            </Table>
-          </div>
+              </Table>
+            </div>
+          </Card>
         </div>
       )}
     </div>
