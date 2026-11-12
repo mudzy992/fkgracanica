@@ -1,3 +1,5 @@
+import { buttonVariants } from "../../components/ui/button-variants";
+import { cn } from "../../lib/utils";
 import { Pencil, Plus, Trash2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
@@ -48,12 +50,8 @@ export function GalleryAdminPage() {
         isLoading={isLoading}
         actions={
           canManage ? (
-            <Link to="/admin/gallery/new">
-              <Button size="sm">
-                <Plus className="mr-1 h-4 w-4" />
-                Nova
-              </Button>
-            </Link>
+            <Link to="/admin/gallery/new" className={cn(buttonVariants({size: "sm"}))}><Plus className="mr-1 h-4 w-4" />
+                Nova</Link>
           ) : undefined
         }
       >
@@ -80,11 +78,7 @@ export function GalleryAdminPage() {
               render: (r) => (
                 <div className="flex gap-1">
                   {canManage && (
-                    <Link to={`/admin/gallery/${r.id}/edit`}>
-                      <Button variant="ghost" size="icon" aria-label={t('actions.edit')}>
-                        <Pencil className="h-4 w-4" />
-                      </Button>
-                    </Link>
+                    <Link to={`/admin/gallery/${r.id}/edit`} aria-label={t('actions.edit')} className={cn(buttonVariants({variant: "ghost", size: "icon"}))}><Pencil className="h-4 w-4" /></Link>
                   )}
                   {canApprove && r.status !== 'PUBLISHED' && (
                     <Button

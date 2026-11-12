@@ -1,3 +1,4 @@
+import { buttonVariants } from "../../../components/ui/button-variants";
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
@@ -10,7 +11,7 @@ import { canEditReport } from '../../../lib/match-report';
 import { isRetrospectiveMatch } from '../../../lib/match-retrospective';
 import { hasPermission } from '../../../lib/permissions';
 import { matchStatusLabel } from '../../../lib/match-status-label';
-import { formatDateTime } from '../../../lib/utils';
+import { cn, formatDateTime } from '../../../lib/utils';
 import { Badge } from '../../../components/ui/badge';
 import { Button } from '../../../components/ui/button';
 import { AdminDataTable } from '../../../components/admin/AdminPageShell';
@@ -116,20 +117,12 @@ export function RoundMatchesPanel({ seasonId, roundId, canManage }: Props) {
                     return (
                       <div className="flex flex-wrap gap-1">
                         {canLive && !finished && (
-                          <Link to={`/admin/live/${r.id}`}>
-                            <Button size="sm" variant="outline">
-                              <Radio className="mr-1 h-3 w-3" />
-                              Live
-                            </Button>
-                          </Link>
+                          <Link to={`/admin/live/${r.id}`} className={cn(buttonVariants({variant: "outline", size: "sm"}))}><Radio className="mr-1 h-3 w-3" />
+                              Live</Link>
                         )}
                         {canLive && reportEditable && (
-                          <Link to={`/admin/matches/${r.id}/report`}>
-                            <Button size="sm" variant="outline">
-                              <FileText className="mr-1 h-3 w-3" />
-                              Izvještaj
-                            </Button>
-                          </Link>
+                          <Link to={`/admin/matches/${r.id}/report`} className={cn(buttonVariants({variant: "outline", size: "sm"}))}><FileText className="mr-1 h-3 w-3" />
+                              Izvještaj</Link>
                         )}
                         {canManage && (!finished || retro) && (
                           <>

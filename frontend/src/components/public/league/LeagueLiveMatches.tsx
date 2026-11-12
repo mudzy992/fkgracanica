@@ -1,10 +1,11 @@
+import { buttonVariants } from "../../ui/button-variants";
 import { Link } from 'react-router-dom';
-import { formatDateTime } from '../../../lib/utils';
+import { cn, formatDateTime } from '../../../lib/utils';
 import { ClubCrest } from '../clubs/ClubCrest';
 import { NewsSectionTitle } from '../../news/NewsSectionTitle';
 import { PremiumCard } from '../shell/PremiumCard';
 import { Badge } from '../../ui/badge';
-import { Button } from '../../ui/button';
+;
 import type { Match } from '../../../types';
 
 export function LeagueLiveMatches({ matches }: { matches: Match[] }) {
@@ -28,9 +29,7 @@ export function LeagueLiveMatches({ matches }: { matches: Match[] }) {
             <div className="flex items-center gap-2">
               <Badge variant="danger">{m.status === 'HALFTIME' ? 'Pauza' : 'UŽIVO'}</Badge>
               <span className="text-xs text-text-muted">{formatDateTime(m.scheduledAt)}</span>
-              <Link to={`/live/${m.id}`}>
-                <Button size="sm">Prati uživo</Button>
-              </Link>
+              <Link to={`/live/${m.id}`} className={cn(buttonVariants({size: "sm"}))}>Prati uživo</Link>
             </div>
           </div>
         </PremiumCard>

@@ -1,3 +1,5 @@
+import { buttonVariants } from "../../components/ui/button-variants";
+import { cn } from "../../lib/utils";
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
@@ -84,9 +86,7 @@ export function NewsAdminPage() {
                 {t('admin.newsAdmin.categories')}
               </Button>
             )}
-            <Link to="/admin/news/new">
-              <Button>{t('admin.content.newNews')}</Button>
-            </Link>
+            <Link to="/admin/news/new" className={cn(buttonVariants())}>{t('admin.content.newNews')}</Link>
           </div>
         }
       >
@@ -120,11 +120,7 @@ export function NewsAdminPage() {
               header: 'Akcije',
               render: (r) => (
                 <div className="flex flex-wrap gap-2">
-                  <Link to={`/admin/news/${r.id}/edit`}>
-                    <Button size="sm" variant="outline">
-                      Uredi
-                    </Button>
-                  </Link>
+                  <Link to={`/admin/news/${r.id}/edit`} className={cn(buttonVariants({variant: "outline", size: "sm"}))}>Uredi</Link>
                   {r.status === 'DRAFT' && canSubmit && !canApprove && (
                     <Button
                       size="sm"
@@ -146,11 +142,7 @@ export function NewsAdminPage() {
                     </Button>
                   )}
                   {r.status === 'PUBLISHED' && (
-                    <Link to={`/vijesti/${r.slug}`} target="_blank" rel="noreferrer">
-                      <Button size="sm" variant="outline">
-                        Pregled
-                      </Button>
-                    </Link>
+                    <Link to={`/vijesti/${r.slug}`} target="_blank" rel="noreferrer" className={cn(buttonVariants({variant: "outline", size: "sm"}))}>Pregled</Link>
                   )}
                   {r.status === 'PUBLISHED' && (
                     <Button size="sm" variant="ghost" onClick={() => archive(r)}>

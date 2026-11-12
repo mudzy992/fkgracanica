@@ -1,10 +1,12 @@
+import { buttonVariants } from "../../components/ui/button-variants";
+import { cn } from "../../lib/utils";
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { usePublishedNews } from '../../hooks';
 import { WidgetSectionHeaderBlock } from '../../components/public/shell/WidgetSectionHeaderBlock';
 import { WidgetSectionShell } from '../../components/public/shell/WidgetSectionShell';
 import { SkeletonCard } from '../../components/ui/skeleton';
-import { Button } from '../../components/ui/button';
+;
 import { NewsCompactCard, NewsFeaturedCard, NewsGridCard } from './news-feed-cards';
 import type { WidgetConfigMap } from './schemas';
 
@@ -23,11 +25,7 @@ export function NewsFeedWidget({ config }: Props) {
     <WidgetSectionShell id="vijesti">
       <WidgetSectionHeaderBlock title={title} subtitle={t('home.latestNewsSubtitle', 'Najnovije iz kluba')} />
       <div className="mb-6 flex justify-end">
-        <Link to={viewAll}>
-          <Button variant="ghost" className="text-primary-light hover:text-white">
-            {viewAllLabel}
-          </Button>
-        </Link>
+        <Link to={viewAll} className={cn(buttonVariants({variant: "ghost"}), "text-primary-light hover:text-white")}>{viewAllLabel}</Link>
       </div>
 
       {isLoading ? (

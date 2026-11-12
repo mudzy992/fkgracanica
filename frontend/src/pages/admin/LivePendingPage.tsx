@@ -1,7 +1,8 @@
+import { buttonVariants } from "../../components/ui/button-variants";
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { usePendingLiveReports, useApproveMatchReport } from '../../hooks/use-live-admin';
-import { formatDateTime } from '../../lib/utils';
+import { cn, formatDateTime } from '../../lib/utils';
 import { AdminPageShell, AdminDataTable } from '../../components/admin/AdminPageShell';
 import { Badge } from '../../components/ui/badge';
 import { Button } from '../../components/ui/button';
@@ -49,11 +50,7 @@ export function LivePendingPage() {
             header: t('admin.common.actions'),
             render: (r) => (
               <div className="flex flex-wrap gap-2">
-                <Link to={`/utakmice/${r.id}`}>
-                  <Button size="sm" variant="outline">
-                    Pregled
-                  </Button>
-                </Link>
+                <Link to={`/utakmice/${r.id}`} className={cn(buttonVariants({variant: "outline", size: "sm"}))}>Pregled</Link>
                 <Button
                   size="sm"
                   onClick={() => void runAction(approve.mutateAsync(r.id))}

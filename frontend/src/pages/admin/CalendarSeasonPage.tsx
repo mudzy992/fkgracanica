@@ -1,3 +1,5 @@
+import { buttonVariants } from "../../components/ui/button-variants";
+import { cn } from "../../lib/utils";
 import { Link, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ArrowLeft, Pencil, Plus, Trash2 } from 'lucide-react';
@@ -49,11 +51,7 @@ export function CalendarSeasonPage() {
       <Seo title={season.name} />
       {dialog}
       <div className="flex flex-wrap items-center gap-3">
-        <Link to="/admin/competitions">
-          <Button variant="ghost" size="icon" aria-label={t('actions.back')}>
-            <ArrowLeft className="h-4 w-4" />
-          </Button>
-        </Link>
+        <Link to="/admin/competitions" aria-label={t('actions.back')} className={cn(buttonVariants({variant: "ghost", size: "icon"}))}><ArrowLeft className="h-4 w-4" /></Link>
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
             <h1 className="text-2xl font-bold">{season.name}</h1>

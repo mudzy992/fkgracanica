@@ -1,12 +1,13 @@
+import { buttonVariants } from "../../../components/ui/button-variants";
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { usePublishedNews } from '../../../hooks';
 import { stripHtml } from '../../../lib/html-content';
 import { mediaUrl } from '../../../lib/media';
-import { formatDate } from '../../../lib/utils';
+import { cn, formatDate } from '../../../lib/utils';
 import { Card, CardContent, CardHeader, CardTitle } from '../../../components/ui/card';
 import { SkeletonCard } from '../../../components/ui/skeleton';
-import { Button } from '../../../components/ui/button';
+;
 
 export function LatestNews() {
   const { t } = useTranslation();
@@ -17,9 +18,7 @@ export function LatestNews() {
     <section className="mx-auto max-w-6xl px-4 py-12">
       <div className="mb-6 flex items-center justify-between">
         <h2 className="text-2xl font-bold text-text">{t('home.latestNews')}</h2>
-        <Link to="/vijesti">
-          <Button variant="ghost">{t('actions.viewAll')}</Button>
-        </Link>
+        <Link to="/vijesti" className={cn(buttonVariants({variant: "ghost"}))}>{t('actions.viewAll')}</Link>
       </div>
       <div className="grid gap-6 md:grid-cols-3">
         {isLoading

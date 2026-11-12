@@ -1,12 +1,13 @@
+import { buttonVariants } from "../../ui/button-variants";
 import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { formatDateTime } from '../../../lib/utils';
+import { cn, formatDateTime } from '../../../lib/utils';
 import { matchRoundLabel } from '../../../lib/round-utils';
 import { ClubCrest } from '../clubs/ClubCrest';
 import { NewsSectionTitle } from '../../news/NewsSectionTitle';
 import { PremiumCard } from '../shell/PremiumCard';
 import { Badge } from '../../ui/badge';
-import { Button } from '../../ui/button';
+;
 import type { Match } from '../../../types';
 
 function pickNextScheduled(matches: Match[]) {
@@ -48,14 +49,8 @@ export function LeagueNextMatch({ matches }: { matches: Match[] }) {
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
-            <Link to={`/live/${next.id}`}>
-              <Button size="sm">Pre-match / Live</Button>
-            </Link>
-            <Link to={`/utakmice/${next.id}`}>
-              <Button size="sm" variant="outline">
-                Detalji
-              </Button>
-            </Link>
+            <Link to={`/live/${next.id}`} className={cn(buttonVariants({size: "sm"}))}>Pre-match / Live</Link>
+            <Link to={`/utakmice/${next.id}`} className={cn(buttonVariants({variant: "outline", size: "sm"}))}>Detalji</Link>
           </div>
         </div>
       </PremiumCard>

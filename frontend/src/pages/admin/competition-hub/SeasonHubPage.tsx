@@ -1,3 +1,5 @@
+import { buttonVariants } from "../../../components/ui/button-variants";
+import { cn } from "../../../lib/utils";
 import { Link, useParams, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ArrowLeft } from 'lucide-react';
@@ -8,7 +10,7 @@ import { findEdition, type CalendarSeason } from '../../../lib/season-utils';
 import { Seo } from '../../../components/seo/Seo';
 import { AdminBreadcrumbs } from '../../../components/admin/AdminBreadcrumbs';
 import { Badge } from '../../../components/ui/badge';
-import { Button } from '../../../components/ui/button';
+;
 import { Skeleton } from '../../../components/ui/skeleton';
 import { RoundMatchesPanel } from './RoundMatchesPanel';
 import { SeasonRoundsPanel } from './SeasonRoundsPanel';
@@ -43,11 +45,7 @@ export function SeasonHubPage() {
         ]}
       />
       <div className="flex flex-wrap items-center gap-3">
-        <Link to={backTo}>
-          <Button variant="ghost" size="icon" aria-label={t('actions.back')}>
-            <ArrowLeft className="h-4 w-4" />
-          </Button>
-        </Link>
+        <Link to={backTo} aria-label={t('actions.back')} className={cn(buttonVariants({variant: "ghost", size: "icon"}))}><ArrowLeft className="h-4 w-4" /></Link>
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
             <h1 className="text-2xl font-bold">

@@ -1,8 +1,10 @@
+import { buttonVariants } from "../../../components/ui/button-variants";
+import { cn } from "../../../lib/utils";
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ClubCrest } from '../../../components/public/clubs/ClubCrest';
 import { Badge } from '../../../components/ui/badge';
-import { Button } from '../../../components/ui/button';
+;
 import { matchStatusLabel, matchStatusTone } from '../../../lib/match-status-label';
 import type { Match } from '../../../types';
 import { deskHref } from './commentator-desk';
@@ -43,18 +45,8 @@ export function CommentatorLiveHero({ match }: { match: Match }) {
         </div>
       </div>
       <div className="mt-5 flex flex-wrap justify-center gap-2">
-        <Link to={deskHref(match)}>
-          <Button size="sm">{t('admin.commentator.openDesk')}</Button>
-        </Link>
-        <Link to={`/live/${match.id}`} target="_blank" rel="noreferrer">
-          <Button
-            size="sm"
-            variant="outline"
-            className="border-white/25 bg-white/10 text-white hover:bg-white/20"
-          >
-            {t('admin.commentator.publicLive')}
-          </Button>
-        </Link>
+        <Link to={deskHref(match)} className={cn(buttonVariants({size: "sm"}))}>{t('admin.commentator.openDesk')}</Link>
+        <Link to={`/live/${match.id}`} target="_blank" rel="noreferrer" className={cn(buttonVariants({variant: "outline", size: "sm"}), "border-white/25 bg-white/10 text-white hover:bg-white/20")}>{t('admin.commentator.publicLive')}</Link>
       </div>
     </div>
   );

@@ -1,6 +1,8 @@
+import { buttonVariants } from "../../../components/ui/button-variants";
+import { cn } from "../../../lib/utils";
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Button } from '../../../components/ui/button';
+;
 import { Card, CardContent } from '../../../components/ui/card';
 
 export function MembershipCTA() {
@@ -13,11 +15,7 @@ export function MembershipCTA() {
             <h2 className="text-2xl font-bold">{t('home.membership')}</h2>
             <p className="mt-2 text-white/80">{t('home.membershipDesc')}</p>
           </div>
-          <Link to="/clanstvo">
-            <Button className="bg-white text-primary hover:bg-white/90">
-              {t('home.membership')}
-            </Button>
-          </Link>
+          <Link to="/clanstvo" className={cn(buttonVariants(), "bg-white text-primary hover:bg-white/90")}>{t('home.membership')}</Link>
         </CardContent>
       </Card>
     </section>

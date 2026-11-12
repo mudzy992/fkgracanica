@@ -1,3 +1,5 @@
+import { buttonVariants } from "../../components/ui/button-variants";
+import { cn } from "../../lib/utils";
 import { Link, Navigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useMatch } from '../../hooks';
@@ -48,11 +50,7 @@ export function MatchReportPage() {
     return (
       <div className="space-y-4 p-4">
         <p className="text-text-muted">{t('admin.matchReport.approvedLocked')}</p>
-        <Link to={`/utakmice/${data.id}`}>
-          <Button variant="outline" size="sm">
-            Detalji utakmice
-          </Button>
-        </Link>
+        <Link to={`/utakmice/${data.id}`} className={cn(buttonVariants({variant: "outline", size: "sm"}))}>Detalji utakmice</Link>
       </div>
     );
   }

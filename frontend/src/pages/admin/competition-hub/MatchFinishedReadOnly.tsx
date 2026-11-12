@@ -1,7 +1,9 @@
+import { buttonVariants } from "../../../components/ui/button-variants";
+import { cn } from "../../../lib/utils";
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { AdminFormSheet } from '../../../components/admin/AdminFormSheet';
-import { Button } from '../../../components/ui/button';
+;
 import { canEditReport } from '../../../lib/match-report';
 import type { Match } from '../../../types';
 import { toLocalDatetime } from './match-form-datetime';
@@ -28,11 +30,7 @@ export function MatchFinishedReadOnly({ open, onOpenChange, match, canLive }: Pr
         </p>
         <p className="text-text-muted">{t('admin.matchFinished.locked')}</p>
         {canLive && canEditReport(match) && (
-          <Link to={`/admin/matches/${match.id}/report`}>
-            <Button type="button" variant="default" size="sm">
-              {t('admin.matchFinished.editReport')}
-            </Button>
-          </Link>
+          <Link to={`/admin/matches/${match.id}/report`} className={cn(buttonVariants({variant: "default", size: "sm"}))}>{t('admin.matchFinished.editReport')}</Link>
         )}
         <MatchHighlightsEditor matchId={match.id} />
       </div>

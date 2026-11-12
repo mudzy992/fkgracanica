@@ -1,3 +1,5 @@
+import { buttonVariants } from "../../../components/ui/button-variants";
+import { cn } from "../../../lib/utils";
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate, useParams } from 'react-router-dom';
@@ -84,9 +86,7 @@ export function GalleryEditorPage() {
           ) : null}
         </div>
         <div className="flex gap-2">
-          <Link to="/admin/gallery">
-            <Button variant="outline">{t('actions.back')}</Button>
-          </Link>
+          <Link to="/admin/gallery" className={cn(buttonVariants({variant: "outline"}))}>{t('actions.back')}</Link>
           <Button
             onClick={() => void save()}
             disabled={!title || create.isPending || update.isPending}

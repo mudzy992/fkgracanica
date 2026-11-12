@@ -1,3 +1,5 @@
+import { buttonVariants } from "../../../components/ui/button-variants";
+import { cn } from "../../../lib/utils";
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
@@ -85,11 +87,7 @@ export function ClubsListPage() {
               header: t('admin.common.actions'),
               render: (r) => (
                 <div className="flex gap-1">
-                  <Link to={`/admin/clubs/${r.id}`}>
-                    <Button variant="ghost" size="sm">
-                      {t('admin.clubsList.manage')}
-                    </Button>
-                  </Link>
+                  <Link to={`/admin/clubs/${r.id}`} className={cn(buttonVariants({variant: "ghost", size: "sm"}))}>{t('admin.clubsList.manage')}</Link>
                   {canManage && !r.isOwnClub && (
                     <Button
                       variant="ghost"

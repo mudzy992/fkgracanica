@@ -1,7 +1,9 @@
+import { buttonVariants } from "../../../components/ui/button-variants";
+import { cn } from "../../../lib/utils";
 import { Link } from 'react-router-dom';
 import { ClubCrest } from '../../../components/public/clubs/ClubCrest';
 import { Badge } from '../../../components/ui/badge';
-import { Button } from '../../../components/ui/button';
+;
 import { useRealtimeConnected } from '../../../hooks/use-realtime-connected';
 import { matchStatusLabel, matchStatusTone } from '../../../lib/match-status-label';
 import type { Match } from '../../../types';
@@ -38,11 +40,7 @@ export function CommentatorDeskHeader({
           <Badge variant={matchStatusTone(match.status)} className="text-[10px]">
             {matchStatusLabel(match.status)}
           </Badge>
-          <Link to={publicHref} target="_blank" rel="noreferrer">
-            <Button variant="outline" size="sm">
-              {publicLabel}
-            </Button>
-          </Link>
+          <Link to={publicHref} target="_blank" rel="noreferrer" className={cn(buttonVariants({variant: "outline", size: "sm"}))}>{publicLabel}</Link>
         </div>
       </div>
       <div className="flex items-center justify-between gap-3 rounded-2xl border border-[var(--border-subtle)] bg-surface/50 px-4 py-3">

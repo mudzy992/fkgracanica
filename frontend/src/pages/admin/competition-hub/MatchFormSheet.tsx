@@ -1,3 +1,5 @@
+import { buttonVariants } from "../../../components/ui/button-variants";
+import { cn } from "../../../lib/utils";
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
@@ -174,9 +176,7 @@ export function MatchFormSheet({ open, onOpenChange, edit, seasonId, roundId }: 
               {t('admin.matchForm.statusHint')}
             </p>
             {canLive && (
-              <Link to={`/admin/live/${edit.id}`}>
-                <Button type="button" variant="outline" size="sm">{t('admin.matchForm.openCommentator')}</Button>
-              </Link>
+              <Link to={`/admin/live/${edit.id}`} className={cn(buttonVariants({variant: "outline", size: "sm"}))}>{t('admin.matchForm.openCommentator')}</Link>
             )}
             <MatchScoreInputs homeScore={homeScore} awayScore={awayScore} onHome={setHomeScore} onAway={setAwayScore} />
           </>
