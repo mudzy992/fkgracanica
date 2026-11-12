@@ -11,6 +11,7 @@
  * Izuzeci (ne broje se kao hardcode):
  *   - `<input type="hidden"` — serijalizacija JSON-a
  *   - `<input type="file"` — file picker (namerno van Input varijante)
+ *   - `<input type="checkbox"` / `radio` — nativni checkbox/radio (Input je za text-like; za toggle se koristi <Switch>)
  *   - `phone-frame`, `hidden`, `sr-only` showcase/helpers
  *
  * Izlaz: OK ili FAIL sa lokacijama.
@@ -50,8 +51,8 @@ function countInFile(file) {
   const rawButton = rawButtonMatches.filter(m => !m[0].includes('type="hidden"') && !m[0].includes("type='hidden'")).length;
   const rawInputMatches = [...text.matchAll(/<input\b[^>]*>/g)];
   const rawInput = rawInputMatches.filter(m => {
-    const s = m[0];
-    return !s.includes('type="hidden"') && !s.includes("type='hidden'") && !s.includes('type="file"') && !s.includes("type='file'");
+    const s = m[0].toLowerCase();
+    return !s.includes('type="hidden"') && !s.includes("type='hidden'") && !s.includes('type="file"') && !s.includes("type='file'") && !s.includes('type="checkbox"') && !s.includes("type='checkbox'") && !s.includes('type="radio"') && !s.includes("type='radio'");
   }).length;
   const rawTextarea = (text.match(/<textarea\b/g) || []).length;
   const rawSelect = (text.match(/<select\b/g) || []).length;
