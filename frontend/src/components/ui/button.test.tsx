@@ -18,7 +18,7 @@ describe('Button (FE-02)', () => {
       </Button>,
     );
     const el = screen.getByRole('button', { name: 'Obriši' });
-    expect(el).toHaveClass('bg-danger', 'h-8', 'w-full');
+    expect(el).toHaveClass('bg-danger', 'h-9', 'w-full');
     expect(el).not.toHaveClass('bg-primary');
   });
 

@@ -15,15 +15,15 @@ describe('PublicAuthButton — varijante (2 grane mobile)', () => {
     render(<MemoryRouter><PublicAuthButton mobile /></MemoryRouter>);
     const link = screen.getByRole('link');
     expect(link.className).toContain('w-full');
-    // size default gives h-10 vs sm h-8 — check h-10 present
-    expect(link.className).toContain('h-10');
+    // size default gives h-11 vs sm h-9 — check h-10 present
+    expect(link.className).toContain('h-11');
   });
 
   it('mobile false koristi sm size bez w-full', () => {
     render(<MemoryRouter><PublicAuthButton /></MemoryRouter>);
     const link = screen.getByRole('link');
     expect(link.className).not.toContain('w-full');
-    expect(link.className).toContain('h-8');
+    expect(link.className).toContain('h-9');
   });
 
   it('mobile undefined također sm bez w-full', () => {
