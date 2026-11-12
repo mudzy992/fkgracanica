@@ -22,9 +22,9 @@ export function LeagueStandingsTable({ rows, compact, highlightClubId, positionC
   const showMovement = positionChanges && positionChanges.size > 0;
 
   return (
-    <table className="w-full min-w-[700px] text-sm">
+    <table className="w-full min-w-[720px] text-sm">
       <thead>
-        <tr className="border-b border-white/10 text-left text-[10px] font-semibold uppercase tracking-wider text-white/45">
+        <tr className="border-b border-white/10 text-left text-[10px] font-semibold uppercase tracking-wider text-white/80">
           <th className="w-10 px-4 py-3">#</th>
           {showMovement && <th className="w-10 px-2 py-3 text-center">±</th>}
           <th className="px-4 py-3">Klub</th>

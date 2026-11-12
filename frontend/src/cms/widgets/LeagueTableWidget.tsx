@@ -63,7 +63,7 @@ export function LeagueTableWidget({ config }: Props) {
       ) : (
         <div className="border-gradient-club glass-premium overflow-hidden rounded-3xl">
           <LeagueStandingsMobile rows={rows} />
-          <div className="hidden overflow-x-auto lg:block">
+          <div className="hidden overflow-x-auto overflow-y-hidden overscroll-x-contain lg:block [scrollbar-width:thin] [scrollbar-color:rgba(255,255,255,0.15)_transparent] [&::-webkit-scrollbar]:h-1.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-white/15 [&::-webkit-scrollbar-track]:bg-transparent">
             <LeagueStandingsTable rows={rows} highlightClubId={ownClub?.id} />
           </div>
           {rows.length === 0 && (
