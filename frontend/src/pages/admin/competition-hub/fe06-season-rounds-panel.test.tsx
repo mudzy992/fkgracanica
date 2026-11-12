@@ -81,7 +81,8 @@ describe('SeasonRoundsPanel — prikaz', () => {
   it('selektovano kolo dobija istaknutu klasu', () => {
     state.rounds = { data: [round()], isLoading: false };
     renderPanel({ selectedRoundId: 'r1' });
-    expect(screen.getByText('Derbi kolo').closest('button')?.className).toContain('bg-primary/5');
+    // selektovana klasa je na vanjskom redu (sibling struktura izbjegava button>button)
+    expect(screen.getByText('Derbi kolo').closest('div')?.className).toContain('bg-primary/5');
   });
 });
 

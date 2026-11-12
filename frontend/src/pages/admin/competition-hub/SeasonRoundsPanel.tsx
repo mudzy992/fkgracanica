@@ -112,26 +112,23 @@ export function SeasonRoundsPanel({ seasonId, selectedRoundId, onSelectRound, ca
         {(rounds ?? []).map((round) => (
           <div
             key={round.id}
-            role="button"
-            tabIndex={0}
-            onClick={() => onSelectRound(round.id)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault();
-                onSelectRound(round.id);
-              }
-            }}
             className={cn(
-              'flex w-full items-center justify-between px-4 py-3 text-left text-sm hover:bg-surface focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent',
+              'flex w-full items-center justify-between px-4 py-3 text-sm hover:bg-surface',
               selectedRoundId === round.id && 'bg-primary/5',
             )}
           >
-            <span className="font-medium">{roundLabel(round)}</span>
-            <span className="text-text-muted">
-              {t('admin.roundsPanel.matches', { count: round._count?.matches ?? 0 })}
-            </span>
+            <button
+              type="button"
+              onClick={() => onSelectRound(round.id)}
+              className="flex flex-1 items-center justify-between text-left hover:bg-transparent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+            >
+              <span className="font-medium">{roundLabel(round)}</span>
+              <span className="text-text-muted">
+                {t('admin.roundsPanel.matches', { count: round._count?.matches ?? 0 })}
+              </span>
+            </button>
             {canManage && (
-              <span className="flex gap-1" onClick={(e) => e.stopPropagation()} role="presentation">
+              <span className="ml-2 flex shrink-0 gap-1">
                 <Button
                   variant="ghost"
                   size="icon"
