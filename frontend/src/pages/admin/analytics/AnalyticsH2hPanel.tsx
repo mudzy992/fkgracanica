@@ -89,19 +89,20 @@ export function AnalyticsH2hPanel() {
 
           <Card className="p-0 overflow-hidden">
             <ul className="divide-y divide-[var(--border-subtle)] text-sm">
-            {data.matches.map((m: H2HAnalytics['matches'][number]) => (
-              <li key={m.id} className="flex items-center justify-between px-4 py-2.5">
-                <span className="w-[38%] truncate text-right text-text-muted">{m.home}</span>
-                <div className="mx-3 flex min-w-[72px] flex-col items-center">
-                  <span className="font-bold tabular-nums">
-                    {m.homeScore}:{m.awayScore}
-                  </span>
-                  <span className="text-[10px] text-text-muted">{fmt(m.scheduledAt)}</span>
-                </div>
-                <span className="w-[38%] truncate text-left text-text-muted">{m.away}</span>
-              </li>
-            ))}
-          </ul>
+              {data.matches.map((m: H2HAnalytics['matches'][number]) => (
+                <li key={m.id} className="flex items-center justify-between px-4 py-2.5">
+                  <span className="w-[38%] truncate text-right text-text-muted">{m.home}</span>
+                  <div className="mx-3 flex min-w-[72px] flex-col items-center">
+                    <span className="font-bold tabular-nums">
+                      {m.homeScore}:{m.awayScore}
+                    </span>
+                    <span className="text-[10px] text-text-muted">{fmt(m.scheduledAt)}</span>
+                  </div>
+                  <span className="w-[38%] truncate text-left text-text-muted">{m.away}</span>
+                </li>
+              ))}
+            </ul>
+          </Card>
         </div>
       )}
     </div>

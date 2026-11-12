@@ -29,7 +29,7 @@ export function AnalyticsVisitorsTrendChart({ trend }: { trend: VisitorTrendRow[
           <span className={`h-2.5 w-2.5 rounded-sm ${BAR_COLORS.total}`} /> Ukupno
         </span>
       </div>
-      <Card className="p-4">
+      <Card className="p-4 overflow-x-auto">
         <div className="flex min-w-[640px] items-end gap-2" style={{ height: '12rem' }}>
           {rows.map((row) => (
             <div key={row.date} className="flex min-w-0 flex-1 flex-col items-center gap-1">
