@@ -21,7 +21,7 @@ export function TrophyFeaturedShowcase({ trophy, compact }: Props) {
       <div className={cn('relative grid items-center gap-8', compact ? 'md:grid-cols-[1fr_1.2fr]' : 'lg:grid-cols-2')}>
         <div className="flex justify-center">
           {trophy.imagePath ? (
-            <img
+            <img loading="lazy" decoding="async"
               src={mediaUrl(trophy.imagePath, compact ? 'medium' : 'original')}
               alt={trophy.name}
               className={cn('object-contain drop-shadow-2xl', compact ? 'max-h-48' : 'max-h-72')}

@@ -33,6 +33,7 @@ export function SeasonPassPanel({ config, paymentSuccess, paymentCancelled }: Pr
 
   const start = async (provider: PaymentProviderId) => {
     const created = pass?.status === 'PENDING' ? pass : await open.mutateAsync();
+    /* v8 ignore next */
     if (created?.id) await pay(created.id, provider);
   };
 

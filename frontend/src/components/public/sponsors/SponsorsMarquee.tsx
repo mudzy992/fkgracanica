@@ -16,7 +16,7 @@ export function SponsorMarqueeItem({ sponsor, className }: Props) {
       )}
     >
       {sponsor.logoPath ? (
-        <img src={mediaUrl(sponsor.logoPath, 'thumb')} alt={sponsor.name} className="max-h-12 max-w-full object-contain" />
+        <img loading="lazy" decoding="async" src={mediaUrl(sponsor.logoPath, 'thumb')} alt={sponsor.name} className="max-h-12 max-w-full object-contain" />
       ) : (
         <span className="text-center text-sm font-semibold text-text-muted">{sponsor.name}</span>
       )}

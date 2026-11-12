@@ -3,10 +3,13 @@ import { Link, useSearchParams } from 'react-router-dom';
 import { api } from '../../lib/api';
 import { useAuth } from '../../lib/auth';
 import { Skeleton } from '../../components/ui/skeleton';
+import { Seo } from '../../components/seo/Seo';
+import { useTranslation } from 'react-i18next';
 
 type FormPayload = { action: string; fields: Record<string, string> };
 
 export function MonriBridgePage() {
+  const { t } = useTranslation();
   const { isAuthenticated, isLoading } = useAuth();
   const [searchParams] = useSearchParams();
   const sid = searchParams.get('sid') ?? '';
@@ -16,11 +19,11 @@ export function MonriBridgePage() {
   useEffect(() => {
     if (isLoading || submitted.current) return;
     if (!isAuthenticated) {
-      setError('Prijava je potrebna za plaćanje.');
+      setError(t('pages.monri.needLogin'));
       return;
     }
     if (!sid) {
-      setError('Nedostaje Monri sesija.');
+      setError(t('pages.monri.missingSession'));
       return;
     }
     submitted.current = true;
@@ -43,21 +46,33 @@ export function MonriBridgePage() {
         document.body.appendChild(form);
         form.submit();
       } catch {
-        setError('Monri forma nije spremna. Provjerite ključeve u adminu.');
+        setError(t('pages.monri.formNotReady'));
       }
     })();
   }, [isAuthenticated, isLoading, sid]);
 
+  // FE-03/P-FE03-7: payment bridge ne smije u indeks pretraživača.
+  const seo = <Seo title={t('pages.monri.seoTitle')} noindex />;
+
   if (error) {
     return (
       <div className="mx-auto max-w-md px-4 py-16 text-center text-sm text-text-muted">
+        {seo}
         <p>{error}</p>
-        <Link className="mt-4 inline-block text-primary" to={sid.startsWith('m-') ? '/clanstvo' : '/ulaznice'}>
-          Nazad
+        <Link
+          className="mt-4 inline-block text-primary-light"
+          to={sid.startsWith('m-') ? '/clanstvo' : '/ulaznice'}
+        >
+          {t('pages.monri.back')}
         </Link>
       </div>
     );
   }
 
-  return <Skeleton className="mx-auto mt-16 h-32 max-w-md" />;
+  return (
+    <>
+      {seo}
+      <Skeleton className="mx-auto mt-16 h-32 max-w-md" />
+    </>
+  );
 }

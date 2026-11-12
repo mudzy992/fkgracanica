@@ -12,32 +12,44 @@ import {
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { ContentStatus } from '@prisma/client';
 import { GalleryService } from './gallery.service';
-import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { PermissionsGuard } from '../common/guards/permissions.guard';
 import { RequirePermissions } from '../common/decorators/permissions.decorator';
+import { CurrentUser } from '../common/decorators/current-user.decorator';
+import type { AuthUser } from '../common/types/auth-user.type';
 
+import { Public } from '../common/decorators/public.decorator';
 @ApiTags('gallery')
 @Controller('gallery')
 export class GalleryController {
   constructor(private readonly galleryService: GalleryService) {}
 
   @Get()
-  findAll(@Query('status') status?: ContentStatus) {
-    return this.galleryService.findAll(status);
+  @Public()
+  findAll(
+    @CurrentUser() user: AuthUser | undefined,
+    @Query('status') status?: ContentStatus,
+  ) {
+    // BE-04/P-B04-1: anonimci (portal, mobile home) uvijek vide samo
+    // PUBLISHED — prije je barem /gallery vraćao i draft albume; status
+    // filter (npr. PENDING moderacija) vrijedi samo za prijavljene.
+    return this.galleryService.findAll(user ? status : ContentStatus.PUBLISHED);
   }
 
   @Get('slug/:slug')
+  @Public()
   findBySlug(@Param('slug') slug: string) {
     return this.galleryService.findBySlug(slug);
   }
 
+  // BE-04/P-B04-1: @Public UKLONJEN — javni čitaoci koriste slug;
+  // :id pozivaju isključivo admin paneli (globalni guard → 401 za anon).
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.galleryService.findOne(id);
   }
 
   @Post()
-  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @UseGuards(PermissionsGuard)
   @RequirePermissions('gallery.manage')
   @ApiBearerAuth()
   create(@Body() body: { title: string; description?: string }) {
@@ -45,15 +57,18 @@ export class GalleryController {
   }
 
   @Patch(':id')
-  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @UseGuards(PermissionsGuard)
   @RequirePermissions('gallery.manage')
   @ApiBearerAuth()
-  update(@Param('id') id: string, @Body() body: Record<string, unknown>) {
+  update(
+    @Param('id') id: string,
+    @Body() body: { title?: string; description?: string | null },
+  ) {
     return this.galleryService.update(id, body);
   }
 
   @Patch(':id/status')
-  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @UseGuards(PermissionsGuard)
   @RequirePermissions('gallery.approve')
   @ApiBearerAuth()
   updateStatus(@Param('id') id: string, @Body('status') status: ContentStatus) {
@@ -61,15 +76,18 @@ export class GalleryController {
   }
 
   @Post(':id/photos')
-  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @UseGuards(PermissionsGuard)
   @RequirePermissions('gallery.manage')
   @ApiBearerAuth()
-  addPhoto(@Param('id') id: string, @Body() body: { path: string; caption?: string; sortOrder?: number }) {
+  addPhoto(
+    @Param('id') id: string,
+    @Body() body: { path: string; caption?: string; sortOrder?: number },
+  ) {
     return this.galleryService.addPhoto(id, body);
   }
 
   @Post(':id/photos/reorder')
-  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @UseGuards(PermissionsGuard)
   @RequirePermissions('gallery.manage')
   @ApiBearerAuth()
   reorderPhotos(@Param('id') id: string, @Body('photoIds') photoIds: string[]) {
@@ -77,15 +95,15 @@ export class GalleryController {
   }
 
   @Delete(':id/photos/:photoId')
-  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @UseGuards(PermissionsGuard)
   @RequirePermissions('gallery.manage')
   @ApiBearerAuth()
-  removePhoto(@Param('photoId') photoId: string) {
-    return this.galleryService.removePhoto(photoId);
+  removePhoto(@Param('id') id: string, @Param('photoId') photoId: string) {
+    return this.galleryService.removePhoto(id, photoId);
   }
 
   @Delete(':id')
-  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @UseGuards(PermissionsGuard)
   @RequirePermissions('gallery.manage')
   @ApiBearerAuth()
   remove(@Param('id') id: string) {

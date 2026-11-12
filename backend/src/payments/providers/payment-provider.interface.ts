@@ -7,7 +7,11 @@ export interface CheckoutSessionResult {
 export interface PaymentProvider {
   readonly id: string;
   isReady(): Promise<boolean>;
-  createTicketCheckout(orderId: string, successUrl: string, cancelUrl: string): Promise<CheckoutSessionResult>;
+  createTicketCheckout(
+    orderId: string,
+    successUrl: string,
+    cancelUrl: string,
+  ): Promise<CheckoutSessionResult>;
   createMembershipCheckout(
     membershipId: string,
     amount: number,

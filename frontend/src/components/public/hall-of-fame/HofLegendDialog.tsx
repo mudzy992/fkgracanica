@@ -16,7 +16,7 @@ export function HofLegendDialog({ entry, open, onClose }: Props) {
     <Dialog
       open={open}
       onOpenChange={(next) => !next && onClose()}
-      className="max-w-4xl overflow-hidden border-amber-300/20 bg-[#08111d]"
+      className="max-w-4xl overflow-hidden border-amber-300/20 bg-surface-night"
     >
       <DialogHeader onClose={onClose}>
         <div>
@@ -29,13 +29,13 @@ export function HofLegendDialog({ entry, open, onClose }: Props) {
           <div className="relative border-b border-white/10 md:border-b-0 md:border-r">
             <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(245,158,11,0.16),transparent_38%)]" />
             {photo ? (
-              <img src={mediaUrl(photo, 'original')} alt="" className="h-full min-h-[24rem] w-full object-cover" />
+              <img loading="lazy" decoding="async" src={mediaUrl(photo, 'original')} alt="" className="h-full min-h-[24rem] w-full object-cover" />
             ) : (
               <div className="flex min-h-[24rem] items-center justify-center bg-[linear-gradient(180deg,#1f1508,#4b320d)] font-display text-6xl font-bold text-amber-100/80">
                 {entry.name[0]}
               </div>
             )}
-            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-[#08111d] via-[#08111d]/55 to-transparent p-6">
+            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-surface-night via-surface-night/55 to-transparent p-6">
               <p className="text-[11px] font-semibold uppercase tracking-[0.26em] text-amber-100/70">Baština kluba</p>
               <p className="mt-2 font-display text-3xl font-bold text-white">{entry.name}</p>
               {entry.role && (

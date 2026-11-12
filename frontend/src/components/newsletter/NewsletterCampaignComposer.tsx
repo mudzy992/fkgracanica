@@ -7,6 +7,7 @@ import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Textarea } from '../ui/textarea';
 import { Switch } from '../ui/switch';
+import { runAction } from '../../lib/action-errors';
 
 export function NewsletterCampaignComposer() {
   const create = useCreateNewsletterCampaign();
@@ -27,15 +28,15 @@ export function NewsletterCampaignComposer() {
 
   const onPreview = async () => {
     const body = payload();
-    if (!body.subject || !body.textBody) return;
-    const res = await preview.mutateAsync(body);
-    setHtml(res.html);
+    // P-FE06-44: rukovaoci se pozivaju sa `void`, pa greška ne smije pobjeći.
+    const result = await runAction(preview.mutateAsync(body));
+    if (result.ok) setHtml(result.value.html);
   };
 
   const onCreate = async () => {
     const body = payload();
-    if (!body.subject || !body.textBody) return;
-    await create.mutateAsync(body);
+    const result = await runAction(create.mutateAsync(body));
+    if (!result.ok) return;
     setSubject('');
     setTextBody('');
     setCtaOn(false);

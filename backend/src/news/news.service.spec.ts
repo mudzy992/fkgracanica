@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundException } from '@nestjs/common';
 import { ContentStatus } from '@prisma/client';
 import { NewsService } from './news.service';
+import { newsInclude } from './news-relations.util';
 import { PrismaService } from '../prisma/prisma.service';
 import { NotificationsService } from '../notifications/notifications.service';
 
@@ -33,12 +34,14 @@ describe('NewsService', () => {
     await expect(service.findBySlug('test')).resolves.toEqual(article);
     expect(prisma.news.findFirst).toHaveBeenCalledWith({
       where: { slug: 'test', status: ContentStatus.PUBLISHED },
-      include: { category: true, tags: true },
+      include: newsInclude,
     });
   });
 
   it('findBySlug throws when not found', async () => {
     prisma.news.findFirst.mockResolvedValue(null);
-    await expect(service.findBySlug('missing')).rejects.toBeInstanceOf(NotFoundException);
+    await expect(service.findBySlug('missing')).rejects.toBeInstanceOf(
+      NotFoundException,
+    );
   });
 });

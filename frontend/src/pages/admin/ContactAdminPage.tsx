@@ -1,6 +1,12 @@
 import { useState, type MouseEvent } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Trash2 } from 'lucide-react';
-import { useContactMessages, useDeleteContact, useMarkAllContactRead, useMarkContactRead } from '../../hooks/use-contact-admin';
+import {
+  useContactMessages,
+  useDeleteContact,
+  useMarkAllContactRead,
+  useMarkContactRead,
+} from '../../hooks/use-contact-admin';
 import { useConfirm } from '../../hooks/use-confirm';
 import { formatDateTime } from '../../lib/utils';
 import { Seo } from '../../components/seo/Seo';
@@ -11,17 +17,23 @@ import { AdminDataTable, AdminPageShell } from '../../components/admin/AdminPage
 import { AdminPagination } from '../../components/admin/AdminPagination';
 import { ContactMessageSheet } from './ContactMessageSheet';
 import type { ContactMessage } from '../../types';
+import { runAction } from '../../lib/action-errors';
 
 interface Props {
   embedded?: boolean;
 }
 
 export function ContactAdminPage({ embedded = false }: Props) {
+  const { t } = useTranslation();
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
   const [unreadOnly, setUnreadOnly] = useState(false);
   const [selected, setSelected] = useState<ContactMessage | null>(null);
-  const { data, isLoading } = useContactMessages({ page, search: search || undefined, unreadOnly });
+  const { data, isLoading, isError, refetch } = useContactMessages({
+    page,
+    search: search || undefined,
+    unreadOnly,
+  });
   const markRead = useMarkContactRead();
   const markAllRead = useMarkAllContactRead();
   const remove = useDeleteContact();
@@ -30,7 +42,7 @@ export function ContactAdminPage({ embedded = false }: Props) {
 
   const openMessage = (msg: ContactMessage) => {
     setSelected(msg);
-    if (!msg.isRead) void markRead.mutateAsync(msg.id);
+    if (!msg.isRead) void runAction(markRead.mutateAsync(msg.id));
   };
 
   const onDelete = async (msg: ContactMessage, e: MouseEvent) => {
@@ -41,11 +53,16 @@ export function ContactAdminPage({ embedded = false }: Props) {
       variant: 'danger',
       confirmLabel: 'Obriši',
     });
-    if (ok) void remove.mutateAsync(msg.id);
+    if (ok) void runAction(remove.mutateAsync(msg.id));
   };
 
   const markAllAction = (
-    <Button size="sm" variant="outline" onClick={() => void markAllRead.mutateAsync()} disabled={markAllRead.isPending}>
+    <Button
+      size="sm"
+      variant="outline"
+      onClick={() => void runAction(markAllRead.mutateAsync())}
+      disabled={markAllRead.isPending}
+    >
       Označi sve pročitanim
     </Button>
   );
@@ -60,11 +77,21 @@ export function ContactAdminPage({ embedded = false }: Props) {
       <div className="flex flex-wrap gap-3 border-b border-[var(--border-subtle)] p-4">
         <Input
           className="max-w-xs"
-          placeholder="Pretraži..."
+          placeholder={t('admin.usersAdmin.search')}
           value={search}
-          onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+          onChange={(e) => {
+            setSearch(e.target.value);
+            setPage(1);
+          }}
         />
-        <Button size="sm" variant={unreadOnly ? 'default' : 'outline'} onClick={() => { setUnreadOnly((v) => !v); setPage(1); }}>
+        <Button
+          size="sm"
+          variant={unreadOnly ? 'default' : 'outline'}
+          onClick={() => {
+            setUnreadOnly((v) => !v);
+            setPage(1);
+          }}
+        >
           Samo nepročitane
         </Button>
       </div>
@@ -80,7 +107,9 @@ export function ContactAdminPage({ embedded = false }: Props) {
             key: 'read',
             header: 'Status',
             render: (r) => (
-              <Badge variant={r.isRead ? 'success' : 'default'}>{r.isRead ? 'Pročitano' : 'Novo'}</Badge>
+              <Badge variant={r.isRead ? 'success' : 'default'}>
+                {r.isRead ? 'Pročitano' : 'Novo'}
+              </Badge>
             ),
           },
           { key: 'date', header: 'Datum', render: (r) => formatDateTime(r.createdAt) },
@@ -88,7 +117,12 @@ export function ContactAdminPage({ embedded = false }: Props) {
             key: 'actions',
             header: '',
             render: (r) => (
-              <Button variant="ghost" size="icon" onClick={(e) => void onDelete(r, e)}>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={(e) => void onDelete(r, e)}
+                aria-label={t('actions.delete')}
+              >
                 <Trash2 className="h-4 w-4 text-danger" />
               </Button>
             ),
@@ -104,7 +138,7 @@ export function ContactAdminPage({ embedded = false }: Props) {
       message={selected}
       open={!!selected}
       onOpenChange={(o) => !o && setSelected(null)}
-      onMarkRead={(id) => void markRead.mutateAsync(id)}
+      onMarkRead={(id) => void runAction(markRead.mutateAsync(id))}
       isMarking={markRead.isPending}
     />
   );
@@ -121,9 +155,15 @@ export function ContactAdminPage({ embedded = false }: Props) {
 
   return (
     <>
-      <Seo title="Kontakt" />
+      <Seo title={t('admin.contact')} />
       {dialog}
-      <AdminPageShell title="Kontakt poruke" isLoading={isLoading} actions={markAllAction}>
+      <AdminPageShell
+        isError={isError}
+        onRetry={() => void refetch()}
+        title={t('admin.contactPage.title')}
+        isLoading={isLoading}
+        actions={markAllAction}
+      >
         {body}
       </AdminPageShell>
       {sheet}

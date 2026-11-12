@@ -1,6 +1,6 @@
 export function MockAdmin() {
   return (
-    <div className="flex h-full min-h-[9rem] bg-[#0a1525]">
+    <div className="flex h-full min-h-[9rem] bg-surface">
       <div className="w-[22%] space-y-1.5 border-r border-white/10 p-2">
         {[1, 2, 3, 4, 5].map((i) => (
           <div key={i} className={`h-1.5 rounded ${i === 1 ? 'bg-blue-400/70' : 'bg-white/15'}`} />

@@ -6,8 +6,17 @@ import { NewsSectionTitle } from '../../components/news/NewsSectionTitle';
 import { Seo } from '../../components/seo/Seo';
 import { Skeleton } from '../../components/ui/skeleton';
 import { cn } from '../../lib/utils';
+import { useTranslation } from 'react-i18next';
 
-function StatKpi({ label, value, highlight }: { label: string; value: number | null | undefined; highlight?: boolean }) {
+function StatKpi({
+  label,
+  value,
+  highlight,
+}: {
+  label: string;
+  value: number | null | undefined;
+  highlight?: boolean;
+}) {
   return (
     <div
       className={cn(
@@ -22,6 +31,7 @@ function StatKpi({ label, value, highlight }: { label: string; value: number | n
 }
 
 export function PlayerDetailPage() {
+  const { t } = useTranslation();
   const { id = '' } = useParams();
   const { data, isLoading, isError } = usePlayerPublic(id);
 
@@ -35,7 +45,7 @@ export function PlayerDetailPage() {
   }
 
   if (isError || !data) {
-    return <p className="p-12 text-center text-text-muted">Igrač nije pronađen.</p>;
+    return <p className="p-12 text-center text-text-muted">{t('pages.player.notFound')}</p>;
   }
 
   const seasonStats = [
@@ -55,14 +65,14 @@ export function PlayerDetailPage() {
       <div className="mx-auto max-w-4xl space-y-12 px-4 pt-10 sm:px-6">
         {data.bio && (
           <div className="glass-premium rounded-2xl p-6 sm:p-8">
-            <NewsSectionTitle>O igraču</NewsSectionTitle>
+            <NewsSectionTitle>{t('pages.player.about')}</NewsSectionTitle>
             <p className="leading-relaxed text-text-muted">{data.bio}</p>
           </div>
         )}
 
         {data.season && (
           <section>
-            <NewsSectionTitle>Sezona {data.season.name}</NewsSectionTitle>
+            <NewsSectionTitle>{t('home.season', { name: data.season.name })}</NewsSectionTitle>
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
               {seasonStats.map(([label, value, highlight]) => (
                 <StatKpi key={label} label={label} value={value} highlight={highlight === true} />
@@ -72,14 +82,14 @@ export function PlayerDetailPage() {
         )}
 
         <section>
-          <NewsSectionTitle>Karijera (ukupno)</NewsSectionTitle>
+          <NewsSectionTitle>{t('pages.player.career')}</NewsSectionTitle>
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
-            <StatKpi label="Nastupi" value={data.careerTotals?.appearances} />
-            <StatKpi label="Golovi" value={data.careerTotals?.goals} highlight />
-            <StatKpi label="Asist." value={data.careerTotals?.assists} />
-            <StatKpi label="Minute" value={data.careerTotals?.minutes} />
-            <StatKpi label="Žuti" value={data.careerTotals?.yellowCards} />
-            <StatKpi label="Crveni" value={data.careerTotals?.redCards} />
+            <StatKpi label={t('pages.player.appearances')} value={data.careerTotals?.appearances} />
+            <StatKpi label={t('pages.player.goals')} value={data.careerTotals?.goals} highlight />
+            <StatKpi label={t('pages.player.assists')} value={data.careerTotals?.assists} />
+            <StatKpi label={t('pages.player.minutes')} value={data.careerTotals?.minutes} />
+            <StatKpi label={t('pages.player.yellowCards')} value={data.careerTotals?.yellowCards} />
+            <StatKpi label={t('pages.player.redCards')} value={data.careerTotals?.redCards} />
           </div>
         </section>
 

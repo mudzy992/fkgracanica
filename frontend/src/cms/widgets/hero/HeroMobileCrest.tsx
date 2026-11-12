@@ -26,7 +26,7 @@ export function HeroMobileCrest({ compact = false }: Props) {
     >
       <div className="relative flex min-h-0 flex-1 items-center justify-center">
         <div
-          className="pointer-events-none absolute bottom-[18%] left-1/2 h-10 w-32 -translate-x-1/2 rounded-full bg-[#0066ff]/50 blur-2xl sm:h-12 sm:w-40"
+          className="pointer-events-none absolute bottom-[18%] left-1/2 h-10 w-32 -translate-x-1/2 rounded-full bg-brand/50 blur-2xl sm:h-12 sm:w-40"
           aria-hidden
         />
         <div

@@ -1,3 +1,5 @@
+import { buttonVariants } from "../../components/ui/button-variants";
+import { cn } from "../../lib/utils";
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { motion, useReducedMotion } from 'framer-motion';
@@ -7,7 +9,7 @@ import { playerPath } from '../../lib/public-routes';
 import { WidgetSectionHeaderBlock } from '../../components/public/shell/WidgetSectionHeaderBlock';
 import { WidgetSectionShell } from '../../components/public/shell/WidgetSectionShell';
 import { Skeleton } from '../../components/ui/skeleton';
-import { Button } from '../../components/ui/button';
+;
 import type { WidgetConfigMap } from './schemas';
 
 type Props = { config: WidgetConfigMap['featured-players'] };
@@ -25,11 +27,7 @@ export function FeaturedPlayersWidget({ config }: Props) {
     <WidgetSectionShell id="tim">
       <WidgetSectionHeaderBlock title={title} subtitle={t('home.teamSubtitle', 'Naši igrači')} />
       <div className="mb-6 flex justify-end">
-        <Link to={viewAll}>
-          <Button variant="ghost" className="text-primary-light hover:text-white">
-            {t('actions.viewAll')}
-          </Button>
-        </Link>
+        <Link to={viewAll} className={cn(buttonVariants({variant: "ghost"}), "text-primary-light hover:text-white")}>{t('actions.viewAll')}</Link>
       </div>
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:gap-4 lg:grid-cols-4">
         {isLoading
@@ -48,7 +46,7 @@ export function FeaturedPlayersWidget({ config }: Props) {
                   <Link to={playerPath(player.id)} className="group block">
                     <div className="border-gradient-club relative aspect-[3/4] overflow-hidden rounded-2xl bg-surface">
                       {player.photoPath ? (
-                        <img
+                        <img loading="lazy" decoding="async"
                           src={mediaUrl(player.photoPath, 'medium')}
                           alt=""
                           className="absolute inset-0 h-full w-full object-cover object-top transition-transform duration-500 group-hover:scale-105"

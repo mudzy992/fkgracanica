@@ -22,7 +22,11 @@ export class NotificationsService {
     private readonly delivery: NotificationDeliveryService,
   ) {}
 
-  async findForUser(userId: string, query: PaginatedQueryDto, unreadOnly = false) {
+  async findForUser(
+    userId: string,
+    query: PaginatedQueryDto,
+    unreadOnly = false,
+  ) {
     const params = parsePagination(query);
     const where = {
       userId,
@@ -114,7 +118,12 @@ export class NotificationsService {
     if (user.notifyPush && user.notifyLiveMatch) {
       await this.delivery.deliverPushOnly(
         { notifyPush: true, pushDevices: user.pushDevices },
-        { title: notification.title, body: notification.body, type: notification.type, path: input.path },
+        {
+          title: notification.title,
+          body: notification.body,
+          type: notification.type,
+          path: input.path,
+        },
       );
     }
     return notification;
@@ -128,7 +137,12 @@ export class NotificationsService {
     });
   }
 
-  async broadcast(input: { title: string; body: string; type: string; path: string }) {
+  async broadcast(input: {
+    title: string;
+    body: string;
+    type: string;
+    path: string;
+  }) {
     const users = await this.prisma.user.findMany({
       where: {
         deletedAt: null,

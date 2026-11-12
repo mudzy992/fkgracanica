@@ -2,6 +2,7 @@ import { MediaPicker } from '../../../components/admin/MediaPicker';
 import { usePublicSettings } from '../../../hooks';
 import { SportEventTicket } from '../../../components/ticketing/SportEventTicket';
 import { sampleTicketPreviewData } from '../../../components/ticketing/TicketDigitalPass';
+import { useTranslation } from 'react-i18next';
 
 interface Props {
   value: string;
@@ -9,6 +10,7 @@ interface Props {
 }
 
 export function TicketingCardBackgroundField({ value, onChange }: Props) {
+  const { t } = useTranslation();
   const { data: settings } = usePublicSettings();
   const clubName = settings?.['club.name'] ?? 'FK Gračanica';
   const crestUrl = settings?.['club.crestUrl'];
@@ -17,16 +19,18 @@ export function TicketingCardBackgroundField({ value, onChange }: Props) {
   return (
     <div className="space-y-4 rounded-xl border border-[var(--border-subtle)] p-4">
       <MediaPicker
-        label="Pozadina ulaznice (backdrop)"
+        label={t('admin.ticketBackground.label')}
         value={value || null}
         onChange={onChange}
       />
       <p className="text-xs text-text-muted">
-        Slika iz medija kao pozadina glavnog dijela ulaznice. Preporuka: stadion, navijači ili grafika utakmice
-        (landscape, min. 1200×800 px).
+        Slika iz medija kao pozadina glavnog dijela ulaznice. Preporuka: stadion, navijači ili
+        grafika utakmice (landscape, min. 1200×800 px).
       </p>
       <div>
-        <p className="mb-2 text-xs font-medium text-text-muted">Pregled</p>
+        <p className="mb-2 text-xs font-medium text-text-muted">
+          {t('admin.ticketBackground.preview')}
+        </p>
         <SportEventTicket
           data={{
             ...preview,

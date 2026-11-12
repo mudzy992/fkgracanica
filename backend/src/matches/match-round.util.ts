@@ -2,20 +2,22 @@ import { BadRequestException } from '@nestjs/common';
 import type { Prisma } from '@prisma/client';
 import type { PrismaService } from '../prisma/prisma.service';
 
-export type ResolvedRound = { roundId: string | null; round: number | null };
+export type ResolvedRound = { roundId: string | null };
 
 export async function resolveMatchRoundFields(
-  prisma: PrismaService,
+  prisma: Pick<PrismaService, 'round'>,
   roundId?: string | null,
 ): Promise<ResolvedRound | Record<string, never>> {
   if (roundId === undefined) return {};
-  if (roundId === null || roundId === '') return { roundId: null, round: null };
+  if (roundId === null || roundId === '') return { roundId: null };
   const round = await prisma.round.findUnique({ where: { id: roundId } });
   if (!round) throw new BadRequestException('Kolo nije pronađeno.');
-  return { roundId: round.id, round: round.number };
+  return { roundId: round.id };
 }
 
-export function isResolvedRound(v: ResolvedRound | Record<string, never>): v is ResolvedRound {
+export function isResolvedRound(
+  v: ResolvedRound | Record<string, never>,
+): v is ResolvedRound {
   return 'roundId' in v;
 }
 
@@ -25,19 +27,16 @@ export function roundToMatchUpdateInput(
 ): Prisma.MatchUpdateInput {
   if (!isResolvedRound(resolved)) return {};
   if (resolved.roundId === null) {
-    return { round: null, roundRel: { disconnect: true } };
+    return { roundRel: { disconnect: true } };
   }
-  return {
-    round: resolved.round,
-    roundRel: { connect: { id: resolved.roundId } },
-  };
+  return { roundRel: { connect: { id: resolved.roundId } } };
 }
 
 export function roundToMatchCreateInput(
   resolved: ResolvedRound | Record<string, never>,
-): { roundId?: string | null; round?: number | null } {
+): { roundId?: string | null } {
   if (!isResolvedRound(resolved)) return {};
-  return { roundId: resolved.roundId, round: resolved.round };
+  return { roundId: resolved.roundId };
 }
 
 export function assertDistinctClubs(homeClubId: string, awayClubId: string) {

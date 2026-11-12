@@ -17,7 +17,7 @@ export function statsByPlayerId(stats?: ClubSeasonStats) {
 export function topScorers(stats?: ClubSeasonStats, limit = 3) {
   return [...(stats?.players ?? [])]
     .filter((p) => (p.stats?.goals ?? 0) > 0)
-    .sort((a, b) => (b.stats?.goals ?? 0) - (a.stats?.goals ?? 0))
+    .sort((a, b) => b.stats!.goals! - a.stats!.goals!)
     .slice(0, limit);
 }
 

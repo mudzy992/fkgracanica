@@ -12,6 +12,7 @@ import { formatDateTime } from '../../lib/utils';
 import { Button } from '../ui/button';
 import { Dialog, DialogBody, DialogHeader } from '../ui/dialog';
 import { Sheet, SheetContent, SheetHeader } from '../ui/sheet';
+import { runAction } from '../../lib/action-errors';
 
 function NotificationList({
   items,
@@ -94,8 +95,8 @@ export function NotificationBell({ admin = false }: { admin?: boolean }) {
       items={unread}
       listPath={listPath}
       onClose={() => setOpen(false)}
-      onMarkAll={() => void markAll.mutateAsync()}
-      onMarkRead={(id) => void markRead.mutateAsync(id)}
+      onMarkAll={() => void runAction(markAll.mutateAsync())}
+      onMarkRead={(id) => void runAction(markRead.mutateAsync(id))}
       count={count}
     />
   );

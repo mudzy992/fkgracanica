@@ -1,6 +1,6 @@
 export function MockLive() {
   return (
-    <div className="overflow-hidden rounded-2xl border border-white/10 bg-[#07101c]">
+    <div className="overflow-hidden rounded-2xl border border-white/10 bg-surface-mock">
       <div className="bg-gradient-to-r from-blue-950 to-slate-900 px-4 py-4">
         <p className="text-center text-[10px] font-semibold uppercase tracking-[0.2em] text-emerald-400">
           Live

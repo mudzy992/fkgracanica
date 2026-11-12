@@ -11,6 +11,7 @@ import { filterPathsByModule } from '../../lib/route-module-map';
 import { isModuleEnabled } from '../../lib/module-settings-rules';
 import { cn } from '../../lib/utils';
 import { Button } from '../ui/button';
+import { buttonVariants } from '../ui/button-variants';
 import { Sheet, SheetContent, SheetHeader } from '../ui/sheet';
 import { PublicFooter } from './PublicFooter';
 import { PublicAuthButton } from './PublicAuthButton';
@@ -81,12 +82,20 @@ export function PublicLayout() {
             <div className="hidden lg:block">
               <PublicAuthButton />
             </div>
-            <Link to="/pretraga" aria-label={t('nav.search')}>
-              <Button variant="ghost" size="icon">
-                <Search className="h-5 w-5" />
-              </Button>
+            <Link
+              to="/pretraga"
+              aria-label={t('nav.search')}
+              className={buttonVariants({ variant: 'ghost', size: 'icon' })}
+            >
+              <Search aria-hidden className="h-5 w-5" />
             </Link>
-            <Button variant="ghost" size="icon" className="lg:hidden" onClick={() => setOpen(true)}>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="lg:hidden"
+              aria-label={t('nav.openMenu', 'Otvori meni')}
+              onClick={() => setOpen(true)}
+            >
               <Menu className="h-5 w-5" />
             </Button>
           </div>
@@ -114,7 +123,12 @@ export function PublicLayout() {
         <Outlet />
       </main>
 
-      <PublicFooter clubName={clubName} crestUrl={crestUrl} footerText={footerText} navItems={navItems} />
+      <PublicFooter
+        clubName={clubName}
+        crestUrl={crestUrl}
+        footerText={footerText}
+        navItems={navItems}
+      />
     </div>
   );
 }

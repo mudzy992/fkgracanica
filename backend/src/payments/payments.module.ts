@@ -12,7 +12,11 @@ import { PaypalOps } from './paypal-ops';
 import { MonriOps } from './monri-ops';
 
 @Module({
-  imports: [forwardRef(() => MembershipModule), JobsModule, NotificationsModule],
+  imports: [
+    forwardRef(() => MembershipModule),
+    JobsModule,
+    NotificationsModule,
+  ],
   controllers: [PaymentsController],
   providers: [
     PaymentsReadinessService,

@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useGalleryAdminList } from '../../../hooks/use-content-admin';
 import { useNewsList } from '../../../hooks';
 import { contentStatusLabel } from '../../../lib/content-status-labels';
@@ -7,6 +8,7 @@ import { HomeQuickActions } from './HomeQuickActions';
 import { RoleHomeShell } from './RoleHomeShell';
 
 export function WriterHome() {
+  const { t } = useTranslation();
   const drafts = useNewsList('DRAFT');
   const pending = useNewsList('PENDING');
   const published = useNewsList('PUBLISHED');
@@ -17,29 +19,55 @@ export function WriterHome() {
   return (
     <RoleHomeShell
       seo="Writer"
-      title="Writer — kontrolna tabla"
-      hint="Samo sadržaj: vijesti i galerija. Objavu radi moderator."
+      title={t('admin.home.writerTitle')}
+      hint={t('admin.home.writerHint')}
     >
       <HomeKpiGrid
         items={[
-          { key: 'drafts', label: 'Nacrti', value: loading ? '…' : (drafts.data?.length ?? 0), href: '/admin/news', hint: 'Vijesti u izradi' },
-          { key: 'pending', label: 'Na odobrenju', value: loading ? '…' : (pending.data?.length ?? 0), href: '/admin/news', hint: 'Čeka moderatora' },
-          { key: 'published', label: 'Objavljene', value: loading ? '…' : (published.data?.length ?? 0), href: '/admin/news', hint: 'Na portalu' },
-          { key: 'albums', label: 'Albumi', value: loading ? '…' : (albums.data?.length ?? 0), href: '/admin/gallery', hint: 'Galerija' },
+          {
+            key: 'drafts',
+            label: t('admin.content.drafts'),
+            value: loading ? '…' : (drafts.data?.length ?? 0),
+            href: '/admin/news',
+            hint: t('admin.content.draftsHint'),
+          },
+          {
+            key: 'pending',
+            label: t('admin.content.pending'),
+            value: loading ? '…' : (pending.data?.length ?? 0),
+            href: '/admin/news',
+            hint: t('admin.content.pendingHint'),
+          },
+          {
+            key: 'published',
+            label: t('admin.content.published'),
+            value: loading ? '…' : (published.data?.length ?? 0),
+            href: '/admin/news',
+            hint: t('admin.content.publishedHint'),
+          },
+          {
+            key: 'albums',
+            label: t('admin.content.albums'),
+            value: loading ? '…' : (albums.data?.length ?? 0),
+            href: '/admin/gallery',
+            hint: t('admin.gallery'),
+          },
         ]}
       />
       <HomeQuickActions
         items={[
-          { to: '/admin/news/new', label: 'Nova vijest', variant: 'default' },
-          { to: '/admin/media', label: 'Mediji / mape' },
-          { to: '/admin/gallery/new', label: 'Novi album' },
-          { to: '/admin/gallery', label: 'Galerija' },
+          { to: '/admin/news/new', label: t('admin.content.newNews'), variant: 'default' },
+          { to: '/admin/media', label: t('admin.content.mediaFolders') },
+          { to: '/admin/gallery/new', label: t('admin.content.newAlbum') },
+          { to: '/admin/gallery', label: t('admin.gallery') },
         ]}
       />
-      <h2 className="mt-8 mb-3 text-sm font-semibold text-text-muted">Neobjavljene vijesti</h2>
+      <h2 className="mt-8 mb-3 text-sm font-semibold text-text-muted">
+        {t('admin.content.unpublishedNews')}
+      </h2>
       <ul className="divide-y divide-[var(--border-subtle)] rounded-xl border border-[var(--border-subtle)]">
         {queue.length === 0 ? (
-          <li className="px-4 py-6 text-sm text-text-muted">Nema nacrta ni predaja.</li>
+          <li className="px-4 py-6 text-sm text-text-muted">{t('admin.content.noDrafts')}</li>
         ) : (
           queue.map((item) => (
             <li key={item.id}>
@@ -48,7 +76,9 @@ export function WriterHome() {
                 className="flex items-center justify-between gap-3 px-4 py-3 text-sm hover:bg-surface/80"
               >
                 <span className="truncate font-medium">{item.title}</span>
-                <span className="shrink-0 text-xs text-text-muted">{contentStatusLabel(item.status)}</span>
+                <span className="shrink-0 text-xs text-text-muted">
+                  {contentStatusLabel(item.status)}
+                </span>
               </Link>
             </li>
           ))

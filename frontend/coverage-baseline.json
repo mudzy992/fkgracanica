@@ -1,0 +1,34 @@
+{
+  "version": 1,
+  "measuredOn": "2026-11-12",
+  "initialMeasurement": {
+    "files": 631,
+    "lines": {
+      "covered": 377,
+      "total": 7953,
+      "pct": 4.74
+    },
+    "statements": {
+      "covered": 439,
+      "total": 8926,
+      "pct": 4.91
+    },
+    "functions": {
+      "covered": 139,
+      "total": 3390,
+      "pct": 4.1
+    },
+    "branches": {
+      "covered": 287,
+      "total": 7784,
+      "pct": 3.68
+    }
+  },
+  "thresholds": {
+    "lines": 100,
+    "statements": 100,
+    "functions": 100,
+    "branches": 100
+  },
+  "targetPercent": 50
+}

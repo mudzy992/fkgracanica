@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Plus, Pencil, Trash2 } from 'lucide-react';
 import { useUsers } from '../../hooks';
 import { useDeleteUser } from '../../hooks/use-users-admin';
@@ -13,6 +14,7 @@ import { AdminDataTable, AdminPageShell } from '../../components/admin/AdminPage
 import { AdminPagination } from '../../components/admin/AdminPagination';
 import { Skeleton } from '../../components/ui/skeleton';
 import { UserAdminFormSheet } from './UserAdminFormSheet';
+import { runAction } from '../../lib/action-errors';
 
 interface Props {
   embedded?: boolean;
@@ -28,6 +30,7 @@ type UserRow = {
 };
 
 export function UsersPage({ embedded = false }: Props) {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const perms = user?.permissions ?? [];
   const canCreate = hasPermission(perms, 'users.create');
@@ -37,7 +40,7 @@ export function UsersPage({ embedded = false }: Props) {
   const [page, setPage] = useState(1);
   const [sheetOpen, setSheetOpen] = useState(false);
   const [editUser, setEditUser] = useState<UserRow | null>(null);
-  const { data, isLoading } = useUsers({ page, search: search || undefined });
+  const { data, isLoading, isError, refetch } = useUsers({ page, search: search || undefined });
   const remove = useDeleteUser();
   const { confirm, dialog } = useConfirm();
   const rows = (data?.data as UserRow[] | undefined) ?? [];
@@ -49,11 +52,17 @@ export function UsersPage({ embedded = false }: Props) {
       variant: 'danger',
       confirmLabel: 'Obriši',
     });
-    if (ok) void remove.mutateAsync(item.id);
+    if (ok) void runAction(remove.mutateAsync(item.id));
   };
 
   const createAction = canCreate ? (
-    <Button size="sm" onClick={() => { setEditUser(null); setSheetOpen(true); }}>
+    <Button
+      size="sm"
+      onClick={() => {
+        setEditUser(null);
+        setSheetOpen(true);
+      }}
+    >
       <Plus className="mr-1 h-4 w-4" />
       Novi
     </Button>
@@ -68,16 +77,17 @@ export function UsersPage({ embedded = false }: Props) {
   ) : (
     <>
       {embedded && createAction && (
-        <div className="flex justify-end border-b border-slate-200 p-4">
-          {createAction}
-        </div>
+        <div className="flex justify-end border-b border-[var(--border-subtle)] p-4">{createAction}</div>
       )}
-      <div className={`border-b border-slate-200 p-4 ${embedded && createAction ? 'pt-0' : ''}`}>
+      <div className={`border-b border-[var(--border-subtle)] p-4 ${embedded && createAction ? 'pt-0' : ''}`}>
         <Input
           className="max-w-xs"
-          placeholder="Pretraži..."
+          placeholder={t('admin.usersAdmin.search')}
           value={search}
-          onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+          onChange={(e) => {
+            setSearch(e.target.value);
+            setPage(1);
+          }}
         />
       </div>
       <AdminDataTable
@@ -110,12 +120,26 @@ export function UsersPage({ embedded = false }: Props) {
             render: (r) => (
               <div className="flex gap-1">
                 {canUpdate && (
-                  <Button variant="ghost" size="icon" onClick={() => { setEditUser(r); setSheetOpen(true); }}>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => {
+                      setEditUser(r);
+                      setSheetOpen(true);
+                    }}
+
+                    aria-label={t('actions.edit')}
+                  >
                     <Pencil className="h-4 w-4" />
                   </Button>
                 )}
                 {canDelete && (
-                  <Button variant="ghost" size="icon" onClick={() => void onDelete(r)}>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => void onDelete(r)}
+                    aria-label={t('actions.delete')}
+                  >
                     <Trash2 className="h-4 w-4 text-danger" />
                   </Button>
                 )}
@@ -146,9 +170,15 @@ export function UsersPage({ embedded = false }: Props) {
 
   return (
     <>
-      <Seo title="Korisnici" />
+      <Seo title={t('admin.users')} />
       {dialog}
-      <AdminPageShell title="Korisnici" isLoading={isLoading} actions={createAction}>
+      <AdminPageShell
+        isError={isError}
+        onRetry={() => void refetch()}
+        title={t('admin.users')}
+        isLoading={isLoading}
+        actions={createAction}
+      >
         {body}
       </AdminPageShell>
       <UserAdminFormSheet

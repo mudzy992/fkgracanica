@@ -2,7 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { MatchEventType } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { NotificationsService } from './notifications.service';
-import { buildLivePushMessage, type LivePushEvent } from './live-push-message.util';
+import {
+  buildLivePushMessage,
+  type LivePushEvent,
+} from './live-push-message.util';
 
 @Injectable()
 export class LiveFanoutService {
@@ -11,7 +14,10 @@ export class LiveFanoutService {
     private readonly notifications: NotificationsService,
   ) {}
 
-  async fanout(matchId: string, event: LivePushEvent & { type: MatchEventType }) {
+  async fanout(
+    matchId: string,
+    event: LivePushEvent & { type: MatchEventType },
+  ) {
     const match = await this.prisma.match.findUnique({
       where: { id: matchId },
       include: { homeClub: true, awayClub: true },

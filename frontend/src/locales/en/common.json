@@ -1,4 +1,16 @@
 {
+  "video": {
+    "pasteUnavailable": "This browser does not support safe pasting. Use a newer browser.",
+    "editorUnavailable": "Embedded video unavailable: invalid link. Saved content has not been changed automatically.",
+    "editorInvalidInput": "Enter a valid YouTube video or playlist.",
+    "removeEmbedded": "Remove video",
+    "embeddedTitle": "Embedded video",
+    "invalidInput": "Enter a valid YouTube link with an 11-character ID.",
+    "embeddedUnavailable": "Embedded video unavailable: invalid link.",
+    "unavailable": "Video unavailable. Please check the YouTube link.",
+    "liveUnavailable": "Live stream unavailable. Please check the YouTube link.",
+    "audioUnavailable": "Prematch audio unavailable. Please check the YouTube link."
+  },
   "nav": {
     "home": "Home",
     "club": "About",
@@ -13,7 +25,8 @@
     "hallOfFame": "Hall of Fame",
     "museum": "Museum",
     "login": "Sign in",
-    "myAccount": "My account"
+    "myAccount": "My account",
+    "openMenu": "Open menu"
   },
   "actions": {
     "readMore": "Read more",
@@ -27,7 +40,13 @@
     "delete": "Delete",
     "edit": "Edit",
     "create": "Create",
-    "back": "Back"
+    "back": "Back",
+    "retry": "Try again",
+    "reloadPage": "Reload page",
+    "close": "Close",
+    "confirm": "Confirm",
+    "language": "Language",
+    "remove": "Remove"
   },
   "home": {
     "heroTitle": "FK Gračanica",
@@ -45,7 +64,26 @@
     "ticketsDesc": "Secure your seat at the stadium.",
     "trophies": "Trophies",
     "newsletter": "Newsletter",
-    "newsletterDesc": "Get the latest news in your inbox."
+    "newsletterDesc": "Get the latest news in your inbox.",
+    "gallerySubtitle": "Moments from the pitch",
+    "leagueSubtitle": "Current league standings",
+    "latestNewsSubtitle": "Latest from the club",
+    "sponsorsSubtitle": "Partners who support us",
+    "teamSubtitle": "The players behind the badge",
+    "trophiesSubtitle": "Trophies through club history",
+    "tableClub": "Club",
+    "tablePoints": "Pts",
+    "newsletterThanks": "Thanks for subscribing!",
+    "newsletterError": "Subscription failed. Check your email and try again.",
+    "teamHome": "Home",
+    "teamAway": "Away",
+    "tablePlayed": "P",
+    "tableWins": "W",
+    "tableDraws": "D",
+    "tableLosses": "L",
+    "tableGoalsFor": "GF",
+    "tableGoalsAgainst": "GA",
+    "season": "Season {{name}}"
   },
   "admin": {
     "dashboard": "Dashboard",
@@ -102,9 +140,731 @@
       "heritage": "Heritage",
       "comms": "Communication",
       "monetization": "Monetization"
+    },
+    "unsavedChanges": "There are unsaved changes. Close without saving?",
+    "unsavedNavigation": "There are unsaved changes. Leave the page without saving?",
+    "openMenu": "Open menu",
+    "breadcrumb": "Breadcrumb",
+    "cmdkTitle": "Admin search",
+    "cmdkPlaceholder": "Search pages or actions…",
+    "cmdkEmpty": "No results for “{{query}}”",
+    "cmdkResults": "Results",
+    "cmdkActions": "Quick actions",
+    "common": {
+      "loading": "Loading…",
+      "select": "Select…",
+      "error": "Something went wrong.",
+      "yes": "Yes",
+      "no": "No",
+      "actions": "Actions",
+      "saving": "Saving…",
+      "saveFailed": "Saving failed. Please try again.",
+      "moveUp": "Move up",
+      "moveDown": "Move down",
+      "saveFailedShort": "Saving failed."
+    },
+    "mediaUpload": {
+      "progressLabel": "Upload progress",
+      "progress": "Upload: {{done}}/{{total}} finished, {{failed}} failed.",
+      "refreshing": "Refreshing the library…",
+      "summary": "Upload finished: {{succeeded}}/{{total}} successful, {{failed}} failed.",
+      "failed": "These files were not confirmed or were not sent. Check the library before selecting them again:",
+      "rejected": "These files were not added to the queue:",
+      "notImage": "not an image",
+      "noSession": "session is not active",
+      "unconfirmed": "outcome not confirmed",
+      "sessionChanged": "not sent because the session changed",
+      "noFolder": "no folder selected",
+      "refreshFailed": "The library refresh could not be confirmed. Check its contents before uploading the same images again.",
+      "retryRefresh": "Refresh library",
+      "clearReport": "Dismiss report"
+    },
+    "mediaPicker": {
+      "pick": "Select media",
+      "pickGallery": "Select gallery photos",
+      "searchPlaceholder": "Search by name, tag or path…",
+      "searchResults": "Searching all folders ({{count}} results)",
+      "folderView": "Showing media in the selected folder",
+      "empty": "No media to show.",
+      "newFolder": "New folder",
+      "addAllFromFolder": "Add all from folder",
+      "addAllHint": "All images uploaded to the selected media folder will be added.",
+      "toggleFolders": "Show or hide subfolders",
+      "insertImage": "Insert image"
+    },
+    "season": {
+      "participants": "Season participants *",
+      "selectAll": "All",
+      "clear": "Clear",
+      "ownClub": "(our club)",
+      "emptyClubs": "No clubs — add clubs in the admin first.",
+      "selected": "Selected: {{count}} · Only participants appear in the league table."
+    },
+    "slug": {
+      "label": "Slug"
+    },
+    "formation": {
+      "allAssigned": "All players are placed.",
+      "pool": "Available players (drag onto the pitch)",
+      "pickPosition": "Pick a position on the pitch or bench.",
+      "bench": "Bench"
+    },
+    "home": {
+      "metaTitle": "Dashboard",
+      "title": "Dashboard",
+      "subtitle": "What needs action, then club health.",
+      "queue": "Needs action",
+      "health": "Club health",
+      "open": "Open →",
+      "kpiError": "Could not load KPI data.",
+      "writerTitle": "Writer — dashboard",
+      "writerHint": "Content only: news and gallery. A moderator publishes.",
+      "moderatorTitle": "Moderator — dashboard",
+      "moderatorHint": "Approval queue. Settings and users are off limits.",
+      "commentatorTitle": "Commentator — dashboard",
+      "commentatorHint": "Scoreboard, events and report submission. No calendar or competitions.",
+      "commentatorHintShort": "Scoreboard, events, reports.",
+      "matchesError": "Could not load matches."
+    },
+    "content": {
+      "news": "News",
+      "galleries": "Galleries",
+      "liveReports": "Live reports",
+      "unread": "Unread",
+      "afterMatch": "After the match",
+      "drafts": "Drafts",
+      "draftsHint": "News in progress",
+      "pending": "Pending approval",
+      "pendingHint": "Waiting for moderator",
+      "published": "Published",
+      "publishedHint": "On the portal",
+      "albums": "Albums",
+      "newNews": "New news",
+      "mediaFolders": "Media / folders",
+      "newAlbum": "New album",
+      "unpublishedNews": "Unpublished news",
+      "noDrafts": "No drafts or submissions.",
+      "newsQueue": "News queue",
+      "galleryQueue": "Gallery queue",
+      "emptyQueue": "Nothing pending.",
+      "approve": "Approve"
+    },
+    "commentator": {
+      "liveOnDesk": "Live on the desk",
+      "openDesk": "Open desk",
+      "publicLive": "Public live",
+      "report": "Report",
+      "live": "Live",
+      "liveHint": "Live / half-time",
+      "today": "Today",
+      "todayHint": "Scheduled today",
+      "draftReports": "Report drafts",
+      "draftReportsHint": "Not submitted yet",
+      "awaitingApproval": "Awaiting approval",
+      "awaitingApprovalHint": "With the moderator"
+    },
+    "match": {
+      "homeTeam": "Home",
+      "awayTeam": "Away"
+    },
+    "visitors": {
+      "title": "Visitors (30 days)",
+      "web": "Web",
+      "mobile": "Mobile",
+      "total": "Total",
+      "uniqueVisitors": "Unique visitors",
+      "webMobile": "Web + mobile"
+    },
+    "commsInbox": "Inbox",
+    "kpi": {
+      "users": "Users",
+      "members": "Members",
+      "activeMemberships": "Active memberships",
+      "publishedNews": "Published news",
+      "matches": "Matches",
+      "goals": "Goals",
+      "ticketsSold": "Tickets sold",
+      "pendingNews": "News awaiting approval"
+    },
+    "payments": {
+      "enabled": "Enabled",
+      "mode": {
+        "label": "Mode",
+        "sandbox": "Test (sandbox)",
+        "live": "Production",
+        "test": "Test"
+      },
+      "stripe": {
+        "publishableKey": "Publishable key",
+        "secretKey": "Secret key",
+        "webhookSecret": "Webhook secret"
+      },
+      "paypal": {
+        "clientId": "Client ID",
+        "clientSecret": "Client secret",
+        "currency": "Currency (default EUR)",
+        "webhookId": "Webhook ID (optional)"
+      },
+      "monri": {
+        "merchantKey": "Merchant key",
+        "authToken": "Authenticity token"
+      }
+    },
+    "cmsWidget": {
+      "foundedYear": "Founded year",
+      "titleRequired": "Title *",
+      "subtitle": "Subtitle",
+      "background": "Background image (hero + stadium)",
+      "backgroundDisplay": "Background display",
+      "bg": {
+        "all": "On — all screens",
+        "desktop": "Large screens only",
+        "mobile": "Small screens only",
+        "none": "Off"
+      },
+      "showNextMatch": "Show next match at the bottom of the hero",
+      "showLastResult": "Show last result (subtle)",
+      "buttons": "Buttons (label + link)",
+      "buttonLabel": "Button text",
+      "buttonUrl": "/path",
+      "variant": {
+        "primary": "Primary",
+        "outline": "Outline"
+      },
+      "sectionTitle": "Section title (optional)",
+      "galleryLatest": "Latest galleries",
+      "gallerySingle": "Single gallery",
+      "limit": "Limit",
+      "viewAllLink": "‘See all’ link",
+      "description": "Description",
+      "buttonUrlFull": "Button URL",
+      "sectionTitleShort": "Section title",
+      "newsCount": "News count",
+      "viewAllLabel": "‘See all’ text"
+    },
+    "club": {
+      "shortName": "Short name",
+      "city": "City",
+      "description": "Description",
+      "nameRequired": "Name *",
+      "shortNameHint": "Short name (e.g. FKG, SLO)",
+      "shortNameNote": "Shown on the TV scoreboard and results. Max 8 characters.",
+      "descriptionPlaceholder": "Club description",
+      "crest": "Crest",
+      "ownClub": "Our club",
+      "ownClubHint": "Only one club can be marked as ours."
+    },
+    "newsForm": {
+      "category": "Category",
+      "noCategory": "— No category —",
+      "tags": "Tags (comma separated)",
+      "tagsPlaceholder": "transfer, match",
+      "videoUrl": "Video URL",
+      "seoTitle": "SEO title",
+      "seoDescription": "SEO description",
+      "gallery": "Gallery",
+      "scheduledAt": "Scheduled publishing",
+      "relatedMatches": "Related matches",
+      "relatedPlayers": "Related players"
+    },
+    "competitionsAdmin": {
+      "metaTitle": "Competitions",
+      "title": "Competitions",
+      "catalogShort": "Catalog",
+      "seasonShort": "Season",
+      "seasons": "Seasons",
+      "emptySeasons": "No seasons.",
+      "colName": "Name",
+      "colPeriod": "Period",
+      "colCompetitions": "Competitions",
+      "open": "Open",
+      "colActive": "Active",
+      "colSlug": "Slug",
+      "colLeague": "League",
+      "league": "League",
+      "other": "Other",
+      "catalog": "Competitions catalog",
+      "emptyCompetitions": "No competitions.",
+      "deleteSeason": "Delete season?"
+    },
+    "ticketingForm": {
+      "capacity": "Stadium capacity",
+      "memberDiscount": "Member discount (%)",
+      "maxPerUser": "Max tickets per user (box office)",
+      "maxPerUserNote": "Online payment has no such limit.",
+      "seasonPrice": "Season ticket price (KM)",
+      "seasonPriceNote": "0 = not on sale",
+      "seasonLabel": "Season ticket name",
+      "boxOffice": "Box office purchase enabled",
+      "categories": "Ticket categories",
+      "save": "Save settings"
+    },
+    "membershipForm": {
+      "detail": "Membership detail",
+      "member": "Member",
+      "email": "Email",
+      "status": "Status",
+      "start": "Start",
+      "end": "Expiry",
+      "created": "Created",
+      "club": "Club",
+      "newMember": "New member",
+      "userEmail": "User email",
+      "emailPlaceholder": "user@email.ba",
+      "accountRequired": "The user must have a registered account.",
+      "activateNow": "Activate immediately (after payment at the box office)"
+    },
+    "playerForm": {
+      "edit": "Edit player",
+      "create": "New player",
+      "firstName": "First name *",
+      "lastName": "Last name *",
+      "club": "Club",
+      "selectClub": "Select club",
+      "shirt": "Shirt number",
+      "photo": "Photo",
+      "bio": "Bio (optional)",
+      "active": "Active in squad",
+      "position": "Position",
+      "shirtNumber": "Number",
+      "inactive": "Inactive"
+    },
+    "clubForm": {
+      "edit": "Edit club",
+      "create": "New club",
+      "stadium": "Stadium",
+      "descriptionPublic": "Club description (public)",
+      "name": "Club name *"
+    },
+    "calendar": {
+      "seasonNotFound": "Season not found.",
+      "competition": "Competition",
+      "participants": "Participants"
+    },
+    "analyticsPanel": {
+      "loading": "Loading visitors…",
+      "web30": "Web (30d)",
+      "mobile30": "Mobile (30d)",
+      "total30": "Total (30d)",
+      "dailyTrend": "Daily trend (30 days)",
+      "table": "Visits table",
+      "date": "Date",
+      "geo": "Geo distribution (30 days)"
+    },
+    "trophyForm": {
+      "edit": "Edit trophy",
+      "create": "New trophy",
+      "nameRequired": "Name *",
+      "year": "Year",
+      "description": "Description (shown for the featured trophy)",
+      "image": "Trophy image",
+      "featured": "Feature as best trophy",
+      "featuredHint": "Shown as featured on the home page and trophies page"
+    },
+    "releases": {
+      "new": "New Android release",
+      "uploading": "Uploading…",
+      "uploadApk": "Upload APK",
+      "version": "Version (1.0.1)",
+      "versionCode": "versionCode",
+      "minVersionCode": "minSupportedVersionCode",
+      "notes": "Release notes",
+      "forceUpdate": "Force update",
+      "createError": "Release was not created.",
+      "metaTitle": "App release",
+      "title": "Android app release",
+      "colVersion": "Version",
+      "colCode": "Code",
+      "required": "Required"
+    },
+    "stadium": {
+      "nameRequired": "Stadium name *",
+      "address": "Address",
+      "capacity": "Capacity",
+      "description": "Stadium description",
+      "image": "Stadium image",
+      "save": "Save stadium"
+    },
+    "matchForm": {
+      "edit": "Edit match",
+      "create": "New match",
+      "liveLocked": "Status and score are changed in the commentator panel.",
+      "home": "Home",
+      "away": "Away",
+      "datetime": "Date and time",
+      "pastMatch": "Past match (already played)",
+      "statusHint": "Enter the result for a finished match here. LIVE goes through the commentator.",
+      "openCommentator": "Open commentator"
+    },
+    "mediaAsset": {
+      "edit": "Edit media",
+      "filename": "File name",
+      "tags": "Tags",
+      "tagsPlaceholder": "news, hero",
+      "folder": "Folder",
+      "noFolder": "No folder",
+      "saveError": "Media changes were not saved."
+    },
+    "timelinePage": {
+      "title": "Club timeline"
+    },
+    "orderSheet": {
+      "title": "Order #{{id}}",
+      "user": "User",
+      "amount": "Amount",
+      "payment": "Payment",
+      "paymentMethod": "Method"
+    },
+    "commentatorBoard": {
+      "player": "Player",
+      "assist": "Assist (optional)",
+      "moreEvents": "More events",
+      "substitution": "Substitution",
+      "out": "Out",
+      "in": "In"
+    },
+    "competitionForm": {
+      "edit": "Edit competition",
+      "create": "New competition",
+      "editSeason": "Edit season",
+      "newSeason": "New season",
+      "nameRequired": "Name *",
+      "league": "League competition",
+      "leagueHint": "Shown on /liga and the home page table.",
+      "yearStart": "Start year",
+      "yearEnd": "End year",
+      "activeSeason": "Active season"
+    },
+    "newsAdmin": {
+      "allCategories": "All categories",
+      "categories": "Categories",
+      "deleteTitle": "Delete news",
+      "deleteConfirm": "Delete “{{title}}”?"
+    },
+    "clubsList": {
+      "type": "Type",
+      "opponent": "Opponent",
+      "manage": "Manage",
+      "title": "Clubs"
+    },
+    "usersAdmin": {
+      "search": "Search…"
+    },
+    "financeBuckets": {
+      "count": "Count",
+      "empty": "No data in this period",
+      "byProvider": "By payment method",
+      "byStatus": "By status"
+    },
+    "financeKpi": {
+      "tickets": "Tickets",
+      "transactions": "{{count}} transactions",
+      "seasonPasses": "Season passes",
+      "cards": "{{count}} cards",
+      "memberships": "Memberships (estimate)",
+      "activeMembers": "{{count}} active members",
+      "totalHint": "Tickets + season passes + membership estimate",
+      "period": "Period",
+      "periodHint": "By payment/activation date"
+    },
+    "roundsPanel": {
+      "rounds": "Rounds",
+      "round": "Round",
+      "empty": "Add the first round.",
+      "matches": "{{count}} matches"
+    },
+    "matchReport": {
+      "title": "Match report",
+      "notFound": "Match not found.",
+      "approvedLocked": "The report is approved and can no longer be edited."
+    },
+    "teamPanel": {
+      "played": "Played",
+      "goals": "Goals",
+      "winPercent": "Win %",
+      "form": "Form:",
+      "recent": "Recent matches"
+    },
+    "cmsMenu": {
+      "custom": "Custom",
+      "active": "Active",
+      "label": "Label",
+      "path": "/path",
+      "pageOptional": "CMS page (optional)",
+      "title": "Main menu",
+      "noActiveItems": "No active items",
+      "addWidget": "Add widget"
+    },
+    "auditPage": {
+      "metaTitle": "Audit",
+      "title": "Audit log",
+      "action": "Action",
+      "entity": "Entity"
+    },
+    "commentatorPage": {
+      "title": "Commentator",
+      "panel": "Commentator panel",
+      "publicLive": "Public live view"
+    },
+    "contactPage": {
+      "title": "Contact messages"
+    },
+    "galleryBatch": {
+      "partial": "Some photos may already have been added; the operation did not complete. The gallery has been refreshed. Review it before selecting again; after an uncertain network response a photo may appear later.",
+      "partialUnverified": "Some photos may already have been added, but the gallery could not be refreshed. Adding photos is disabled until refresh succeeds.",
+      "savedUnverified": "The photos were sent, but the gallery could not be refreshed. Adding photos is disabled until refresh succeeds.",
+      "initialUnverified": "The gallery could not be refreshed. Adding photos is disabled until refresh succeeds.",
+      "folderFailed": "Could not load photos from the selected folder. No photos were sent.",
+      "refreshed": "The gallery was refreshed. Review the photos before adding more.",
+      "checking": "Adding photos or refreshing the gallery.",
+      "retry": "Refresh gallery"
+    },
+    "galleryPhotos": {
+      "empty": "No photos yet. Add images or a folder."
+    },
+    "hofForm": {
+      "edit": "Edit entry",
+      "create": "New entry",
+      "name": "Name *",
+      "role": "Role *",
+      "years": "Years (e.g. 1998–2010)",
+      "bio": "Biography"
+    },
+    "museumForm": {
+      "edit": "Edit item",
+      "create": "New item",
+      "title": "Title *"
+    },
+    "timelineForm": {
+      "edit": "Edit event",
+      "create": "New event",
+      "year": "Year *",
+      "image": "Image"
+    },
+    "userForm": {
+      "edit": "Edit user",
+      "create": "New user",
+      "newPassword": "New password (optional)",
+      "password": "Password",
+      "firstName": "First name",
+      "lastName": "Last name",
+      "active": "Active",
+      "roles": "Roles"
+    },
+    "providerHints": {
+      "stripeTitle": "Stripe test (demo)",
+      "stripeBody": "In the Stripe Dashboard enable Test mode and enter the pk_test and sk_test keys. Test card:",
+      "stripeWebhook": "Local webhook: stripe listen --forward-to localhost:3000/payments/webhooks/stripe",
+      "paypalTitle": "PayPal sandbox",
+      "paypalBody": "developer.paypal.com → App → Client ID and Secret. Mode: sandbox. The charge is in EUR (same number as KM on the order). Webhook ID is required for the server callback; returning to the portal works without it.",
+      "paypalWebhook": "Webhook: POST /payments/webhooks/paypal",
+      "monriTitle": "Monri test",
+      "monriBody": "Test IPG: ipgtest.monri.com/v2/form. Live: ipg.monri.com. Merchant key + authenticity token. Mode: test. Currency BAM, amount in fening. Bridge: /placanje/monri.",
+      "monriWebhook": "Callback: POST /payments/webhooks/monri"
+    },
+    "playerPanel": {
+      "selectPlayer": "Select player…",
+      "season": "Season",
+      "minutes": "Min"
+    },
+    "clubHub": {
+      "notFound": "Club not found."
+    },
+    "cmsBuilder": {
+      "notFound": "Page not found.",
+      "sections": "Sections",
+      "noSections": "No sections."
+    },
+    "cmsMeta": {
+      "title": "Title",
+      "draft": "Draft",
+      "published": "Published",
+      "save": "Save meta",
+      "editTitle": "Edit: {{title}}"
+    },
+    "seasonHub": {
+      "notFound": "Competition in season not found."
+    },
+    "galleryEditor": {
+      "createAlbum": "Create album",
+      "titleRequired": "Album title *",
+      "descriptionOptional": "Description (optional)",
+      "afterCreate": "After creating the album you add photos on the full screen.",
+      "photos": "Photos ({{count}})"
+    },
+    "mediaGrid": {
+      "copyUrl": "Copy URL",
+      "copied": "Copied"
+    },
+    "ticketingPayments": {
+      "status": "Online payment status",
+      "membershipPrice": "Annual membership (KM)",
+      "defaultProvider": "Default payment service"
+    },
+    "analyticsPage": {
+      "allSeasons": "All seasons"
+    },
+    "analyticsTabs": {
+      "team": "Team",
+      "h2h": "H2H",
+      "players": "Players",
+      "visitors": "Visitors"
+    },
+    "emailLog": {
+      "noErrors": "No email delivery errors",
+      "allDelivered": "All emails were delivered successfully."
+    },
+    "livePendingPage": {
+      "title": "Live reports awaiting approval",
+      "empty": "No matches pending.",
+      "match": "Match"
+    },
+    "membershipPage": {
+      "title": "Membership"
+    },
+    "rolesForm": {
+      "create": "New role",
+      "name": "Name *",
+      "createError": "Role creation failed."
+    },
+    "rolesPage": {
+      "system": "System",
+      "editPermissions": "Edit permissions"
+    },
+    "seasonEdition": {
+      "fromCatalog": "From catalog",
+      "newCompetition": "Or a new competition (name)",
+      "league": "League"
+    },
+    "sponsorForm": {
+      "edit": "Edit sponsor",
+      "create": "New sponsor",
+      "url": "URL (optional)",
+      "logo": "Logo"
+    },
+    "h2h": {
+      "clubA": "Club A",
+      "clubB": "Club B"
+    },
+    "cmsPages": {
+      "title": "CMS pages",
+      "new": "New page",
+      "create": "New CMS page",
+      "titleRequired": "Page title *",
+      "slugRequired": "Slug (e.g. about-us) *",
+      "empty": "No pages."
+    },
+    "commentPanel": {
+      "liveComments": "Live comments",
+      "empty": "No comments.",
+      "placeholder": "Comment for the audience..."
+    },
+    "matchFinished": {
+      "title": "Match (finished)",
+      "locked": "A finished match cannot be edited.",
+      "editReport": "Edit report"
+    },
+    "roundCascade": {
+      "title": "Delete round and everything linked?",
+      "irreversible": "This action cannot be undone.",
+      "ack": "I understand the data cannot be restored"
+    },
+    "roundMatches": {
+      "title": "Matches in the round"
+    },
+    "financeFilters": {
+      "status": "Payment status",
+      "method": "Payment method",
+      "period": "Show period"
+    },
+    "newsEditor": {
+      "title": "Title",
+      "excerpt": "Lead",
+      "content": "Content"
+    },
+    "ticketCategories": {
+      "name": "Name",
+      "price": "Price"
+    },
+    "contactMessage": {
+      "date": "Date",
+      "message": "Message"
+    },
+    "newsCategories": {
+      "newPlaceholder": "New category name",
+      "empty": "No categories."
+    },
+    "newsletterPage": {
+      "searchPlaceholder": "Search email...",
+      "subscribersTitle": "Newsletter subscribers"
+    },
+    "clubStats": {
+      "empty": "No data.",
+      "title": "Player statistics"
+    },
+    "commentatorClock": {
+      "matchMinute": "Match minute",
+      "stoppage": "Stoppage time"
+    },
+    "eventLog": {
+      "title": "Event log",
+      "empty": "No events."
+    },
+    "penalties": {
+      "title": "Penalty kicks"
+    },
+    "retrospective": {
+      "title": "Match report",
+      "minute": "Event minute"
+    },
+    "streamDialog": {
+      "title": "YouTube live stream"
+    },
+    "highlights": {
+      "youtubeUrl": "YouTube URL"
+    },
+    "scoreInputs": {
+      "home": "Home goals",
+      "away": "Away goals"
+    },
+    "roundForm": {
+      "numberPlaceholder": "Round number *",
+      "namePlaceholder": "Name (optional)"
+    },
+    "mediaBulk": {
+      "moveTo": "Move to folder…",
+      "actionError": "The action failed. Please try again."
+    },
+    "mediaFolders": {
+      "title": "Media folders",
+      "all": "All media"
+    },
+    "mediaToolbar": {
+      "searchPlaceholder": "Search by name, tag or path…",
+      "clearSearch": "Clear search"
+    },
+    "ticketBackground": {
+      "label": "Ticket background (backdrop)",
+      "preview": "Preview"
+    },
+    "seasonTicket": {
+      "issueTitle": "Issue season ticket (box office)",
+      "emailPlaceholder": "user email"
+    },
+    "cmsPreview": {
+      "livePreview": "Live preview",
+      "empty": "Add a widget to preview."
+    },
+    "cmsSection": {
+      "aboutPlaceholder": "Text about the club"
+    },
+    "cmsNextMatch": {
+      "titlePlaceholder": "Title (optional)",
+      "stadiumBackground": "Stadium background (parallax)"
     }
   },
   "common": {
+    "routeLoadError": "Could not load this page. Check your connection and reload it.",
     "loading": "Loading...",
     "noResults": "No results",
     "error": "Something went wrong",
@@ -114,7 +874,9 @@
     "message": "Message",
     "subject": "Subject",
     "livePushTitle": "Live match push",
-    "livePushHint": "Goals, cards and other live actions. Turn off to mute push."
+    "livePushHint": "Goals, cards and other live actions. Turn off to mute push.",
+    "loadError": "We could not load the data. Check your connection and try again.",
+    "actionFailed": "The action failed. Please try again."
   },
   "footer": {
     "menu": "Menu",
@@ -154,8 +916,152 @@
     "phone": "Phone",
     "address": "Address"
   },
+  "paymentReturn": {
+    "pending": "The payment status is not confirmed yet. Check its status before making another purchase.",
+    "error": "The payment status cannot be confirmed right now. If you were charged, do not make another purchase; contact support.",
+    "retryInfo": "Resubmitting may complete a previously approved payment; it does not start a new purchase.",
+    "retry": "Resubmit the existing payment confirmation",
+    "signIn": "Sign in to confirm your existing payment."
+  },
   "pages": {
-    "notFound": "Page not found."
+    "notFound": "Page not found.",
+    "gallery": {
+      "seoTitle": "Gallery",
+      "eyebrow": "Media",
+      "title": "Gallery",
+      "subtitle": "Photos from matches, events and behind the scenes.",
+      "empty": "No published galleries.",
+      "photos": "Photos",
+      "notFound": "Gallery not found."
+    },
+    "club": {
+      "notFound": "Club not found.",
+      "squadEmpty": "The squad has not been published yet.",
+      "timelineSeoDesc": "History and development of FK Gračanica",
+      "timelineEmpty": "Club history has not been published yet.",
+      "aboutClub": "About the club"
+    },
+    "news": {
+      "notFound": "News not found."
+    },
+    "search": {
+      "seoTitle": "Search",
+      "eyebrow": "Portal",
+      "title": "Search",
+      "subtitle": "Find news, players, clubs and matches.",
+      "placeholder": "Search news, players, matches...",
+      "minChars": "Enter at least 2 characters.",
+      "empty": "No results.",
+      "all": "All",
+      "previous": "Previous",
+      "next": "Next"
+    },
+    "sponsors": {
+      "seoTitle": "Sponsors",
+      "seoDesc": "Partners and sponsors of FK Gračanica",
+      "empty": "No sponsors."
+    },
+    "trophies": {
+      "seoTitle": "Trophies",
+      "seoDesc": "Trophies and titles of FK Gračanica",
+      "other": "Other trophies",
+      "empty": "No trophies."
+    },
+    "museum": {
+      "seoTitle": "Museum",
+      "seoDesc": "Artefacts and history of FK Gračanica",
+      "collection": "Collection",
+      "empty": "No exhibits in the museum."
+    },
+    "hallOfFame": {
+      "seoTitle": "Hall of Fame",
+      "seoDesc": "Legends of FK Gračanica",
+      "empty": "No Hall of Fame entries."
+    },
+    "league": {
+      "seoTitle": "League",
+      "seoDesc": "League table and results",
+      "tableToRound": "Table after round {{round}}",
+      "overallTable": "Overall table"
+    },
+    "newsletter": {
+      "seoTitle": "Newsletter unsubscribe",
+      "eyebrow": "Newsletter",
+      "title": "Unsubscribe",
+      "subtitle": "Manage your subscription.",
+      "formTitle": "Newsletter",
+      "formDesc": "Unsubscribe from the FK Gračanica mailing list.",
+      "loading": "Processing your request…",
+      "success": "You are unsubscribed. You will no longer receive the newsletter.",
+      "invalid": "The link is invalid or has already been used."
+    },
+    "player": {
+      "notFound": "Player not found.",
+      "about": "About the player",
+      "career": "Career (total)",
+      "appearances": "Appearances",
+      "goals": "Goals",
+      "assists": "Assists",
+      "minutes": "Minutes",
+      "yellowCards": "Yellow",
+      "redCards": "Red",
+      "matches": "Matches",
+      "loadingMatches": "Loading matches...",
+      "starter": "start",
+      "bench": "bench",
+      "goalsCount": "{{count}} goal(s)"
+    },
+    "tickets": {
+      "seoTitle": "Tickets",
+      "seoDesc": "Ticket reservations for FK Gračanica matches",
+      "eyebrow": "Stadium",
+      "title": "Tickets",
+      "subtitle": "Secure your seat at the match.",
+      "formTitle": "Tickets",
+      "formDesc": "Reserve tickets and review your orders.",
+      "signIn": "Sign in",
+      "moduleInactive": "The ticket module is currently inactive.",
+      "guestInfo": "Members and guests can buy tickets online or reserve them for the box office — sign-in is required.",
+      "signedInAs": "Signed in as: {{email}}",
+      "paymentCancelled": "The payment was cancelled. Your reservation is kept — pay it from \"My orders\".",
+      "tabsReserve": "Reserve",
+      "tabsOrders": "My orders",
+      "tabsSeason": "Season",
+      "onlyBoxOffice": "Reservation only — payment at the stadium box office.",
+      "onlineOrBoxOffice": "Pay online or reserve for the box office — your choice."
+    },
+    "membership": {
+      "seoTitle": "Membership",
+      "seoTitleAccount": "My account",
+      "eyebrow": "Community",
+      "title": "Membership",
+      "titleAccount": "My account",
+      "subtitle": "Join the club and support FK Gračanica as a registered member.",
+      "subtitleAccount": "Membership, tickets and a review of your orders.",
+      "joinTitle": "Become a member",
+      "joinSubtitle": "Exclusive benefits for club members.",
+      "accountTitle": "My account",
+      "accountSubtitle": "Review your membership card and purchased tickets."
+    },
+    "matchCenter": {
+      "notFound": "Match not found.",
+      "report": "Match report — ",
+      "editReport": "Edit report",
+      "createReport": "Create / edit report",
+      "backToLeague": "Back to the league"
+    },
+    "live": {
+      "notFound": "Match not found.",
+      "notLive": "The match is not live at the moment.",
+      "backToLeague": "Back to the league"
+    },
+    "monri": {
+      "seoTitle": "Payment",
+      "needLogin": "Signing in is required to pay.",
+      "formNotReady": "The Monri form is not ready. Check the keys in admin.",
+      "back": "Back",
+      "missingSession": "The Monri session is missing."
+    }
   },
   "match": {
     "fullStream": "Full match",
@@ -163,7 +1069,9 @@
     "addHighlight": "Add clip",
     "highlightTitle": "Clip title",
     "highlightStart": "Start (seconds, optional)",
-    "highlightSaveError": "Could not save clip."
+    "highlightSaveError": "Could not save clip.",
+    "highlightDeleteTitle": "Delete highlight?",
+    "highlightDeleteDesc": "\"{{title}}\" will be deleted."
   },
   "appDownload": {
     "seoTitle": "Android app",
@@ -204,5 +1112,9 @@
       "install": "Install",
       "cancel": "Cancel"
     }
+  },
+  "profile": {
+    "avatarUploadError": "Profile photo was not saved.",
+    "avatarDeleteError": "Profile photo was not removed."
   }
 }

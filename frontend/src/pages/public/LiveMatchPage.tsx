@@ -11,6 +11,7 @@ import type { Match } from '../../types';
 import { Seo } from '../../components/seo/Seo';
 import { Skeleton } from '../../components/ui/skeleton';
 import { ClubCrest } from '../../components/public/clubs/ClubCrest';
+import { useTranslation } from 'react-i18next';
 
 function LiveMatchSeo({
   match,
@@ -38,6 +39,7 @@ function LiveMatchSeo({
 }
 
 export function LiveMatchPage() {
+  const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
   const { data, isLoading } = useMatch(id ?? '');
   useMatchRealtime(id);
@@ -54,9 +56,9 @@ export function LiveMatchPage() {
   if (!data) {
     return (
       <div className="flex min-h-dvh flex-col items-center justify-center gap-4 bg-slate-950 p-8 text-white">
-        <p className="text-white/70">Utakmica nije pronađena.</p>
+        <p className="text-white/70">{t('pages.live.notFound')}</p>
         <Link to="/liga" className="text-sm text-amber-300 hover:underline">
-          Natrag na ligu
+          {t('pages.live.backToLeague')}
         </Link>
       </div>
     );
@@ -111,7 +113,7 @@ export function LiveMatchPage() {
         <p className="mt-4 text-sm text-white/60">
           {data.homeClub?.name} — {data.awayClub?.name}
         </p>
-        <p className="mt-2 text-sm text-white/40">Utakmica trenutno nije uživo.</p>
+        <p className="mt-2 text-sm text-white/40">{t('pages.live.notLive')}</p>
       </div>
       <div className="relative flex flex-wrap justify-center gap-3">
         <Link

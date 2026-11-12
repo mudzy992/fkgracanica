@@ -3,26 +3,23 @@ export function roundLabel(round: { number: number; name?: string | null }): str
 }
 
 export function matchRoundNumber(match: {
-  round?: number | null;
   roundRel?: { number: number; name?: string | null } | null;
 }): number | null {
-  return match.roundRel?.number ?? match.round ?? null;
+  return match.roundRel?.number ?? null;
 }
 
 export function matchRoundLabel(match: {
-  round?: number | null;
   roundRel?: { number: number; name?: string | null } | null;
 }): string | null {
-  if (match.roundRel) return roundLabel(match.roundRel);
-  const n = match.round;
-  return n != null ? `${n}. kolo` : null;
+  return match.roundRel ? roundLabel(match.roundRel) : null;
 }
 
-export function groupMatchesByRound<T extends {
-  round?: number | null;
-  roundRel?: { number: number; name?: string | null } | null;
-  scheduledAt: string;
-}>(matches: T[]): { key: number; label: string; matches: T[] }[] {
+export function groupMatchesByRound<
+  T extends {
+    roundRel?: { number: number; name?: string | null } | null;
+    scheduledAt: string;
+  },
+>(matches: T[]): { key: number; label: string; matches: T[] }[] {
   const map = new Map<number, T[]>();
   for (const m of matches) {
     const n = matchRoundNumber(m);
@@ -35,7 +32,7 @@ export function groupMatchesByRound<T extends {
     .sort(([a], [b]) => b - a)
     .map(([key, items]) => ({
       key,
-      label: items[0]?.roundRel ? roundLabel(items[0].roundRel) : `${key}. kolo`,
+      label: roundLabel(items[0].roundRel!),
       matches: items.sort(
         (a, b) => new Date(b.scheduledAt).getTime() - new Date(a.scheduledAt).getTime(),
       ),

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Pencil, Plus, Trash2 } from 'lucide-react';
 import { useHallOfFame } from '../../hooks';
 import { useDeleteHallOfFame } from '../../hooks/use-heritage-admin';
@@ -8,13 +9,15 @@ import { Button } from '../../components/ui/button';
 import { AdminDataTable, AdminPageShell } from '../../components/admin/AdminPageShell';
 import { HallOfFameAdminFormSheet } from './HallOfFameAdminFormSheet';
 import type { HallOfFameEntry } from '../../types';
+import { runAction } from '../../lib/action-errors';
 
 interface Props {
   embedded?: boolean;
 }
 
 export function HallOfFameAdminPage({ embedded = false }: Props) {
-  const { data, isLoading } = useHallOfFame();
+  const { t } = useTranslation();
+  const { data, isLoading, isError, refetch } = useHallOfFame();
   const remove = useDeleteHallOfFame();
   const { confirm, dialog } = useConfirm();
   const [open, setOpen] = useState(false);
@@ -27,11 +30,17 @@ export function HallOfFameAdminPage({ embedded = false }: Props) {
       variant: 'danger',
       confirmLabel: 'Obriši',
     });
-    if (ok) void remove.mutateAsync(item.id);
+    if (ok) void runAction(remove.mutateAsync(item.id));
   };
 
   const createAction = (
-    <Button size="sm" onClick={() => { setEdit(null); setOpen(true); }}>
+    <Button
+      size="sm"
+      onClick={() => {
+        setEdit(null);
+        setOpen(true);
+      }}
+    >
       <Plus className="mr-1 h-4 w-4" />
       Novi
     </Button>
@@ -56,10 +65,24 @@ export function HallOfFameAdminPage({ embedded = false }: Props) {
             header: 'Akcije',
             render: (r) => (
               <div className="flex gap-1">
-                <Button variant="ghost" size="icon" onClick={() => { setEdit(r); setOpen(true); }}>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => {
+                    setEdit(r);
+                    setOpen(true);
+                  }}
+
+                  aria-label={t('actions.edit')}
+                >
                   <Pencil className="h-4 w-4" />
                 </Button>
-                <Button variant="ghost" size="icon" onClick={() => void onDelete(r)}>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => void onDelete(r)}
+                  aria-label={t('actions.delete')}
+                >
                   <Trash2 className="h-4 w-4 text-danger" />
                 </Button>
               </div>
@@ -73,7 +96,10 @@ export function HallOfFameAdminPage({ embedded = false }: Props) {
   const sheet = (
     <HallOfFameAdminFormSheet
       open={open}
-      onOpenChange={(o) => { setOpen(o); if (!o) setEdit(null); }}
+      onOpenChange={(o) => {
+        setOpen(o);
+        if (!o) setEdit(null);
+      }}
       edit={edit}
     />
   );
@@ -90,9 +116,15 @@ export function HallOfFameAdminPage({ embedded = false }: Props) {
 
   return (
     <>
-      <Seo title="Hall of Fame" />
+      <Seo title={t('admin.hallOfFame')} />
       {dialog}
-      <AdminPageShell title="Hall of Fame" isLoading={isLoading} actions={createAction}>
+      <AdminPageShell
+        isError={isError}
+        onRetry={() => void refetch()}
+        title={t('admin.hallOfFame')}
+        isLoading={isLoading}
+        actions={createAction}
+      >
         {body}
       </AdminPageShell>
       {sheet}

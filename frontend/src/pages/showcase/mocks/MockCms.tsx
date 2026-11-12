@@ -2,7 +2,7 @@ const BLOCKS = ['Hero', 'Vijesti', 'Tabela', 'CTA'];
 
 export function MockCms() {
   return (
-    <div className="space-y-2 rounded-2xl border border-white/10 bg-[#07101c] p-3">
+    <div className="space-y-2 rounded-2xl border border-white/10 bg-surface-mock p-3">
       {BLOCKS.map((label, i) => (
         <div
           key={label}

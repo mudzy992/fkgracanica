@@ -1,3 +1,4 @@
+import { buttonVariants } from "../../components/ui/button-variants";
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { motion, useReducedMotion } from 'framer-motion';
@@ -6,7 +7,7 @@ import { mediaUrl } from '../../lib/media';
 import { WidgetSectionHeaderBlock } from '../../components/public/shell/WidgetSectionHeaderBlock';
 import { WidgetSectionShell } from '../../components/public/shell/WidgetSectionShell';
 import { Skeleton } from '../../components/ui/skeleton';
-import { Button } from '../../components/ui/button';
+;
 import { PhotoGridWithLightbox } from '../../components/public/PhotoGridWithLightbox';
 import { cn } from '../../lib/utils';
 import type { WidgetConfigMap } from './schemas';
@@ -39,11 +40,7 @@ export function GalleryWidget({ config }: Props) {
       <WidgetSectionShell id="galerija">
         <WidgetSectionHeaderBlock title={title || single.title} />
         <div className="mb-6 flex justify-end">
-          <Link to={`/galerija/${single.slug}`}>
-            <Button variant="ghost" className="text-primary-light hover:text-white">
-              {t('actions.viewAll')}
-            </Button>
-          </Link>
+          <Link to={`/galerija/${single.slug}`} className={cn(buttonVariants({variant: "ghost"}), "text-primary-light hover:text-white")}>{t('actions.viewAll')}</Link>
         </div>
         <PhotoGridWithLightbox photos={single.photos.slice(0, config.limit)} columns="three" />
       </WidgetSectionShell>
@@ -54,11 +51,7 @@ export function GalleryWidget({ config }: Props) {
     <WidgetSectionShell id="galerija">
       <WidgetSectionHeaderBlock title={title} subtitle={t('home.gallerySubtitle', 'Trenuci sa terena')} />
       <div className="mb-6 flex justify-end">
-        <Link to={viewAll}>
-          <Button variant="ghost" className="text-primary-light hover:text-white">
-            {t('actions.viewAll')}
-          </Button>
-        </Link>
+        <Link to={viewAll} className={cn(buttonVariants({variant: "ghost"}), "text-primary-light hover:text-white")}>{t('actions.viewAll')}</Link>
       </div>
       <div className="grid auto-rows-fr grid-cols-2 gap-3 md:grid-cols-4 md:gap-4">
         {isLoading
@@ -79,7 +72,7 @@ export function GalleryWidget({ config }: Props) {
                 >
                   <Link to={`/galerija/${g.slug}`} className="group relative block h-full overflow-hidden rounded-2xl">
                     {cover ? (
-                      <img
+                      <img loading="lazy" decoding="async"
                         src={mediaUrl(cover, 'medium')}
                         alt=""
                         className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"

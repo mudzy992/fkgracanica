@@ -4,6 +4,7 @@ import { usePublicSettings, useSponsors } from '../../hooks';
 import { useTicketingPublicConfig } from '../../hooks/use-ticketing';
 import { useClubSquad } from '../../hooks/use-club-hub';
 import { matchLineupToPitchSlots } from '../../lib/match-lineup-pitch';
+import { resolvePublicMatchLineup } from '../../lib/match-lineup-from-squad';
 import { SponsorsMarquee } from '../public/sponsors/SponsorsMarquee';
 import { ResponsiveFormationPitch } from '../public/clubs/ResponsiveFormationPitch';
 import { ClubCrest } from '../public/clubs/ClubCrest';
@@ -35,9 +36,12 @@ export function LivePreMatchShell({ match }: Props) {
   const { data: settings } = usePublicSettings();
   const { data: ticketing } = useTicketingPublicConfig();
   const audioUrl = settings?.['live.prematchAudioUrl'] ?? '';
-  const lineup = match.lineup ?? match.lineups ?? [];
   const { data: homeSquad } = useClubSquad(match.homeClubId);
   const { data: awaySquad } = useClubSquad(match.awayClubId);
+  const lineup = resolvePublicMatchLineup(match.lineup ?? match.lineups ?? [], match.lineupConfigured, [
+    { clubId: match.homeClubId, squad: homeSquad?.slots },
+    { clubId: match.awayClubId, squad: awaySquad?.slots },
+  ]);
   const homeSlots = matchLineupToPitchSlots(lineup, match.homeClubId, homeSquad?.slots);
   const awaySlots = matchLineupToPitchSlots(lineup, match.awayClubId, awaySquad?.slots);
   const [showAway, setShowAway] = useState(false);
@@ -47,13 +51,19 @@ export function LivePreMatchShell({ match }: Props) {
   const rest = list.slice(Math.ceil(list.length / 2));
 
   useEffect(() => {
-    if (!homeSlots.length && !awaySlots.length) return;
+    if (!homeSlots.length || !awaySlots.length) return;
     const id = window.setInterval(() => setShowAway((v) => !v), 12_000);
     return () => window.clearInterval(id);
   }, [homeSlots.length, awaySlots.length]);
 
-  const activeSlots = showAway && awaySlots.length ? awaySlots : homeSlots;
-  const activeClub = showAway && awaySlots.length ? match.awayClub : match.homeClub;
+  const displayAway = awaySlots.length > 0 && (!homeSlots.length || showAway);
+  const activeSlots = displayAway ? awaySlots : homeSlots;
+  const activeClub = displayAway ? match.awayClub : match.homeClub;
+  const activeClubId = displayAway ? match.awayClubId : match.homeClubId;
+  const displayedIds = new Set(activeSlots.map((slot) => slot.playerId));
+  const extraStarters = lineup.filter((row) =>
+    row.clubId === activeClubId && row.isStarter && row.player && !displayedIds.has(row.playerId),
+  );
   const ticketingOn = settings?.['modules.ticketing'] !== 'false' && ticketing?.modulesTicketing !== false;
   const sales = ticketing?.salesModes;
   const showTicketsCta =
@@ -109,6 +119,11 @@ export function LivePreMatchShell({ match }: Props) {
               compact
               crestFallback={activeClub}
             />
+            {extraStarters.length > 0 && (
+              <p className="mt-3 text-center text-xs text-white/75">
+                Ostali spremljeni starteri: {extraStarters.map((row) => `${row.player!.firstName} ${row.player!.lastName}`).join(', ')}
+              </p>
+            )}
           </div>
         </section>
       )}

@@ -12,20 +12,26 @@ export interface SeoInput {
   url?: string;
   type?: 'website' | 'article';
   publishedAt?: string | null;
+  /**
+   * FE-03/P-FE03-7: stranice koje ne smiju u indeks (payment bridge, prijava).
+   * `robotsIndex` iz podešavanja važi za ostale stranice.
+   */
+  noindex?: boolean;
 }
 
-export function Seo({ title, description, image, url, type, publishedAt }: SeoInput) {
+export function Seo({ title, description, image, url, type, publishedAt, noindex }: SeoInput) {
   const location = useLocation();
   const { data: settings } = usePublicSettings();
 
-  const siteName = settings?.['club.name']?.trim() || settings?.['seo.title']?.trim() || 'FK Gračanica';
+  const siteName =
+    settings?.['club.name']?.trim() || settings?.['seo.title']?.trim() || 'FK Gračanica';
   const defaultDescription =
     settings?.['seo.description']?.trim() ||
     'Službena web stranica FK Gračanica — vijesti, utakmice, članstvo i ulaznice.';
   const defaultImage = defaultShareImage(settings?.['club.crestUrl']);
   const pageUrl = url ?? location.pathname + location.search;
   const isHome = location.pathname === '/';
-  const robotsIndex = settings?.['seo.robotsIndex'] !== 'false';
+  const robotsIndex = !noindex && settings?.['seo.robotsIndex'] !== 'false';
   const twitterHandle = settings?.['seo.twitterHandle'];
 
   const jsonLd = useMemo(() => {
@@ -46,7 +52,18 @@ export function Seo({ title, description, image, url, type, publishedAt }: SeoIn
       });
     }
     return undefined;
-  }, [isHome, type, title, description, defaultDescription, pageUrl, image, publishedAt, siteName, defaultImage]);
+  }, [
+    isHome,
+    type,
+    title,
+    description,
+    defaultDescription,
+    pageUrl,
+    image,
+    publishedAt,
+    siteName,
+    defaultImage,
+  ]);
 
   useEffect(() => {
     applySeoToDocument({

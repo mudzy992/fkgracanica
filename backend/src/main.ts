@@ -7,12 +7,20 @@ import { ConfigService } from '@nestjs/config';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import helmet from 'helmet';
-import { join } from 'path';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
-  const app = await NestFactory.create<NestExpressApplication>(AppModule, { rawBody: true });
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, {
+    rawBody: true,
+  });
   const config = app.get(ConfigService);
+
+  // BE-01/Q-11(a) (odobreno): Coolify proxy je tačno 1 hop ispred servisa.
+  // Bez ove postavke throttler vidi IP proxyja kao klijenta i SVE
+  // posjetioce grupiše u JEDAN rate-limit bucket (portal bi pao pod
+  // normalnim saobraćajem). Ako se servis ikad izlaže direktno bez
+  // proxyja, ukloniti — inače klijent može varati X-Forwarded-For.
+  app.set('trust proxy', 1);
 
   app.setGlobalPrefix('api/v1');
   app.useGlobalPipes(
@@ -25,13 +33,15 @@ async function bootstrap() {
   );
   app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));
 
-  const uploadPath = config.get<string>('UPLOAD_PATH', './uploads');
+  // BE-01/P2: čitanja preko tipizirane konfiguracije (config/configuration.ts);
+  // defaulti žive tamo, ne ovdje.
+  const uploadPath = config.get<string>('uploadPath', './uploads');
   app.useStaticAssets(uploadPath, {
     prefix: '/api/v1/uploads/files/',
   });
 
   const corsOrigins = config.get<string>(
-    'CORS_ORIGINS',
+    'corsOrigins',
     'http://localhost:5173',
   );
   app.enableCors({
@@ -39,7 +49,7 @@ async function bootstrap() {
     credentials: true,
   });
 
-  const publicUrl = config.get<string>('API_PUBLIC_URL');
+  const publicUrl = config.get<string>('apiPublicUrl');
   const swaggerBuilder = new DocumentBuilder()
     .setTitle('FK Gračanica API')
     .setDescription('Backend API za FK Gračanica')
@@ -52,7 +62,7 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, swaggerConfig);
   SwaggerModule.setup('api/docs', app, document);
 
-  const port = Number(config.get<string>('PORT', '3000'));
+  const port = config.get<number>('port') ?? 3000;
   await app.listen(port);
 }
 

@@ -1,22 +1,33 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { RoundsService } from './rounds.service';
-import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { PermissionsGuard } from '../common/guards/permissions.guard';
 import { RequirePermissions } from '../common/decorators/permissions.decorator';
 
+import { Public } from '../common/decorators/public.decorator';
 @ApiTags('rounds')
 @Controller('rounds')
 export class RoundsController {
   constructor(private readonly service: RoundsService) {}
 
   @Get()
+  @Public()
   findBySeason(@Query('seasonId') seasonId: string) {
     return this.service.findBySeason(seasonId);
   }
 
   @Post()
-  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @UseGuards(PermissionsGuard)
   @RequirePermissions('competitions.manage')
   @ApiBearerAuth()
   create(
@@ -33,7 +44,7 @@ export class RoundsController {
   }
 
   @Patch(':id')
-  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @UseGuards(PermissionsGuard)
   @RequirePermissions('competitions.manage')
   @ApiBearerAuth()
   update(
@@ -50,7 +61,7 @@ export class RoundsController {
   }
 
   @Get(':id/delete-impact')
-  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @UseGuards(PermissionsGuard)
   @RequirePermissions('competitions.manage')
   @ApiBearerAuth()
   deleteImpact(@Param('id') id: string) {
@@ -58,7 +69,7 @@ export class RoundsController {
   }
 
   @Delete(':id')
-  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @UseGuards(PermissionsGuard)
   @RequirePermissions('competitions.manage')
   @ApiBearerAuth()
   remove(@Param('id') id: string, @Query('cascade') cascade?: string) {

@@ -10,13 +10,27 @@ import {
 import { Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
-import { Server, Socket } from 'socket.io';
+import { Server, Socket, DefaultEventsMap } from 'socket.io';
 import { PrismaService } from '../prisma/prisma.service';
+import configuration from '../config/configuration';
+
+type SocketData = { public?: boolean; userId?: string };
+
+/** BE-06/B-06-02: gornja granica `match:` soba po jednom socketu. */
+const MAX_MATCH_ROOMS = 32;
+type ClientSocket = Socket<
+  DefaultEventsMap,
+  DefaultEventsMap,
+  DefaultEventsMap,
+  SocketData
+>;
 
 @WebSocketGateway({
   cors: { origin: true, credentials: true },
   namespace: '/realtime',
-  path: process.env.SOCKET_IO_PATH || '/socket.io',
+  // BE-06: čita se iz jedinog izvora (config/configuration.ts) — ista
+  // vrijednost kao prije (SOCKET_IO_PATH / '/socket.io').
+  path: configuration().socketIoPath,
 })
 export class RealtimeGateway
   implements OnGatewayConnection, OnGatewayDisconnect
@@ -32,7 +46,7 @@ export class RealtimeGateway
     private readonly prisma: PrismaService,
   ) {}
 
-  async handleConnection(client: Socket) {
+  async handleConnection(client: ClientSocket) {
     const token =
       (client.handshake.auth?.token as string) ||
       (client.handshake.headers.authorization?.replace('Bearer ', '') ?? '');
@@ -62,23 +76,33 @@ export class RealtimeGateway
     }
   }
 
-  handleDisconnect(client: Socket) {
+  handleDisconnect(client: ClientSocket) {
     this.logger.debug(`Client disconnected: ${client.data.userId ?? 'public'}`);
   }
 
   @SubscribeMessage('match:join')
   handleMatchJoin(
-    @ConnectedSocket() client: Socket,
+    @ConnectedSocket()
+    client: ClientSocket,
     @MessageBody() body: { matchId?: string },
   ) {
     if (!body?.matchId) return { ok: false };
-    client.join(`match:${body.matchId}`);
+    const room = `match:${body.matchId}`;
+    if (client.rooms.has(room)) return { ok: true, matchId: body.matchId };
+    // BE-06/B-06-02: WS nema HTTP throttler (BE-01 skipIf) → cap soba po
+    // socketu sprječava memory flood (anonimac može slati nasumične id-ove).
+    const matchRooms = [...client.rooms].filter((r) =>
+      r.startsWith('match:'),
+    ).length;
+    if (matchRooms >= MAX_MATCH_ROOMS) return { ok: false };
+    client.join(room);
     return { ok: true, matchId: body.matchId };
   }
 
   @SubscribeMessage('match:leave')
   handleMatchLeave(
-    @ConnectedSocket() client: Socket,
+    @ConnectedSocket()
+    client: ClientSocket,
     @MessageBody() body: { matchId?: string },
   ) {
     if (body?.matchId) client.leave(`match:${body.matchId}`);
@@ -86,14 +110,20 @@ export class RealtimeGateway
   }
 
   @SubscribeMessage('newsletter:join')
-  handleNewsletterJoin(@ConnectedSocket() client: Socket) {
+  handleNewsletterJoin(
+    @ConnectedSocket()
+    client: ClientSocket,
+  ) {
     if (!client.data.userId) return { ok: false };
     client.join('newsletter');
     return { ok: true };
   }
 
   @SubscribeMessage('newsletter:leave')
-  handleNewsletterLeave(@ConnectedSocket() client: Socket) {
+  handleNewsletterLeave(
+    @ConnectedSocket()
+    client: ClientSocket,
+  ) {
     client.leave('newsletter');
     return { ok: true };
   }

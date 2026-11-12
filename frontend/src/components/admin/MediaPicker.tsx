@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { mediaUrl } from '../../lib/media';
 import { Button } from '../ui/button';
 import { MediaPickerDialog } from './MediaPickerDialog';
@@ -11,7 +12,14 @@ interface Props {
   readOnly?: boolean;
 }
 
-export function MediaPicker({ value, onSelect, onChange, label = 'Naslovna slika', readOnly }: Props) {
+export function MediaPicker({
+  value,
+  onSelect,
+  onChange,
+  label = 'Naslovna slika',
+  readOnly,
+}: Props) {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const pickPath = onSelect ?? onChange ?? (() => {});
 
@@ -20,7 +28,11 @@ export function MediaPicker({ value, onSelect, onChange, label = 'Naslovna slika
       <label className="mb-3 block text-sm font-medium text-text">{label}</label>
       <div className="flex flex-wrap items-center gap-3">
         {value && (
-          <img src={mediaUrl(value, 'thumb')} alt="" className="h-16 w-16 rounded-lg object-cover" />
+          <img
+            src={mediaUrl(value, 'thumb')}
+            alt=""
+            className="h-16 w-16 rounded-lg object-cover"
+          />
         )}
         {!readOnly && (
           <div className="flex gap-2">
@@ -39,7 +51,7 @@ export function MediaPicker({ value, onSelect, onChange, label = 'Naslovna slika
         open={open}
         onOpenChange={setOpen}
         mode="single"
-        title="Odabir medija"
+        title={t('admin.mediaPicker.pick')}
         selectedPaths={value ? [value] : []}
         onConfirm={(paths) => pickPath(paths[0] ?? '')}
       />

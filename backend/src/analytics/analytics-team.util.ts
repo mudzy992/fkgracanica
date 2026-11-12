@@ -9,7 +9,10 @@ export type MatchSide = {
   scheduledAt: Date;
 };
 
-export function teamResult(match: MatchSide, clubId: string): 'W' | 'D' | 'L' | null {
+export function teamResult(
+  match: MatchSide,
+  clubId: string,
+): 'W' | 'D' | 'L' | null {
   if (match.status !== 'FINISHED') return null;
   const home = match.homeClubId === clubId;
   const away = match.awayClubId === clubId;

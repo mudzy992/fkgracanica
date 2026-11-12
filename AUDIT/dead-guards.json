@@ -1,0 +1,11 @@
+{
+    "version": 1,
+    "description": "Registar mrtvih zaštita (P-FE06-42). Svaki statement koji V8 coverage prijavi kao nepokriven mora biti ovdje; `node scripts/audit/dead-guards.mjs` pada za neupisan statement i upozorava za zastario unos. Linija je početna linija statementa iz `frontend/coverage/coverage-final.json`. Unos se uklanja čim grana postane dostupna (primjer: Q-FE06-37, `NewsEditorPage`).",
+    "kinds": {
+        "disabled-ui": "Kontrola koja bi pokrenula ovaj kod je u tom stanju `disabled` ili se ne renderuje, pa grana kroz UI nije dostupna.",
+        "type-invariant": "Pozvana funkcija po tipu nikad ne vraća praznu vrijednost za date ulazе, pa je grana odbrane nemoguća.",
+        "double-guard": "Isti uslov je već provjeren pri renderovanju ili u drugom izrazu, pa je ova grana redundantna.",
+        "synthetic-event": "Grana brani sintetičke događaje; stvarni DOM događaji uvijek nose `Element` kao `target`."
+    },
+    "guards": []
+}

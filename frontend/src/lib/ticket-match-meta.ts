@@ -3,7 +3,7 @@ import type { TicketMatch } from '../types/ticketing';
 export function ticketRoundLabel(match?: TicketMatch): string | undefined {
   if (!match) return undefined;
   if (match.roundRel?.name?.trim()) return match.roundRel.name.trim();
-  const n = match.roundRel?.number ?? match.round;
+  const n = match.roundRel?.number;
   if (n != null) return `${n}. kolo`;
   return undefined;
 }

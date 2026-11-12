@@ -1,8 +1,14 @@
-import { Body, Controller, Delete, Param, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Param,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { LiveReportService } from './live-report.service';
 import { ReportEventDto } from './live.dto';
-import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { PermissionsGuard } from '../common/guards/permissions.guard';
 import { RequirePermissions } from '../common/decorators/permissions.decorator';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
@@ -10,7 +16,7 @@ import type { AuthUser } from '../common/types/auth-user.type';
 
 @ApiTags('live')
 @Controller('live')
-@UseGuards(JwtAuthGuard, PermissionsGuard)
+@UseGuards(PermissionsGuard)
 @RequirePermissions('live.manage')
 @ApiBearerAuth()
 export class LiveReportController {
@@ -26,7 +32,10 @@ export class LiveReportController {
   }
 
   @Delete('matches/:matchId/report/events/:eventId')
-  deleteReportEvent(@Param('matchId') matchId: string, @Param('eventId') eventId: string) {
+  deleteReportEvent(
+    @Param('matchId') matchId: string,
+    @Param('eventId') eventId: string,
+  ) {
     return this.reports.deleteEvent(matchId, eventId);
   }
 

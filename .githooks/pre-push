@@ -1,0 +1,6 @@
+#!/bin/sh
+# pre-push hook — audit gate (zero-dep; CI-01, vidi docs/CONVENTIONS.md)
+# Aktivira se: git config core.hooksPath .githooks   (po clone-u — vidi docs/CI.md)
+set -e
+echo "pre-push: check:all …"
+node scripts/standards/check-all.mjs

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Pencil, Plus, Trash2 } from 'lucide-react';
 import { useMuseum } from '../../hooks';
 import { useDeleteMuseumItem } from '../../hooks/use-heritage-admin';
@@ -9,6 +10,7 @@ import { AdminDataTable, AdminPageShell } from '../../components/admin/AdminPage
 import { MuseumAdminFormSheet } from './MuseumAdminFormSheet';
 import { museumCategoryLabel } from '../../lib/museum-categories';
 import type { MuseumItem } from '../../types';
+import { runAction } from '../../lib/action-errors';
 
 type MuseumRow = MuseumItem & { category?: string };
 
@@ -17,7 +19,8 @@ interface Props {
 }
 
 export function MuseumAdminPage({ embedded = false }: Props) {
-  const { data, isLoading } = useMuseum();
+  const { t } = useTranslation();
+  const { data, isLoading, isError, refetch } = useMuseum();
   const remove = useDeleteMuseumItem();
   const { confirm, dialog } = useConfirm();
   const [open, setOpen] = useState(false);
@@ -30,11 +33,17 @@ export function MuseumAdminPage({ embedded = false }: Props) {
       variant: 'danger',
       confirmLabel: 'Obriši',
     });
-    if (ok) void remove.mutateAsync(item.id);
+    if (ok) void runAction(remove.mutateAsync(item.id));
   };
 
   const createAction = (
-    <Button size="sm" onClick={() => { setEdit(null); setOpen(true); }}>
+    <Button
+      size="sm"
+      onClick={() => {
+        setEdit(null);
+        setOpen(true);
+      }}
+    >
       <Plus className="mr-1 h-4 w-4" />
       Novi
     </Button>
@@ -52,17 +61,35 @@ export function MuseumAdminPage({ embedded = false }: Props) {
         empty="Nema predmeta u muzeju."
         columns={[
           { key: 'title', header: 'Naslov', render: (r) => r.title },
-          { key: 'category', header: 'Kategorija', render: (r) => museumCategoryLabel(r.category) || '—' },
+          {
+            key: 'category',
+            header: 'Kategorija',
+            render: (r) => museumCategoryLabel(r.category) || '—',
+          },
           { key: 'year', header: 'Godina', render: (r) => r.year ?? '—' },
           {
             key: 'actions',
             header: 'Akcije',
             render: (r) => (
               <div className="flex gap-1">
-                <Button variant="ghost" size="icon" onClick={() => { setEdit(r); setOpen(true); }}>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => {
+                    setEdit(r);
+                    setOpen(true);
+                  }}
+
+                  aria-label={t('actions.edit')}
+                >
                   <Pencil className="h-4 w-4" />
                 </Button>
-                <Button variant="ghost" size="icon" onClick={() => void onDelete(r)}>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => void onDelete(r)}
+                  aria-label={t('actions.delete')}
+                >
                   <Trash2 className="h-4 w-4 text-danger" />
                 </Button>
               </div>
@@ -76,7 +103,10 @@ export function MuseumAdminPage({ embedded = false }: Props) {
   const sheet = (
     <MuseumAdminFormSheet
       open={open}
-      onOpenChange={(o) => { setOpen(o); if (!o) setEdit(null); }}
+      onOpenChange={(o) => {
+        setOpen(o);
+        if (!o) setEdit(null);
+      }}
       edit={edit}
     />
   );
@@ -93,9 +123,15 @@ export function MuseumAdminPage({ embedded = false }: Props) {
 
   return (
     <>
-      <Seo title="Muzej" />
+      <Seo title={t('admin.museum')} />
       {dialog}
-      <AdminPageShell title="Muzej" isLoading={isLoading} actions={createAction}>
+      <AdminPageShell
+        isError={isError}
+        onRetry={() => void refetch()}
+        title={t('admin.museum')}
+        isLoading={isLoading}
+        actions={createAction}
+      >
         {body}
       </AdminPageShell>
       {sheet}

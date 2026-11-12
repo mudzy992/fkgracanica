@@ -14,7 +14,12 @@ import {
   useUpdateClubFormation,
 } from '../../../../hooks/use-club-hub';
 import { usePlayers } from '../../../../hooks';
-import { buildSwapAssignments, parseDndId, resolveDragAssignments, squadSlotDndId } from '../../../../lib/formation-dnd';
+import {
+  buildSwapAssignments,
+  parseDndId,
+  resolveDragAssignments,
+  squadSlotDndId,
+} from '../../../../lib/formation-dnd';
 import type { ClubSquadSlot } from '../../../../types/club-hub';
 import { Skeleton } from '../../../../components/ui/skeleton';
 import { ResponsiveFormationEditablePitch } from '../../../../components/admin/formation/FormationEditablePitch';
@@ -22,8 +27,10 @@ import { FormationInputs } from '../../../../components/admin/formation/Formatio
 import { FormationPlayerPool } from '../../../../components/admin/formation/FormationPlayerPool';
 import { FormationSlotPanel } from '../../../../components/admin/formation/FormationSlotPanel';
 import { BenchDropRow } from '../../../../components/admin/formation/BenchDropRow';
+import { useTranslation } from 'react-i18next';
 
 export function ClubFormationTab({ clubId }: { clubId: string }) {
+  const { t } = useTranslation();
   const { data, isLoading } = useClubSquad(clubId);
   const { data: players } = usePlayers({ clubId, activeOnly: false });
   const updateFormation = useUpdateClubFormation(clubId);
@@ -66,13 +73,13 @@ export function ClubFormationTab({ clubId }: { clubId: string }) {
   };
 
   const assignPlayer = (playerId: string) => {
-    if (!activeSlot) return;
-    void runAssign(buildSwapAssignments(data.slots, activeSlot, playerId));
+    void runAssign(buildSwapAssignments(data.slots, activeSlot!, playerId));
   };
 
   const removePlayer = () => {
-    if (!activeSlot) return;
-    void runAssign([{ slotIndex: activeSlot.slotIndex, isBench: activeSlot.isBench, playerId: null }]);
+    void runAssign([
+      { slotIndex: activeSlot!.slotIndex, isBench: activeSlot!.isBench, playerId: null },
+    ]);
   };
 
   const onDragStart = (event: DragStartEvent) => {
@@ -125,11 +132,11 @@ export function ClubFormationTab({ clubId }: { clubId: string }) {
               onClose={() => setActiveSlot(null)}
             />
           ) : (
-            <p className="text-sm text-text-muted">Odaberite poziciju na terenu ili klupi.</p>
+            <p className="text-sm text-text-muted">{t('admin.formation.pickPosition')}</p>
           )}
           <FormationPlayerPool players={poolPlayers} />
           <div>
-            <h3 className="mb-2 font-semibold">Klupa</h3>
+            <h3 className="mb-2 font-semibold">{t('admin.formation.bench')}</h3>
             <div className="space-y-2">
               {bench.map((slot) => (
                 <BenchDropRow
@@ -143,7 +150,11 @@ export function ClubFormationTab({ clubId }: { clubId: string }) {
           </div>
         </div>
       </div>
-      <DragOverlay>{dragLabel ? <span className="rounded bg-primary px-2 py-1 text-xs text-white">{dragLabel}</span> : null}</DragOverlay>
+      <DragOverlay>
+        {dragLabel ? (
+          <span className="rounded bg-primary px-2 py-1 text-xs text-white">{dragLabel}</span>
+        ) : null}
+      </DragOverlay>
     </DndContext>
   );
 }

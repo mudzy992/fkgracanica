@@ -1,4 +1,9 @@
-import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { MembershipStatus, Prisma } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 import { PrismaService } from '../prisma/prisma.service';
@@ -9,7 +14,10 @@ import { JobsService } from '../jobs/jobs.module';
 import { NotificationsService } from '../notifications/notifications.service';
 import { notifyMembershipActive } from '../payments/payment-notify';
 import type { JoinMembershipDto } from './dto/join-membership.dto';
-import { resolveExpiredMany, resolveExpiredOne } from './membership-expiry.util';
+import {
+  resolveExpiredMany,
+  resolveExpiredOne,
+} from './membership-expiry.util';
 import {
   assertCanActivate,
   assertCanCancel,
@@ -21,7 +29,12 @@ import {
   requireMembership,
 } from './membership-lifecycle.util';
 
-const userSelect = { id: true, email: true, firstName: true, lastName: true } as const;
+const userSelect = {
+  id: true,
+  email: true,
+  firstName: true,
+  lastName: true,
+} as const;
 const includeWithUser = { user: { select: userSelect }, card: true } as const;
 
 @Injectable()
@@ -38,18 +51,25 @@ export class MembershipService {
     await this.assertMembershipModuleEnabled();
     const allowed = await this.payments.isMembershipOnlineAllowed();
     if (!allowed) {
-      throw new BadRequestException('Online kupovina članstva trenutno nije omogućena');
+      throw new BadRequestException(
+        'Online kupovina članstva trenutno nije omogućena',
+      );
     }
 
-    const existing = await this.prisma.user.findUnique({ where: { email: dto.email } });
+    const existing = await this.prisma.user.findUnique({
+      where: { email: dto.email },
+    });
     if (existing) {
       throw new ConflictException(
         'Račun s ovim emailom već postoji. Prijavite se i nastavite kupovinu članstva.',
       );
     }
 
-    const memberRole = await this.prisma.role.findUnique({ where: { name: 'Član' } });
-    if (!memberRole) throw new BadRequestException('Uloga člana nije konfigurisana');
+    const memberRole = await this.prisma.role.findUnique({
+      where: { name: 'Član' },
+    });
+    if (!memberRole)
+      throw new BadRequestException('Uloga člana nije konfigurisana');
 
     const passwordHash = await bcrypt.hash(dto.password, 10);
     const user = await this.prisma.user.create({
@@ -77,13 +97,17 @@ export class MembershipService {
     });
     if (!membership) throw new NotFoundException('Članstvo nije pronađeno');
     if (!isPayable(membership.status)) {
-      throw new BadRequestException('Ovo članstvo nije dostupno za online uplatu');
+      throw new BadRequestException(
+        'Ovo članstvo nije dostupno za online uplatu',
+      );
     }
     return membership;
   }
 
   private async assertMembershipModuleEnabled() {
-    const row = await this.prisma.setting.findUnique({ where: { key: 'feature.membership' } });
+    const row = await this.prisma.setting.findUnique({
+      where: { key: 'feature.membership' },
+    });
     if (row?.value === 'false') {
       throw new BadRequestException('Modul članstva trenutno nije aktivan');
     }
@@ -91,7 +115,11 @@ export class MembershipService {
 
   async register(userId: string) {
     await this.assertMembershipModuleEnabled();
-    return openPendingMembership(this.prisma, userId, 'Već imate aktivno ili čekajuće članstvo');
+    return openPendingMembership(
+      this.prisma,
+      userId,
+      'Već imate aktivno ili čekajuće članstvo',
+    );
   }
 
   async createForUser(email: string, activate = false) {
@@ -142,14 +170,22 @@ export class MembershipService {
       },
       update: {},
     });
-    await notifyMembershipActive(this.prisma, this.jobs, id, this.notifications);
+    await notifyMembershipActive(
+      this.prisma,
+      this.jobs,
+      id,
+      this.notifications,
+    );
     return { membership, card };
   }
 
   async renew(id: string) {
     const membership = await requireMembership(this.prisma, id);
     assertCanRenew(membership.status);
-    const base = membership.endDate && membership.endDate > new Date() ? membership.endDate : new Date();
+    const base =
+      membership.endDate && membership.endDate > new Date()
+        ? membership.endDate
+        : new Date();
     const endDate = new Date(base.getTime() + 365 * 24 * 60 * 60 * 1000);
     return this.prisma.membership.update({
       where: { id },

@@ -1,22 +1,32 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { SponsorsService } from './sponsors.service';
-import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { PermissionsGuard } from '../common/guards/permissions.guard';
 import { RequirePermissions } from '../common/decorators/permissions.decorator';
 
+import { Public } from '../common/decorators/public.decorator';
 @ApiTags('sponsors')
 @Controller('sponsors')
 export class SponsorsController {
   constructor(private readonly service: SponsorsService) {}
 
   @Get()
+  @Public()
   findAll() {
     return this.service.findAll();
   }
 
   @Post()
-  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @UseGuards(PermissionsGuard)
   @RequirePermissions('sponsors.manage')
   @ApiBearerAuth()
   create(@Body() body: Record<string, unknown>) {
@@ -24,15 +34,15 @@ export class SponsorsController {
   }
 
   @Post('reorder')
-  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @UseGuards(PermissionsGuard)
   @RequirePermissions('sponsors.manage')
   @ApiBearerAuth()
-  reorder(@Body('ids') ids: string[]) {
+  reorder(@Body('ids') ids: unknown) {
     return this.service.reorder(ids);
   }
 
   @Patch(':id')
-  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @UseGuards(PermissionsGuard)
   @RequirePermissions('sponsors.manage')
   @ApiBearerAuth()
   update(@Param('id') id: string, @Body() body: Record<string, unknown>) {
@@ -40,7 +50,7 @@ export class SponsorsController {
   }
 
   @Delete(':id')
-  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @UseGuards(PermissionsGuard)
   @RequirePermissions('sponsors.manage')
   @ApiBearerAuth()
   remove(@Param('id') id: string) {

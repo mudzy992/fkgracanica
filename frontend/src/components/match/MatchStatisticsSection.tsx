@@ -59,8 +59,8 @@ export function MatchStatisticsSection({
             {(home.possession != null || away.possession != null) && (
               <MatchStatBar
                 label="Posjed"
-                home={home.possession ?? (away.possession != null ? 100 - away.possession : 50)}
-                away={away.possession ?? (home.possession != null ? 100 - home.possession : 50)}
+                home={home.possession ?? 100 - away.possession!}
+                away={away.possession ?? 100 - home.possession!}
                 suffix="%"
               />
             )}

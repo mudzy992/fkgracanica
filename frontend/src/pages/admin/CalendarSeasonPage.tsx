@@ -1,4 +1,7 @@
+import { buttonVariants } from "../../components/ui/button-variants";
+import { cn } from "../../lib/utils";
 import { Link, useParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { ArrowLeft, Pencil, Plus, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import { useSeasons } from '../../hooks';
@@ -14,8 +17,10 @@ import { AdminDataTable } from '../../components/admin/AdminPageShell';
 import { adminLinkClass } from '../../lib/admin-styles';
 import { type CalendarSeason } from '../../lib/season-utils';
 import { SeasonEditionFormSheet, type SeasonEditionRow } from './SeasonEditionFormSheet';
+import { runAction } from '../../lib/action-errors';
 
 export function CalendarSeasonPage() {
+  const { t } = useTranslation();
   const { seasonId = '' } = useParams();
   const { data: seasons, isLoading } = useSeasons();
   const { user } = useAuth();
@@ -35,49 +40,65 @@ export function CalendarSeasonPage() {
       variant: 'danger',
       confirmLabel: 'Ukloni',
     });
-    if (ok) void deleteEdition.mutateAsync({ seasonId, editionId: item.id });
+    if (ok) void runAction(deleteEdition.mutateAsync({ seasonId, editionId: item.id }));
   };
 
   if (isLoading) return <Skeleton className="mx-4 mt-8 h-64" />;
-  if (!season) return <p className="p-8 text-text-muted">Sezona nije pronađena.</p>;
+  if (!season) return <p className="p-8 text-text-muted">{t('admin.calendar.seasonNotFound')}</p>;
 
   return (
     <div className="space-y-6 pb-8">
       <Seo title={season.name} />
       {dialog}
       <div className="flex flex-wrap items-center gap-3">
-        <Link to="/admin/competitions">
-          <Button variant="ghost" size="icon"><ArrowLeft className="h-4 w-4" /></Button>
-        </Link>
+        <Link to="/admin/competitions" aria-label={t('actions.back')} className={cn(buttonVariants({variant: "ghost", size: "icon"}))}><ArrowLeft className="h-4 w-4" /></Link>
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
             <h1 className="text-2xl font-bold">{season.name}</h1>
-            {season.isActive && <Badge variant="success">Aktivna</Badge>}
+            {season.isActive && (
+              <Badge variant="success">{t('admin.competitionsAdmin.colActive')}</Badge>
+            )}
           </div>
-          <p className="text-sm text-text-muted">{season.yearStart}/{season.yearEnd}</p>
+          <p className="text-sm text-text-muted">
+            {season.yearStart}/{season.yearEnd}
+          </p>
         </div>
         {canManage && (
-          <Button size="sm" onClick={() => { setEdit(null); setOpen(true); }}>
+          <Button
+            size="sm"
+            onClick={() => {
+              setEdit(null);
+              setOpen(true);
+            }}
+          >
             <Plus className="mr-1 h-4 w-4" />
             Takmičenje
           </Button>
         )}
       </div>
-      <div className="overflow-hidden rounded-2xl border border-slate-200 bg-background">
+      <div className="overflow-hidden rounded-2xl border border-[var(--border-subtle)] bg-background">
         <AdminDataTable
           rows={rows}
           empty="Nema takmičenja u ovoj sezoni."
           columns={[
-            { key: 'name', header: 'Takmičenje', render: (r) => r.competition?.name ?? '—' },
+            {
+              key: 'name',
+              header: t('admin.calendar.competition'),
+              render: (r) => r.competition?.name ?? '—',
+            },
             {
               key: 'league',
-              header: 'Liga',
+              header: t('admin.competitionsAdmin.colLeague'),
               render: (r) =>
-                r.competition?.isLeague ? <Badge variant="success">Liga</Badge> : <Badge variant="muted">Ostalo</Badge>,
+                r.competition?.isLeague ? (
+                  <Badge variant="success">{t('admin.competitionsAdmin.league')}</Badge>
+                ) : (
+                  <Badge variant="muted">{t('admin.competitionsAdmin.other')}</Badge>
+                ),
             },
             {
               key: 'participants',
-              header: 'Učesnici',
+              header: t('admin.calendar.participants'),
               render: (r) => r.participants?.length ?? 0,
             },
             {
@@ -93,27 +114,45 @@ export function CalendarSeasonPage() {
               ),
             },
             ...(canManage
-              ? [{
-                  key: 'actions',
-                  header: 'Akcije',
-                  render: (r: SeasonEditionRow) => (
-                    <div className="flex gap-1">
-                      <Button variant="ghost" size="icon" onClick={() => { setEdit(r); setOpen(true); }}>
-                        <Pencil className="h-4 w-4" />
-                      </Button>
-                      <Button variant="ghost" size="icon" onClick={() => void onDelete(r)}>
-                        <Trash2 className="h-4 w-4 text-danger" />
-                      </Button>
-                    </div>
-                  ),
-                }]
+              ? [
+                  {
+                    key: 'actions',
+                    header: 'Akcije',
+                    render: (r: SeasonEditionRow) => (
+                      <div className="flex gap-1">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => {
+                            setEdit(r);
+                            setOpen(true);
+                          }}
+                          aria-label={t('actions.edit')}
+                        >
+                          <Pencil className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => void onDelete(r)}
+                          aria-label={t('actions.delete')}
+                        >
+                          <Trash2 className="h-4 w-4 text-danger" />
+                        </Button>
+                      </div>
+                    ),
+                  },
+                ]
               : []),
           ]}
         />
       </div>
       <SeasonEditionFormSheet
         open={open}
-        onOpenChange={(o) => { setOpen(o); if (!o) setEdit(null); }}
+        onOpenChange={(o) => {
+          setOpen(o);
+          if (!o) setEdit(null);
+        }}
         seasonId={seasonId}
         editEdition={edit}
       />

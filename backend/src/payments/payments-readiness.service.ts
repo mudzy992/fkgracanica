@@ -1,6 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { toProviderGate, type PaymentProviderId, type ProviderGate } from './provider-gate.util';
+import {
+  toProviderGate,
+  type PaymentProviderId,
+  type ProviderGate,
+} from './provider-gate.util';
 
 export type { PaymentProviderId, ProviderGate };
 
@@ -37,7 +41,9 @@ export class PaymentsReadinessService {
         this.getPrivate('payments.paypal.clientId'),
         this.getPrivate('payments.paypal.clientSecret'),
       ]);
-      return this.isTruthy(enabled) && !!clientId.trim() && !!clientSecret.trim();
+      return (
+        this.isTruthy(enabled) && !!clientId.trim() && !!clientSecret.trim()
+      );
     }
     const [enabled, merchantKey, authKey] = await Promise.all([
       this.getPrivate('payments.monri.enabled'),
@@ -88,7 +94,12 @@ export class PaymentsReadinessService {
     const boxOfficeOn = boxOffice !== 'false';
     const onlineReady = readyProviders.length > 0;
     const onlineOn = this.isTruthy(onlineEnabled) && onlineReady;
-    return { boxOffice: boxOfficeOn, online: onlineOn, onlineReady, readyProviders };
+    return {
+      boxOffice: boxOfficeOn,
+      online: onlineOn,
+      onlineReady,
+      readyProviders,
+    };
   }
 
   async isMembershipOnlineAllowed(): Promise<boolean> {

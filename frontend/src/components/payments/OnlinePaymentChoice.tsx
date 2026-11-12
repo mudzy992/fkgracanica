@@ -4,9 +4,9 @@ import { PaymentProviderLogo } from './PaymentProviderLogo';
 import { Button } from '../ui/button';
 
 const PROVIDER_STYLES: Record<PaymentProviderId, string> = {
-  stripe: 'bg-[#635bff] text-white hover:bg-[#5851e5]',
-  paypal: 'bg-[#0070ba] text-white hover:bg-[#005ea6]',
-  monri: 'bg-[#1a1a2e] text-white hover:bg-[#2d2d44]',
+  stripe: 'bg-stripe text-white hover:bg-stripe-hover',
+  paypal: 'bg-paypal text-white hover:bg-paypal-hover',
+  monri: 'bg-monri text-white hover:bg-monri-hover',
 };
 
 interface Props {

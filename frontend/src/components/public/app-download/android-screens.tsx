@@ -37,7 +37,7 @@ export function InstallerScreen({ version, clubName, crestUrl, t }: Props) {
     <div className="flex h-[calc(100%-1.5rem)] flex-col bg-white px-3 pb-5 pt-2">
       <div className="flex items-center gap-2">
         {crest ? (
-          <img src={crest} alt="" className="h-9 w-9 rounded-lg object-contain" />
+          <img loading="lazy" decoding="async" src={crest} alt="" className="h-9 w-9 rounded-lg object-contain" />
         ) : (
           <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-800 text-[10px] font-bold text-white">
             FK

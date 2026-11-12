@@ -1,4 +1,5 @@
-export type ShowcaseBadge = 'ready' | 'in_progress' | 'after_launch' | 'web_only';
+export type ShowcaseBadge =
+  'ready' | 'in_progress' | 'after_launch' | 'web_only';
 export type ShowcaseSurface = 'web' | 'admin' | 'mobile';
 
 export type ShowcaseModule = {
@@ -62,5 +63,7 @@ export function isShowcaseModeOn(value: string | undefined): boolean {
 export function overallPercentFrom(modules: ShowcaseModule[]): number {
   const counted = modules.filter((m) => m.badge !== 'after_launch');
   if (!counted.length) return 0;
-  return Math.round(counted.reduce((sum, m) => sum + m.percent, 0) / counted.length);
+  return Math.round(
+    counted.reduce((sum, m) => sum + m.percent, 0) / counted.length,
+  );
 }

@@ -17,7 +17,9 @@ export async function tallyCampaignEmail(
   if (!campaignId) return null;
   const row = await prisma.newsletterCampaign.update({
     where: { id: campaignId },
-    data: ok ? { sentCount: { increment: 1 } } : { failCount: { increment: 1 } },
+    data: ok
+      ? { sentCount: { increment: 1 } }
+      : { failCount: { increment: 1 } },
   });
   if (row.status !== 'SENDING') {
     return {
@@ -28,7 +30,11 @@ export async function tallyCampaignEmail(
       targetCount: row.targetCount,
     };
   }
-  const next = campaignFinalStatus(row.sentCount, row.failCount, row.targetCount);
+  const next = campaignFinalStatus(
+    row.sentCount,
+    row.failCount,
+    row.targetCount,
+  );
   if (!next) {
     return {
       id: row.id,

@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { APP_FILTER } from '@nestjs/core';
+import { APP_FILTER, APP_GUARD } from '@nestjs/core';
+import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { join } from 'path';
 import { PrismaModule } from './prisma/prisma.module';
 import { AuthModule } from './auth/auth.module';
@@ -45,6 +46,9 @@ import { AppReleasesModule } from './app-releases/app-releases.module';
 import { PublicAnalyticsModule } from './public-analytics/public-analytics.module';
 import { EmailLogModule } from './email-log/email-log.module';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
+import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
+import configuration from './config/configuration';
+import { validateEnv } from './config/env.validate';
 
 @Module({
   imports: [
@@ -54,6 +58,19 @@ import { HttpExceptionFilter } from './common/filters/http-exception.filter';
         join(__dirname, '..', '..', '.env'),
         join(__dirname, '..', '.env'),
       ],
+      // BE-01/P1+P2 (odobreno): tipizirana konfiguracija + fail-fast
+      // validacija obaveznih env varijabla (bez novih npm zavisnosti).
+      load: [configuration],
+      validate: validateEnv,
+    }),
+    // BE-01/Q-11(a) (odobreno): globalni rate limit 100 zahtjeva/60s po IP-u.
+    // Auth rute imaju stroži @Throttle (10/60s); `trust proxy` u main.ts je
+    // OBAVEZAN dio ove odluke (Coolify proxy = 1 hop).
+    // BE-02 korekcija: THROTTLER SAMO NA HTTP — WS poruke nemaju req.ip u
+    // switchToHttp kontekstu (zajednički bucket / rizik pada live feeda).
+    ThrottlerModule.forRoot({
+      throttlers: [{ name: 'default', ttl: 60_000, limit: 100 }],
+      skipIf: (context) => context.getType() !== 'http',
     }),
     PrismaModule,
     AuditModule,
@@ -98,6 +115,14 @@ import { HttpExceptionFilter } from './common/filters/http-exception.filter';
     PublicAnalyticsModule,
     EmailLogModule,
   ],
-  providers: [{ provide: APP_FILTER, useClass: HttpExceptionFilter }],
+  providers: [
+    { provide: APP_FILTER, useClass: HttpExceptionFilter },
+    // BE-01/Q-11(a): ThrottlerGuard prvi — rate limit važi i za
+    // neautorizirane pokušaje (brute-force broji prije auth odbijanja).
+    { provide: APP_GUARD, useClass: ThrottlerGuard },
+    // BE-02/Q-12(a) — D-006: globalni JwtAuthGuard (default-deny);
+    // @Public() rute preskaču (popis: route-access.spec.ts).
+    { provide: APP_GUARD, useClass: JwtAuthGuard },
+  ],
 })
 export class AppModule {}

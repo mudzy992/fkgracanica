@@ -1,11 +1,14 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useClubStadium, useUpsertClubStadium } from '../../../../hooks/use-club-hub';
 import { MediaPicker } from '../../../../components/admin/MediaPicker';
 import { Button } from '../../../../components/ui/button';
 import { Input } from '../../../../components/ui/input';
+import { Textarea } from '../../../../components/ui/textarea';
 import { Skeleton } from '../../../../components/ui/skeleton';
 
 export function ClubStadiumTab({ clubId }: { clubId: string }) {
+  const { t } = useTranslation();
   const { data, isLoading } = useClubStadium(clubId);
   const save = useUpsertClubStadium(clubId);
   const [name, setName] = useState('');
@@ -39,19 +42,37 @@ export function ClubStadiumTab({ clubId }: { clubId: string }) {
 
   return (
     <div className="max-w-xl space-y-4">
-      <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Naziv stadiona *" />
-      <Input value={address} onChange={(e) => setAddress(e.target.value)} placeholder="Adresa" />
-      <Input value={city} onChange={(e) => setCity(e.target.value)} placeholder="Grad" />
-      <Input type="number" value={capacity} onChange={(e) => setCapacity(e.target.value)} placeholder="Kapacitet" />
-      <textarea
+      <Input
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+        placeholder={t('admin.stadium.nameRequired')}
+      />
+      <Input
+        value={address}
+        onChange={(e) => setAddress(e.target.value)}
+        placeholder={t('admin.stadium.address')}
+      />
+      <Input
+        value={city}
+        onChange={(e) => setCity(e.target.value)}
+        placeholder={t('admin.club.city')}
+      />
+      <Input
+        type="number"
+        value={capacity}
+        onChange={(e) => setCapacity(e.target.value)}
+        placeholder={t('admin.stadium.capacity')}
+      />
+      <Textarea
         value={description}
         onChange={(e) => setDescription(e.target.value)}
         rows={3}
-        className="w-full rounded-lg border border-slate-200 p-2 text-sm"
-        placeholder="Opis stadiona"
+        placeholder={t('admin.stadium.description')}
       />
-      <MediaPicker value={imagePath} onChange={setImagePath} label="Slika stadiona" />
-      <Button onClick={() => void onSave()} disabled={!name || save.isPending}>Spremi stadion</Button>
+      <MediaPicker value={imagePath} onChange={setImagePath} label={t('admin.stadium.image')} />
+      <Button onClick={() => void onSave()} disabled={!name || save.isPending}>
+        {t('admin.stadium.save')}
+      </Button>
     </div>
   );
 }

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Pencil, Plus, Star, Trash2 } from 'lucide-react';
 import { useTrophies } from '../../hooks';
 import { useDeleteTrophy } from '../../hooks/use-content-admin';
@@ -11,11 +12,13 @@ import { Button } from '../../components/ui/button';
 import { AdminDataTable, AdminPageShell } from '../../components/admin/AdminPageShell';
 import { TrophiesAdminFormSheet } from './TrophiesAdminFormSheet';
 import type { Trophy } from '../../types';
+import { runAction } from '../../lib/action-errors';
 
 export function TrophiesAdminPage() {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const canManage = hasPermission(user?.permissions, 'trophies.manage');
-  const { data, isLoading } = useTrophies();
+  const { data, isLoading, isError, refetch } = useTrophies();
   const remove = useDeleteTrophy();
   const { confirm, dialog } = useConfirm();
   const [open, setOpen] = useState(false);
@@ -28,19 +31,27 @@ export function TrophiesAdminPage() {
       confirmLabel: 'Obriši',
       variant: 'danger',
     });
-    if (ok) void remove.mutateAsync(item.id);
+    if (ok) void runAction(remove.mutateAsync(item.id));
   };
 
   return (
     <>
-      <Seo title="Trofeji" />
+      <Seo title={t('admin.trophies')} />
       {dialog}
       <AdminPageShell
-        title="Trofeji"
+        isError={isError}
+        onRetry={() => void refetch()}
+        title={t('admin.trophies')}
         isLoading={isLoading}
         actions={
           canManage ? (
-            <Button size="sm" onClick={() => { setEdit(null); setOpen(true); }}>
+            <Button
+              size="sm"
+              onClick={() => {
+                setEdit(null);
+                setOpen(true);
+              }}
+            >
               <Plus className="mr-1 h-4 w-4" />
               Novi
             </Button>
@@ -50,12 +61,21 @@ export function TrophiesAdminPage() {
         <AdminDataTable
           rows={data ?? []}
           columns={[
-            { key: 'name', header: 'Naziv', render: (r) => (
-              <span className="flex items-center gap-2">
-                {r.name}
-                {r.featured && <Badge variant="success"><Star className="mr-1 h-3 w-3" />Istaknut</Badge>}
-              </span>
-            )},
+            {
+              key: 'name',
+              header: 'Naziv',
+              render: (r) => (
+                <span className="flex items-center gap-2">
+                  {r.name}
+                  {r.featured && (
+                    <Badge variant="success">
+                      <Star className="mr-1 h-3 w-3" />
+                      Istaknut
+                    </Badge>
+                  )}
+                </span>
+              ),
+            },
             { key: 'year', header: 'Godina', render: (r) => r.year },
             {
               key: 'actions',
@@ -63,10 +83,24 @@ export function TrophiesAdminPage() {
               render: (r) =>
                 canManage ? (
                   <div className="flex gap-1">
-                    <Button variant="ghost" size="icon" onClick={() => { setEdit(r); setOpen(true); }}>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => {
+                        setEdit(r);
+                        setOpen(true);
+                      }}
+
+                      aria-label={t('actions.edit')}
+                    >
                       <Pencil className="h-4 w-4" />
                     </Button>
-                    <Button variant="ghost" size="icon" onClick={() => void onDelete(r)}>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => void onDelete(r)}
+                      aria-label={t('actions.delete')}
+                    >
                       <Trash2 className="h-4 w-4 text-danger" />
                     </Button>
                   </div>
@@ -77,7 +111,10 @@ export function TrophiesAdminPage() {
       </AdminPageShell>
       <TrophiesAdminFormSheet
         open={open}
-        onOpenChange={(o) => { setOpen(o); if (!o) setEdit(null); }}
+        onOpenChange={(o) => {
+          setOpen(o);
+          if (!o) setEdit(null);
+        }}
         edit={edit}
       />
     </>

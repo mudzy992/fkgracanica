@@ -12,11 +12,14 @@ export const DEFAULT_TICKET_CATEGORIES: TicketCategoryDef[] = [
   { id: 'vip', label: 'VIP', price: 15, isActive: true },
 ];
 
-export function parseTicketCategories(raw?: string | null): TicketCategoryDef[] {
+export function parseTicketCategories(
+  raw?: string | null,
+): TicketCategoryDef[] {
   if (!raw?.trim()) return DEFAULT_TICKET_CATEGORIES;
   try {
     const parsed = JSON.parse(raw) as TicketCategoryDef[];
-    if (!Array.isArray(parsed) || !parsed.length) return DEFAULT_TICKET_CATEGORIES;
+    if (!Array.isArray(parsed) || !parsed.length)
+      return DEFAULT_TICKET_CATEGORIES;
     return parsed.filter((c) => c.id && c.label && typeof c.price === 'number');
   } catch {
     return DEFAULT_TICKET_CATEGORIES;
@@ -31,6 +34,9 @@ export function findCategoryById(categories: TicketCategoryDef[], id: string) {
   return categories.find((c) => c.id === id);
 }
 
-export function findCategoryByLabel(categories: TicketCategoryDef[], label: string) {
+export function findCategoryByLabel(
+  categories: TicketCategoryDef[],
+  label: string,
+) {
   return categories.find((c) => c.label === label);
 }

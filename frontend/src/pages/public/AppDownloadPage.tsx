@@ -55,12 +55,19 @@ export function AppDownloadPage() {
           <EmptyState message={t('appDownload.empty')} />
         ) : (
           <div className="space-y-8">
-            <PremiumCard className="flex flex-col gap-4 p-6 sm:flex-row sm:items-center sm:justify-between sm:p-8" hover={false}>
+            <PremiumCard
+              className="flex flex-col gap-4 p-6 sm:flex-row sm:items-center sm:justify-between sm:p-8"
+              hover={false}
+            >
               <div>
                 <p className="font-display text-lg font-bold text-text">
                   {t('appDownload.version', { version: latest.version })}
                 </p>
-                <p className="mt-1 text-sm text-text-muted">{t('appDownload.size', { size: formatMb(latest.apkSizeBytes) })}</p>
+                <p className="mt-1 text-sm text-text-muted">
+                  {t('appDownload.size', {
+                    size: formatMb(latest.apkSizeBytes),
+                  })}
+                </p>
                 {latest.releaseNotes ? (
                   <p className="mt-3 max-w-xl text-sm text-text-muted">{latest.releaseNotes}</p>
                 ) : null}
@@ -74,6 +81,8 @@ export function AppDownloadPage() {
                 </a>
                 {qrDataUrl ? (
                   <img
+                    loading="lazy"
+                    decoding="async"
                     src={qrDataUrl}
                     alt=""
                     width={180}

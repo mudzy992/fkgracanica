@@ -6,7 +6,10 @@ export async function resolveExpiredMany<
 >(prisma: PrismaService, items: T[]): Promise<T[]> {
   const now = new Date();
   const expiredIds = items
-    .filter((m) => m.status === MembershipStatus.ACTIVE && m.endDate && m.endDate < now)
+    .filter(
+      (m) =>
+        m.status === MembershipStatus.ACTIVE && m.endDate && m.endDate < now,
+    )
     .map((m) => m.id);
   if (!expiredIds.length) return items;
   await prisma.membership.updateMany({

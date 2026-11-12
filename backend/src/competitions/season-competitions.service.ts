@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { slugify } from '../common/utils/slug.util';
@@ -26,7 +30,9 @@ export class SeasonCompetitionsService {
   }
 
   async add(seasonId: string, data: AddEditionInput) {
-    const season = await this.prisma.season.findUnique({ where: { id: seasonId } });
+    const season = await this.prisma.season.findUnique({
+      where: { id: seasonId },
+    });
     if (!season) throw new NotFoundException('Sezona nije pronađena.');
     return this.prisma.$transaction(async (tx) => {
       const competitionId = await this.resolveCompetitionId(tx, data);
@@ -35,10 +41,18 @@ export class SeasonCompetitionsService {
           data: { seasonId, competitionId },
         });
         await syncSeasonParticipants(tx, edition.id, data.clubIds ?? []);
-        return tx.seasonCompetition.findUnique({ where: { id: edition.id }, include: editionInclude });
+        return tx.seasonCompetition.findUnique({
+          where: { id: edition.id },
+          include: editionInclude,
+        });
       } catch (err) {
-        if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2002') {
-          throw new BadRequestException('Takmičenje je već dodano u ovu sezonu.');
+        if (
+          err instanceof Prisma.PrismaClientKnownRequestError &&
+          err.code === 'P2002'
+        ) {
+          throw new BadRequestException(
+            'Takmičenje je već dodano u ovu sezonu.',
+          );
         }
         throw err;
       }
@@ -55,7 +69,10 @@ export class SeasonCompetitionsService {
     }
     return this.prisma.$transaction(async (tx) => {
       await syncSeasonParticipants(tx, editionId, clubIds);
-      return tx.seasonCompetition.findUnique({ where: { id: editionId }, include: editionInclude });
+      return tx.seasonCompetition.findUnique({
+        where: { id: editionId },
+        include: editionInclude,
+      });
     });
   }
 
@@ -68,7 +85,8 @@ export class SeasonCompetitionsService {
     const edition = await this.prisma.seasonCompetition.findFirst({
       where: { id: editionId, seasonId },
     });
-    if (!edition) throw new NotFoundException('Izdanje takmičenja nije pronađeno.');
+    if (!edition)
+      throw new NotFoundException('Izdanje takmičenja nije pronađeno.');
     return edition;
   }
 
@@ -78,7 +96,10 @@ export class SeasonCompetitionsService {
   ): Promise<string> {
     if (data.competitionId) return data.competitionId;
     const name = data.name?.trim();
-    if (!name) throw new BadRequestException('Odaberite takmičenje ili unesite naziv novog.');
+    if (!name)
+      throw new BadRequestException(
+        'Odaberite takmičenje ili unesite naziv novog.',
+      );
     if (data.isLeague) await ensureSingleLeagueCompetition(tx);
     const created = await tx.competition.create({
       data: { name, slug: slugify(name), isLeague: data.isLeague ?? false },

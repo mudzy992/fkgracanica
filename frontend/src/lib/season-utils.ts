@@ -38,7 +38,7 @@ export function leagueEdition(season?: CalendarSeason): SeasonEdition | undefine
 
 export function sortedEditions(season?: CalendarSeason): SeasonEdition[] {
   return [...(season?.competitions ?? [])].sort((a, b) => {
-    const league = Number(b.competition?.isLeague) - Number(a.competition?.isLeague);
+    const league = Number(b.competition?.isLeague ?? false) - Number(a.competition?.isLeague ?? false);
     return league || (a.competition?.name ?? '').localeCompare(b.competition?.name ?? '');
   });
 }

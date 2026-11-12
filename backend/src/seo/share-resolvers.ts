@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { ContentStatus } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import {
@@ -11,9 +12,25 @@ import type { PackInput, SiteDefaults } from './share-defaults';
 
 @Injectable()
 export class ShareResolvers {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly config: ConfigService,
+  ) {}
 
-  async fromCmsPage(slug: string, url: string, defaults: SiteDefaults): Promise<PackInput> {
+  /** Javni API base za media URL-ove (BE-08/P-B08-1 — bez `process.env`). */
+  private media(path: string | null | undefined) {
+    return mediaPublicUrl(
+      path,
+      'medium',
+      this.config.get<string>('apiPublicUrl'),
+    );
+  }
+
+  async fromCmsPage(
+    slug: string,
+    url: string,
+    defaults: SiteDefaults,
+  ): Promise<PackInput> {
     const page = await this.prisma.cmsPage.findUnique({ where: { slug } });
     return {
       title: page?.seoTitle ?? page?.title ?? defaults.siteName,
@@ -27,29 +44,53 @@ export class ShareResolvers {
       where: { slug, status: ContentStatus.PUBLISHED },
     });
     if (!item) {
-      return { title: 'Vijest', description: defaults.description, url: `/vijesti/${slug}` };
+      return {
+        title: 'Vijest',
+        description: defaults.description,
+        url: `/vijesti/${slug}`,
+      };
     }
     return {
       title: item.seoTitle ?? item.title,
       description: item.seoDesc ?? item.excerpt ?? defaults.description,
-      image: mediaPublicUrl(item.coverPath, 'medium'),
+      image: this.media(item.coverPath),
       url: `/vijesti/${slug}`,
       type: 'article',
     };
   }
 
-  async fromMatch(id: string, live: boolean, defaults: SiteDefaults): Promise<PackInput> {
+  async fromMatch(
+    id: string,
+    live: boolean,
+    defaults: SiteDefaults,
+  ): Promise<PackInput> {
     const match = await this.prisma.match.findUnique({
       where: { id },
-      include: { homeClub: true, awayClub: true, edition: { include: { competition: true, season: true } } },
+      include: {
+        homeClub: true,
+        awayClub: true,
+        edition: { include: { competition: true, season: true } },
+      },
     });
     const url = live ? `/live/${id}` : `/utakmice/${id}`;
-    if (!match) return { title: 'Utakmica', description: defaults.description, url };
+    if (!match)
+      return { title: 'Utakmica', description: defaults.description, url };
     const scheduled = live && match.status === 'SCHEDULED';
     const title = scheduled
       ? `${matchShareTitle(match.homeClub, match.awayClub, match.status, match.homeScore, match.awayScore)} — Uskoro`
-      : matchShareTitle(match.homeClub, match.awayClub, match.status, match.homeScore, match.awayScore, live);
-    const crest = matchShareImage(match.homeClub, match.awayClub, defaults.crestPath);
+      : matchShareTitle(
+          match.homeClub,
+          match.awayClub,
+          match.status,
+          match.homeScore,
+          match.awayScore,
+          live,
+        );
+    const crest = matchShareImage(
+      match.homeClub,
+      match.awayClub,
+      defaults.crestPath,
+    );
     return {
       title,
       description: matchShareDescription({
@@ -63,7 +104,7 @@ export class ShareResolvers {
         awayScore: match.awayScore,
         live: live || match.status === 'LIVE' || match.status === 'HALFTIME',
       }),
-      image: mediaPublicUrl(crest, 'medium') ?? defaults.crestUrl,
+      image: this.media(crest) ?? defaults.crestUrl,
       url,
       type: 'article',
     };
@@ -75,11 +116,12 @@ export class ShareResolvers {
       include: { photos: { orderBy: { sortOrder: 'asc' }, take: 1 } },
     });
     const url = `/galerija/${slug}`;
-    if (!item) return { title: 'Galerija', description: defaults.description, url };
+    if (!item)
+      return { title: 'Galerija', description: defaults.description, url };
     return {
       title: item.title,
       description: item.description ?? defaults.description,
-      image: mediaPublicUrl(item.photos[0]?.path, 'medium'),
+      image: this.media(item.photos[0]?.path),
       url,
     };
   }
@@ -91,8 +133,9 @@ export class ShareResolvers {
     });
     return {
       title: 'O klubu',
-      description: club?.description ?? 'Historija i vremenska linija FK Gračanica.',
-      image: mediaPublicUrl(club?.crestPath, 'medium') ?? defaults.crestUrl,
+      description:
+        club?.description ?? 'Historija i vremenska linija FK Gračanica.',
+      image: this.media(club?.crestPath) ?? defaults.crestUrl,
       url: '/o-klubu',
     };
   }
@@ -100,12 +143,13 @@ export class ShareResolvers {
   async fromPlayer(id: string, defaults: SiteDefaults): Promise<PackInput> {
     const player = await this.prisma.player.findUnique({ where: { id } });
     const url = `/igrac/${id}`;
-    if (!player) return { title: 'Igrač', description: defaults.description, url };
+    if (!player)
+      return { title: 'Igrač', description: defaults.description, url };
     const name = `${player.firstName} ${player.lastName}`.trim();
     return {
       title: name,
       description: player.bio ?? defaults.description,
-      image: mediaPublicUrl(player.photoPath, 'medium'),
+      image: this.media(player.photoPath),
       url,
     };
   }

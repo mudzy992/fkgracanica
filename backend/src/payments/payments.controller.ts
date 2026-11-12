@@ -1,19 +1,34 @@
-import { Body, Controller, Get, Headers, Post, Query, Redirect, Req, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Headers,
+  Post,
+  Query,
+  Redirect,
+  Req,
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import type { RawBodyRequest } from '@nestjs/common';
 import type { Request } from 'express';
 import { PaymentsService } from './payments.service';
-import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
 import type { AuthUser } from '../common/types/auth-user.type';
 import { buildMobileReturnUrl } from './mobile-return.util';
+import {
+  parseProviderId,
+  requireHttpUrl,
+  requireId,
+} from './checkout-validate.util';
 
+import { Public } from '../common/decorators/public.decorator';
 @ApiTags('payments')
 @Controller('payments')
 export class PaymentsController {
   constructor(private readonly service: PaymentsService) {}
 
   @Get('mobile-return')
+  @Public()
   @Redirect()
   mobileReturn(
     @Query()
@@ -30,7 +45,6 @@ export class PaymentsController {
   }
 
   @Post('checkout/tickets')
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   checkoutTickets(
     @CurrentUser() user: AuthUser,
@@ -43,40 +57,37 @@ export class PaymentsController {
     },
   ) {
     return this.service.checkoutTickets(
-      body.orderId,
-      body.successUrl,
-      body.cancelUrl,
+      requireId(body.orderId, 'Narudžba nedostaje'),
+      requireHttpUrl(body.successUrl, 'Povratni URL nije validan'),
+      requireHttpUrl(body.cancelUrl, 'Povratni URL nije validan'),
       user.id,
-      body.provider,
+      parseProviderId(body.provider),
     );
   }
 
   @Post('checkout/membership')
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   checkoutMembership(
     @CurrentUser() user: AuthUser,
     @Body()
     body: {
       membershipId: string;
-      amount: number;
       successUrl: string;
       cancelUrl: string;
       provider?: 'stripe' | 'paypal' | 'monri';
     },
   ) {
+    // BE-07/P-B07-1: klijentski iznos se ne prima — cijena dolazi sa servera.
     return this.service.checkoutMembership(
-      body.membershipId,
-      body.amount,
-      body.successUrl,
-      body.cancelUrl,
+      requireId(body.membershipId, 'Članstvo nedostaje'),
+      requireHttpUrl(body.successUrl, 'Povratni URL nije validan'),
+      requireHttpUrl(body.cancelUrl, 'Povratni URL nije validan'),
       user.id,
-      body.provider,
+      parseProviderId(body.provider),
     );
   }
 
   @Post('checkout/season-pass')
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   checkoutSeasonPass(
     @CurrentUser() user: AuthUser,
@@ -89,45 +100,73 @@ export class PaymentsController {
     },
   ) {
     return this.service.checkoutSeasonPass(
-      body.passId,
-      body.successUrl,
-      body.cancelUrl,
+      requireId(body.passId, 'Sezonska karta nedostaje'),
+      requireHttpUrl(body.successUrl, 'Povratni URL nije validan'),
+      requireHttpUrl(body.cancelUrl, 'Povratni URL nije validan'),
       user.id,
-      body.provider,
+      parseProviderId(body.provider),
     );
   }
 
   @Post('membership/confirm-session')
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   confirmMembershipSession(
     @CurrentUser() user: AuthUser,
-    @Body() body: { sessionId: string; provider?: 'stripe' | 'paypal' | 'monri'; returnUrl?: string },
+    @Body()
+    body: {
+      sessionId: string;
+      provider?: 'stripe' | 'paypal' | 'monri';
+      returnUrl?: string;
+    },
   ) {
-    return this.service.confirmMembershipSession(body.sessionId, user.id, body.provider, body.returnUrl);
+    return this.service.confirmMembershipSession(
+      requireId(body.sessionId, 'Sesija plaćanja nedostaje'),
+      user.id,
+      parseProviderId(body.provider),
+      body.returnUrl,
+    );
   }
 
   @Post('tickets/confirm-session')
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   confirmTicketSession(
     @CurrentUser() user: AuthUser,
-    @Body() body: { sessionId: string; provider?: 'stripe' | 'paypal' | 'monri'; returnUrl?: string },
+    @Body()
+    body: {
+      sessionId: string;
+      provider?: 'stripe' | 'paypal' | 'monri';
+      returnUrl?: string;
+    },
   ) {
-    return this.service.confirmTicketSession(body.sessionId, user.id, body.provider, body.returnUrl);
+    return this.service.confirmTicketSession(
+      requireId(body.sessionId, 'Sesija plaćanja nedostaje'),
+      user.id,
+      parseProviderId(body.provider),
+      body.returnUrl,
+    );
   }
 
   @Post('season-pass/confirm-session')
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   confirmSeasonPassSession(
     @CurrentUser() user: AuthUser,
-    @Body() body: { sessionId: string; provider?: 'stripe' | 'paypal' | 'monri'; returnUrl?: string },
+    @Body()
+    body: {
+      sessionId: string;
+      provider?: 'stripe' | 'paypal' | 'monri';
+      returnUrl?: string;
+    },
   ) {
-    return this.service.confirmSeasonPassSession(body.sessionId, user.id, body.provider, body.returnUrl);
+    return this.service.confirmSeasonPassSession(
+      requireId(body.sessionId, 'Sesija plaćanja nedostaje'),
+      user.id,
+      parseProviderId(body.provider),
+      body.returnUrl,
+    );
   }
 
   @Post('webhooks/stripe')
+  @Public()
   stripeWebhook(
     @Req() req: RawBodyRequest<Request>,
     @Headers('stripe-signature') signature: string,
@@ -137,13 +176,13 @@ export class PaymentsController {
   }
 
   @Post('webhooks/paypal')
+  @Public()
   paypalWebhook(@Req() req: RawBodyRequest<Request>) {
     const raw = req.rawBody ?? Buffer.from('');
-    return this.service.handlePaypalWebhook(raw, req.headers as Record<string, string | string[] | undefined>);
+    return this.service.handlePaypalWebhook(raw, req.headers);
   }
 
   @Get('monri/form')
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   getMonriForm(
     @CurrentUser() user: AuthUser,
@@ -154,11 +193,9 @@ export class PaymentsController {
   }
 
   @Post('webhooks/monri')
+  @Public()
   monriWebhook(@Req() req: RawBodyRequest<Request>) {
     const raw = req.rawBody ?? Buffer.from('');
-    return this.service.handleMonriWebhook(
-      raw,
-      req.headers as Record<string, string | string[] | undefined>,
-    );
+    return this.service.handleMonriWebhook(raw, req.headers);
   }
 }

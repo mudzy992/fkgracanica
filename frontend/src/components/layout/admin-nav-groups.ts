@@ -37,7 +37,13 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
       {
         to: '/admin/notifications',
         labelKey: 'notifications.title',
-        permissions: ['dashboard.read', 'news.manage', 'news.submit', 'gallery.manage', 'live.manage'],
+        permissions: [
+          'dashboard.read',
+          'news.manage',
+          'news.submit',
+          'gallery.manage',
+          'live.manage',
+        ],
       },
       { to: '/admin/audit', labelKey: 'admin.audit', permissions: ['audit.read'] },
       {
@@ -53,7 +59,11 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
     labelKey: 'admin.navGroup.content',
     items: [
       { to: '/admin/cms', labelKey: 'admin.cms', permissions: ['cms.manage'] },
-      { to: '/admin/media', labelKey: 'admin.media', permissions: ['media.manage', 'media.read', 'media.upload'] },
+      {
+        to: '/admin/media',
+        labelKey: 'admin.media',
+        permissions: ['media.manage', 'media.read', 'media.upload'],
+      },
       {
         to: '/admin/news',
         labelKey: 'admin.news',
@@ -64,12 +74,22 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
         labelKey: 'admin.gallery',
         permissions: ['gallery.manage', 'gallery.approve'],
       },
+      {
+        to: '/admin/comms',
+        labelKey: 'admin.comms',
+        permissions: ['contact.read', 'newsletter.read'],
+        moduleKeys: ['modules.contact', 'modules.newsletter'],
+      },
     ],
   },
   {
     labelKey: 'admin.navGroup.club',
     items: [
-      { to: '/admin/club-timeline', labelKey: 'admin.timeline', permissions: ['club-timeline.manage'] },
+      {
+        to: '/admin/club-timeline',
+        labelKey: 'admin.timeline',
+        permissions: ['club-timeline.manage'],
+      },
       {
         to: '/admin/clubs',
         labelKey: 'admin.clubSquad',
@@ -77,11 +97,6 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
       },
       { to: '/admin/sponsors', labelKey: 'admin.sponsors', permissions: ['sponsors.manage'] },
       { to: '/admin/trophies', labelKey: 'admin.trophies', permissions: ['trophies.manage'] },
-    ],
-  },
-  {
-    labelKey: 'admin.navGroup.heritage',
-    items: [
       {
         to: '/admin/heritage',
         labelKey: 'admin.heritage',
@@ -105,18 +120,15 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
     labelKey: 'admin.navGroup.system',
     items: [
       { to: '/admin/settings', labelKey: 'admin.settings', permissions: ['settings.read'] },
-      { to: '/admin/app-releases', labelKey: 'admin.appReleases', permissions: ['app-releases.manage'] },
-      { to: '/admin/users', labelKey: 'admin.usersAndRoles', permissions: ['users.read', 'rbac.read'] },
-    ],
-  },
-  {
-    labelKey: 'admin.navGroup.comms',
-    items: [
       {
-        to: '/admin/comms',
-        labelKey: 'admin.comms',
-        permissions: ['contact.read', 'newsletter.read'],
-        moduleKeys: ['modules.contact', 'modules.newsletter'],
+        to: '/admin/app-releases',
+        labelKey: 'admin.appReleases',
+        permissions: ['app-releases.manage'],
+      },
+      {
+        to: '/admin/users',
+        labelKey: 'admin.usersAndRoles',
+        permissions: ['users.read', 'rbac.read'],
       },
     ],
   },
@@ -139,8 +151,7 @@ export function filterNavLeaves(
   return ADMIN_NAV_GROUPS.map((group) => ({
     ...group,
     items: group.items.filter(
-      (item) =>
-        item.permissions.some((p) => permissions.includes(p)) && isModuleVisible(item),
+      (item) => item.permissions.some((p) => permissions.includes(p)) && isModuleVisible(item),
     ),
   })).filter((g) => g.items.length > 0);
 }

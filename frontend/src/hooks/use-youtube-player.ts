@@ -47,30 +47,33 @@ function useYouTubeAudioEmbed(url: string, active: boolean) {
       p.playVideo();
     };
 
-    void loadYouTubeApi().then(() => {
-      if (cancelled || !containerRef.current || !window.YT?.Player) return;
-      playerRef.current?.destroy();
-      playerRef.current = new window.YT.Player(containerRef.current, {
-        videoId,
-        playerVars: { ...AUDIO_VARS, enablejsapi: 1, origin: window.location.origin },
-        events: {
-          onReady: ({ target }) => {
-            target.unMute();
-            target.setVolume(100);
-            target.playVideo();
-            bindPointerFallback(tryPlay);
-          },
-          onStateChange: ({ data, target }) => {
-            const PS = window.YT?.PlayerState;
-            if (PS && (data === PS.PAUSED || data === PS.CUED)) {
+    // Mrežni pad učitavanja YouTube API-ja ne smije ostaviti neuhvaćen rejection.
+    void loadYouTubeApi()
+      .catch(() => undefined)
+      .then(() => {
+        if (cancelled || !containerRef.current || !window.YT?.Player) return;
+        playerRef.current?.destroy();
+        playerRef.current = new window.YT.Player(containerRef.current, {
+          videoId,
+          playerVars: { ...AUDIO_VARS, enablejsapi: 1, origin: window.location.origin },
+          events: {
+            onReady: ({ target }) => {
+              target.unMute();
+              target.setVolume(100);
               target.playVideo();
-              window.clearTimeout(retryTimer);
-              retryTimer = window.setTimeout(tryPlay, 800);
-            }
+              bindPointerFallback(tryPlay);
+            },
+            onStateChange: ({ data, target }) => {
+              const PS = window.YT?.PlayerState;
+              if (PS && (data === PS.PAUSED || data === PS.CUED)) {
+                target.playVideo();
+                window.clearTimeout(retryTimer);
+                retryTimer = window.setTimeout(tryPlay, 800);
+              }
+            },
           },
-        },
+        });
       });
-    });
 
     return () => {
       cancelled = true;

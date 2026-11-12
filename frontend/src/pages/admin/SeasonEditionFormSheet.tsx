@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useAddSeasonCompetition, useUpdateSeasonCompetition } from '../../hooks/use-season-admin';
 import { useCompetitions, useClubs } from '../../hooks';
 import { AdminFormSheet } from '../../components/admin/AdminFormSheet';
@@ -25,6 +26,7 @@ interface Props {
 }
 
 export function SeasonEditionFormSheet({ open, onOpenChange, seasonId, editEdition }: Props) {
+  const { t } = useTranslation();
   const { data: competitions } = useCompetitions();
   const { data: clubs } = useClubs();
   const addEdition = useAddSeasonCompetition();
@@ -36,11 +38,12 @@ export function SeasonEditionFormSheet({ open, onOpenChange, seasonId, editEditi
   const [error, setError] = useState('');
 
   const catalog = useMemo(
-    () => ((competitions as CatalogItem[] | undefined) ?? []).map((c) => ({ id: c.id, label: c.name })),
+    () =>
+      ((competitions as CatalogItem[] | undefined) ?? []).map((c) => ({ id: c.id, label: c.name })),
     [competitions],
   );
   const clubOptions = useMemo(
-    () => ((clubs as { id: string; name: string; isOwnClub?: boolean }[] | undefined) ?? []),
+    () => (clubs as { id: string; name: string; isOwnClub?: boolean }[] | undefined) ?? [],
     [clubs],
   );
 
@@ -86,11 +89,20 @@ export function SeasonEditionFormSheet({ open, onOpenChange, seasonId, editEditi
           <p className="text-sm text-text-muted">{editEdition.competition?.name}</p>
         ) : (
           <>
-            <EntitySelect label="Iz kataloga" value={competitionId} onChange={setCompetitionId} options={catalog} />
-            <Input value={newName} onChange={(e) => setNewName(e.target.value)} placeholder="Ili novo takmičenje (naziv)" />
+            <EntitySelect
+              label={t('admin.seasonEdition.fromCatalog')}
+              value={competitionId}
+              onChange={setCompetitionId}
+              options={catalog}
+            />
+            <Input
+              value={newName}
+              onChange={(e) => setNewName(e.target.value)}
+              placeholder={t('admin.seasonEdition.newCompetition')}
+            />
             {newName.trim() ? (
               <div className="flex items-center justify-between gap-3">
-                <span className="text-sm font-medium">Ligaško</span>
+                <span className="text-sm font-medium">{t('admin.seasonEdition.league')}</span>
                 <Switch checked={isLeague} onCheckedChange={setIsLeague} />
               </div>
             ) : null}
@@ -98,7 +110,10 @@ export function SeasonEditionFormSheet({ open, onOpenChange, seasonId, editEditi
         )}
         <SeasonClubPicker clubs={clubOptions} value={clubIds} onChange={setClubIds} />
         {error && <p className="text-sm text-danger">{error}</p>}
-        <Button onClick={() => void save()} disabled={addEdition.isPending || updateEdition.isPending}>
+        <Button
+          onClick={() => void save()}
+          disabled={addEdition.isPending || updateEdition.isPending}
+        >
           {editEdition ? 'Spremi' : 'Dodaj'}
         </Button>
       </div>

@@ -1,6 +1,6 @@
-import { Link, Outlet } from 'react-router-dom';
-import { Menu, LogOut } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { Link, Outlet, useLocation } from 'react-router-dom';
+import { Menu, LogOut, Search } from 'lucide-react';
+import { Suspense, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../lib/auth';
 import { usePublicSettings, usePrivateSettings } from '../../hooks';
@@ -9,10 +9,12 @@ import { resolveAdminModuleKey } from '../../lib/admin-module-map';
 import { Button } from '../ui/button';
 import { NotificationBell } from '../notifications/NotificationBell';
 import { ErrorBoundary } from '../common/ErrorBoundary';
+import { RouteLoading } from '../common/RouteLoading';
 import { Sheet, SheetContent, SheetHeader } from '../ui/sheet';
 import { filterNavLeaves, type AdminNavLeaf } from './admin-nav-groups';
 import { AdminSidebarNav } from './AdminSidebarNav';
 import { AdminShowcaseBanner } from './AdminShowcaseBanner';
+import { AdminCommandPalette } from './AdminCommandPalette';
 
 function SidebarFooter({ onLogout }: { onLogout: () => void }) {
   const { t } = useTranslation();
@@ -25,7 +27,10 @@ function SidebarFooter({ onLogout }: { onLogout: () => void }) {
 }
 
 export function AdminLayout() {
+  const { t } = useTranslation();
+  const { pathname } = useLocation();
   const [open, setOpen] = useState(false);
+  const [paletteOpen, setPaletteOpen] = useState(false);
   const { user, logout } = useAuth();
   const { data: publicSettings } = usePublicSettings();
   const { data: privateSettings } = usePrivateSettings();
@@ -51,7 +56,7 @@ export function AdminLayout() {
         <div className="flex min-h-0 flex-1 flex-col p-4">
           <div className="mb-4 flex shrink-0 items-center justify-between gap-2">
             <div>
-              <Link to="/admin" className="text-lg font-bold text-primary">
+              <Link to="/admin" className="text-lg font-bold text-primary-light">
                 FK Admin
               </Link>
               {user && (
@@ -62,6 +67,20 @@ export function AdminLayout() {
             </div>
             <NotificationBell admin />
           </div>
+          <button
+            type="button"
+            onClick={() => setPaletteOpen(true)}
+            className="mb-3 flex shrink-0 items-center gap-2 rounded-lg border border-[var(--border-subtle)] px-2.5 py-2 text-left text-sm text-text-muted transition-colors hover:bg-surface"
+            aria-keyshortcuts="Control+K Meta+K"
+          >
+            <Search aria-hidden className="h-4 w-4 shrink-0" />
+            <span className="min-w-0 flex-1 truncate">
+              {t('admin.cmdkPlaceholder', 'Traži stranicu ili akciju…')}
+            </span>
+            <kbd aria-hidden className="shrink-0 rounded border border-[var(--border-subtle)] px-1 py-0.5 text-[10px]">
+              ⌘K
+            </kbd>
+          </button>
           <div className="min-h-0 flex-1 overflow-y-auto">
             <AdminSidebarNav groups={navGroups} />
           </div>
@@ -73,12 +92,25 @@ export function AdminLayout() {
 
       <div className="flex min-w-0 flex-1 flex-col">
         <header className="flex h-14 shrink-0 items-center justify-between border-b border-[var(--border-subtle)] bg-background px-4 lg:hidden">
-          <Link to="/admin" className="font-bold text-primary">
+          <Link to="/admin" className="font-bold text-primary-light">
             FK Admin
           </Link>
           <div className="flex items-center gap-1">
             <NotificationBell admin />
-            <Button variant="ghost" size="icon" onClick={() => setOpen(true)}>
+            <Button
+              variant="ghost"
+              size="icon"
+              aria-label={t('admin.cmdkTitle', 'Pretraga admina')}
+              onClick={() => setPaletteOpen(true)}
+            >
+              <Search className="h-5 w-5" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              aria-label={t('admin.openMenu', 'Otvori meni')}
+              onClick={() => setOpen(true)}
+            >
               <Menu className="h-5 w-5" />
             </Button>
           </div>
@@ -86,7 +118,9 @@ export function AdminLayout() {
 
         <Sheet open={open} onOpenChange={setOpen}>
           <div className="flex h-full flex-col">
-            <SheetHeader onClose={() => setOpen(false)}>Admin</SheetHeader>
+            <SheetHeader onClose={() => setOpen(false)}>
+              {t('admin.navGroup.overview', 'Admin')}
+            </SheetHeader>
             <SheetContent className="flex min-h-0 flex-1 flex-col overflow-hidden">
               <div className="min-h-0 flex-1 overflow-y-auto">
                 <AdminSidebarNav groups={navGroups} onNavigate={() => setOpen(false)} />
@@ -98,10 +132,13 @@ export function AdminLayout() {
           </div>
         </Sheet>
 
+        <AdminCommandPalette open={paletteOpen} onOpenChange={setPaletteOpen} groups={navGroups} />
         <AdminShowcaseBanner />
         <main className="flex-1 overflow-auto p-4 md:p-6">
-          <ErrorBoundary>
-            <Outlet />
+          <ErrorBoundary resetKey={pathname}>
+            <Suspense fallback={<RouteLoading />}>
+              <Outlet />
+            </Suspense>
           </ErrorBoundary>
         </main>
       </div>

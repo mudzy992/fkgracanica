@@ -7,6 +7,7 @@ import { RealtimeGateway } from '../realtime/realtime.gateway';
 import { NotificationsService } from '../notifications/notifications.service';
 import { AuditService } from '../audit/audit.service';
 import { validateModuleSettingUpdates } from './module-settings.util';
+import { preparePrematchAudioUpdates } from './prematch-audio.util';
 
 @Injectable()
 export class SettingsService implements OnModuleInit {
@@ -39,7 +40,10 @@ export class SettingsService implements OnModuleInit {
   async getModuleFlags() {
     const settings = await this.prisma.setting.findMany({
       where: {
-        OR: [{ key: { startsWith: 'modules.' } }, { key: { startsWith: 'feature.' } }],
+        OR: [
+          { key: { startsWith: 'modules.' } },
+          { key: { startsWith: 'feature.' } },
+        ],
       },
     });
     return this.toKeyValue(settings);
@@ -68,8 +72,15 @@ export class SettingsService implements OnModuleInit {
     updates: Record<string, string>,
     actorId?: string,
   ) {
-    const [pub, priv] = await Promise.all([this.getPublic(), this.getPrivate()]);
-    const merged = await applySeoSettingDefaults(this.prisma, updates);
+    const [pub, priv] = await Promise.all([
+      this.getPublic(),
+      this.getPrivate(),
+    ]);
+    const defaults = await applySeoSettingDefaults(this.prisma, updates);
+    const merged =
+      scope === SettingScope.PUBLIC
+        ? preparePrematchAudioUpdates(defaults, pub)
+        : defaults;
     validateModuleSettingUpdates({ ...pub, ...priv, ...merged }, merged);
 
     const keys = Object.keys(merged);
@@ -105,7 +116,12 @@ export class SettingsService implements OnModuleInit {
   }
 
   private toKeyValue(
-    settings: { key: string; value: string; type: string; description: string | null }[],
+    settings: {
+      key: string;
+      value: string;
+      type: string;
+      description: string | null;
+    }[],
   ) {
     return settings.reduce<Record<string, string>>((acc, s) => {
       acc[s.key] = s.value;

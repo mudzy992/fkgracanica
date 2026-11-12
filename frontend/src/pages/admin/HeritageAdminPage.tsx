@@ -9,14 +9,11 @@ import { Button } from '../../components/ui/button';
 import { AdminPageShell } from '../../components/admin/AdminPageShell';
 import { HallOfFameAdminPage } from './HallOfFameAdminPage';
 import { MuseumAdminPage } from './MuseumAdminPage';
+import { useTranslation } from 'react-i18next';
 
 type Tab = 'hall-of-fame' | 'museum';
 
-function resolveTab(
-  param: string | null,
-  canHof: boolean,
-  canMuseum: boolean,
-): Tab {
+function resolveTab(param: string | null, canHof: boolean, canMuseum: boolean): Tab {
   if (param === 'museum' && canMuseum) return 'museum';
   if (param === 'hall-of-fame' && canHof) return 'hall-of-fame';
   if (canHof) return 'hall-of-fame';
@@ -24,6 +21,7 @@ function resolveTab(
 }
 
 export function HeritageAdminPage() {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const perms = user?.permissions ?? [];
   const { data: moduleFlags } = useModuleFlags();
@@ -41,24 +39,28 @@ export function HeritageAdminPage() {
     return list;
   }, [canHof, canMuseum]);
 
-  if (!canHof && !canMuseum) return <Navigate to="/admin" replace />;
-
   const tabParam = searchParams.get('tab');
   const activeTab = resolveTab(tabParam, canHof, canMuseum);
+  const hasTab = canHof || canMuseum;
 
   useEffect(() => {
+    // P-FE06-29/30: bez ijednog taba preusmjeravanje ispod mora ostati na snazi —
+    // upis `?tab=` bi ga poništio i ostavio praznu stranicu.
+    if (!hasTab) return;
     if (tabParam !== activeTab) {
       setSearchParams({ tab: activeTab }, { replace: true });
     }
-  }, [tabParam, activeTab, setSearchParams]);
+  }, [hasTab, tabParam, activeTab, setSearchParams]);
+
+  if (!hasTab) return <Navigate to="/admin" replace />;
 
   const setTab = (tab: Tab) => setSearchParams({ tab }, { replace: true });
 
   return (
     <>
-      <Seo title="Baština" />
+      <Seo title={t('admin.heritage')} />
       <AdminPageShell
-        title="Baština"
+        title={t('admin.heritage')}
         actions={
           tabs.length > 1 ? (
             <div className="flex flex-wrap gap-2">

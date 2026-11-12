@@ -1,10 +1,15 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Card } from '../../../components/ui/card';
+import { Select } from '../../../components/ui/select';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../../../components/ui/table';
 import { usePlayers, useSeasons } from '../../../hooks';
 import { asArray } from '../../../lib/as-array';
 import type { Player } from '../../../types';
 import { usePlayerAnalytics } from '../../../hooks/use-analytics';
 
 export function AnalyticsPlayerPanel() {
+  const { t } = useTranslation();
   const { data: playersRaw } = usePlayers({ activeOnly: true });
   const players = asArray<Player>(playersRaw);
   const { data: seasonsRaw } = useSeasons();
@@ -15,20 +20,19 @@ export function AnalyticsPlayerPanel() {
 
   return (
     <div className="space-y-4">
-      <select
-        className="h-10 rounded-lg border border-[var(--border-subtle)] bg-background px-3 text-sm"
+      <Select
         value={id}
         onChange={(e) => setId(e.target.value)}
       >
-        <option value="">Odaberi igrača…</option>
+        <option value="">{t('admin.playerPanel.selectPlayer')}</option>
         {players.map((p) => (
           <option key={p.id} value={p.id}>
             {p.firstName} {p.lastName}
           </option>
         ))}
-      </select>
+      </Select>
 
-      {isFetching && <p className="text-sm text-text-muted">Učitavanje...</p>}
+      {isFetching && <p className="text-sm text-text-muted">{t('admin.common.loading')}</p>}
 
       {data && (
         <div className="space-y-4">
@@ -41,41 +45,49 @@ export function AnalyticsPlayerPanel() {
               { label: '🟨', value: data.totals.yellowCards },
               { label: '🟥', value: data.totals.redCards },
             ].map((s) => (
-              <div key={s.label} className="rounded-xl border border-[var(--border-subtle)] bg-surface/50 px-3 py-2">
+              <Card
+                key={s.label}
+                className="bg-surface/50 px-3 py-2 text-center"
+              >
                 <p className="text-xs text-text-muted">{s.label}</p>
                 <p className="mt-1 text-xl font-bold tabular-nums">{s.value}</p>
-              </div>
+              </Card>
             ))}
           </div>
 
-          <div className="overflow-x-auto rounded-xl border border-[var(--border-subtle)]">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-[var(--border-subtle)] text-left text-xs text-text-muted">
-                  <th className="px-4 py-2">Sezona</th>
-                  <th className="px-4 py-2 text-right">N</th>
-                  <th className="px-4 py-2 text-right">G</th>
-                  <th className="px-4 py-2 text-right">A</th>
-                  <th className="px-4 py-2 text-right">Min</th>
-                  <th className="px-4 py-2 text-right">🟨</th>
-                  <th className="px-4 py-2 text-right">🟥</th>
-                </tr>
-              </thead>
-              <tbody>
+          <Card className="overflow-hidden p-0">
+            <div className="overflow-x-auto">
+              <Table className="w-full text-sm">
+              <TableHeader>
+                <TableRow className="border-b border-[var(--border-subtle)] text-left text-xs text-text-muted">
+                  <TableHead className="px-4 py-2">{t('admin.playerPanel.season')}</TableHead>
+                  <TableHead className="px-4 py-2 text-right">N</TableHead>
+                  <TableHead className="px-4 py-2 text-right">G</TableHead>
+                  <TableHead className="px-4 py-2 text-right">A</TableHead>
+                  <TableHead className="px-4 py-2 text-right">{t('admin.playerPanel.minutes')}</TableHead>
+                  <TableHead className="px-4 py-2 text-right">🟨</TableHead>
+                  <TableHead className="px-4 py-2 text-right">🟥</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
                 {data.seasons.map((row) => (
-                  <tr key={row.seasonId} className="border-b border-[var(--border-subtle)] last:border-0">
-                    <td className="px-4 py-2">{seasonName(row.seasonId)}</td>
-                    <td className="px-4 py-2 text-right tabular-nums">{row.appearances}</td>
-                    <td className="px-4 py-2 text-right tabular-nums">{row.goals}</td>
-                    <td className="px-4 py-2 text-right tabular-nums">{row.assists}</td>
-                    <td className="px-4 py-2 text-right tabular-nums">{row.minutes}</td>
-                    <td className="px-4 py-2 text-right tabular-nums">{row.yellowCards}</td>
-                    <td className="px-4 py-2 text-right tabular-nums">{row.redCards}</td>
-                  </tr>
+                  <TableRow
+                    key={row.seasonId}
+                    className="border-b border-[var(--border-subtle)] last:border-0"
+                  >
+                    <TableCell className="px-4 py-2">{seasonName(row.seasonId)}</TableCell>
+                    <TableCell className="px-4 py-2 text-right tabular-nums">{row.appearances}</TableCell>
+                    <TableCell className="px-4 py-2 text-right tabular-nums">{row.goals}</TableCell>
+                    <TableCell className="px-4 py-2 text-right tabular-nums">{row.assists}</TableCell>
+                    <TableCell className="px-4 py-2 text-right tabular-nums">{row.minutes}</TableCell>
+                    <TableCell className="px-4 py-2 text-right tabular-nums">{row.yellowCards}</TableCell>
+                    <TableCell className="px-4 py-2 text-right tabular-nums">{row.redCards}</TableCell>
+                  </TableRow>
                 ))}
-              </tbody>
-            </table>
-          </div>
+              </TableBody>
+              </Table>
+            </div>
+          </Card>
         </div>
       )}
     </div>

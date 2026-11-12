@@ -4,8 +4,7 @@ import { mediaUrl } from '../lib/media';
 export function useDynamicFavicon(crestPath?: string) {
   useEffect(() => {
     if (!crestPath) return;
-    const href = mediaUrl(crestPath, 'thumb');
-    if (!href) return;
+    const href = mediaUrl(crestPath, 'thumb')!;
     let link = document.querySelector<HTMLLinkElement>("link[rel='icon']");
     if (!link) {
       link = document.createElement('link');

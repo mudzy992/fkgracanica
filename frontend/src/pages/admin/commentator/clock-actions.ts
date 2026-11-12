@@ -3,8 +3,17 @@ import type { Match } from '../../../types';
 
 export type ClockActionStyle = 'primary' | 'outline' | 'end';
 
+/**
+ * P-FE06-42: ključ je unija, ne `string` — ako `buildClockActions` emitira
+ * ključ za koji `CommentatorClockActions` nema rukovaoca, padne `tsc`, a ne
+ * tiho ništa u produkciji.
+ */
+export type ClockActionKey =
+  | 'start' | 'ht' | 'end' | 'resume2' | 'ft' | 'et'
+  | 'eth' | 'et2' | 'etend' | 'pen' | 'penend';
+
 export type ClockActionSpec = {
-  key: string;
+  key: ClockActionKey;
   label: string;
   style: ClockActionStyle;
   confirm?: boolean;

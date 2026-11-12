@@ -15,7 +15,7 @@ export function CmsHubPage() {
   return (
     <>
       <Seo title="CMS" />
-      <div className="mb-4 flex gap-2 border-b border-slate-200">
+      <div className="mb-4 flex gap-2 border-b border-[var(--border-subtle)]">
         {tabs.map((t) => (
           <Button
             key={t}

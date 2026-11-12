@@ -18,13 +18,22 @@ export class CompetitionsService {
     return this.prisma.$transaction(async (tx) => {
       if (data.isLeague) await ensureSingleLeagueCompetition(tx);
       return tx.competition.create({
-        data: { name: data.name, slug: slugify(data.name), isLeague: data.isLeague ?? false },
+        data: {
+          name: data.name,
+          slug: slugify(data.name),
+          isLeague: data.isLeague ?? false,
+        },
       });
     });
   }
 
-  async updateCompetition(id: string, data: { name?: string; isLeague?: boolean }) {
-    const patch: { name?: string; slug?: string; isLeague?: boolean } = { ...data };
+  async updateCompetition(
+    id: string,
+    data: { name?: string; isLeague?: boolean },
+  ) {
+    const patch: { name?: string; slug?: string; isLeague?: boolean } = {
+      ...data,
+    };
     if (typeof data.name === 'string') patch.slug = slugify(data.name);
     return this.prisma.$transaction(async (tx) => {
       if (patch.isLeague === true) await ensureSingleLeagueCompetition(tx, id);

@@ -11,7 +11,7 @@ export function MuseumExhibitCard({ item }: Props) {
   return (
     <article className="border-gradient-club glass-premium card-lift h-full overflow-hidden rounded-2xl">
       {item.imagePath ? (
-        <img
+        <img loading="lazy" decoding="async"
           src={mediaUrl(item.imagePath, 'medium')}
           alt=""
           className="h-44 w-full object-cover sm:h-48"

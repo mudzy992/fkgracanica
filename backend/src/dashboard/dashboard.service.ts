@@ -1,5 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { ContentStatus, MatchReportStatus, MembershipStatus } from '@prisma/client';
+import {
+  ContentStatus,
+  MatchReportStatus,
+  MembershipStatus,
+} from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { PublicAnalyticsService } from '../public-analytics/public-analytics.service';
 
@@ -39,7 +43,9 @@ export class DashboardService {
           },
         },
       }),
-      this.prisma.membership.count({ where: { status: MembershipStatus.ACTIVE } }),
+      this.prisma.membership.count({
+        where: { status: MembershipStatus.ACTIVE },
+      }),
       this.prisma.news.count({ where: { status: ContentStatus.PUBLISHED } }),
       this.prisma.match.count(),
       this.prisma.matchEvent.count({
@@ -48,8 +54,12 @@ export class DashboardService {
       this.prisma.ticket.count({ where: { status: { not: 'CANCELLED' } } }),
       this.prisma.news.count({ where: { status: ContentStatus.PENDING } }),
       this.prisma.gallery.count({ where: { status: ContentStatus.PENDING } }),
-      this.prisma.match.count({ where: { reportStatus: MatchReportStatus.PENDING_APPROVAL } }),
-      this.prisma.membership.count({ where: { status: MembershipStatus.PENDING } }),
+      this.prisma.match.count({
+        where: { reportStatus: MatchReportStatus.PENDING_APPROVAL },
+      }),
+      this.prisma.membership.count({
+        where: { status: MembershipStatus.PENDING },
+      }),
       this.prisma.contactMessage.count({ where: { isRead: false } }),
       this.analytics.getTotals(30),
     ]);

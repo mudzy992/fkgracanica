@@ -1,6 +1,7 @@
 import { useApproveMatchReport } from '../../hooks/use-live-admin';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
+import { runAction } from '../../lib/action-errors';
 
 interface Props {
   matchId: string;
@@ -20,7 +21,7 @@ export function MatchReportApproval({ matchId, reportStatus }: Props) {
       </div>
       <Button
         size="sm"
-        onClick={() => void approve.mutateAsync(matchId)}
+        onClick={() => void runAction(approve.mutateAsync(matchId))}
         disabled={approve.isPending}
       >
         Odobri izvještaj

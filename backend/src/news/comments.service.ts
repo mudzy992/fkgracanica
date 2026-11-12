@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ForbiddenException,
   Injectable,
   NotFoundException,
@@ -28,16 +29,24 @@ export class CommentsService {
   }
 
   async create(newsId: string, user: AuthUser, content: string) {
+    // BE-09b/P-B09b-8: druga linija odbrane — DTO validira HTTP sloj, ali
+    // servis se zove i iz drugih mjesta (prazan/whitespace komentar = 400).
+    const trimmed = typeof content === 'string' ? content.trim() : '';
+    if (trimmed.length < 2) {
+      throw new BadRequestException('Komentar je prekratak');
+    }
     await this.assertPublishedNews(newsId);
     await this.assertCanComment(user);
     return this.prisma.comment.create({
-      data: { newsId, userId: user.id, content: content.trim() },
+      data: { newsId, userId: user.id, content: trimmed },
       include: { user: { select: userSelect } },
     });
   }
 
   async remove(commentId: string, user: AuthUser) {
-    const comment = await this.prisma.comment.findUnique({ where: { id: commentId } });
+    const comment = await this.prisma.comment.findUnique({
+      where: { id: commentId },
+    });
     if (!comment) throw new NotFoundException('Komentar nije pronađen');
     const isModerator = user.permissions.includes('news.manage');
     if (comment.userId !== user.id && !isModerator) {

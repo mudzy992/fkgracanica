@@ -12,7 +12,12 @@ export async function seedClubStadiumAndSquad(prisma: SeedPrisma, ownClubId: str
         clubId: ownClubId,
         name: club.stadium,
         city: club.city ?? undefined,
-        description: 'Domaći stadion FK Gračanica.',
+        // BE-09c/P-B09c-9: opis je vezan za klub (prije je i protivnik dobijao
+        // „Domaći stadion FK Gračanica”).
+        description:
+          club.name === 'FK Gračanica'
+            ? 'Domaći stadion FK Gračanica.'
+            : `Stadion kluba ${club.name}.`,
       },
     });
   }

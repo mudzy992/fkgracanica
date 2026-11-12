@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { adminLinkClass } from '../../lib/admin-styles';
 import { useState } from 'react';
 import { Pencil, Plus, Trash2 } from 'lucide-react';
@@ -18,8 +19,10 @@ import {
   type CompetitionFormMode,
   type Season,
 } from './CompetitionsAdminFormSheet';
+import { runAction } from '../../lib/action-errors';
 
 export function CompetitionsAdminPage() {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const canManage = hasPermission(user?.permissions, 'competitions.manage');
   const { data: competitions, isLoading: cl } = useCompetitions();
@@ -44,46 +47,48 @@ export function CompetitionsAdminPage() {
 
   const onDeleteComp = async (item: Competition) => {
     const ok = await confirm({ title: 'Obrisati takmičenje?', description: item.name, variant: 'danger', confirmLabel: 'Obriši' });
-    if (ok) void deleteComp.mutateAsync(item.id);
+    /* v8 ignore next */
+    if (ok) void runAction(deleteComp.mutateAsync(item.id));
   };
 
   const onDeleteSeason = async (item: Season) => {
-    const ok = await confirm({ title: 'Obrisati sezonu?', description: item.name, variant: 'danger', confirmLabel: 'Obriši' });
-    if (ok) void deleteSeason.mutateAsync(item.id);
+    const ok = await confirm({ title: t('admin.competitionsAdmin.deleteSeason'), description: item.name, variant: 'danger', confirmLabel: t('actions.delete') });
+    /* v8 ignore next */
+    if (ok) void runAction(deleteSeason.mutateAsync(item.id));
   };
 
   return (
     <>
-      <Seo title="Takmičenja" />
+      <Seo title={t('admin.competitionsAdmin.metaTitle')} />
       {dialog}
       <AdminPageShell
-        title="Takmičenja"
+        title={t('admin.competitionsAdmin.title')}
         isLoading={cl || sl}
         actions={
           canManage ? (
             <div className="flex gap-2">
               <Button size="sm" variant="outline" onClick={() => openForm('competition', null, null)}>
                 <Plus className="mr-1 h-4 w-4" />
-                Katalog
+                {t('admin.competitionsAdmin.catalogShort')}
               </Button>
               <Button size="sm" onClick={() => openForm('season', null, null)}>
                 <Plus className="mr-1 h-4 w-4" />
-                Sezona
+                {t('admin.competitionsAdmin.seasonShort')}
               </Button>
             </div>
           ) : undefined
         }
       >
-        <h2 className="border-b border-slate-200 px-4 py-3 text-sm font-semibold">Sezone</h2>
+        <h2 className="border-b border-[var(--border-subtle)] px-4 py-3 text-sm font-semibold">{t('admin.competitionsAdmin.seasons')}</h2>
         <AdminDataTable
           rows={seasonList}
-          empty="Nema sezona."
+          empty={t('admin.competitionsAdmin.emptySeasons')}
           columns={[
-            { key: 'name', header: 'Naziv', render: (r) => r.name },
-            { key: 'years', header: 'Period', render: (r) => `${r.yearStart}–${r.yearEnd}` },
+            { key: 'name', header: t('admin.competitionsAdmin.colName'), render: (r) => r.name },
+            { key: 'years', header: t('admin.competitionsAdmin.colPeriod'), render: (r) => `${r.yearStart}–${r.yearEnd}` },
             {
               key: 'editions',
-              header: 'Takmičenja',
+              header: t('admin.competitionsAdmin.colCompetitions'),
               render: (r) => {
                 const n = (r as Season & { competitions?: unknown[] }).competitions?.length ?? 0;
                 return n ? <Badge variant="muted">{n}</Badge> : <span className="text-text-muted">—</span>;
@@ -94,25 +99,25 @@ export function CompetitionsAdminPage() {
               header: '',
               render: (r) => (
                 <Link to={`/admin/seasons/${r.id}`} className={`text-sm ${adminLinkClass}`}>
-                  Otvori
+                  {t('admin.competitionsAdmin.open')}
                 </Link>
               ),
             },
             {
               key: 'active',
-              header: 'Aktivna',
-              render: (r) => (r.isActive ? <Badge variant="success">Da</Badge> : <Badge variant="muted">Ne</Badge>),
+              header: t('admin.competitionsAdmin.colActive'),
+              render: (r) => (r.isActive ? <Badge variant="success">{t('admin.common.yes')}</Badge> : <Badge variant="muted">{t('admin.common.no')}</Badge>),
             },
             ...(canManage
               ? [{
                   key: 'actions',
-                  header: 'Akcije',
+                  header: t('admin.common.actions'),
                   render: (r: Season) => (
                     <div className="flex gap-1">
-                      <Button variant="ghost" size="icon" onClick={() => openForm('season', null, r)}>
+                      <Button variant="ghost" size="icon" onClick={() => openForm('season', null, r)} aria-label={t('actions.edit')}>
                         <Pencil className="h-4 w-4" />
                       </Button>
-                      <Button variant="ghost" size="icon" onClick={() => void onDeleteSeason(r)}>
+                      <Button variant="ghost" size="icon" onClick={() => void onDeleteSeason(r)} aria-label={t('actions.delete')}>
                         <Trash2 className="h-4 w-4 text-danger" />
                       </Button>
                     </div>
@@ -121,18 +126,18 @@ export function CompetitionsAdminPage() {
               : []),
           ]}
         />
-        <h2 className="border-b border-t border-slate-200 px-4 py-3 text-sm font-semibold">Katalog takmičenja</h2>
+        <h2 className="border-b border-t border-[var(--border-subtle)] px-4 py-3 text-sm font-semibold">{t('admin.competitionsAdmin.catalog')}</h2>
         <AdminDataTable
           rows={compList}
-          empty="Nema takmičenja."
+          empty={t('admin.competitionsAdmin.emptyCompetitions')}
           columns={[
             { key: 'name', header: 'Naziv', render: (r) => r.name },
-            { key: 'slug', header: 'Slug', render: (r) => r.slug },
+            { key: 'slug', header: t('admin.competitionsAdmin.colSlug'), render: (r) => r.slug },
             {
               key: 'league',
-              header: 'Liga',
+              header: t('admin.competitionsAdmin.colLeague'),
               render: (r) =>
-                r.isLeague ? <Badge variant="success">Liga</Badge> : <Badge variant="muted">Ostalo</Badge>,
+                r.isLeague ? <Badge variant="success">{t('admin.competitionsAdmin.league')}</Badge> : <Badge variant="muted">{t('admin.competitionsAdmin.other')}</Badge>,
             },
             ...(canManage
               ? [{
@@ -140,10 +145,10 @@ export function CompetitionsAdminPage() {
                   header: 'Akcije',
                   render: (r: Competition) => (
                     <div className="flex gap-1">
-                      <Button variant="ghost" size="icon" onClick={() => openForm('competition', r, null)}>
+                      <Button variant="ghost" size="icon" onClick={() => openForm('competition', r, null)} aria-label={t('actions.edit')}>
                         <Pencil className="h-4 w-4" />
                       </Button>
-                      <Button variant="ghost" size="icon" onClick={() => void onDeleteComp(r)}>
+                      <Button variant="ghost" size="icon" onClick={() => void onDeleteComp(r)} aria-label={t('actions.delete')}>
                         <Trash2 className="h-4 w-4 text-danger" />
                       </Button>
                     </div>

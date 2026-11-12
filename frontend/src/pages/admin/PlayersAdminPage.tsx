@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Pencil, Plus, Trash2 } from 'lucide-react';
 import { usePlayers } from '../../hooks';
 import { useDeletePlayer } from '../../hooks/use-competition-admin';
@@ -12,11 +13,13 @@ import { Button } from '../../components/ui/button';
 import { AdminDataTable, AdminPageShell } from '../../components/admin/AdminPageShell';
 import { PlayersAdminFormSheet } from './PlayersAdminFormSheet';
 import type { Player } from '../../types';
+import { runAction } from '../../lib/action-errors';
 
 export function PlayersAdminPage() {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const canManage = hasPermission(user?.permissions, 'players.manage');
-  const { data, isLoading } = usePlayers();
+  const { data, isLoading, isError, refetch } = usePlayers();
   const remove = useDeletePlayer();
   const { confirm, dialog } = useConfirm();
   const [open, setOpen] = useState(false);
@@ -29,19 +32,27 @@ export function PlayersAdminPage() {
       confirmLabel: 'Obriši',
       variant: 'danger',
     });
-    if (ok) void remove.mutateAsync(item.id);
+    if (ok) void runAction(remove.mutateAsync(item.id));
   };
 
   return (
     <>
-      <Seo title="Igrači" />
+      <Seo title={t('admin.players')} />
       {dialog}
       <AdminPageShell
-        title="Igrači"
+        isError={isError}
+        onRetry={() => void refetch()}
+        title={t('admin.players')}
         isLoading={isLoading}
         actions={
           canManage ? (
-            <Button size="sm" onClick={() => { setEdit(null); setOpen(true); }}>
+            <Button
+              size="sm"
+              onClick={() => {
+                setEdit(null);
+                setOpen(true);
+              }}
+            >
               <Plus className="mr-1 h-4 w-4" />
               Novi
             </Button>
@@ -53,27 +64,49 @@ export function PlayersAdminPage() {
           columns={[
             {
               key: 'name',
-              header: 'Ime',
+              header: t('admin.playerForm.firstName').replace(' *', ''),
               render: (r) => (
                 <span className="flex items-center gap-2">
                   {r.firstName} {r.lastName}
-                  {!r.isActive && <Badge variant="muted">Neaktivan</Badge>}
+                  {!r.isActive && <Badge variant="muted">{t('admin.playerForm.inactive')}</Badge>}
                 </span>
               ),
             },
-            { key: 'position', header: 'Pozicija', render: (r) => playerPositionLabel(r.position) },
-            { key: 'number', header: 'Broj', render: (r) => r.number ?? '—' },
-            { key: 'club', header: 'Klub', render: (r) => r.club?.name ?? '—' },
+            {
+              key: 'position',
+              header: t('admin.playerForm.position'),
+              render: (r) => playerPositionLabel(r.position),
+            },
+            {
+              key: 'number',
+              header: t('admin.playerForm.shirtNumber'),
+              render: (r) => r.number ?? '—',
+            },
+            { key: 'club', header: t('admin.playerForm.club'), render: (r) => r.club?.name ?? '—' },
             {
               key: 'actions',
-              header: 'Akcije',
+              header: t('admin.common.actions'),
               render: (r) =>
                 canManage ? (
                   <div className="flex gap-1">
-                    <Button variant="ghost" size="icon" onClick={() => { setEdit(r); setOpen(true); }}>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => {
+                        setEdit(r);
+                        setOpen(true);
+                      }}
+
+                      aria-label={t('actions.edit')}
+                    >
                       <Pencil className="h-4 w-4" />
                     </Button>
-                    <Button variant="ghost" size="icon" onClick={() => void onDelete(r)}>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => void onDelete(r)}
+                      aria-label={t('actions.delete')}
+                    >
                       <Trash2 className="h-4 w-4 text-danger" />
                     </Button>
                   </div>
@@ -84,7 +117,10 @@ export function PlayersAdminPage() {
       </AdminPageShell>
       <PlayersAdminFormSheet
         open={open}
-        onOpenChange={(o) => { setOpen(o); if (!o) setEdit(null); }}
+        onOpenChange={(o) => {
+          setOpen(o);
+          if (!o) setEdit(null);
+        }}
         edit={edit}
       />
     </>

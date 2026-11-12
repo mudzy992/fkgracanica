@@ -14,8 +14,10 @@ import { TeamSeasonStats } from '../../components/team/TeamSeasonStats';
 import { spotlightPlayers, statsByPlayerId } from '../../components/team/team-stats-utils';
 import { Seo } from '../../components/seo/Seo';
 import { Skeleton } from '../../components/ui/skeleton';
+import { useTranslation } from 'react-i18next';
 
 export function ClubPublicPage() {
+  const { t } = useTranslation();
   const { slug = '' } = useParams();
   const { data, isLoading, isError } = useClubPublic(slug);
   const { data: moduleFlags } = useModuleFlags();
@@ -24,19 +26,13 @@ export function ClubPublicPage() {
   const seasonStats = data?.seasonStats;
   const players = data?.players ?? [];
 
-  const bench = useMemo(
-    () => squad?.slots.filter((s) => s.isBench && s.player) ?? [],
-    [squad],
-  );
+  const bench = useMemo(() => squad?.slots.filter((s) => s.isBench && s.player) ?? [], [squad]);
   const squadPlayers = useMemo(
     () => squad?.slots.filter((s) => !s.isBench && s.player).map((s) => s.player!) ?? [],
     [squad],
   );
   const statsMap = useMemo(() => statsByPlayerId(seasonStats), [seasonStats]);
-  const scorers = useMemo(
-    () => spotlightPlayers(seasonStats, players),
-    [seasonStats, players],
-  );
+  const scorers = useMemo(() => spotlightPlayers(seasonStats, players), [seasonStats, players]);
 
   const competitionsOn = isModuleEnabled(moduleFlags, 'modules.competitions');
   const showCompetition = competitionsOn && (data?.participations?.length ?? 0) > 0;
@@ -55,7 +51,7 @@ export function ClubPublicPage() {
   }
 
   if (isError || !data) {
-    return <p className="p-12 text-center text-text-muted">Klub nije pronađen.</p>;
+    return <p className="p-12 text-center text-text-muted">{t('pages.club.notFound')}</p>;
   }
 
   const { club, stadium } = data;
@@ -78,14 +74,11 @@ export function ClubPublicPage() {
         ) : players.length > 0 ? (
           <ClubPlayersGrid players={players} stats={seasonStats} />
         ) : (
-          <p className="py-12 text-center text-text-muted">Kadar trenutno nije objavljen.</p>
+          <p className="py-12 text-center text-text-muted">{t('pages.club.squadEmpty')}</p>
         )}
 
         {showCompetition && (
-          <ClubCompetitionTabs
-            clubId={club.id}
-            participations={data.participations ?? []}
-          />
+          <ClubCompetitionTabs clubId={club.id} participations={data.participations!} />
         )}
 
         <TeamSeasonStats stats={seasonStats} />

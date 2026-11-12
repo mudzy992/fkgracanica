@@ -22,9 +22,15 @@ function nextWeek(): Date {
   return d;
 }
 
-async function ensureRound(prisma: SeedPrisma, seasonId: string, number: number) {
+async function ensureRound(
+  prisma: SeedPrisma,
+  seasonId: string,
+  number: number,
+) {
   return prisma.round.upsert({
-    where: { seasonCompetitionId_number: { seasonCompetitionId: seasonId, number } },
+    where: {
+      seasonCompetitionId_number: { seasonCompetitionId: seasonId, number },
+    },
     create: { seasonCompetitionId: seasonId, number, name: roundName(number) },
     update: {},
   });
@@ -34,7 +40,7 @@ async function createMatchIfMissing(
   prisma: SeedPrisma,
   ctx: DemoCompetitionContext,
   data: {
-    round: number;
+    number: number;
     scheduledAt: Date;
     status: MatchStatus;
     homeScore?: number;
@@ -42,28 +48,22 @@ async function createMatchIfMissing(
     venue?: string;
   },
 ) {
-  const round = await ensureRound(prisma, ctx.seasonId, data.round);
+  const round = await ensureRound(prisma, ctx.seasonId, data.number);
   const existing = await prisma.match.findFirst({
     where: {
       seasonCompetitionId: ctx.seasonId,
       homeClubId: ctx.ownClubId,
       awayClubId: ctx.opponentClubId,
-      round: data.round,
+      roundId: round.id,
     },
   });
-  if (existing) {
-    if (!existing.roundId) {
-      await prisma.match.update({ where: { id: existing.id }, data: { roundId: round.id } });
-    }
-    return;
-  }
+  if (existing) return;
 
   await prisma.match.create({
     data: {
       seasonCompetitionId: ctx.seasonId,
       homeClubId: ctx.ownClubId,
       awayClubId: ctx.opponentClubId,
-      round: data.round,
       roundId: round.id,
       scheduledAt: data.scheduledAt,
       status: data.status,
@@ -74,9 +74,12 @@ async function createMatchIfMissing(
   });
 }
 
-export async function seedMatches(prisma: SeedPrisma, ctx: DemoCompetitionContext) {
+export async function seedMatches(
+  prisma: SeedPrisma,
+  ctx: DemoCompetitionContext,
+) {
   await createMatchIfMissing(prisma, ctx, {
-    round: 12,
+    number: 12,
     scheduledAt: lastWeekend(),
     status: MatchStatus.FINISHED,
     homeScore: 2,
@@ -85,7 +88,7 @@ export async function seedMatches(prisma: SeedPrisma, ctx: DemoCompetitionContex
   });
 
   await createMatchIfMissing(prisma, ctx, {
-    round: 13,
+    number: 13,
     scheduledAt: nextWeek(),
     status: MatchStatus.SCHEDULED,
     venue: 'Stadion FK Gračanica',

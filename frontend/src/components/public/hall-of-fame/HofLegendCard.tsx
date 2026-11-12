@@ -32,13 +32,13 @@ export function HofLegendCard({ entry, onOpen }: Props) {
       <div className="pointer-events-none absolute -right-10 top-10 h-24 w-24 rounded-full bg-amber-300/10 blur-2xl" />
       <div className="mb-6 text-left">{entry.years && <p className="text-sm tabular-nums text-slate-400">{entry.years}</p>}</div>
       {photo ? (
-        <img
+        <img loading="lazy" decoding="async"
           src={mediaUrl(photo, 'medium')}
           alt=""
-          className="mx-auto mb-5 h-32 w-32 rounded-full object-cover ring-2 ring-amber-300/50 ring-offset-4 ring-offset-[#0f172a]"
+          className="mx-auto mb-5 h-32 w-32 rounded-full object-cover ring-2 ring-amber-300/50 ring-offset-4 ring-offset-slate-900"
         />
       ) : (
-        <div className="mx-auto mb-5 flex h-32 w-32 items-center justify-center rounded-full bg-amber-300/10 font-display text-3xl font-bold text-amber-100 ring-2 ring-amber-300/30 ring-offset-4 ring-offset-[#0f172a]">
+        <div className="mx-auto mb-5 flex h-32 w-32 items-center justify-center rounded-full bg-amber-300/10 font-display text-3xl font-bold text-amber-100 ring-2 ring-amber-300/30 ring-offset-4 ring-offset-slate-900">
           {entry.name[0]}
         </div>
       )}

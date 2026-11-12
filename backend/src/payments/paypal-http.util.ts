@@ -14,16 +14,23 @@ async function paypalJson<T>(url: string, init: RequestInit): Promise<T> {
   return text ? (JSON.parse(text) as T) : ({} as T);
 }
 
-export async function paypalAccessToken(baseUrl: string, clientId: string, secret: string) {
+export async function paypalAccessToken(
+  baseUrl: string,
+  clientId: string,
+  secret: string,
+) {
   const basic = Buffer.from(`${clientId}:${secret}`).toString('base64');
-  const data = await paypalJson<{ access_token: string }>(`${baseUrl}/v1/oauth2/token`, {
-    method: 'POST',
-    headers: {
-      Authorization: `Basic ${basic}`,
-      'Content-Type': 'application/x-www-form-urlencoded',
+  const data = await paypalJson<{ access_token: string }>(
+    `${baseUrl}/v1/oauth2/token`,
+    {
+      method: 'POST',
+      headers: {
+        Authorization: `Basic ${basic}`,
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: 'grant_type=client_credentials',
     },
-    body: 'grant_type=client_credentials',
-  });
+  );
   return data.access_token;
 }
 
@@ -42,21 +49,32 @@ export async function paypalCreateOrder(
   });
 }
 
-export async function paypalGetOrder(baseUrl: string, token: string, orderId: string) {
+export async function paypalGetOrder(
+  baseUrl: string,
+  token: string,
+  orderId: string,
+) {
   return paypalJson<PaypalOrder>(`${baseUrl}/v2/checkout/orders/${orderId}`, {
     headers: { Authorization: `Bearer ${token}` },
   });
 }
 
-export async function paypalCaptureOrder(baseUrl: string, token: string, orderId: string) {
-  return paypalJson<PaypalOrder>(`${baseUrl}/v2/checkout/orders/${orderId}/capture`, {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json',
+export async function paypalCaptureOrder(
+  baseUrl: string,
+  token: string,
+  orderId: string,
+) {
+  return paypalJson<PaypalOrder>(
+    `${baseUrl}/v2/checkout/orders/${orderId}/capture`,
+    {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: '{}',
     },
-    body: '{}',
-  });
+  );
 }
 
 export async function paypalVerifyWebhook(

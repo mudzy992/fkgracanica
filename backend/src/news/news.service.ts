@@ -8,6 +8,7 @@ import { ContentStatus } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { NotificationsService } from '../notifications/notifications.service';
 import { slugify } from '../common/utils/slug.util';
+import * as newsVideo from './news-video.util';
 import {
   mapNewsUpdate,
   newsInclude,
@@ -23,7 +24,7 @@ export interface NewsWriteInput {
   authorId?: string;
   categoryId?: string;
   coverPath?: string;
-  videoUrl?: string;
+  videoUrl?: string | null;
   galleryId?: string;
   seoTitle?: string;
   seoDesc?: string;
@@ -65,40 +66,71 @@ export class NewsService {
   }
 
   async findOne(id: string) {
-    const item = await this.prisma.news.findUnique({ where: { id }, include: newsInclude });
+    const item = await this.prisma.news.findUnique({
+      where: { id },
+      include: newsInclude,
+    });
     if (!item) throw new NotFoundException('Vijest nije pronađena');
     return item;
   }
 
-  async create(data: NewsWriteInput) {
-    const slug = await this.uniqueSlug(data.slug?.trim() || slugify(data.title));
-    const { tags, relatedMatchIds, relatedPlayerIds, scheduledAt, ...rest } = data;
-    const item = await this.prisma.news.create({
-      data: {
-        ...rest,
-        slug,
-        status: ContentStatus.DRAFT,
-        scheduledAt: scheduledAt ? new Date(scheduledAt) : undefined,
-      },
+  /** BE-04/P-B04-1: laka provjera za javne rute (komentari drafta nisu javni). */
+  async isPublished(id: string) {
+    const news = await this.prisma.news.findUnique({
+      where: { id },
+      select: { status: true },
     });
-    await syncNewsTags(this.prisma, item.id, tags);
-    await syncNewsRelations(this.prisma, item.id, relatedMatchIds, relatedPlayerIds);
+    return news?.status === ContentStatus.PUBLISHED;
+  }
+
+  async create(data: NewsWriteInput) {
+    data = newsVideo.prepareNewsVideoCreate(data);
+    const slug = await this.uniqueSlug(
+      data.slug?.trim() || slugify(data.title),
+    );
+    const { tags, relatedMatchIds, relatedPlayerIds, scheduledAt, ...rest } =
+      data;
+    // BE-09b/P-B09b-5: vijest + tagovi + relacije u JEDNOJ transakciji —
+    // prije je pad `createMany`-a ostavljao vijest bez tagova.
+    const item = await this.prisma.$transaction(async (tx) => {
+      const created = await tx.news.create({
+        data: {
+          ...rest,
+          slug,
+          status: ContentStatus.DRAFT,
+          scheduledAt: scheduledAt ? new Date(scheduledAt) : undefined,
+        },
+      });
+      await syncNewsTags(tx, created.id, tags);
+      await syncNewsRelations(
+        tx,
+        created.id,
+        relatedMatchIds,
+        relatedPlayerIds,
+      );
+      return created;
+    });
     return this.findOne(item.id);
   }
 
   async update(id: string, data: Record<string, unknown>) {
-    await this.findOne(id);
+    const previous = await this.findOne(id);
+    data = newsVideo.prepareNewsVideoUpdate(data, previous.videoUrl);
     const tags = data.tags as string[] | undefined;
     const relatedMatchIds = data.relatedMatchIds as string[] | undefined;
     const relatedPlayerIds = data.relatedPlayerIds as string[] | undefined;
     const update = mapNewsUpdate(data);
     if (typeof update.slug === 'string' && update.slug) {
-      update.slug = await this.uniqueSlug(update.slug as string, id);
+      update.slug = await this.uniqueSlug(update.slug, id);
     }
-    if (update.scheduledAt) update.scheduledAt = new Date(update.scheduledAt as string);
-    await this.prisma.news.update({ where: { id }, data: update });
-    await syncNewsTags(this.prisma, id, tags);
-    await syncNewsRelations(this.prisma, id, relatedMatchIds, relatedPlayerIds);
+    if (update.scheduledAt)
+      update.scheduledAt = new Date(update.scheduledAt as string);
+    // BE-09b/P-B09b-5: update + tagovi + relacije atomarno.
+    await this.prisma.$transaction(async (tx) => {
+      await tx.news.update({ where: { id }, data: update });
+      await syncNewsTags(tx, id, tags);
+      await syncNewsRelations(tx, id, relatedMatchIds, relatedPlayerIds);
+    });
     return this.findOne(id);
   }
 
@@ -108,7 +140,8 @@ export class NewsService {
       where: { id },
       data: {
         status,
-        publishedAt: status === ContentStatus.PUBLISHED ? new Date() : undefined,
+        publishedAt:
+          status === ContentStatus.PUBLISHED ? new Date() : undefined,
       },
       include: newsInclude,
     });

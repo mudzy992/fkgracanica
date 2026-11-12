@@ -1,4 +1,16 @@
 {
+  "video": {
+    "pasteUnavailable": "Ovaj preglednik ne omogućava sigurno lijepljenje. Koristite noviji preglednik.",
+    "editorUnavailable": "Ugrađeni video nije dostupan: neispravan link. Spremljeni sadržaj nije automatski izmijenjen.",
+    "editorInvalidInput": "Unesite ispravan YouTube video ili playlistu.",
+    "removeEmbedded": "Ukloni video",
+    "embeddedTitle": "Ugrađeni video",
+    "invalidInput": "Unesite ispravan YouTube link s ID-jem od 11 znakova.",
+    "embeddedUnavailable": "Ugrađeni video nije dostupan: neispravan link.",
+    "unavailable": "Video nije dostupan. Provjerite YouTube link.",
+    "liveUnavailable": "Prijenos nije dostupan. Provjerite YouTube link.",
+    "audioUnavailable": "Muzika prije utakmice nije dostupna. Provjerite YouTube link."
+  },
   "nav": {
     "home": "Početna",
     "club": "O klubu",
@@ -13,7 +25,8 @@
     "hallOfFame": "Hall of Fame",
     "museum": "Muzej",
     "login": "Prijavi se",
-    "myAccount": "Moj račun"
+    "myAccount": "Moj račun",
+    "openMenu": "Otvori meni"
   },
   "actions": {
     "readMore": "Pročitaj više",
@@ -27,7 +40,13 @@
     "delete": "Obriši",
     "edit": "Uredi",
     "create": "Kreiraj",
-    "back": "Nazad"
+    "back": "Nazad",
+    "retry": "Pokušaj ponovo",
+    "reloadPage": "Ponovo učitaj stranicu",
+    "close": "Zatvori",
+    "confirm": "Potvrdi",
+    "language": "Jezik",
+    "remove": "Ukloni"
   },
   "home": {
     "heroTitle": "FK Gračanica",
@@ -45,7 +64,26 @@
     "ticketsDesc": "Osiguraj svoje mjesto na stadionu.",
     "trophies": "Trofeji",
     "newsletter": "Newsletter",
-    "newsletterDesc": "Primaj najnovije vijesti direktno u inbox."
+    "newsletterDesc": "Primaj najnovije vijesti direktno u inbox.",
+    "gallerySubtitle": "Trenuci sa terena",
+    "leagueSubtitle": "Trenutno stanje u ligi",
+    "latestNewsSubtitle": "Najnovije iz kluba",
+    "sponsorsSubtitle": "Partneri koji nas podržavaju",
+    "teamSubtitle": "Igrači koji nose dres",
+    "trophiesSubtitle": "Trofeji kroz historiju kluba",
+    "tableClub": "Klub",
+    "tablePoints": "Bod",
+    "newsletterThanks": "Hvala na pretplati!",
+    "newsletterError": "Pretplata nije uspjela. Provjerite email i pokušajte ponovo.",
+    "teamHome": "Domaćin",
+    "teamAway": "Gost",
+    "tablePlayed": "O",
+    "tableWins": "B",
+    "tableDraws": "N",
+    "tableLosses": "P",
+    "tableGoalsFor": "DG",
+    "tableGoalsAgainst": "RG",
+    "season": "Sezona {{name}}"
   },
   "admin": {
     "dashboard": "Kontrolna tabla",
@@ -102,9 +140,731 @@
       "heritage": "Baština",
       "comms": "Komunikacija",
       "monetization": "Monetizacija"
+    },
+    "unsavedChanges": "Ima nesačuvanih izmjena. Zatvoriti bez spremanja?",
+    "unsavedNavigation": "Ima nesačuvanih izmjena. Napustiti stranicu bez spremanja?",
+    "openMenu": "Otvori meni",
+    "breadcrumb": "Putanja",
+    "cmdkTitle": "Pretraga admina",
+    "cmdkPlaceholder": "Traži stranicu ili akciju…",
+    "cmdkEmpty": "Nema rezultata za „{{query}}\"",
+    "cmdkResults": "Rezultati",
+    "cmdkActions": "Brze akcije",
+    "common": {
+      "loading": "Učitavanje…",
+      "select": "Odaberi…",
+      "error": "Došlo je do greške.",
+      "yes": "Da",
+      "no": "Ne",
+      "actions": "Akcije",
+      "saving": "Spremanje…",
+      "saveFailed": "Spremanje nije uspjelo. Pokušajte ponovo.",
+      "moveUp": "Pomjeri gore",
+      "moveDown": "Pomjeri dolje",
+      "saveFailedShort": "Spremanje nije uspjelo."
+    },
+    "mediaUpload": {
+      "progressLabel": "Napredak uploada",
+      "progress": "Upload: {{done}}/{{total}} završeno, {{failed}} neuspješno.",
+      "refreshing": "Osvježavanje biblioteke…",
+      "summary": "Upload završen: {{succeeded}}/{{total}} uspješno, {{failed}} neuspješno.",
+      "failed": "Ovi fajlovi nisu potvrđeni ili nisu poslani. Provjerite biblioteku prije ponovnog odabira:",
+      "rejected": "Ovi fajlovi nisu dodani u red:",
+      "notImage": "nije slika",
+      "noSession": "sesija nije aktivna",
+      "unconfirmed": "ishod nije potvrđen",
+      "sessionChanged": "nije poslano jer se sesija promijenila",
+      "noFolder": "nije odabrana mapa",
+      "refreshFailed": "Osvježavanje biblioteke nije potvrđeno. Provjerite stanje prije ponovnog uploada istih slika.",
+      "retryRefresh": "Osvježi biblioteku",
+      "clearReport": "Zatvori izvještaj"
+    },
+    "mediaPicker": {
+      "pick": "Odabir medija",
+      "pickGallery": "Odabir fotografija za galeriju",
+      "searchPlaceholder": "Pretraga po nazivu, tagu ili putanji…",
+      "searchResults": "Pretraga kroz sve mape ({{count}} rezultata)",
+      "folderView": "Prikaz medija u odabranoj mapi",
+      "empty": "Nema medija za prikaz.",
+      "newFolder": "Nova mapa",
+      "addAllFromFolder": "Dodaj sve iz mape",
+      "addAllHint": "Dodaju se sve slike uploadovane u odabranu mapu medija.",
+      "toggleFolders": "Prikaži ili sakrij podmape",
+      "insertImage": "Ubaci sliku"
+    },
+    "season": {
+      "participants": "Učesnici sezone *",
+      "selectAll": "Svi",
+      "clear": "Očisti",
+      "ownClub": "(naš klub)",
+      "emptyClubs": "Nema klubova — prvo dodajte klubove u adminu.",
+      "selected": "Odabrano: {{count}} · Samo učesnici se pojavljuju u ligaškoj tabeli."
+    },
+    "slug": {
+      "label": "Slug"
+    },
+    "formation": {
+      "allAssigned": "Svi igrači su raspoređeni.",
+      "pool": "Dostupni igrači (povuci na teren)",
+      "pickPosition": "Odaberite poziciju na terenu ili klupi.",
+      "bench": "Klupa"
+    },
+    "home": {
+      "metaTitle": "Kontrolna tabla",
+      "title": "Kontrolna tabla",
+      "subtitle": "Šta čeka akciju, pa zdravlje kluba.",
+      "queue": "Čeka akciju",
+      "health": "Zdravlje kluba",
+      "open": "Otvori →",
+      "kpiError": "Nije moguće učitati KPI podatke.",
+      "writerTitle": "Writer — kontrolna tabla",
+      "writerHint": "Samo sadržaj: vijesti i galerija. Objavu radi moderator.",
+      "moderatorTitle": "Moderator — kontrolna tabla",
+      "moderatorHint": "Queue za odobrenje. Settings i korisnike ne dirate.",
+      "commentatorTitle": "Komentator — kontrolna tabla",
+      "commentatorHint": "Semafor, događaji i predaja izvještaja. Bez kalendara i takmičenja.",
+      "commentatorHintShort": "Semafor, događaji, izvještaji.",
+      "matchesError": "Nije moguće učitati utakmice."
+    },
+    "content": {
+      "news": "Vijesti",
+      "galleries": "Galerije",
+      "liveReports": "Live izvještaji",
+      "unread": "Nepročitano",
+      "afterMatch": "Nakon utakmice",
+      "drafts": "Nacrti",
+      "draftsHint": "Vijesti u izradi",
+      "pending": "Na odobrenju",
+      "pendingHint": "Čeka moderatora",
+      "published": "Objavljene",
+      "publishedHint": "Na portalu",
+      "albums": "Albumi",
+      "newNews": "Nova vijest",
+      "mediaFolders": "Mediji / mape",
+      "newAlbum": "Novi album",
+      "unpublishedNews": "Neobjavljene vijesti",
+      "noDrafts": "Nema nacrta ni predaja.",
+      "newsQueue": "Red vijesti",
+      "galleryQueue": "Red galerija",
+      "emptyQueue": "Nema stavki na čekanju.",
+      "approve": "Odobri"
+    },
+    "commentator": {
+      "liveOnDesk": "Uživo na desku",
+      "openDesk": "Otvori desk",
+      "publicLive": "Javni live",
+      "report": "Izvještaj",
+      "live": "Uživo",
+      "liveHint": "Live / poluvrijeme",
+      "today": "Danas",
+      "todayHint": "Zakazane danas",
+      "draftReports": "Nacrti izvještaja",
+      "draftReportsHint": "Još nisu predati",
+      "awaitingApproval": "Čeka odobrenje",
+      "awaitingApprovalHint": "Kod moderatora"
+    },
+    "match": {
+      "homeTeam": "Domaćin",
+      "awayTeam": "Gost"
+    },
+    "visitors": {
+      "title": "Posjetioci (30 dana)",
+      "web": "Web",
+      "mobile": "Mobile",
+      "total": "Ukupno",
+      "uniqueVisitors": "Unikatni posjetioci",
+      "webMobile": "Web + mobile"
+    },
+    "commsInbox": "Inbox",
+    "kpi": {
+      "users": "Korisnici",
+      "members": "Članovi",
+      "activeMemberships": "Aktivna članstva",
+      "publishedNews": "Objavljene vijesti",
+      "matches": "Utakmice",
+      "goals": "Golovi",
+      "ticketsSold": "Prodane ulaznice",
+      "pendingNews": "Vijesti na odobrenju"
+    },
+    "payments": {
+      "enabled": "Omogućen",
+      "mode": {
+        "label": "Režim",
+        "sandbox": "Test (sandbox)",
+        "live": "Produkcija",
+        "test": "Test"
+      },
+      "stripe": {
+        "publishableKey": "Javni ključ (publishable)",
+        "secretKey": "Tajni ključ",
+        "webhookSecret": "Webhook tajna"
+      },
+      "paypal": {
+        "clientId": "Client ID",
+        "clientSecret": "Client secret",
+        "currency": "Valuta (zadano EUR)",
+        "webhookId": "Webhook ID (opciono)"
+      },
+      "monri": {
+        "merchantKey": "Merchant key",
+        "authToken": "Authenticity token"
+      }
+    },
+    "cmsWidget": {
+      "foundedYear": "Godina osnivanja",
+      "titleRequired": "Naslov *",
+      "subtitle": "Podnaslov",
+      "background": "Pozadinska slika (hero + stadion)",
+      "backgroundDisplay": "Prikaz pozadine",
+      "bg": {
+        "all": "Uključeno — svi ekrani",
+        "desktop": "Samo veliki ekrani",
+        "mobile": "Samo mali ekrani",
+        "none": "Isključeno"
+      },
+      "showNextMatch": "Prikaži sljedeću utakmicu u hero dnu",
+      "showLastResult": "Prikaži zadnji rezultat (suptilno)",
+      "buttons": "Dugmad (label + link)",
+      "buttonLabel": "Tekst dugmeta",
+      "buttonUrl": "/putanja",
+      "variant": {
+        "primary": "Primarno",
+        "outline": "Outline"
+      },
+      "sectionTitle": "Naslov sekcije (opcionalno)",
+      "galleryLatest": "Najnovije galerije",
+      "gallerySingle": "Jedna galerija",
+      "limit": "Limit",
+      "viewAllLink": "Link 'Vidi sve'",
+      "description": "Opis",
+      "buttonUrlFull": "URL dugmeta",
+      "sectionTitleShort": "Naslov sekcije",
+      "newsCount": "Broj vijesti",
+      "viewAllLabel": "Tekst 'Vidi sve'"
+    },
+    "club": {
+      "shortName": "Kratko ime",
+      "city": "Grad",
+      "description": "Opis",
+      "nameRequired": "Naziv *",
+      "shortNameHint": "Kratko ime (npr. FKG, SLO)",
+      "shortNameNote": "Prikazuje se na TV semaforu i rezultatima. Max 8 znakova.",
+      "descriptionPlaceholder": "Opis kluba",
+      "crest": "Grb",
+      "ownClub": "Naš klub",
+      "ownClubHint": "Samo jedan klub može biti označen kao naš."
+    },
+    "newsForm": {
+      "category": "Kategorija",
+      "noCategory": "— Bez kategorije —",
+      "tags": "Tagovi (zarezom)",
+      "tagsPlaceholder": "transfer, utakmica",
+      "videoUrl": "Video URL",
+      "seoTitle": "SEO naslov",
+      "seoDescription": "SEO opis",
+      "gallery": "Galerija",
+      "scheduledAt": "Zakazano objavljivanje",
+      "relatedMatches": "Povezane utakmice",
+      "relatedPlayers": "Povezani igrači"
+    },
+    "competitionsAdmin": {
+      "metaTitle": "Takmičenja",
+      "title": "Takmičenja",
+      "catalogShort": "Katalog",
+      "seasonShort": "Sezona",
+      "seasons": "Sezone",
+      "emptySeasons": "Nema sezona.",
+      "colName": "Naziv",
+      "colPeriod": "Period",
+      "colCompetitions": "Takmičenja",
+      "open": "Otvori",
+      "colActive": "Aktivna",
+      "colSlug": "Slug",
+      "colLeague": "Liga",
+      "league": "Liga",
+      "other": "Ostalo",
+      "catalog": "Katalog takmičenja",
+      "emptyCompetitions": "Nema takmičenja.",
+      "deleteSeason": "Obrisati sezonu?"
+    },
+    "ticketingForm": {
+      "capacity": "Kapacitet stadiona",
+      "memberDiscount": "Popust za članove (%)",
+      "maxPerUser": "Maks. ulaznica po korisniku (blagajna)",
+      "maxPerUserNote": "Online plaćanje nema ovaj limit.",
+      "seasonPrice": "Cijena sezonske karte (KM)",
+      "seasonPriceNote": "0 = nije u prodaji.",
+      "seasonLabel": "Naziv sezonske karte",
+      "boxOffice": "Kupovina na blagajni omogućena",
+      "categories": "Kategorije ulaznica",
+      "save": "Spremi postavke"
+    },
+    "membershipForm": {
+      "detail": "Detalj članstva",
+      "member": "Član",
+      "email": "Email",
+      "status": "Status",
+      "start": "Početak",
+      "end": "Istek",
+      "created": "Kreirano",
+      "club": "Klub",
+      "newMember": "Novi član",
+      "userEmail": "Email korisnika",
+      "emailPlaceholder": "korisnik@email.ba",
+      "accountRequired": "Korisnik mora imati registrirani račun.",
+      "activateNow": "Aktiviraj odmah (nakon uplate na blagajni)"
+    },
+    "playerForm": {
+      "edit": "Uredi igrača",
+      "create": "Novi igrač",
+      "firstName": "Ime *",
+      "lastName": "Prezime *",
+      "club": "Klub",
+      "selectClub": "Odaberi klub",
+      "shirt": "Broj dresa",
+      "photo": "Fotografija",
+      "bio": "Bio (opcionalno)",
+      "active": "Aktivan u kadru",
+      "position": "Pozicija",
+      "shirtNumber": "Broj",
+      "inactive": "Neaktivan"
+    },
+    "clubForm": {
+      "edit": "Uredi klub",
+      "create": "Novi klub",
+      "stadium": "Stadion",
+      "descriptionPublic": "Opis kluba (javni prikaz)",
+      "name": "Naziv kluba *"
+    },
+    "calendar": {
+      "seasonNotFound": "Sezona nije pronađena.",
+      "competition": "Takmičenje",
+      "participants": "Učesnici"
+    },
+    "analyticsPanel": {
+      "loading": "Učitavanje posjetilaca…",
+      "web30": "Web (30d)",
+      "mobile30": "Mobile (30d)",
+      "total30": "Ukupno (30d)",
+      "dailyTrend": "Dnevni trend (30 dana)",
+      "table": "Tabela posjeta",
+      "date": "Datum",
+      "geo": "Geo distribucija (30 dana)"
+    },
+    "trophyForm": {
+      "edit": "Uredi trofej",
+      "create": "Novi trofej",
+      "nameRequired": "Naziv *",
+      "year": "Godina",
+      "description": "Opis (prikazuje se kod istaknutog trofeja)",
+      "image": "Slika trofeja",
+      "featured": "Istakni kao najbolji trofej",
+      "featuredHint": "Prikazuje se istaknuto na početnoj i stranici trofeja"
+    },
+    "releases": {
+      "new": "Novi Android release",
+      "uploading": "Upload…",
+      "uploadApk": "Upload APK",
+      "version": "Verzija (1.0.1)",
+      "versionCode": "versionCode",
+      "minVersionCode": "minSupportedVersionCode",
+      "notes": "Napomene",
+      "forceUpdate": "Obavezno ažuriranje",
+      "createError": "Release nije kreiran.",
+      "metaTitle": "App release",
+      "title": "Android app release",
+      "colVersion": "Verzija",
+      "colCode": "Code",
+      "required": "Obavezno"
+    },
+    "stadium": {
+      "nameRequired": "Naziv stadiona *",
+      "address": "Adresa",
+      "capacity": "Kapacitet",
+      "description": "Opis stadiona",
+      "image": "Slika stadiona",
+      "save": "Spremi stadion"
+    },
+    "matchForm": {
+      "edit": "Uredi utakmicu",
+      "create": "Nova utakmica",
+      "liveLocked": "Status i rezultat se mijenjaju u komentator panelu.",
+      "home": "Domaći",
+      "away": "Gosti",
+      "datetime": "Datum i vrijeme",
+      "pastMatch": "Utakmica u prošlosti (već odigrana)",
+      "statusHint": "Završenu utakmicu unesite rezultatom ovdje. LIVE ide preko komentatora.",
+      "openCommentator": "Otvori komentator"
+    },
+    "mediaAsset": {
+      "edit": "Uredi medij",
+      "filename": "Naziv fajla",
+      "tags": "Tagovi",
+      "tagsPlaceholder": "vijesti, hero",
+      "folder": "Mapa",
+      "noFolder": "Bez mape",
+      "saveError": "Izmjena medija nije sačuvana."
+    },
+    "timelinePage": {
+      "title": "Vremenska linija kluba"
+    },
+    "orderSheet": {
+      "title": "Narudžba #{{id}}",
+      "user": "Korisnik",
+      "amount": "Iznos",
+      "payment": "Plaćanje",
+      "paymentMethod": "Način"
+    },
+    "commentatorBoard": {
+      "player": "Igrač",
+      "assist": "Asistent (opcionalno)",
+      "moreEvents": "Više događaja",
+      "substitution": "Izmjena",
+      "out": "Izlazi",
+      "in": "Ulazi"
+    },
+    "competitionForm": {
+      "edit": "Uredi takmičenje",
+      "create": "Novo takmičenje",
+      "editSeason": "Uredi sezonu",
+      "newSeason": "Nova sezona",
+      "nameRequired": "Naziv *",
+      "league": "Ligaško takmičenje",
+      "leagueHint": "Prikazuje se na /liga i tabeli na naslovnoj.",
+      "yearStart": "Godina početka",
+      "yearEnd": "Godina kraja",
+      "activeSeason": "Aktivna sezona"
+    },
+    "newsAdmin": {
+      "allCategories": "Sve kategorije",
+      "categories": "Kategorije",
+      "deleteTitle": "Obriši vijest",
+      "deleteConfirm": "Obrisati „{{title}}“?"
+    },
+    "clubsList": {
+      "type": "Tip",
+      "opponent": "Protivnik",
+      "manage": "Upravljaj",
+      "title": "Klubovi"
+    },
+    "usersAdmin": {
+      "search": "Pretraži…"
+    },
+    "financeBuckets": {
+      "count": "Broj",
+      "empty": "Nema podataka u ovom periodu",
+      "byProvider": "Po načinu plaćanja",
+      "byStatus": "Po statusu"
+    },
+    "financeKpi": {
+      "tickets": "Ulaznice",
+      "transactions": "{{count}} transakcija",
+      "seasonPasses": "Sezonske karte",
+      "cards": "{{count}} karata",
+      "memberships": "Članarine (procjena)",
+      "activeMembers": "{{count}} aktivnih članova",
+      "totalHint": "Ulaznice + sezona + procjena članarina",
+      "period": "Period",
+      "periodHint": "Po datumu kreiranja uplate / aktivacije"
+    },
+    "roundsPanel": {
+      "rounds": "Kola",
+      "round": "Kolo",
+      "empty": "Dodajte prvo kolo.",
+      "matches": "{{count}} utakm."
+    },
+    "matchReport": {
+      "title": "Izvještaj utakmice",
+      "notFound": "Utakmica nije pronađena.",
+      "approvedLocked": "Izvještaj je odobren i više se ne može uređivati."
+    },
+    "teamPanel": {
+      "played": "Odigrano",
+      "goals": "Golovi",
+      "winPercent": "Pobjede %",
+      "form": "Forma:",
+      "recent": "Zadnje utakmice"
+    },
+    "cmsMenu": {
+      "custom": "Prilagođena",
+      "active": "Aktivno",
+      "label": "Label",
+      "path": "/putanja",
+      "pageOptional": "CMS stranica (opcionalno)",
+      "title": "Glavni meni",
+      "noActiveItems": "Nema aktivnih stavki",
+      "addWidget": "Dodaj widget"
+    },
+    "auditPage": {
+      "metaTitle": "Audit",
+      "title": "Audit log",
+      "action": "Akcija",
+      "entity": "Entitet"
+    },
+    "commentatorPage": {
+      "title": "Komentator",
+      "panel": "Komentator panel",
+      "publicLive": "Javni live prikaz"
+    },
+    "contactPage": {
+      "title": "Kontakt poruke"
+    },
+    "galleryBatch": {
+      "partial": "Neke fotografije možda su već dodane; dodavanje nije u potpunosti uspjelo. Galerija je osvježena. Pregledajte je prije ponovnog odabira; kod neizvjesnog mrežnog odgovora slika se može pojaviti i kasnije.",
+      "partialUnverified": "Neke fotografije možda su već dodane, ali stanje galerije nije moguće osvježiti. Dodavanje je onemogućeno dok osvježavanje ne uspije.",
+      "savedUnverified": "Fotografije su poslane, ali stanje galerije nije moguće osvježiti. Dodavanje je onemogućeno dok osvježavanje ne uspije.",
+      "initialUnverified": "Stanje galerije nije moguće osvježiti. Dodavanje je onemogućeno dok osvježavanje ne uspije.",
+      "folderFailed": "Nije moguće učitati slike iz odabrane mape. Nijedna fotografija nije poslana.",
+      "refreshed": "Galerija je osvježena. Pregledajte fotografije prije novog dodavanja.",
+      "checking": "Dodavanje ili osvježavanje galerije je u toku.",
+      "retry": "Osvježi galeriju"
+    },
+    "galleryPhotos": {
+      "empty": "Još nema fotografija. Dodajte slike ili mapu."
+    },
+    "hofForm": {
+      "edit": "Uredi unos",
+      "create": "Novi unos",
+      "name": "Ime *",
+      "role": "Uloga *",
+      "years": "Godine (npr. 1998–2010)",
+      "bio": "Biografija"
+    },
+    "museumForm": {
+      "edit": "Uredi predmet",
+      "create": "Novi predmet",
+      "title": "Naslov *"
+    },
+    "timelineForm": {
+      "edit": "Uredi događaj",
+      "create": "Novi događaj",
+      "year": "Godina *",
+      "image": "Slika"
+    },
+    "userForm": {
+      "edit": "Uredi korisnika",
+      "create": "Novi korisnik",
+      "newPassword": "Nova lozinka (opcionalno)",
+      "password": "Lozinka",
+      "firstName": "Ime",
+      "lastName": "Prezime",
+      "active": "Aktivan",
+      "roles": "Uloge"
+    },
+    "providerHints": {
+      "stripeTitle": "Stripe test (demo)",
+      "stripeBody": "U Stripe Dashboardu uključite Test mode i unesite pk_test i sk_test ključeve. Test kartica:",
+      "stripeWebhook": "Webhook lokalno: stripe listen --forward-to localhost:3000/payments/webhooks/stripe",
+      "paypalTitle": "PayPal sandbox",
+      "paypalBody": "developer.paypal.com → App → Client ID i Secret. Mode: sandbox. Charge ide u EUR (isti broj kao KM na narudžbi). Webhook ID obavezan za server callback; povratak na portal radi i bez njega.",
+      "paypalWebhook": "Webhook: POST /payments/webhooks/paypal",
+      "monriTitle": "Monri test",
+      "monriBody": "Test IPG: ipgtest.monri.com/v2/form. Live: ipg.monri.com. Merchant key + authenticity token. Mode: test. Valuta BAM, iznos u feningima. Bridge: /placanje/monri.",
+      "monriWebhook": "Callback: POST /payments/webhooks/monri"
+    },
+    "playerPanel": {
+      "selectPlayer": "Odaberi igrača…",
+      "season": "Sezona",
+      "minutes": "Min"
+    },
+    "clubHub": {
+      "notFound": "Klub nije pronađen."
+    },
+    "cmsBuilder": {
+      "notFound": "Stranica nije pronađena.",
+      "sections": "Sekcije",
+      "noSections": "Nema sekcija."
+    },
+    "cmsMeta": {
+      "title": "Naslov",
+      "draft": "Nacrt",
+      "published": "Objavljeno",
+      "save": "Sačuvaj meta",
+      "editTitle": "Uredi: {{title}}"
+    },
+    "seasonHub": {
+      "notFound": "Takmičenje u sezoni nije pronađeno."
+    },
+    "galleryEditor": {
+      "createAlbum": "Kreiraj album",
+      "titleRequired": "Naslov albuma *",
+      "descriptionOptional": "Opis (opcionalno)",
+      "afterCreate": "Nakon kreiranja albuma dodajete fotografije na cijelom ekranu.",
+      "photos": "Fotografije ({{count}})"
+    },
+    "mediaGrid": {
+      "copyUrl": "Kopiraj URL",
+      "copied": "Kopirano"
+    },
+    "ticketingPayments": {
+      "status": "Status online plaćanja",
+      "membershipPrice": "Godišnja članarina (KM)",
+      "defaultProvider": "Zadani servis plaćanja"
+    },
+    "analyticsPage": {
+      "allSeasons": "Sve sezone"
+    },
+    "analyticsTabs": {
+      "team": "Tim",
+      "h2h": "H2H",
+      "players": "Igrači",
+      "visitors": "Posjetioci"
+    },
+    "emailLog": {
+      "noErrors": "Nema grešaka u slanju emailova",
+      "allDelivered": "Svi emailovi su uspješno isporučeni."
+    },
+    "livePendingPage": {
+      "title": "Live izvještaji na odobrenje",
+      "empty": "Nema utakmica na čekanju.",
+      "match": "Utakmica"
+    },
+    "membershipPage": {
+      "title": "Članstvo"
+    },
+    "rolesForm": {
+      "create": "Nova uloga",
+      "name": "Naziv *",
+      "createError": "Kreiranje uloge nije uspjelo."
+    },
+    "rolesPage": {
+      "system": "Sistemska",
+      "editPermissions": "Uredi dozvole"
+    },
+    "seasonEdition": {
+      "fromCatalog": "Iz kataloga",
+      "newCompetition": "Ili novo takmičenje (naziv)",
+      "league": "Ligaško"
+    },
+    "sponsorForm": {
+      "edit": "Uredi sponzora",
+      "create": "Novi sponzor",
+      "url": "URL (opcionalno)",
+      "logo": "Logo"
+    },
+    "h2h": {
+      "clubA": "Klub A",
+      "clubB": "Klub B"
+    },
+    "cmsPages": {
+      "title": "CMS stranice",
+      "new": "Nova stranica",
+      "create": "Nova CMS stranica",
+      "titleRequired": "Naslov stranice *",
+      "slugRequired": "Slug (npr. o-nama) *",
+      "empty": "Nema stranica."
+    },
+    "commentPanel": {
+      "liveComments": "Komentari uživo",
+      "empty": "Nema komentara.",
+      "placeholder": "Komentar za publiku..."
+    },
+    "matchFinished": {
+      "title": "Utakmica (završena)",
+      "locked": "Završena utakmica se ne može uređivati.",
+      "editReport": "Uredi izvještaj"
+    },
+    "roundCascade": {
+      "title": "Obrisati kolo i sve povezano?",
+      "irreversible": "Ova radnja se ne može poništiti.",
+      "ack": "Razumijem da se podaci ne mogu vratiti"
+    },
+    "roundMatches": {
+      "title": "Utakmice u kolu"
+    },
+    "financeFilters": {
+      "status": "Status uplate",
+      "method": "Način plaćanja",
+      "period": "Prikaži period"
+    },
+    "newsEditor": {
+      "title": "Naslov",
+      "excerpt": "Uvod",
+      "content": "Sadržaj"
+    },
+    "ticketCategories": {
+      "name": "Naziv",
+      "price": "Cijena"
+    },
+    "contactMessage": {
+      "date": "Datum",
+      "message": "Poruka"
+    },
+    "newsCategories": {
+      "newPlaceholder": "Naziv nove kategorije",
+      "empty": "Nema kategorija."
+    },
+    "newsletterPage": {
+      "searchPlaceholder": "Pretraži email...",
+      "subscribersTitle": "Newsletter pretplatnici"
+    },
+    "clubStats": {
+      "empty": "Nema podataka.",
+      "title": "Statistike igrača"
+    },
+    "commentatorClock": {
+      "matchMinute": "Minuta utakmice",
+      "stoppage": "Sudijska nadoknada"
+    },
+    "eventLog": {
+      "title": "Dnevnik događaja",
+      "empty": "Nema događaja."
+    },
+    "penalties": {
+      "title": "Izvođenje penala"
+    },
+    "retrospective": {
+      "title": "Izvještaj utakmice",
+      "minute": "Minuta događaja"
+    },
+    "streamDialog": {
+      "title": "YouTube live stream"
+    },
+    "highlights": {
+      "youtubeUrl": "YouTube URL"
+    },
+    "scoreInputs": {
+      "home": "Golovi domaćih",
+      "away": "Golovi gostiju"
+    },
+    "roundForm": {
+      "numberPlaceholder": "Broj kola *",
+      "namePlaceholder": "Naziv (opcionalno)"
+    },
+    "mediaBulk": {
+      "moveTo": "Premjesti u mapu…",
+      "actionError": "Akcija nije izvršena. Pokušajte ponovo."
+    },
+    "mediaFolders": {
+      "title": "Mape medija",
+      "all": "Svi mediji"
+    },
+    "mediaToolbar": {
+      "searchPlaceholder": "Pretraga po nazivu, tagu ili putanji…",
+      "clearSearch": "Obriši pretragu"
+    },
+    "ticketBackground": {
+      "label": "Pozadina ulaznice (backdrop)",
+      "preview": "Pregled"
+    },
+    "seasonTicket": {
+      "issueTitle": "Izdaj sezonsku kartu (blagajna)",
+      "emailPlaceholder": "email korisnika"
+    },
+    "cmsPreview": {
+      "livePreview": "Live preview",
+      "empty": "Dodajte widget za preview."
+    },
+    "cmsSection": {
+      "aboutPlaceholder": "Tekst o klubu"
+    },
+    "cmsNextMatch": {
+      "titlePlaceholder": "Naslov (opcionalno)",
+      "stadiumBackground": "Pozadina stadiona (parallax)"
     }
   },
   "common": {
+    "routeLoadError": "Stranicu nije moguće učitati. Provjerite vezu i ponovo je učitajte.",
     "loading": "Učitavanje...",
     "noResults": "Nema rezultata",
     "error": "Došlo je do greške",
@@ -114,7 +874,9 @@
     "message": "Poruka",
     "subject": "Naslov",
     "livePushTitle": "Live push obavijesti",
-    "livePushHint": "Golovi, kartoni i ostale akcije uživo. Isključite da utišate push."
+    "livePushHint": "Golovi, kartoni i ostale akcije uživo. Isključite da utišate push.",
+    "loadError": "Podatke nije moguće učitati. Provjerite vezu i pokušajte ponovo.",
+    "actionFailed": "Akcija nije uspjela. Pokušajte ponovo."
   },
   "footer": {
     "menu": "Meni",
@@ -154,8 +916,152 @@
     "phone": "Telefon",
     "address": "Adresa"
   },
+  "paymentReturn": {
+    "pending": "Status uplate još nije potvrđen. Provjerite stanje prije nove kupovine.",
+    "error": "Status uplate trenutno nije moguće potvrditi. Ako ste zaduženi, ne pokrećite novu kupovinu; obratite se podršci.",
+    "retryInfo": "Ponovna potvrda može dovršiti već odobrenu uplatu; ne pokreće novu kupovinu.",
+    "retry": "Ponovo potvrdi postojeću uplatu",
+    "signIn": "Prijavite se kako biste potvrdili postojeću uplatu."
+  },
   "pages": {
-    "notFound": "Stranica nije pronađena."
+    "notFound": "Stranica nije pronađena.",
+    "gallery": {
+      "seoTitle": "Galerija",
+      "eyebrow": "Mediji",
+      "title": "Galerija",
+      "subtitle": "Fotografije s utakmica, događaja i iza kulisa.",
+      "empty": "Nema objavljenih galerija.",
+      "photos": "Fotografije",
+      "notFound": "Galerija nije pronađena."
+    },
+    "club": {
+      "notFound": "Klub nije pronađen.",
+      "squadEmpty": "Kadar trenutno nije objavljen.",
+      "timelineSeoDesc": "Historija i razvoj FK Gračanica",
+      "timelineEmpty": "Historija kluba još nije objavljena.",
+      "aboutClub": "O klubu"
+    },
+    "news": {
+      "notFound": "Vijest nije pronađena."
+    },
+    "search": {
+      "seoTitle": "Pretraga",
+      "eyebrow": "Portal",
+      "title": "Pretraga",
+      "subtitle": "Pronađite vijesti, igrače, klubove i utakmice.",
+      "placeholder": "Pretraži vijesti, igrače, utakmice...",
+      "minChars": "Unesite najmanje 2 karaktera.",
+      "empty": "Nema rezultata.",
+      "all": "Sve",
+      "previous": "Prethodna",
+      "next": "Sljedeća"
+    },
+    "sponsors": {
+      "seoTitle": "Sponzori",
+      "seoDesc": "Partneri i sponzori FK Gračanica",
+      "empty": "Nema sponzora."
+    },
+    "trophies": {
+      "seoTitle": "Trofeji",
+      "seoDesc": "Trofeji i titule FK Gračanica",
+      "other": "Ostali trofeji",
+      "empty": "Nema trofeja."
+    },
+    "museum": {
+      "seoTitle": "Muzej",
+      "seoDesc": "Artefakti i historija FK Gračanica",
+      "collection": "Zbirka",
+      "empty": "Nema predmeta u muzeju."
+    },
+    "hallOfFame": {
+      "seoTitle": "Kuća slavnih",
+      "seoDesc": "Legende FK Gračanica",
+      "empty": "Nema unosa u Kući slavnih."
+    },
+    "league": {
+      "seoTitle": "Liga",
+      "seoDesc": "Tabela i rezultati lige",
+      "tableToRound": "Tabela do {{round}}. kola",
+      "overallTable": "Ukupna tabela"
+    },
+    "newsletter": {
+      "seoTitle": "Odjava s newslettera",
+      "eyebrow": "Newsletter",
+      "title": "Odjava",
+      "subtitle": "Upravljanje pretplatom.",
+      "formTitle": "Newsletter",
+      "formDesc": "Odjava s mailing liste FK Gračanica.",
+      "loading": "Obrađujemo zahtjev…",
+      "success": "Odjavljeni ste. Više nećete primati newsletter.",
+      "invalid": "Link nije validan ili je već iskorišten."
+    },
+    "player": {
+      "notFound": "Igrač nije pronađen.",
+      "about": "O igraču",
+      "career": "Karijera (ukupno)",
+      "appearances": "Nastupi",
+      "goals": "Golovi",
+      "assists": "Asist.",
+      "minutes": "Minute",
+      "yellowCards": "Žuti",
+      "redCards": "Crveni",
+      "matches": "Utakmice",
+      "loadingMatches": "Učitavanje utakmica...",
+      "starter": "start",
+      "bench": "klupa",
+      "goalsCount": "{{count}} gol"
+    },
+    "tickets": {
+      "seoTitle": "Ulaznice",
+      "seoDesc": "Rezervacija ulaznica za utakmice FK Gračanica",
+      "eyebrow": "Stadion",
+      "title": "Ulaznice",
+      "subtitle": "Osigurajte svoje mjesto na utakmici.",
+      "formTitle": "Ulaznice",
+      "formDesc": "Rezervacija i pregled vaših narudžbi.",
+      "signIn": "Prijavite se",
+      "moduleInactive": "Modul ulaznica trenutno nije aktivan.",
+      "guestInfo": "Članovi i gosti mogu kupiti ulaznice online ili rezervisati za blagajnu — potrebna je prijava.",
+      "signedInAs": "Prijavljeni: {{email}}",
+      "paymentCancelled": "Plaćanje je otkazano. Rezervacija je sačuvana — platite iz „Moje narudžbe”.",
+      "tabsReserve": "Rezervacija",
+      "tabsOrders": "Moje narudžbe",
+      "tabsSeason": "Sezona",
+      "onlyBoxOffice": "Samo rezervacija — plaćanje na blagajni stadiona.",
+      "onlineOrBoxOffice": "Plaćanje online ili rezervacija za blagajnu — po izboru."
+    },
+    "membership": {
+      "seoTitle": "Članstvo",
+      "seoTitleAccount": "Moj račun",
+      "eyebrow": "Zajednica",
+      "title": "Članstvo",
+      "titleAccount": "Moj račun",
+      "subtitle": "Pridružite se klubu i podržite FK Gračanica kao registrirani član.",
+      "subtitleAccount": "Članstvo, ulaznice i pregled vaših narudžbi.",
+      "joinTitle": "Postani član",
+      "joinSubtitle": "Ekskluzivne pogodnosti za članove kluba.",
+      "accountTitle": "Moj račun",
+      "accountSubtitle": "Pregledajte člansku karticu i kupljene ulaznice."
+    },
+    "matchCenter": {
+      "notFound": "Utakmica nije pronađena.",
+      "report": "Izvještaj utakmice — ",
+      "editReport": "Uredi izvještaj",
+      "createReport": "Kreiraj / uredi izvještaj",
+      "backToLeague": "Natrag na ligu"
+    },
+    "live": {
+      "notFound": "Utakmica nije pronađena.",
+      "notLive": "Utakmica trenutno nije uživo.",
+      "backToLeague": "Natrag na ligu"
+    },
+    "monri": {
+      "seoTitle": "Plaćanje",
+      "needLogin": "Prijava je potrebna za plaćanje.",
+      "formNotReady": "Monri forma nije spremna. Provjerite ključeve u adminu.",
+      "back": "Nazad",
+      "missingSession": "Nedostaje Monri sesija."
+    }
   },
   "match": {
     "fullStream": "Snimak",
@@ -163,7 +1069,9 @@
     "addHighlight": "Dodaj klip",
     "highlightTitle": "Naslov klipa",
     "highlightStart": "Početak (sekunde, opcionalno)",
-    "highlightSaveError": "Klip nije spremljen."
+    "highlightSaveError": "Klip nije spremljen.",
+    "highlightDeleteTitle": "Obrisati highlight?",
+    "highlightDeleteDesc": "„{{title}}” će biti obrisan."
   },
   "appDownload": {
     "seoTitle": "Android aplikacija",
@@ -204,5 +1112,9 @@
       "install": "Instaliraj",
       "cancel": "Otkaži"
     }
+  },
+  "profile": {
+    "avatarUploadError": "Profilna slika nije sačuvana.",
+    "avatarDeleteError": "Profilna slika nije uklonjena."
   }
 }

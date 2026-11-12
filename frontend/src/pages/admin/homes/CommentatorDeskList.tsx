@@ -1,11 +1,12 @@
+import { buttonVariants } from "../../../components/ui/button-variants";
 import { Link } from 'react-router-dom';
 import { ClubCrest } from '../../../components/public/clubs/ClubCrest';
 import { Badge } from '../../../components/ui/badge';
-import { Button } from '../../../components/ui/button';
+;
 import { Skeleton } from '../../../components/ui/skeleton';
 import { reportStatusLabel } from '../../../lib/match-report';
 import { matchStatusLabel, matchStatusTone } from '../../../lib/match-status-label';
-import { formatDateTime } from '../../../lib/utils';
+import { cn, formatDateTime } from '../../../lib/utils';
 import type { Match } from '../../../types';
 import { deskCtaLabel, deskHref, groupDeskMatches, matchTitle } from './commentator-desk';
 
@@ -28,15 +29,19 @@ function DeskRow({ match }: { match: Match }) {
         <Badge variant={matchStatusTone(match.status)} className="text-[10px]">
           {matchStatusLabel(match.status)}
         </Badge>
-        <Link to={deskHref(match)}>
-          <Button size="sm">{deskCtaLabel(match)}</Button>
-        </Link>
+        <Link to={deskHref(match)} className={cn(buttonVariants({size: "sm"}))}>{deskCtaLabel(match)}</Link>
       </div>
     </li>
   );
 }
 
-export function CommentatorDeskList({ matches, isLoading }: { matches: Match[]; isLoading: boolean }) {
+export function CommentatorDeskList({
+  matches,
+  isLoading,
+}: {
+  matches: Match[];
+  isLoading: boolean;
+}) {
   if (isLoading) {
     return (
       <div className="space-y-2 rounded-xl border border-[var(--border-subtle)] p-4">

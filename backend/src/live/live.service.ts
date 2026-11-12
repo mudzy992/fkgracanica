@@ -1,14 +1,28 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
-import { MatchEventType, MatchPeriod, MatchReportStatus, MatchStatus } from '@prisma/client';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+import {
+  MatchEventType,
+  MatchPeriod,
+  MatchReportStatus,
+  MatchStatus,
+} from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { RealtimeGateway } from '../realtime/realtime.gateway';
 import { StatisticsService } from '../statistics/statistics.service';
 import { applyScore, isScoringEvent } from './live-score.util';
 import { resolveEventMinute } from './live-clock.util';
-import { matchEditionInclude, withSeasonAlias } from '../matches/match-edition.util';
+import {
+  matchEditionInclude,
+  withSeasonAlias,
+} from '../matches/match-edition.util';
 import { LiveFanoutService } from '../notifications/live-fanout.service';
 import { requiresClubPlayer, requiresRelatedPlayer } from './live-event-rules';
 import { emitLiveClock } from './live-emit-clock';
+import { optionalYouTubeUrl } from '../common/utils/youtube-write.util';
+import { parseYouTubeId } from '../common/utils/youtube.util';
 
 @Injectable()
 export class LiveService {
@@ -19,24 +33,33 @@ export class LiveService {
     private readonly liveFanout: LiveFanoutService,
   ) {}
 
-  async addEvent(matchId: string, data: {
-    type: MatchEventType;
-    minute?: number;
-    playerId?: string;
-    relatedPlayerId?: string;
-    teamSide?: string;
-    description?: string;
-    createdById?: string;
-  }) {
-    const current = await this.prisma.match.findUniqueOrThrow({ where: { id: matchId } });
+  async addEvent(
+    matchId: string,
+    data: {
+      type: MatchEventType;
+      minute?: number;
+      playerId?: string;
+      relatedPlayerId?: string;
+      teamSide?: string;
+      description?: string;
+      createdById?: string;
+    },
+  ) {
+    const current = await this.prisma.match.findUniqueOrThrow({
+      where: { id: matchId },
+    });
     if (current.status === MatchStatus.FINISHED) {
-      throw new BadRequestException('Za završenu utakmicu koristite editor izvještaja.');
+      throw new BadRequestException(
+        'Za završenu utakmicu koristite editor izvještaja.',
+      );
     }
     if (requiresClubPlayer(data.type) && !data.playerId) {
       throw new BadRequestException('Odaberite igrača za ovu akciju.');
     }
     if (requiresRelatedPlayer(data.type) && !data.relatedPlayerId) {
-      throw new BadRequestException('Izmjena zahtijeva igrača koji izlazi i koji ulazi.');
+      throw new BadRequestException(
+        'Izmjena zahtijeva igrača koji izlazi i koji ulazi.',
+      );
     }
     const minute = data.minute ?? resolveEventMinute(current, current.minute);
     const event = await this.prisma.matchEvent.create({
@@ -50,29 +73,49 @@ export class LiveService {
     return event;
   }
 
-  async addComment(matchId: string, data: { message: string; userId?: string; minute?: number }) {
-    const current = await this.prisma.match.findUniqueOrThrow({ where: { id: matchId } });
+  async addComment(
+    matchId: string,
+    data: { message: string; userId?: string; minute?: number },
+  ) {
+    const current = await this.prisma.match.findUniqueOrThrow({
+      where: { id: matchId },
+    });
     const minute = data.minute ?? resolveEventMinute(current, current.minute);
-    const comment = await this.prisma.liveComment.create({ data: { ...data, minute, matchId } });
+    const comment = await this.prisma.liveComment.create({
+      data: { ...data, minute, matchId },
+    });
     this.realtime.emitLiveComment(matchId, comment);
     return comment;
   }
 
   async setLiveStream(matchId: string, url: string | null) {
+    if (url?.trim() && !parseYouTubeId(url)) {
+      const current = await this.prisma.match.findUnique({
+        where: { id: matchId },
+      });
+      if (current?.liveStreamUrl === url) return current;
+    }
     const match = await this.prisma.match.update({
       where: { id: matchId },
-      data: { liveStreamUrl: url },
+      data: { liveStreamUrl: optionalYouTubeUrl(url) },
     });
     this.realtime.emitMatchStatus(matchId, match);
     return match;
   }
 
   listPendingApproval() {
-    return this.prisma.match.findMany({
-      where: { reportStatus: MatchReportStatus.PENDING_APPROVAL },
-      include: { homeClub: true, awayClub: true, ...matchEditionInclude },
-      orderBy: { updatedAt: 'desc' },
-    }).then((rows) => rows.map(withSeasonAlias));
+    return this.prisma.match
+      .findMany({
+        where: { reportStatus: MatchReportStatus.PENDING_APPROVAL },
+        include: {
+          homeClub: true,
+          awayClub: true,
+          roundRel: { select: { id: true, number: true, name: true } },
+          ...matchEditionInclude,
+        },
+        orderBy: { updatedAt: 'desc' },
+      })
+      .then((rows) => rows.map(withSeasonAlias));
   }
 
   async approveReport(matchId: string) {
@@ -105,18 +148,26 @@ export class LiveService {
 
   private async applyEventScore(
     matchId: string,
-    current: { homeScore: number; awayScore: number; matchPeriod: MatchPeriod | null },
+    current: {
+      homeScore: number;
+      awayScore: number;
+      matchPeriod: MatchPeriod | null;
+    },
     data: { type: MatchEventType; teamSide?: string },
     minute: number,
   ) {
     if (!isScoringEvent(data.type)) {
-      await this.prisma.match.update({ where: { id: matchId }, data: { minute } });
+      await this.prisma.match.update({
+        where: { id: matchId },
+        data: { minute },
+      });
       return;
     }
     const isPenalties = current.matchPeriod === MatchPeriod.PENALTIES;
     const isShootoutPenalty =
       isPenalties &&
-      (data.type === MatchEventType.PENALTY_SCORED || data.type === MatchEventType.PENALTY_MISSED);
+      (data.type === MatchEventType.PENALTY_SCORED ||
+        data.type === MatchEventType.PENALTY_MISSED);
     if (isShootoutPenalty) {
       const side = data.teamSide === 'away' ? 'away' : 'home';
       const scored = data.type === MatchEventType.PENALTY_SCORED;
@@ -140,10 +191,18 @@ export class LiveService {
       return;
     }
     if (isPenalties) {
-      await this.prisma.match.update({ where: { id: matchId }, data: { minute } });
+      await this.prisma.match.update({
+        where: { id: matchId },
+        data: { minute },
+      });
       return;
     }
-    const scores = applyScore(current.homeScore, current.awayScore, data.type, data.teamSide);
+    const scores = applyScore(
+      current.homeScore,
+      current.awayScore,
+      data.type,
+      data.teamSide,
+    );
     const match = await this.prisma.match.update({
       where: { id: matchId },
       data: { ...scores, minute },

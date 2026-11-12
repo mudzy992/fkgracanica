@@ -15,7 +15,7 @@ describe('live-clock.util', () => {
   it('formats stoppage display', () => {
     const state = computeLiveClock(base);
     expect(state?.showStoppage).toBe(true);
-    expect(formatLiveMinute(state!)).toBe('46:00 (+6)');
+    expect(formatLiveMinute(state)).toBe('46:00 (+6)');
   });
 
   it('prompts stoppage after 45 without announcement', () => {

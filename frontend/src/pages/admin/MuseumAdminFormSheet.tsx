@@ -1,11 +1,14 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useCreateMuseumItem, useUpdateMuseumItem } from '../../hooks/use-heritage-admin';
 import { getApiErrorMessage } from '../../lib/api-error';
 import { MUSEUM_CATEGORIES } from '../../lib/museum-categories';
 import { AdminFormSheet } from '../../components/admin/AdminFormSheet';
 import { MediaPicker } from '../../components/admin/MediaPicker';
 import { Button } from '../../components/ui/button';
+import { Select } from '../../components/ui/select';
 import { Input } from '../../components/ui/input';
+import { Textarea } from '../../components/ui/textarea';
 import type { MuseumItem } from '../../types';
 
 const CATEGORIES = MUSEUM_CATEGORIES;
@@ -19,6 +22,7 @@ interface Props {
 }
 
 export function MuseumAdminFormSheet({ open, onOpenChange, edit }: Props) {
+  const { t } = useTranslation();
   const create = useCreateMuseumItem();
   const update = useUpdateMuseumItem();
   const [title, setTitle] = useState('');
@@ -54,30 +58,52 @@ export function MuseumAdminFormSheet({ open, onOpenChange, edit }: Props) {
   };
 
   return (
-    <AdminFormSheet open={open} onOpenChange={onOpenChange} title={edit ? 'Uredi predmet' : 'Novi predmet'}>
+    <AdminFormSheet
+      open={open}
+      onOpenChange={onOpenChange}
+      title={edit ? t('admin.museumForm.edit') : t('admin.museumForm.create')}
+    >
       <div className="space-y-4">
-        <Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Naslov *" />
+        <Input
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          placeholder={t('admin.museumForm.title')}
+        />
         <div>
-          <label className="mb-1 block text-sm font-medium">Kategorija</label>
-          <select
+          <label className="mb-1 block text-sm font-medium">{t('admin.newsForm.category')}</label>
+          <Select
             value={category}
             onChange={(e) => setCategory(e.target.value)}
-            className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
           >
             {CATEGORIES.map((c) => (
-              <option key={c.value} value={c.value}>{c.label}</option>
+              <option key={c.value} value={c.value}>
+                {c.label}
+              </option>
             ))}
-          </select>
+          </Select>
         </div>
-        <Input type="number" value={year} onChange={(e) => setYear(e.target.value)} placeholder="Godina" />
-        <textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={4} className="w-full rounded-lg border border-slate-200 p-2 text-sm" placeholder="Opis" />
+        <Input
+          type="number"
+          value={year}
+          onChange={(e) => setYear(e.target.value)}
+          placeholder={t('admin.trophyForm.year')}
+        />
+        <Textarea
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          rows={4}
+          placeholder={t('admin.cmsWidget.description')}
+        />
         <MediaPicker value={imagePath} onChange={setImagePath} />
-        <Button onClick={() => void save()} disabled={!title || create.isPending || update.isPending}>
-          {edit ? 'Spremi' : 'Kreiraj'}
+        <Button
+          onClick={() => void save()}
+          disabled={!title || create.isPending || update.isPending}
+        >
+          {edit ? t('actions.save') : t('actions.create')}
         </Button>
         {(create.isError || update.isError) && (
           <p className="text-sm text-danger">
-            {getApiErrorMessage(create.error ?? update.error, 'Spremanje nije uspjelo.')}
+            {getApiErrorMessage(create.error ?? update.error, t('admin.common.saveFailedShort'))}
           </p>
         )}
       </div>

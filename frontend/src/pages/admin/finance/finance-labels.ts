@@ -23,9 +23,9 @@ export const PROVIDER_META: Record<
   FinanceProviderKey,
   { label: string; className: string }
 > = {
-  stripe: { label: 'Stripe', className: 'bg-[#635bff] text-white' },
-  paypal: { label: 'PayPal', className: 'bg-[#0070ba] text-white' },
-  monri: { label: 'Monri', className: 'bg-[#1a1a2e] text-white' },
+  stripe: { label: 'Stripe', className: 'bg-stripe text-white' },
+  paypal: { label: 'PayPal', className: 'bg-paypal text-white' },
+  monri: { label: 'Monri', className: 'bg-monri text-white' },
   box_office: { label: 'Blagajna', className: 'bg-emerald-700 text-white' },
   membership: { label: 'Članarina', className: 'bg-primary/15 text-primary' },
 };

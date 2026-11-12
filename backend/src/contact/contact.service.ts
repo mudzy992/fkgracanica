@@ -13,7 +13,13 @@ export class ContactService {
     private readonly jobs: JobsService,
   ) {}
 
-  async create(data: { name: string; email: string; subject?: string; message: string; userId?: string }) {
+  async create(data: {
+    name: string;
+    email: string;
+    subject?: string;
+    message: string;
+    userId?: string;
+  }) {
     const row = await this.prisma.contactMessage.create({ data });
     const mail = contactAckEmail(data.name);
     await this.jobs.enqueueEmail({
@@ -62,7 +68,10 @@ export class ContactService {
   }
 
   markRead(id: string) {
-    return this.prisma.contactMessage.update({ where: { id }, data: { isRead: true } });
+    return this.prisma.contactMessage.update({
+      where: { id },
+      data: { isRead: true },
+    });
   }
 
   markAllRead() {

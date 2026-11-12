@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useCreateClub, useUpdateClub } from '../../hooks/use-competition-admin';
 import { AdminFormSheet } from '../../components/admin/AdminFormSheet';
 import { MediaPicker } from '../../components/admin/MediaPicker';
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
+import { Textarea } from '../../components/ui/textarea';
 import { Switch } from '../../components/ui/switch';
 import type { Club } from '../../types';
 
@@ -14,6 +16,7 @@ interface Props {
 }
 
 export function ClubsAdminFormSheet({ open, onOpenChange, edit }: Props) {
+  const { t } = useTranslation();
   const create = useCreateClub();
   const update = useUpdateClub();
   const [name, setName] = useState('');
@@ -52,33 +55,51 @@ export function ClubsAdminFormSheet({ open, onOpenChange, edit }: Props) {
       else await create.mutateAsync(body);
       onOpenChange(false);
     } catch {
-      setFeedback('Spremanje nije uspjelo. Pokušajte ponovo.');
+      setFeedback(t('admin.common.saveFailed'));
     }
   };
 
   return (
-    <AdminFormSheet open={open} onOpenChange={onOpenChange} title={edit ? 'Uredi klub' : 'Novi klub'}>
+    <AdminFormSheet
+      open={open}
+      onOpenChange={onOpenChange}
+      title={edit ? t('admin.clubForm.edit') : t('admin.clubForm.create')}
+    >
       <div className="space-y-4">
-        <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Naziv *" />
-        <Input value={city} onChange={(e) => setCity(e.target.value)} placeholder="Grad" />
-        <Input value={stadium} onChange={(e) => setStadium(e.target.value)} placeholder="Stadion" />
-        <textarea
+        <Input
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          placeholder={t('admin.club.nameRequired')}
+        />
+        <Input
+          value={city}
+          onChange={(e) => setCity(e.target.value)}
+          placeholder={t('admin.club.city')}
+        />
+        <Input
+          value={stadium}
+          onChange={(e) => setStadium(e.target.value)}
+          placeholder={t('admin.clubForm.stadium')}
+        />
+        <Textarea
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           rows={3}
-          className="w-full rounded-lg border border-slate-200 p-2 text-sm"
-          placeholder="Opis kluba (javni prikaz)"
+          placeholder={t('admin.clubForm.descriptionPublic')}
         />
-        <MediaPicker value={crestPath} onChange={setCrestPath} label="Grb" />
-        <label className="flex items-center justify-between gap-3 rounded-lg border border-slate-200 p-3">
+        <MediaPicker value={crestPath} onChange={setCrestPath} label={t('admin.club.crest')} />
+        <label className="flex items-center justify-between gap-3 rounded-lg border border-[var(--border-subtle)] p-3">
           <div>
-            <span className="text-sm font-medium">Naš klub</span>
-            <p className="text-xs text-text-muted">Samo jedan klub može biti označen kao naš.</p>
+            <span className="text-sm font-medium">{t('admin.club.ownClub')}</span>
+            <p className="text-xs text-text-muted">{t('admin.club.ownClubHint')}</p>
           </div>
           <Switch checked={isOwnClub} onCheckedChange={setIsOwnClub} />
         </label>
         {feedback && <p className="text-sm text-danger">{feedback}</p>}
-        <Button onClick={() => void save()} disabled={!name || create.isPending || update.isPending}>
+        <Button
+          onClick={() => void save()}
+          disabled={!name || create.isPending || update.isPending}
+        >
           {edit ? 'Spremi' : 'Kreiraj'}
         </Button>
       </div>

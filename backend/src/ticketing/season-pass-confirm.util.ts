@@ -12,7 +12,9 @@ export async function confirmSeasonPassFlow(
     where: { id: passId },
     data: {
       status: 'ACTIVE',
-      ...(extras?.paymentProvider ? { paymentProvider: extras.paymentProvider } : {}),
+      ...(extras?.paymentProvider
+        ? { paymentProvider: extras.paymentProvider }
+        : {}),
       ...(extras?.externalId ? { externalId: extras.externalId } : {}),
     },
   });

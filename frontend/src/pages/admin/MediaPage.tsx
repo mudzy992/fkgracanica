@@ -14,6 +14,7 @@ import {
 import { useMediaLibraryAccess } from '../../hooks/use-media-library-access';
 import { useMediaSelection } from '../../hooks/use-media-selection';
 import { useMediaUploadQueue } from '../../hooks/use-media-upload-queue';
+import { useMediaFileChooser } from '../../hooks/use-media-file-chooser';
 import { useConfirm } from '../../hooks/use-confirm';
 import { MediaFolderTree } from '../../components/admin/MediaFolderTree';
 import { AdminPageShell } from '../../components/admin/AdminPageShell';
@@ -25,8 +26,13 @@ import { MediaPageAssetsSection } from './media/MediaPageAssetsSection';
 import { MediaPageFileInputs } from './media/MediaPageFileInputs';
 import { emptyMediaMessage, copyMediaOriginalUrl } from './media/media-page-helpers';
 import { Seo } from '../../components/seo/Seo';
+import { useTranslation } from 'react-i18next';
+import { useAuth } from '../../lib/auth';
+import { runAction } from '../../lib/action-errors';
 
 export function MediaPage() {
+  const { t } = useTranslation();
+  const { user } = useAuth();
   const { canUpload, canManage } = useMediaLibraryAccess();
   const uploadRef = useRef<HTMLInputElement>(null);
   const replaceRef = useRef<HTMLInputElement>(null);
@@ -41,7 +47,7 @@ export function MediaPage() {
   const [copied, setCopied] = useState<string | null>(null);
 
   const selection = useMediaSelection();
-  const { enqueue, state: uploadState } = useMediaUploadQueue();
+  const { enqueue, retryRefresh, clearReport, state: uploadState } = useMediaUploadQueue(user?.id ?? '');
   const { data: foldersRaw, isLoading: fl } = useMediaFolders();
   const folders = asArray<MediaFolder>(foldersRaw);
 
@@ -67,7 +73,8 @@ export function MediaPage() {
   const { confirm, dialog } = useConfirm();
 
   const selectedFolderName = folders.find((f) => f.id === folderId)?.name;
-  const uploadDisabled = uploadState.isRunning || !folderId;
+  const uploadDisabled = !folderId;
+  const uploadChooser = useMediaFileChooser(uploadRef, folderId, selectedFolderName, enqueue);
 
   const handleFolderSelect = (id?: string) => {
     setFolderId(id);
@@ -84,7 +91,7 @@ export function MediaPage() {
       variant: 'danger',
       confirmLabel: 'Obriši',
     });
-    if (ok) void remove.mutateAsync(id);
+    if (ok) void runAction(remove.mutateAsync(id));
   };
 
   const onFolderDelete = async (id: string, name: string) => {
@@ -95,7 +102,7 @@ export function MediaPage() {
       confirmLabel: 'Obriši',
     });
     if (ok) {
-      void deleteFolder.mutateAsync(id).then(() => folderId === id && setFolderId(undefined));
+      void runAction(deleteFolder.mutateAsync(id)).then(() => folderId === id && setFolderId(undefined));
     }
   };
 
@@ -106,28 +113,27 @@ export function MediaPage() {
     newName: newFolder,
     onNewNameChange: setNewFolder,
     onCreate: canUpload
-      ? () => void createFolder.mutateAsync({ name: newFolder, parentId: folderId }).then(() => setNewFolder(''))
+      ? () => void runAction(createFolder.mutateAsync({ name: newFolder, parentId: folderId })).then(() => setNewFolder(''))
       : undefined,
     isCreating: createFolder.isPending,
-    onRename: canManage ? (id: string, name: string) => void updateFolder.mutateAsync({ id, name }) : undefined,
+    onRename: canManage ? (id: string, name: string) => void runAction(updateFolder.mutateAsync({ id, name })) : undefined,
     onDelete: canManage ? onFolderDelete : undefined,
   };
 
   return (
     <>
-      <Seo title="Mediji" />
+      <Seo title={t('admin.media')} />
       {dialog}
       <MediaPageFileInputs
         uploadRef={uploadRef}
         replaceRef={replaceRef}
-        folderId={folderId}
         replaceId={replaceId}
-        onUpload={(files) => folderId && enqueue(files, folderId)}
+        onUpload={uploadChooser.onUpload}
         onReplace={(file) => {
-          if (replaceId) void replace.mutateAsync({ id: replaceId, file }).finally(() => setReplaceId(null));
+          if (replaceId) void runAction(replace.mutateAsync({ id: replaceId, file })).finally(() => setReplaceId(null));
         }}
       />
-      <AdminPageShell title="Mediji" isLoading={fl || al}>
+      <AdminPageShell title={t('admin.media')} isLoading={fl || al}>
         <MediaPageToolbar
           search={search}
           onSearchChange={(v) => { setSearch(v); setPage(1); selection.clear(); }}
@@ -143,20 +149,21 @@ export function MediaPage() {
             (selection.selectionMode ? selection.exitSelectionMode() : selection.enterSelectionMode())
           }
           onSelectAllVisible={() => selection.selectAll(visibleIds)}
-          onUploadClick={() => uploadRef.current?.click()}
+          onUploadClick={uploadChooser.choose}
           uploadDisabled={uploadDisabled}
           uploadTitle={folderId ? undefined : 'Prvo odaberite mapu'}
           onFolderChipClick={() => setFolderSheetOpen(true)}
           uploadProgress={uploadState}
+          onRetryUploadRefresh={retryRefresh}
+          onClearUploadReport={clearReport}
           canUpload={canUpload}
           canManage={canManage}
         />
         {canUpload ? (
           <MediaUploadZone
             folderId={folderId}
-            disabled={uploadState.isRunning}
-            onTrigger={() => uploadRef.current?.click()}
-            onFiles={(files) => folderId && enqueue(files, folderId)}
+            onTrigger={uploadChooser.choose}
+            onFiles={(files) => folderId && enqueue(files, folderId, selectedFolderName)}
           />
         ) : null}
         <div className="grid min-h-[320px] items-start lg:grid-cols-[minmax(200px,240px)_1fr]">

@@ -4,8 +4,10 @@ import { api } from '../../lib/api';
 import { FormShell } from '../../components/public/forms/FormShell';
 import { PageHeroHeader } from '../../components/public/shell/PageHeroHeader';
 import { Seo } from '../../components/seo/Seo';
+import { useTranslation } from 'react-i18next';
 
 export function NewsletterUnsubscribePage() {
+  const { t } = useTranslation();
   const [searchParams] = useSearchParams();
   const token = searchParams.get('token') ?? '';
   const [state, setState] = useState<'loading' | 'ok' | 'err'>('loading');
@@ -23,12 +25,21 @@ export function NewsletterUnsubscribePage() {
 
   return (
     <div className="pb-16">
-      <Seo title="Odjava s newslettera" />
-      <PageHeroHeader eyebrow="Newsletter" title="Odjava" subtitle="Upravljanje pretplatom." />
-      <FormShell title="Newsletter" description="Odjava s mailing liste FK Gračanica.">
-        {state === 'loading' && <p className="text-sm text-text-muted">Obrađujemo zahtjev…</p>}
-        {state === 'ok' && <p className="text-sm">Odjavljeni ste. Više nećete primati newsletter.</p>}
-        {state === 'err' && <p className="text-sm text-danger">Link nije validan ili je već iskorišten.</p>}
+      <Seo title={t('pages.newsletter.seoTitle')} />
+      <PageHeroHeader
+        eyebrow={t('pages.newsletter.eyebrow')}
+        title={t('pages.newsletter.title')}
+        subtitle={t('pages.newsletter.subtitle')}
+      />
+      <FormShell
+        title={t('pages.newsletter.formTitle')}
+        description={t('pages.newsletter.formDesc')}
+      >
+        {state === 'loading' && (
+          <p className="text-sm text-text-muted">{t('pages.newsletter.loading')}</p>
+        )}
+        {state === 'ok' && <p className="text-sm">{t('pages.newsletter.success')}</p>}
+        {state === 'err' && <p className="text-sm text-danger">{t('pages.newsletter.invalid')}</p>}
       </FormShell>
     </div>
   );

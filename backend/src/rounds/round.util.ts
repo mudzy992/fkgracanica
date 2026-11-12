@@ -3,14 +3,13 @@ export function roundDefaultName(number: number): string {
 }
 
 export function resolveRoundNumber(match: {
-  round?: number | null;
   roundRel?: { number: number } | null;
 }): number | null {
-  return match.roundRel?.number ?? match.round ?? null;
+  return match.roundRel?.number ?? null;
 }
 
 export function matchWithinRoundLimit(
-  match: { round?: number | null; roundRel?: { number: number } | null },
+  match: { roundRel?: { number: number } | null },
   upToRound: number,
 ): boolean {
   const n = resolveRoundNumber(match);

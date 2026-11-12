@@ -1,5 +1,6 @@
 import { Input } from '../../../components/ui/input';
 import { clampScore } from './match-form-status';
+import { useTranslation } from 'react-i18next';
 
 interface Props {
   homeScore: number;
@@ -10,10 +11,15 @@ interface Props {
 }
 
 export function MatchScoreInputs({ homeScore, awayScore, onHome, onAway, labeled }: Props) {
+  const { t } = useTranslation();
   return (
     <div className="grid grid-cols-2 gap-2">
       <div>
-        {labeled && <label className="mb-1 block text-xs text-text-muted">Golovi domaćih</label>}
+        {labeled && (
+          <label className="mb-1 block text-xs text-text-muted">
+            {t('admin.scoreInputs.home')}
+          </label>
+        )}
         <Input
           type="number"
           min={0}
@@ -23,7 +29,11 @@ export function MatchScoreInputs({ homeScore, awayScore, onHome, onAway, labeled
         />
       </div>
       <div>
-        {labeled && <label className="mb-1 block text-xs text-text-muted">Golovi gostiju</label>}
+        {labeled && (
+          <label className="mb-1 block text-xs text-text-muted">
+            {t('admin.scoreInputs.away')}
+          </label>
+        )}
         <Input
           type="number"
           min={0}

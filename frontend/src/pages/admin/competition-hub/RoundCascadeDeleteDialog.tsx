@@ -1,5 +1,7 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { ConfirmDialog } from '../../../components/admin/ConfirmDialog';
+import { Switch } from '../../../components/ui/switch';
 import type { RoundDeleteImpact } from '../../../hooks/use-rounds';
 
 interface Props {
@@ -19,6 +21,7 @@ export function RoundCascadeDeleteDialog({
   onOpenChange,
   onConfirm,
 }: Props) {
+  const { t } = useTranslation();
   const [ack, setAck] = useState(false);
 
   return (
@@ -28,7 +31,7 @@ export function RoundCascadeDeleteDialog({
         if (!o) setAck(false);
         onOpenChange(o);
       }}
-      title="Obrisati kolo i sve povezano?"
+      title={t('admin.roundCascade.title')}
       description={
         <div className="space-y-3 text-sm text-text-muted">
           <p>
@@ -42,15 +45,10 @@ export function RoundCascadeDeleteDialog({
             <li>{impact.commentCount} komentara</li>
             <li>{impact.ticketCount} ulaznica</li>
           </ul>
-          <p className="text-danger">Ova radnja se ne može poništiti.</p>
-          <label className="flex cursor-pointer items-start gap-2">
-            <input
-              type="checkbox"
-              checked={ack}
-              onChange={(e) => setAck(e.target.checked)}
-              className="mt-0.5 h-4 w-4 rounded border-slate-300"
-            />
-            <span>Razumijem da se podaci ne mogu vratiti</span>
+          <p className="text-danger">{t('admin.roundCascade.irreversible')}</p>
+          <label className="flex cursor-pointer items-center justify-between gap-3 rounded-lg border border-[var(--border-subtle)] p-3">
+            <span className="text-sm">{t('admin.roundCascade.ack')}</span>
+            <Switch checked={ack} onCheckedChange={setAck} />
           </label>
         </div>
       }

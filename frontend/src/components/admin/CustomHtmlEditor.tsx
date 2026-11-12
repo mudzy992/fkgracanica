@@ -1,5 +1,6 @@
 import { useRef } from 'react';
 import { Button } from '../ui/button';
+import { Textarea } from '../ui/textarea';
 import { cn } from '../../lib/utils';
 
 const TAG_ACTIONS = [
@@ -18,7 +19,10 @@ function applyTag(text: string, start: number, end: number, open: string, close:
   const selected = text.slice(start, end);
   const inner = selected || 'tekst';
   const wrapped = `${open}${inner}${close}`;
-  return { next: text.slice(0, start) + wrapped + text.slice(end), cursor: start + open.length + inner.length };
+  return {
+    next: text.slice(0, start) + wrapped + text.slice(end),
+    cursor: start + open.length + inner.length,
+  };
 }
 
 interface Props {
@@ -31,8 +35,7 @@ export function CustomHtmlEditor({ value, onChange, className }: Props) {
   const ref = useRef<HTMLTextAreaElement>(null);
 
   const insert = (open: string, close: string) => {
-    const el = ref.current;
-    if (!el) return;
+    const el = ref.current!;
     const start = el.selectionStart;
     const end = el.selectionEnd;
     const { next, cursor } = applyTag(value, start, end, open, close);
@@ -44,15 +47,21 @@ export function CustomHtmlEditor({ value, onChange, className }: Props) {
   };
 
   return (
-    <div className={cn('rounded-lg border border-slate-200', className)}>
-      <div className="flex flex-wrap gap-1 border-b border-slate-200 p-2">
+    <div className={cn('rounded-lg border border-[var(--border-subtle)]', className)}>
+      <div className="flex flex-wrap gap-1 border-b border-[var(--border-subtle)] p-2">
         {TAG_ACTIONS.map((tag) => (
-          <Button key={tag.label} type="button" size="sm" variant="outline" onClick={() => insert(tag.open, tag.close)}>
+          <Button
+            key={tag.label}
+            type="button"
+            size="sm"
+            variant="outline"
+            onClick={() => insert(tag.open, tag.close)}
+          >
             {tag.label}
           </Button>
         ))}
       </div>
-      <textarea
+      <Textarea
         ref={ref}
         value={value}
         onChange={(e) => onChange(e.target.value)}

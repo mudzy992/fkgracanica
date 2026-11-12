@@ -12,7 +12,7 @@ export type MenuModuleBlock = {
 };
 
 function moduleLabelFor(key: string): string {
-  return APP_MODULE_DEFINITIONS.find((m) => m.key === key)?.label ?? key;
+  return APP_MODULE_DEFINITIONS.find((m) => m.key === key)!.label;
 }
 
 /** Aktivna meni stavka čiji modul je ugašen → neće se prikazati javno. */

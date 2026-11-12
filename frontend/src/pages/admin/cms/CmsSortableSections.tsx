@@ -15,8 +15,10 @@ import {
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { GripVertical } from 'lucide-react';
+import { Card } from '../../../components/ui/card';
 import { Badge } from '../../../components/ui/badge';
 import { Button } from '../../../components/ui/button';
+import { Switch } from '../../../components/ui/switch';
 import { widgetMeta } from '../../../cms/widgets/schemas';
 import type { CmsPageSection } from '../../../cms/types';
 import { cn } from '../../../lib/utils';
@@ -49,37 +51,41 @@ function SortableRow({
   const label = widgetMeta[section.widgetType as keyof typeof widgetMeta]?.label ?? section.widgetType;
 
   return (
-    <div
+    <Card
       ref={setNodeRef}
       style={{ transform: CSS.Transform.toString(transform), transition }}
       className={cn(
-        'flex items-center gap-2 rounded-lg border p-2',
-        selected ? 'border-primary bg-primary/5' : 'border-slate-200 bg-background',
+        'flex items-center gap-2 p-2',
+        selected ? 'border-primary bg-primary/5' : 'border-[var(--border-subtle)] bg-background',
         isDragging && 'opacity-60 shadow-md',
       )}
     >
-      <button type="button" className="cursor-grab text-text-muted hover:text-text" {...attributes} {...listeners}>
+      <Button
+        type="button"
+        variant="ghost"
+        size="icon"
+        className="h-7 w-7 shrink-0 cursor-grab text-text-muted hover:text-text"
+        {...attributes}
+        {...listeners}
+      >
         <GripVertical className="h-4 w-4" />
-      </button>
-      <button type="button" className="flex flex-1 items-center gap-2 text-left" onClick={onSelect}>
+      </Button>
+      <Button
+        type="button"
+        variant="ghost"
+        className="flex h-auto flex-1 justify-start gap-2 p-1 text-left font-normal"
+        onClick={onSelect}
+      >
         <Badge variant="muted">{label}</Badge>
         <span className="text-xs text-text-muted">#{index + 1}</span>
-      </button>
+      </Button>
       {onToggleEnabled && (
-        <button
-          type="button"
-          role="switch"
-          aria-checked={section.enabled}
-          onClick={() => onToggleEnabled(!section.enabled)}
-          className={`h-5 w-9 rounded-full ${section.enabled ? 'bg-success' : 'bg-text-muted/30'}`}
-        >
-          <span className={`block h-4 w-4 rounded-full bg-white transition ${section.enabled ? 'translate-x-4' : 'translate-x-0.5'}`} />
-        </button>
+        <Switch checked={section.enabled} onCheckedChange={(enabled) => onToggleEnabled(enabled)} />
       )}
       <Button size="sm" variant="outline" className="text-danger" onClick={onDelete}>
         Obriši
       </Button>
-    </div>
+    </Card>
   );
 }
 

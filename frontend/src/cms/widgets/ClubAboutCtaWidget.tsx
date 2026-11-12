@@ -30,7 +30,7 @@ export function ClubAboutCtaWidget({ config: _config }: Props) {
 
   return (
     <section className="mx-auto max-w-6xl px-4 py-12 sm:px-6 md:py-16">
-      <div className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-[#07111f] p-6 shadow-[0_30px_90px_rgba(2,6,23,0.45)] sm:p-8 lg:p-10">
+      <div className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-surface-deep p-6 shadow-[0_30px_90px_rgba(2,6,23,0.45)] sm:p-8 lg:p-10">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(59,130,246,0.18),transparent_38%),radial-gradient(circle_at_bottom_right,rgba(245,158,11,0.16),transparent_30%)]" />
         <div className="relative grid gap-6 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
           <div className="space-y-5">
@@ -55,7 +55,7 @@ export function ClubAboutCtaWidget({ config: _config }: Props) {
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="overflow-hidden rounded-[1.75rem] border border-white/10 bg-slate-900/60">
               {storyImage ? (
-                <img src={storyImage} alt="" className="h-80 w-full object-cover sm:h-[26rem]" />
+                <img loading="lazy" decoding="async" src={storyImage} alt="" className="h-80 w-full object-cover sm:h-[26rem]" />
               ) : (
                 <div className="flex h-80 items-center justify-center bg-[linear-gradient(160deg,#0f172a,#1d4ed8)] text-sm font-semibold uppercase tracking-[0.3em] text-white/70 sm:h-[26rem]">
                   O klubu
@@ -64,7 +64,7 @@ export function ClubAboutCtaWidget({ config: _config }: Props) {
             </div>
             <div className="overflow-hidden rounded-[1.75rem] border border-amber-300/20 bg-slate-950/70 sm:mt-10">
               {heritageImage ? (
-                <img src={heritageImage} alt="" className="h-80 w-full object-cover sm:h-[26rem]" />
+                <img loading="lazy" decoding="async" src={heritageImage} alt="" className="h-80 w-full object-cover sm:h-[26rem]" />
               ) : (
                 <div className="flex h-80 items-center justify-center bg-[linear-gradient(180deg,#120d05,#3f2a0f)] text-sm font-semibold uppercase tracking-[0.3em] text-amber-100/75 sm:h-[26rem]">
                   Baština

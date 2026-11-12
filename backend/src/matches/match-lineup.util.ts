@@ -10,7 +10,7 @@ export type LineupSlotInput = {
 };
 
 export async function validateMatchLineup(
-  prisma: PrismaService,
+  prisma: Pick<PrismaService, 'match' | 'player' | 'matchLineup'>,
   matchId: string,
   slots: LineupSlotInput[],
 ) {
@@ -25,7 +25,9 @@ export async function validateMatchLineup(
 
   for (const slot of slots) {
     if (!allowed.has(slot.clubId)) {
-      throw new BadRequestException('Igrač mora pripadati domaćem ili gostujućem klubu.');
+      throw new BadRequestException(
+        'Igrač mora pripadati domaćem ili gostujućem klubu.',
+      );
     }
     if (playerIds.has(slot.playerId)) {
       throw new BadRequestException('Igrač ne može biti duplo u postavi.');
@@ -35,6 +37,14 @@ export async function validateMatchLineup(
     const player = await prisma.player.findFirst({
       where: { id: slot.playerId, clubId: slot.clubId },
     });
-    if (!player) throw new BadRequestException('Igrač ne pripada odabranom klubu.');
+    if (!player) {
+      // Sačuvani historijski par igrač/klub ostaje dozvoljen i nakon transfera.
+      const existing = await prisma.matchLineup.findFirst({
+        where: { matchId, clubId: slot.clubId, playerId: slot.playerId },
+        select: { id: true },
+      });
+      if (!existing)
+        throw new BadRequestException('Igrač ne pripada odabranom klubu.');
+    }
   }
 }

@@ -5,7 +5,9 @@ describe('season-pass-capacity', () => {
     const prisma = {
       ticket: { count: jest.fn().mockResolvedValue(10) },
       match: {
-        findUnique: jest.fn().mockResolvedValue({ edition: { seasonId: 's1' } }),
+        findUnique: jest
+          .fn()
+          .mockResolvedValue({ edition: { seasonId: 's1' } }),
       },
       seasonPass: { count: jest.fn().mockResolvedValue(3) },
     };

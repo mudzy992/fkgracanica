@@ -2,6 +2,9 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useTranslation } from 'react-i18next';
+import { isInvalidChangedYouTubeUrl } from '../../../lib/youtube';
+import { getApiErrorMessage } from '../../../lib/api-error';
 import { Seo } from '../../../components/seo/Seo';
 import { Button } from '../../../components/ui/button';
 import { Skeleton } from '../../../components/ui/skeleton';
@@ -17,6 +20,7 @@ import { NewsEditorMain } from './NewsEditorMain';
 import { NewsEditorMeta } from './NewsEditorMeta';
 
 export function NewsEditorPage() {
+  const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
   const isEdit = Boolean(id);
   const navigate = useNavigate();
@@ -29,20 +33,32 @@ export function NewsEditorPage() {
     defaultValues: emptyNewsForm,
   });
   const { register, handleSubmit, reset, control, watch, setValue, formState } = form;
+  /**
+   * Q-FE06-37: react-hook-form računa `isDirty` samo za polja na koja je
+   * pretplaćen tokom renderovanja. Čitanje isključivo u rukovaocu (`requestBack`)
+   * vraćalo je uvijek `false`, pa potvrda o nesačuvanim izmjenama nikad nije
+   * izlazila. Pretplata ispod je jedina promjena ponašanja: potvrda se sada
+   * stvarno prikazuje kad forma ima izmjene.
+   */
+  const isDirty = formState.isDirty;
 
   useEffect(() => {
     if (item) reset(newsItemToForm(item));
   }, [item, reset]);
 
   const requestBack = () => {
-    if (formState.isDirty && !window.confirm('Ima nesačuvanih izmjena. Napustiti?')) return;
+    if (isDirty && !window.confirm('Ima nesačuvanih izmjena. Napustiti?')) return;
     navigate('/admin/news');
   };
 
   const onSubmit = async (data: NewsFormData) => {
     setError('');
+    if (isInvalidChangedYouTubeUrl(data.videoUrl, item?.videoUrl)) {
+      form.setError('videoUrl', { type: 'validate', message: t('video.invalidInput') }, { shouldFocus: true });
+      return;
+    }
     try {
-      const body = formToNewsBody(data);
+      const body = formToNewsBody(data, item?.videoUrl);
       if (isEdit && id) {
         await update.mutateAsync({ id, ...body });
         navigate('/admin/news');
@@ -50,8 +66,8 @@ export function NewsEditorPage() {
       }
       const created = await create.mutateAsync(body);
       navigate(`/admin/news/${created.id}/edit`, { replace: true });
-    } catch {
-      setError('Greška pri spremanju vijesti');
+    } catch (err) {
+      setError(getApiErrorMessage(err, 'Greška pri spremanju vijesti'));
     }
   };
 
@@ -62,9 +78,15 @@ export function NewsEditorPage() {
       <Seo title={isEdit ? 'Uredi vijest' : 'Nova vijest'} />
       <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
         <div>
-          <button type="button" onClick={requestBack} className="text-xs text-text-muted hover:underline">
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            onClick={requestBack}
+            className="h-auto p-0 text-xs text-text-muted hover:bg-transparent hover:text-text hover:underline"
+          >
             ← Vijesti
-          </button>
+          </Button>
           <h1 className="text-2xl font-bold text-text">{isEdit ? 'Uredi vijest' : 'Nova vijest'}</h1>
         </div>
         <div className="flex gap-2">
@@ -100,7 +122,7 @@ export function NewsEditorPage() {
           errors={formState.errors}
         />
       </form>
-      {error ? <p className="mt-4 text-sm text-danger">{error}</p> : null}
+      {error ? <p role="alert" className="mt-4 text-sm text-danger">{error}</p> : null}
     </>
   );
 }

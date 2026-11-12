@@ -1,3 +1,8 @@
+# Produkcioni compose — COOLIFY (D-005 / Q-05: "Coolify; Traefik ne postoji").
+# Jedini izvor istine za infrastrukturu. Stari Traefik stack penzionisan je u
+# docs/_retired/docker-compose1.yaml (NE KORISTITI).
+# Audit/hardening nalazi: AUDIT/segments/INF-01.md
+#
 services:
 
   backend:
@@ -6,39 +11,69 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
-      args:
-        DATABASE_URL: ${DATABASE_URL}
+      # CI-04/B-CI04-02: NEMA `DATABASE_URL` u build.args. Coolify izvozi
+      # build-args i u runtime env, pa je dummy vrijednost pregazila pravi
+      # DATABASE_URL iz `environment:` bloka ispod (P1001 na `.invalid` host).
+      # `prisma generate` ne treba URL (placeholder je u prisma.config.ts).
 
     environment:
+      # CI-04/B-CI04-02: `${VAR:?poruka}` = fail-fast. Ako varijabla NIJE u
+      # Coolify env fajlu, deploy pada odmah sa imenom varijable koja fali,
+      # umjesto da kontejner starta sa praznim DATABASE_URL i padne na
+      # `P1001 Can't reach database server at localhost:5432`.
       NODE_ENV: production
-      PORT: ${PORT}
+      PORT: "${PORT:-3000}"
 
-      DATABASE_URL: ${DATABASE_URL}
-      DB_PROVIDER: ${DB_PROVIDER}
+      DATABASE_URL: "${DATABASE_URL:?DATABASE_URL nije postavljen u Coolify env (Application → Environment Variables)}"
+      DB_PROVIDER: "${DB_PROVIDER:-postgresql}"
 
-      REDIS_URL: ${REDIS_URL}
+      REDIS_URL: "${REDIS_URL:-}"
+      # Eksplicitni CA za ioredis (rediss://) — backend ga čita direktno
+      # (common/utils/redis-tls.util.ts) i proslijeđuje kao tls.ca.
+      # Bez ovoga: "self-signed certificate in certificate chain".
+      REDIS_TLS_CA: /run/secrets/redis-ca.crt
+      # Node root store dopuna — nužna za `prisma migrate deploy` (Prisma
+      # CLI ignoriše sslrootcert i vjeruje samo Node root store-u); za
+      # runtime Postgres služi sslrootcert iz DATABASE_URL-a.
+      NODE_EXTRA_CERTS: /etc/ssl/certs/coolify-ca.crt
 
-      UPLOAD_PATH: ${UPLOAD_PATH}
+      UPLOAD_PATH: "${UPLOAD_PATH:-/app/uploads}"
 
-      API_PUBLIC_URL: ${API_PUBLIC_URL}
-      SOCKET_IO_PATH: ${SOCKET_IO_PATH}
+      API_PUBLIC_URL: "${API_PUBLIC_URL:?API_PUBLIC_URL nije postavljen}"
+      SOCKET_IO_PATH: "${SOCKET_IO_PATH:-/socket.io}"
 
-      CORS_ORIGINS: ${CORS_ORIGINS}
+      CORS_ORIGINS: "${CORS_ORIGINS:-*}"
 
-      JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET}
-      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET}
-      JWT_ACCESS_EXPIRES: ${JWT_ACCESS_EXPIRES}
-      JWT_REFRESH_EXPIRES: ${JWT_REFRESH_EXPIRES}
+      JWT_ACCESS_SECRET: "${JWT_ACCESS_SECRET:?JWT_ACCESS_SECRET nije postavljen}"
+      JWT_REFRESH_SECRET: "${JWT_REFRESH_SECRET:?JWT_REFRESH_SECRET nije postavljen}"
+      JWT_ACCESS_EXPIRES: "${JWT_ACCESS_EXPIRES:-15m}"
+      JWT_REFRESH_EXPIRES: "${JWT_REFRESH_EXPIRES:-7d}"
 
-      ADMIN_EMAIL: ${ADMIN_EMAIL}
-      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+      ADMIN_EMAIL: "${ADMIN_EMAIL:?ADMIN_EMAIL nije postavljen}"
+      ADMIN_PASSWORD: "${ADMIN_PASSWORD:?ADMIN_PASSWORD nije postavljen}"
 
     volumes:
       - /mnt/shared-app-files/fkgracanica:/app/uploads
+      # TLS CA za Redis (rediss://) — vidi REDIS_URL u .env
+      - /data/coolify/ssl/redis-core/redis-ca.crt:/run/secrets/redis-ca.crt:ro
+      # Coolify CA za Postgres (?sslmode=verify-full&sslrootcert=/etc/ssl/certs/coolify-ca.crt)
+      - /data/coolify/ssl/coolify-ca.crt:/etc/ssl/certs/coolify-ca.crt:ro
 
     networks:
       - db_net
       - redis_net
+
+    # INF-01 (I-01-04): nema eskalacije privilegija unutar kontejnera.
+    security_opt:
+      - "no-new-privileges:true"
+
+    # INF-01 (I-01-03): rotacija docker logova da json-file ne raste u
+    # beskonačnost na disku (10 MB × 3 po kontejneru).
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
 
     restart: unless-stopped
 
@@ -47,8 +82,10 @@ services:
     image: fkgracanica-frontend:prod
 
     build:
-      context: ./frontend
-      dockerfile: Dockerfile
+      # CI-04: kontekst je root repoa — build koristi root package-lock.json
+      # (npm workspace), isti lock koji koristi CI. Vidi frontend/Dockerfile.
+      context: .
+      dockerfile: frontend/Dockerfile
       args:
         VITE_API_URL: ${VITE_API_URL}
         VITE_REALTIME_URL: ${VITE_REALTIME_URL}
@@ -58,10 +95,21 @@ services:
         EXPO_PUBLIC_SOCKET_IO_PATH: ${EXPO_PUBLIC_SOCKET_IO_PATH}
 
     environment:
-      INTERNAL_API_URL: ${INTERNAL_API_URL}
+      INTERNAL_API_URL: "${INTERNAL_API_URL:-http://backend:3000/api/v1}"
 
     depends_on:
       - backend
+
+    # INF-01 (I-01-04): isto kao backend — bez eskalacije privilegija.
+    security_opt:
+      - "no-new-privileges:true"
+
+    # INF-01 (I-01-03): rotacija docker logova (10 MB × 3).
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
 
     restart: unless-stopped
 

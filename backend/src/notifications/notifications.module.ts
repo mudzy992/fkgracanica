@@ -9,7 +9,11 @@ import { LiveFanoutService } from './live-fanout.service';
 @Module({
   imports: [RealtimeModule, JobsModule],
   controllers: [NotificationsController],
-  providers: [NotificationsService, NotificationDeliveryService, LiveFanoutService],
+  providers: [
+    NotificationsService,
+    NotificationDeliveryService,
+    LiveFanoutService,
+  ],
   exports: [NotificationsService, LiveFanoutService],
 })
 export class NotificationsModule {}

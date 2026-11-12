@@ -16,7 +16,9 @@ describe('monri-digest.util', () => {
   const key = '2345klj';
 
   it('form digest matches SHA512(key+order+amount+currency)', () => {
-    const expected = createHash('sha512').update('2345kljabcdef54321EUR').digest('hex');
+    const expected = createHash('sha512')
+      .update('2345kljabcdef54321EUR')
+      .digest('hex');
     expect(monriFormDigest(key, 'abcdef', '54321', 'EUR')).toBe(expected);
     expect(hexEqual(expected, expected)).toBe(true);
     expect(hexEqual(expected, 'aa')).toBe(false);
@@ -29,7 +31,10 @@ describe('monri-digest.util', () => {
   });
 
   it('order number parse', () => {
-    expect(parseMonriRef(monriOrderNumber('tickets', 'ord1'))).toEqual({ kind: 'tickets', id: 'ord1' });
+    expect(parseMonriRef(monriOrderNumber('tickets', 'ord1'))).toEqual({
+      kind: 'tickets',
+      id: 'ord1',
+    });
     expect(parseMonriRef(monriOrderNumber('membership', 'mem1'))).toEqual({
       kind: 'membership',
       id: 'mem1',
@@ -60,7 +65,9 @@ describe('monri-digest.util', () => {
   it('rejects tampered callback body', () => {
     const body = '{"status":"approved"}';
     const digest = monriCallbackDigest(key, body);
-    expect(hexEqual(digest, monriCallbackDigest(key, '{"status":"declined"}'))).toBe(false);
+    expect(
+      hexEqual(digest, monriCallbackDigest(key, '{"status":"declined"}')),
+    ).toBe(false);
     expect(parseCallbackAuth(undefined)).toBe('');
   });
 });

@@ -47,7 +47,9 @@ describe('paypal-api.util', () => {
   });
 
   it('return url sets provider and drops session_id', () => {
-    const url = withPaypalReturnUrl('https://x.test/ulaznice?paid=1&session_id={CHECKOUT_SESSION_ID}');
+    const url = withPaypalReturnUrl(
+      'https://x.test/ulaznice?paid=1&session_id={CHECKOUT_SESSION_ID}',
+    );
     expect(url).toContain('provider=paypal');
     expect(url).not.toContain('session_id');
   });
@@ -75,9 +77,11 @@ describe('paypal-webhook.util', () => {
         },
       }),
     ).toBe('ORDER-9');
-    expect(extractPaypalCustomId({ resource: { custom_id: 'm:mem' } })).toEqual({
-      kind: 'membership',
-      id: 'mem',
-    });
+    expect(extractPaypalCustomId({ resource: { custom_id: 'm:mem' } })).toEqual(
+      {
+        kind: 'membership',
+        id: 'mem',
+      },
+    );
   });
 });

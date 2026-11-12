@@ -10,7 +10,9 @@ export async function getSeasonParticipantClubs(
 ): Promise<StandingParticipant[]> {
   const rows = await prisma.seasonClub.findMany({
     where: { seasonCompetitionId: seasonId },
-    include: { club: { select: { id: true, name: true, slug: true, crestPath: true } } },
+    include: {
+      club: { select: { id: true, name: true, slug: true, crestPath: true } },
+    },
     orderBy: { club: { name: 'asc' } },
   });
   return rows.map((r) => ({

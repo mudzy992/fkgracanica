@@ -1,4 +1,7 @@
+import { buttonVariants } from "../../components/ui/button-variants";
+import { cn } from "../../lib/utils";
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { asArray } from '../../lib/as-array';
 import { useNewsList } from '../../hooks';
@@ -15,10 +18,12 @@ import { ConfirmDialog } from '../../components/admin/ConfirmDialog';
 import { Seo } from '../../components/seo/Seo';
 import { Badge } from '../../components/ui/badge';
 import { Button } from '../../components/ui/button';
+import { Select } from '../../components/ui/select';
 import { AdminDataTable, AdminPageShell } from '../../components/admin/AdminPageShell';
 import { NewsCategoriesDialog } from './NewsCategoriesDialog';
 import { contentStatusLabel } from '../../lib/content-status-labels';
 import type { ContentStatus, NewsItem } from '../../types';
+import { runAction } from '../../lib/action-errors';
 
 function statusVariant(status: ContentStatus): 'default' | 'success' | 'muted' {
   if (status === 'PUBLISHED') return 'success';
@@ -27,6 +32,7 @@ function statusVariant(status: ContentStatus): 'default' | 'success' | 'muted' {
 }
 
 export function NewsAdminPage() {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const perms = user?.permissions ?? [];
   const canSubmit = hasPermission(perms, 'news.submit');
@@ -35,7 +41,7 @@ export function NewsAdminPage() {
   const [categoryId, setCategoryId] = useState('');
   const { data: categoriesRaw } = useNewsCategories();
   const categories = asArray<NewsCategory>(categoriesRaw);
-  const { data, isLoading } = useNewsList(undefined, categoryId || undefined);
+  const { data, isLoading, isError, refetch } = useNewsList(undefined, categoryId || undefined);
   const updateStatus = useUpdateNewsStatus();
   const submitReview = useSubmitNewsForReview();
   const deleteNews = useDeleteNews();
@@ -43,45 +49,44 @@ export function NewsAdminPage() {
   const [categoriesOpen, setCategoriesOpen] = useState(false);
 
   const publish = (item: NewsItem) => {
-    void updateStatus.mutateAsync({ id: item.id, status: 'PUBLISHED' });
+    void runAction(updateStatus.mutateAsync({ id: item.id, status: 'PUBLISHED' }));
   };
 
   const submit = (item: NewsItem) => {
-    void submitReview.mutateAsync(item.id);
+    void runAction(submitReview.mutateAsync(item.id));
   };
 
   const archive = (item: NewsItem) => {
-    void updateStatus.mutateAsync({ id: item.id, status: 'ARCHIVED' });
+    void runAction(updateStatus.mutateAsync({ id: item.id, status: 'ARCHIVED' }));
   };
 
   return (
     <>
-      <Seo title="Vijesti" />
+      <Seo title={t('admin.news')} />
       <AdminPageShell
-        title="Vijesti"
+        isError={isError}
+        onRetry={() => void refetch()}
+        title={t('admin.news')}
         isLoading={isLoading}
         actions={
           <div className="flex flex-wrap items-center gap-2">
-            <select
-              className="rounded-lg border border-slate-200 bg-background px-3 py-2 text-sm"
+            <Select className="w-auto"
               value={categoryId}
               onChange={(e) => setCategoryId(e.target.value)}
             >
-              <option value="">Sve kategorije</option>
+              <option value="">{t('admin.newsAdmin.allCategories')}</option>
               {categories.map((c) => (
                 <option key={c.id} value={c.id}>
                   {c.name}
                 </option>
               ))}
-            </select>
+            </Select>
             {canManage && (
               <Button variant="outline" onClick={() => setCategoriesOpen(true)}>
-                Kategorije
+                {t('admin.newsAdmin.categories')}
               </Button>
             )}
-            <Link to="/admin/news/new">
-              <Button>Nova vijest</Button>
-            </Link>
+            <Link to="/admin/news/new" className={cn(buttonVariants())}>{t('admin.content.newNews')}</Link>
           </div>
         }
       >
@@ -89,9 +94,15 @@ export function NewsAdminPage() {
           rows={asArray<NewsItem>(data)}
           empty="Nema vijesti — kreirajte prvu."
           columns={[
-            { key: 'title', header: 'Naslov', render: (r) => (
-              <Link to={`/admin/news/${r.id}/edit`} className="font-medium hover:underline">{r.title}</Link>
-            ) },
+            {
+              key: 'title',
+              header: 'Naslov',
+              render: (r) => (
+                <Link to={`/admin/news/${r.id}/edit`} className="font-medium hover:underline">
+                  {r.title}
+                </Link>
+              ),
+            },
             {
               key: 'category',
               header: 'Kategorija',
@@ -109,11 +120,16 @@ export function NewsAdminPage() {
               header: 'Akcije',
               render: (r) => (
                 <div className="flex flex-wrap gap-2">
-                  <Link to={`/admin/news/${r.id}/edit`}>
-                    <Button size="sm" variant="outline">Uredi</Button>
+                  <Link to={`/admin/news/${r.id}/edit`} className={cn(buttonVariants({variant: "outline", size: "sm"}))}>
+                    Uredi
                   </Link>
                   {r.status === 'DRAFT' && canSubmit && !canApprove && (
-                    <Button size="sm" variant="outline" onClick={() => submit(r)} disabled={submitReview.isPending}>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => submit(r)}
+                      disabled={submitReview.isPending}
+                    >
                       Predaj na pregled
                     </Button>
                   )}
@@ -128,11 +144,9 @@ export function NewsAdminPage() {
                     </Button>
                   )}
                   {r.status === 'PUBLISHED' && (
-                    <Link to={`/vijesti/${r.slug}`} target="_blank" rel="noreferrer">
-                      <Button size="sm" variant="outline">
-                        Pregled
-                      </Button>
-                    </Link>
+                    <Link to={`/vijesti/${r.slug}`} target="_blank" rel="noreferrer" className={cn(buttonVariants({variant: "outline", size: "sm"}))}>
+                  Pregled
+                </Link>
                   )}
                   {r.status === 'PUBLISHED' && (
                     <Button size="sm" variant="ghost" onClick={() => archive(r)}>
@@ -152,14 +166,16 @@ export function NewsAdminPage() {
       <ConfirmDialog
         open={!!deleteTarget}
         onOpenChange={(o) => !o && setDeleteTarget(null)}
-        title="Obriši vijest"
-        description={deleteTarget ? `Obrisati "${deleteTarget.title}"?` : ''}
-        confirmLabel="Obriši"
+        title={t('admin.newsAdmin.deleteTitle')}
+        description={
+          deleteTarget ? t('admin.newsAdmin.deleteConfirm', { title: deleteTarget.title }) : ''
+        }
+        confirmLabel={t('actions.delete')}
         variant="danger"
         isPending={deleteNews.isPending}
         onConfirm={() => {
           if (!deleteTarget) return;
-          void deleteNews.mutateAsync(deleteTarget.id).then(() => setDeleteTarget(null));
+          void runAction(deleteNews.mutateAsync(deleteTarget.id)).then(() => setDeleteTarget(null));
         }}
       />
     </>

@@ -33,6 +33,7 @@ export function paypalWebhookShouldCapture(eventType?: string) {
 
 export function paypalWebhookShouldConfirm(eventType?: string) {
   return (
-    eventType === 'CHECKOUT.ORDER.APPROVED' || eventType === 'PAYMENT.CAPTURE.COMPLETED'
+    eventType === 'CHECKOUT.ORDER.APPROVED' ||
+    eventType === 'PAYMENT.CAPTURE.COMPLETED'
   );
 }

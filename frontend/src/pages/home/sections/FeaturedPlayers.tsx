@@ -20,6 +20,8 @@ export function FeaturedPlayers() {
                 <Card key={player.id} className="overflow-hidden text-center">
                   {player.photoPath ? (
                     <img
+                      loading="lazy"
+                      decoding="async"
                       src={mediaUrl(player.photoPath)}
                       alt=""
                       className="h-32 w-full object-cover"

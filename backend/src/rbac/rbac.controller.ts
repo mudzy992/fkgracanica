@@ -1,8 +1,16 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { RbacService } from './rbac.service';
 import { UpdateRolePermissionsDto } from './dto/update-role-permissions.dto';
-import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { PermissionsGuard } from '../common/guards/permissions.guard';
 import { RequirePermissions } from '../common/decorators/permissions.decorator';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
@@ -10,7 +18,7 @@ import type { AuthUser } from '../common/types/auth-user.type';
 
 @ApiTags('rbac')
 @Controller('rbac')
-@UseGuards(JwtAuthGuard, PermissionsGuard)
+@UseGuards(PermissionsGuard)
 @ApiBearerAuth()
 export class RbacController {
   constructor(private readonly rbacService: RbacService) {}
@@ -49,6 +57,10 @@ export class RbacController {
     @Param('id') id: string,
     @Body() dto: UpdateRolePermissionsDto,
   ) {
-    return this.rbacService.updateRolePermissions(actor.id, id, dto.permissionKeys);
+    return this.rbacService.updateRolePermissions(
+      actor.id,
+      id,
+      dto.permissionKeys,
+    );
   }
 }

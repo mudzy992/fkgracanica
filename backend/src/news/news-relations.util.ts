@@ -1,17 +1,31 @@
 import type { Prisma } from '@prisma/client';
-import type { PrismaService } from '../prisma/prisma.service';
+
+/** Podskup Prisma klijenta koji dijele `PrismaService` i `tx` u transakciji. */
+export type NewsRelationsClient = Pick<
+  Prisma.TransactionClient,
+  'newsTag' | 'newsMatch' | 'newsPlayer'
+>;
 
 export const newsInclude = {
   category: true,
   tags: true,
   gallery: { include: { photos: { orderBy: { sortOrder: 'asc' as const } } } },
-  relatedMatches: { include: { match: { include: { homeClub: true, awayClub: true } } } },
+  relatedMatches: {
+    include: { match: { include: { homeClub: true, awayClub: true } } },
+  },
   relatedPlayers: { include: { player: true } },
-  author: { select: { id: true, email: true, firstName: true, lastName: true } },
+  author: {
+    select: { id: true, email: true, firstName: true, lastName: true },
+  },
 } satisfies Prisma.NewsInclude;
 
+/**
+ * BE-09b/P-B09b-5: prima i `PrismaService` i transakcijski klijent — poziva se
+ * unutar `$transaction`-a zajedno sa `news.create/update`, pa pad
+ * `createMany`-a vraća i same tagove (prije: vijest bez ijednog taga).
+ */
 export async function syncNewsTags(
-  prisma: PrismaService,
+  prisma: NewsRelationsClient,
   newsId: string,
   tags?: string[],
 ) {
@@ -19,12 +33,14 @@ export async function syncNewsTags(
   await prisma.newsTag.deleteMany({ where: { newsId } });
   const names = [...new Set(tags.map((t) => t.trim()).filter(Boolean))];
   if (names.length) {
-    await prisma.newsTag.createMany({ data: names.map((name) => ({ newsId, name })) });
+    await prisma.newsTag.createMany({
+      data: names.map((name) => ({ newsId, name })),
+    });
   }
 }
 
 export async function syncNewsRelations(
-  prisma: PrismaService,
+  prisma: NewsRelationsClient,
   newsId: string,
   matchIds?: string[],
   playerIds?: string[],
@@ -49,8 +65,17 @@ export async function syncNewsRelations(
 
 export function mapNewsUpdate(data: Record<string, unknown>) {
   const allowed = [
-    'title', 'slug', 'excerpt', 'content', 'coverPath', 'videoUrl',
-    'galleryId', 'categoryId', 'seoTitle', 'seoDesc', 'scheduledAt',
+    'title',
+    'slug',
+    'excerpt',
+    'content',
+    'coverPath',
+    'videoUrl',
+    'galleryId',
+    'categoryId',
+    'seoTitle',
+    'seoDesc',
+    'scheduledAt',
   ] as const;
   const update: Record<string, unknown> = {};
   for (const key of allowed) {

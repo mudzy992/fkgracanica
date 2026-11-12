@@ -1,23 +1,42 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { ContactService } from './contact.service';
 import { ContactListQueryDto } from './dto/contact-list-query.dto';
-import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { PermissionsGuard } from '../common/guards/permissions.guard';
 import { RequirePermissions } from '../common/decorators/permissions.decorator';
 
+import { Public } from '../common/decorators/public.decorator';
 @ApiTags('contact')
 @Controller('contact')
 export class ContactController {
   constructor(private readonly service: ContactService) {}
 
   @Post()
-  create(@Body() body: { name: string; email: string; subject?: string; message: string }) {
+  @Public()
+  create(
+    @Body()
+    body: {
+      name: string;
+      email: string;
+      subject?: string;
+      message: string;
+    },
+  ) {
     return this.service.create(body);
   }
 
   @Get()
-  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @UseGuards(PermissionsGuard)
   @RequirePermissions('contact.read')
   @ApiBearerAuth()
   findAll(@Query() query: ContactListQueryDto) {
@@ -25,7 +44,7 @@ export class ContactController {
   }
 
   @Patch('read-all')
-  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @UseGuards(PermissionsGuard)
   @RequirePermissions('contact.read')
   @ApiBearerAuth()
   markAllRead() {
@@ -33,7 +52,7 @@ export class ContactController {
   }
 
   @Get(':id')
-  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @UseGuards(PermissionsGuard)
   @RequirePermissions('contact.read')
   @ApiBearerAuth()
   findOne(@Param('id') id: string) {
@@ -41,7 +60,7 @@ export class ContactController {
   }
 
   @Delete(':id')
-  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @UseGuards(PermissionsGuard)
   @RequirePermissions('contact.read')
   @ApiBearerAuth()
   remove(@Param('id') id: string) {
@@ -49,7 +68,7 @@ export class ContactController {
   }
 
   @Patch(':id/read')
-  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @UseGuards(PermissionsGuard)
   @RequirePermissions('contact.read')
   @ApiBearerAuth()
   markRead(@Param('id') id: string) {

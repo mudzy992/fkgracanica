@@ -1,7 +1,8 @@
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../lib/auth';
-import { Button } from '../ui/button';
+import { buttonVariants } from '../ui/button-variants';
+import { cn } from '../../lib/utils';
 import { PublicUserMenu } from './PublicUserMenu';
 
 interface Props {
@@ -17,10 +18,12 @@ export function PublicAuthButton({ onNavigate, mobile }: Props) {
 
   if (!isAuthenticated) {
     return (
-      <Link to="/prijava" onClick={onNavigate}>
-        <Button size={mobile ? 'default' : 'sm'} className={mobile ? 'w-full' : ''}>
-          {t('nav.login')}
-        </Button>
+      <Link
+        to="/prijava"
+        onClick={onNavigate}
+        className={cn(buttonVariants({ size: mobile ? 'default' : 'sm' }), mobile && 'w-full')}
+      >
+        {t('nav.login')}
       </Link>
     );
   }

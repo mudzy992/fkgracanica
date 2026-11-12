@@ -1,4 +1,5 @@
 import { useMatch, useMatches } from '../../../hooks';
+import { useTranslation } from 'react-i18next';
 import { useMatchRealtime } from '../../../hooks/use-match-realtime';
 import { Button } from '../../../components/ui/button';
 import type { HomeAction } from './HomeQuickActions';
@@ -18,6 +19,7 @@ import {
 } from './commentator-desk';
 
 export function CommentatorHome() {
+  const { t } = useTranslation();
   const { data, isLoading, isError, refetch } = useMatches();
   const matches = data ?? [];
   const counts = deskCounts(matches);
@@ -31,17 +33,27 @@ export function CommentatorHome() {
   const today = pickToday(matches)[0];
   const pending = pickAwaitingApproval(matches)[0];
   const actions: HomeAction[] = [];
-  if (primary) actions.push({ to: deskHref(primary), label: 'Otvori desk', variant: 'default' });
-  if (live[0]) actions.push({ to: `/live/${live[0].id}`, label: 'Javni live' });
-  if (draft) actions.push({ to: deskHref(draft), label: 'Izvještaj' });
+  if (primary)
+    actions.push({
+      to: deskHref(primary),
+      label: t('admin.commentator.openDesk'),
+      variant: 'default',
+    });
+  if (live[0])
+    actions.push({ to: `/live/${live[0].id}`, label: t('admin.commentator.publicLive') });
+  if (draft) actions.push({ to: deskHref(draft), label: t('admin.commentator.report') });
 
   if (isError) {
     return (
-      <RoleHomeShell seo="Komentator" title="Komentator — kontrolna tabla" hint="Semafor, događaji, izvještaji.">
+      <RoleHomeShell
+        seo="Komentator"
+        title={t('admin.home.commentatorTitle')}
+        hint={t('admin.home.commentatorHintShort')}
+      >
         <div className="flex flex-col items-center gap-4 py-12">
-          <p className="text-text-muted">Nije moguće učitati utakmice.</p>
+          <p className="text-text-muted">{t('admin.home.matchesError')}</p>
           <Button variant="outline" onClick={() => void refetch()}>
-            Pokušaj ponovo
+            {t('actions.retry')}
           </Button>
         </div>
       </RoleHomeShell>
@@ -51,43 +63,47 @@ export function CommentatorHome() {
   return (
     <RoleHomeShell
       seo="Komentator"
-      title="Komentator — kontrolna tabla"
-      hint="Semafor, događaji i predaja izvještaja. Bez kalendara i takmičenja."
+      title={t('admin.home.commentatorTitle')}
+      hint={t('admin.home.commentatorHint')}
     >
       <HomeKpiGrid
         items={[
           {
             key: 'live',
-            label: 'Uživo',
+            label: t('admin.commentator.live'),
             value: isLoading ? '…' : counts.live,
-            hint: 'Live / poluvrijeme',
+            hint: t('admin.commentator.liveHint'),
             href: live[0] ? deskHref(live[0]) : undefined,
           },
           {
             key: 'today',
-            label: 'Danas',
+            label: t('admin.commentator.today'),
             value: isLoading ? '…' : counts.today,
-            hint: 'Zakazane danas',
+            hint: t('admin.commentator.todayHint'),
             href: today ? deskHref(today) : undefined,
           },
           {
             key: 'drafts',
-            label: 'Nacrti izvještaja',
+            label: t('admin.commentator.draftReports'),
             value: isLoading ? '…' : counts.drafts,
-            hint: 'Još nisu predati',
+            hint: t('admin.commentator.draftReportsHint'),
             href: draft ? deskHref(draft) : undefined,
           },
           {
             key: 'pending',
-            label: 'Čeka odobrenje',
+            label: t('admin.commentator.awaitingApproval'),
             value: isLoading ? '…' : counts.pending,
-            hint: 'Kod moderatora',
+            hint: t('admin.commentator.awaitingApprovalHint'),
             href: pending ? deskHref(pending) : undefined,
           },
         ]}
       />
       {actions.length > 0 ? <HomeQuickActions items={actions} /> : null}
-      {hero ? <div className="mt-8"><CommentatorLiveHero match={hero} /></div> : null}
+      {hero ? (
+        <div className="mt-8">
+          <CommentatorLiveHero match={hero} />
+        </div>
+      ) : null}
       <div className="mt-8">
         <CommentatorDeskList matches={matches} isLoading={isLoading} />
       </div>

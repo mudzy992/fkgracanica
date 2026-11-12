@@ -19,20 +19,31 @@ export const LINE_GRID_SLOTS = 4;
 
 export function validateFormation(counts: FormationCounts): FormationCounts {
   const { def, mid, fwd } = counts;
-  if (!Number.isInteger(def) || !Number.isInteger(mid) || !Number.isInteger(fwd)) {
+  if (
+    !Number.isInteger(def) ||
+    !Number.isInteger(mid) ||
+    !Number.isInteger(fwd)
+  ) {
     throw new BadRequestException('Formacija mora sadržavati cijele brojeve.');
   }
   if (def < 1 || mid < 1 || fwd < 1) {
-    throw new BadRequestException('Svaka linija (odbrana, veznjaci, napad) mora imati najmanje 1 igrača.');
+    throw new BadRequestException(
+      'Svaka linija (odbrana, veznjaci, napad) mora imati najmanje 1 igrača.',
+    );
   }
   if (def + mid + fwd > 10) {
-    throw new BadRequestException('Zbroj odbrane, veznjaka i napada ne smije biti veći od 10 (uz golmana).');
+    throw new BadRequestException(
+      'Zbroj odbrane, veznjaka i napada ne smije biti veći od 10 (uz golmana).',
+    );
   }
   return { def, mid, fwd };
 }
 
 /** Centers N players within LINE_GRID_SLOTS (e.g. 2 → slots 2 & 3 of 4). */
-export function lineYCentered(indexInLine: number, countInLine: number): number {
+export function lineYCentered(
+  indexInLine: number,
+  countInLine: number,
+): number {
   if (countInLine === 1) return 50;
   if (countInLine === 3) {
     return [12, 50, 88][indexInLine] ?? 50;
@@ -48,10 +59,17 @@ function lineX(line: number): number {
   return lines[line] ?? 50;
 }
 
-export function buildFormationSlots(counts: FormationCounts): FormationSlotLayout[] {
+export function buildFormationSlots(
+  counts: FormationCounts,
+): FormationSlotLayout[] {
   const { def, mid, fwd } = validateFormation(counts);
   const slots: FormationSlotLayout[] = [
-    { slotIndex: 0, lineRole: PlayerPosition.GK, positionX: lineX(0), positionY: 50 },
+    {
+      slotIndex: 0,
+      lineRole: PlayerPosition.GK,
+      positionX: lineX(0),
+      positionY: 50,
+    },
   ];
   let idx = 1;
   for (let i = 0; i < def; i += 1) {

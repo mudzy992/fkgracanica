@@ -1,5 +1,7 @@
+import { buttonVariants } from "../../../components/ui/button-variants";
+import { cn } from "../../../lib/utils";
 import { Link } from 'react-router-dom';
-import { Button } from '../../../components/ui/button';
+;
 
 export type HomeAction = {
   to: string;
@@ -11,9 +13,7 @@ export function HomeQuickActions({ items }: { items: HomeAction[] }) {
   return (
     <div className="mt-6 flex flex-wrap gap-2">
       {items.map((item) => (
-        <Link key={`${item.to}-${item.label}`} to={item.to}>
-          <Button variant={item.variant ?? 'outline'}>{item.label}</Button>
-        </Link>
+        <Link key={`${item.to}-${item.label}`} to={item.to} className={cn(buttonVariants({variant: item.variant ?? 'outline'}))}>{item.label}</Link>
       ))}
     </div>
   );

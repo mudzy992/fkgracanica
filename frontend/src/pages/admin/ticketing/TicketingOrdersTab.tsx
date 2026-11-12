@@ -15,6 +15,7 @@ import { Button } from '../../../components/ui/button';
 import { AdminDataTable } from '../../../components/admin/AdminPageShell';
 import { TicketingOrderSheet } from '../TicketingOrderSheet';
 import type { TicketingAdminOrder } from '../../../hooks/use-ticketing-admin';
+import { useTranslation } from 'react-i18next';
 
 type Filter = 'all' | 'pending' | 'paid' | 'refund' | 'closed';
 
@@ -27,6 +28,7 @@ const FILTERS: { key: Filter; label: string }[] = [
 ];
 
 export function TicketingOrdersTab() {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const canManage = hasPermission(user?.permissions, 'ticketing.manage');
   const { data, isLoading } = useTicketingAdminOrders();
@@ -39,7 +41,9 @@ export function TicketingOrdersTab() {
   const orders = useMemo(() => {
     const list = data ?? [];
     if (filter === 'pending') {
-      return list.filter((o) => o.status === 'pending' || o.payment?.status === 'PENDING_BOX_OFFICE');
+      return list.filter(
+        (o) => o.status === 'pending' || o.payment?.status === 'PENDING_BOX_OFFICE',
+      );
     }
     if (filter === 'paid') return list.filter((o) => o.status === 'paid');
     if (filter === 'refund') return list.filter((o) => o.status === 'refund_requested');
@@ -54,7 +58,7 @@ export function TicketingOrdersTab() {
     if (ok) void action(id);
   };
 
-  if (isLoading) return <p className="p-4 text-sm text-text-muted">Učitavanje...</p>;
+  if (isLoading) return <p className="p-4 text-sm text-text-muted">{t('admin.common.loading')}</p>;
 
   return (
     <>
@@ -71,7 +75,11 @@ export function TicketingOrdersTab() {
           </Button>
         ))}
       </div>
-      {canManage && <div className="px-4"><TicketingValidatePanel /></div>}
+      {canManage && (
+        <div className="px-4">
+          <TicketingValidatePanel />
+        </div>
+      )}
       <AdminDataTable
         rows={orders}
         empty="Nema narudžbi."
@@ -106,7 +114,9 @@ export function TicketingOrdersTab() {
                     <Button
                       size="sm"
                       disabled={confirmPayment.isPending}
-                      onClick={() => void askAction('Potvrditi uplatu?', r.id, confirmPayment.mutateAsync)}
+                      onClick={() =>
+                        void askAction('Potvrditi uplatu?', r.id, confirmPayment.mutateAsync)
+                      }
                     >
                       Potvrdi uplatu
                     </Button>
@@ -116,7 +126,9 @@ export function TicketingOrdersTab() {
                       size="sm"
                       variant="outline"
                       disabled={confirmRefund.isPending}
-                      onClick={() => void askAction('Odobriti povrat?', r.id, confirmRefund.mutateAsync)}
+                      onClick={() =>
+                        void askAction('Odobriti povrat?', r.id, confirmRefund.mutateAsync)
+                      }
                     >
                       Odobri povrat
                     </Button>

@@ -4,15 +4,18 @@ import { splitFeaturedTrophy } from '../../lib/trophy-utils';
 import { PageContainer } from '../../components/public/PageContainer';
 import { TrophiesCinematicHero } from '../../components/public/trophies/TrophiesCinematicHero';
 import { EmptyState } from '../../components/public/EmptyState';
+import { DataError } from '../../components/common/DataError';
 import { Seo } from '../../components/seo/Seo';
 import { TrophyCard } from '../../components/public/trophies/TrophyCard';
 import { TrophyFeaturedShowcase } from '../../components/public/trophies/TrophyFeaturedShowcase';
 import { NewsSectionTitle } from '../../components/news/NewsSectionTitle';
 import { Reveal } from '../../lib/motion/Reveal';
 import { Skeleton } from '../../components/ui/skeleton';
+import { useTranslation } from 'react-i18next';
 
 export function TrophiesPage() {
-  const { data, isLoading } = useTrophies();
+  const { t } = useTranslation();
+  const { data, isLoading, isError, refetch } = useTrophies();
   const trophies = data ?? [];
   const { featured, rest } = splitFeaturedTrophy(trophies);
 
@@ -23,14 +26,16 @@ export function TrophiesPage() {
 
   return (
     <div className="pb-16 sm:pb-20">
-      <Seo title="Trofeji" description="Trofeji i titule FK Gračanica" />
+      <Seo title={t('pages.trophies.seoTitle')} description={t('pages.trophies.seoDesc')} />
       <TrophiesCinematicHero
         totalCount={stats.total}
         featuredYear={featured?.year}
         competitionCount={stats.competitionCount}
       />
       <PageContainer className="py-10 sm:py-12">
-        {isLoading ? (
+        {isError ? (
+          <DataError onRetry={() => void refetch()} />
+        ) : isLoading ? (
           <div className="space-y-6">
             <Skeleton className="h-72 rounded-3xl" />
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -47,7 +52,7 @@ export function TrophiesPage() {
             {rest.length > 0 && (
               <section className="pt-10 sm:pt-12">
                 <Reveal>
-                  <NewsSectionTitle>Ostali trofeji</NewsSectionTitle>
+                  <NewsSectionTitle>{t('pages.trophies.other')}</NewsSectionTitle>
                 </Reveal>
                 <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                   {rest.map((t, i) => (
@@ -60,7 +65,7 @@ export function TrophiesPage() {
             )}
           </>
         ) : (
-          <EmptyState message="Nema trofeja." />
+          <EmptyState message={t('pages.trophies.empty')} />
         )}
       </PageContainer>
     </div>

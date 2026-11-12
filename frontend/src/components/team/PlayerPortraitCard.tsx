@@ -43,7 +43,7 @@ export function PlayerPortraitCard({ player, stats, delay = 0, spotlight, classN
           )}
 
           {player.photoPath ? (
-            <img
+            <img loading="lazy" decoding="async"
               src={mediaUrl(player.photoPath, 'medium')}
               alt=""
               className="absolute inset-0 h-full w-full object-cover object-top transition-transform duration-700 group-hover:scale-105"

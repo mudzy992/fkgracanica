@@ -5,6 +5,7 @@ import { asArray } from '../../lib/as-array';
 import type { NewsCategory } from '../../hooks/use-news-admin';
 import type { NewsItem } from '../../types';
 import { EmptyState } from '../../components/public/EmptyState';
+import { DataError } from '../../components/common/DataError';
 import { PageContainer } from '../../components/public/PageContainer';
 import { PageHeroHeader } from '../../components/public/shell/PageHeroHeader';
 import { Seo } from '../../components/seo/Seo';
@@ -49,22 +50,28 @@ export function NewsListPage() {
   const [categoryId, setCategoryId] = useState<string | undefined>();
   const { data: categoriesRaw } = useNewsCategories();
   const categories = asArray<NewsCategory>(categoriesRaw);
-  const { data, isLoading } = usePublishedNews(categoryId);
+  const { data, isLoading, isError, refetch } = usePublishedNews(categoryId);
   const items = asArray<NewsItem>(data);
   const filtered = Boolean(categoryId);
 
   return (
     <div className="pb-16">
-      <Seo
+      <Seo title={t('news.title')} description={t('news.seoDesc')} url="/vijesti" />
+      <PageHeroHeader
+        eyebrow={t('news.eyebrow')}
         title={t('news.title')}
-        description={t('news.seoDesc')}
-        url="/vijesti"
+        subtitle={t('news.subtitle')}
       />
-      <PageHeroHeader eyebrow={t('news.eyebrow')} title={t('news.title')} subtitle={t('news.subtitle')} />
       <PageContainer className="py-10 sm:py-12">
-        <NewsCategoryFilter categories={categories} activeId={categoryId} onChange={setCategoryId} />
+        <NewsCategoryFilter
+          categories={categories}
+          activeId={categoryId}
+          onChange={setCategoryId}
+        />
 
-        {isLoading ? (
+        {isError ? (
+          <DataError onRetry={() => void refetch()} />
+        ) : isLoading ? (
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {Array.from({ length: 6 }).map((_, i) => (
               <SkeletonCard key={i} />

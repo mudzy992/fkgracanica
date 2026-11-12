@@ -15,7 +15,7 @@ export interface NewsWriteBody {
   excerpt?: string;
   slug?: string;
   coverPath?: string;
-  videoUrl?: string;
+  videoUrl?: string | null;
   galleryId?: string;
   categoryId?: string;
   seoTitle?: string;

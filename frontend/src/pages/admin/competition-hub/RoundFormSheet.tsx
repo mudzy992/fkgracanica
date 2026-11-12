@@ -4,6 +4,7 @@ import { AdminFormSheet } from '../../../components/admin/AdminFormSheet';
 import { Button } from '../../../components/ui/button';
 import { Input } from '../../../components/ui/input';
 import type { CompetitionRound } from '../../../types';
+import { useTranslation } from 'react-i18next';
 
 interface Props {
   open: boolean;
@@ -18,6 +19,7 @@ function toLocalDate(iso?: string | null) {
 }
 
 export function RoundFormSheet({ open, onOpenChange, edit, seasonId }: Props) {
+  const { t } = useTranslation();
   const create = useCreateRound();
   const update = useUpdateRound();
   const [number, setNumber] = useState(1);
@@ -54,14 +56,31 @@ export function RoundFormSheet({ open, onOpenChange, edit, seasonId }: Props) {
   };
 
   return (
-    <AdminFormSheet open={open} onOpenChange={onOpenChange} title={edit ? 'Uredi kolo' : 'Novo kolo'}>
+    <AdminFormSheet
+      open={open}
+      onOpenChange={onOpenChange}
+      title={edit ? 'Uredi kolo' : 'Novo kolo'}
+    >
       <div className="space-y-4">
-        <Input type="number" min={1} value={number} onChange={(e) => setNumber(Number(e.target.value))} placeholder="Broj kola *" />
-        <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Naziv (opcionalno)" />
+        <Input
+          type="number"
+          min={1}
+          value={number}
+          onChange={(e) => setNumber(Number(e.target.value))}
+          placeholder={t('admin.roundForm.numberPlaceholder')}
+        />
+        <Input
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          placeholder={t('admin.roundForm.namePlaceholder')}
+        />
         <Input type="date" value={startsAt} onChange={(e) => setStartsAt(e.target.value)} />
         <Input type="date" value={endsAt} onChange={(e) => setEndsAt(e.target.value)} />
         {error && <p className="text-sm text-danger">{error}</p>}
-        <Button onClick={() => void save()} disabled={!number || create.isPending || update.isPending}>
+        <Button
+          onClick={() => void save()}
+          disabled={!number || create.isPending || update.isPending}
+        >
           {edit ? 'Spremi' : 'Kreiraj'}
         </Button>
       </div>

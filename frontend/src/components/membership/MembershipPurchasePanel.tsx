@@ -13,6 +13,7 @@ import { Skeleton } from '../ui/skeleton';
 import type { MembershipRow } from '../../types/membership';
 import type { PaymentProviderId } from '../../types/payment-provider';
 import type { TicketingPublicConfig } from '../../types/ticketing-config';
+import { runAction } from '../../lib/action-errors';
 
 interface Props {
   config?: TicketingPublicConfig;
@@ -132,7 +133,7 @@ export function MembershipPurchasePanel({
         providers={providers}
         busy={busy}
         onPay={(p) => void payOnline(current.id, p)}
-        onRejoin={() => void register.mutateAsync()}
+        onRejoin={() => void runAction(register.mutateAsync())}
         registerError={register.isError}
       />
     );

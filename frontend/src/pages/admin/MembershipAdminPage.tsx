@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState } from 'react'; import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { Plus, Settings } from 'lucide-react';
 import { useAuth } from '../../lib/auth';
@@ -29,6 +29,7 @@ import { MembershipCardsBulkExport } from '../../components/membership/Membershi
 import { MembershipDetailSheet } from './MembershipDetailSheet';
 import { MembershipAdminFormSheet } from './MembershipAdminFormSheet';
 import type { MembershipRow, MembershipStatus } from '../../types/membership';
+import { askMembershipAction } from './membership-actions';
 
 type Filter = 'all' | MembershipStatus;
 
@@ -42,9 +43,10 @@ const FILTERS: { key: Filter; label: string }[] = [
 ];
 
 export function MembershipAdminPage() {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const canManage = hasPermission(user?.permissions, 'membership.manage');
-  const { data, isLoading } = useMemberships();
+  const { data, isLoading, isError, refetch } = useMemberships();
   const activate = useActivateMembership();
   const renew = useRenewMembership();
   const suspend = useSuspendMembership();
@@ -60,17 +62,17 @@ export function MembershipAdminPage() {
     return list.filter((m) => m.status === filter);
   }, [data, filter]);
 
-  const askAction = async (title: string, id: string, action: (id: string) => Promise<unknown>) => {
-    const ok = await confirm({ title, confirmLabel: 'Potvrdi' });
-    if (ok) void action(id);
-  };
+  const askAction = (title: string, id: string, fn: (id: string) => Promise<unknown>) =>
+    askMembershipAction(confirm, t('actions.confirm'), title, id, fn);
 
   return (
     <>
-      <Seo title="Članstvo" />
+      <Seo title={t('admin.membershipPage.title')} />
       {dialog}
       <AdminPageShell
-        title="Članstvo"
+        isError={isError}
+        onRetry={() => void refetch()}
+        title={t('admin.membershipPage.title')}
         isLoading={isLoading}
         actions={
           <div className="flex flex-wrap items-center gap-2">

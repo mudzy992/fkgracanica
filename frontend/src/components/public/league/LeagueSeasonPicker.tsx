@@ -14,7 +14,7 @@ export function LeagueSeasonPicker({ seasons, value, onChange }: Props) {
     <select
       value={value ?? ''}
       onChange={(e) => onChange(e.target.value)}
-      className="rounded-lg border border-slate-200 bg-background px-3 py-2 text-sm"
+      className="rounded-lg border border-[var(--border-subtle)] bg-background px-3 py-2 text-sm"
       aria-label="Odaberi sezonu"
     >
       {seasons.map((s) => (

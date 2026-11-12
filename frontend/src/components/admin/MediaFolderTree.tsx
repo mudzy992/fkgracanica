@@ -1,4 +1,5 @@
 import type { MediaFolder } from '../../hooks/use-media-admin';
+import { useTranslation } from 'react-i18next';
 import { useState } from 'react';
 import { asArray } from '../../lib/as-array';
 import { Button } from '../ui/button';
@@ -33,6 +34,7 @@ function FolderNode({
   onRename?: (id: string, name: string) => void;
   onDelete?: (id: string, name: string) => void;
 }) {
+  const { t } = useTranslation();
   const [editing, setEditing] = useState(false);
   const [name, setName] = useState(folder.name);
 
@@ -51,25 +53,36 @@ function FolderNode({
             autoFocus
           />
         ) : (
-          <button
+          <Button
             type="button"
+            variant="ghost"
             onClick={() => onSelect(folder.id)}
             className={cn(
-              'flex flex-1 items-center justify-between rounded-lg px-3 py-2 text-left text-sm',
-              selectedId === folder.id ? 'bg-primary/10 text-primary' : 'hover:bg-surface',
+              'flex h-auto flex-1 items-center justify-between rounded-lg px-3 py-2 text-left text-sm font-normal',
+              selectedId === folder.id ? 'bg-primary/10 text-primary-light hover:bg-primary/10' : 'hover:bg-surface',
             )}
           >
             <span>{folder.name}</span>
             <span className="text-xs text-text-muted">{folder._count?.assets ?? 0}</span>
-          </button>
+          </Button>
         )}
         {!editing && (onRename || onDelete) ? (
           <div className="flex gap-1">
             {onRename ? (
-              <Button type="button" size="sm" variant="ghost" onClick={() => setEditing(true)}>✎</Button>
+              <Button type="button" size="sm" variant="ghost" aria-label={`${t('actions.edit')}: ${folder.name}`} onClick={() => setEditing(true)}>
+                ✎
+              </Button>
             ) : null}
             {onDelete ? (
-              <Button type="button" size="sm" variant="ghost" onClick={() => onDelete(folder.id, folder.name)}>×</Button>
+              <Button
+                type="button"
+                size="sm"
+                variant="ghost"
+                aria-label={`${t('actions.delete')}: ${folder.name}`}
+                onClick={() => onDelete(folder.id, folder.name)}
+              >
+                ×
+              </Button>
             ) : null}
           </div>
         ) : null}
@@ -101,20 +114,22 @@ export function MediaFolderTree({
   onDelete,
   className,
 }: MediaFolderTreeProps) {
+  const { t } = useTranslation();
   const roots = asArray<MediaFolder>(folders).filter((f) => !f.parentId);
 
   return (
-    <div className={cn('space-y-3 border-r border-slate-200 p-4', className)}>
-      <button
+    <div className={cn('space-y-3 border-r border-[var(--border-subtle)] p-4', className)}>
+      <Button
         type="button"
+        variant="ghost"
         onClick={() => onSelect(undefined)}
         className={cn(
-          'w-full rounded-lg px-3 py-2 text-left text-sm',
-          !selectedId ? 'bg-primary/10 text-primary' : 'hover:bg-surface',
+          'h-auto w-full justify-start rounded-lg px-3 py-2 text-left text-sm font-normal',
+          !selectedId ? 'bg-primary/10 text-primary-light hover:bg-primary/10' : 'hover:bg-surface',
         )}
       >
-        Svi mediji
-      </button>
+        {t('admin.mediaFolders.all')}
+      </Button>
       {roots.map((folder) => (
         <FolderNode
           key={folder.id}
@@ -131,10 +146,10 @@ export function MediaFolderTree({
           <Input
             value={newName}
             onChange={(e) => onNewNameChange(e.target.value)}
-            placeholder="Nova mapa"
+            placeholder={t('admin.mediaPicker.newFolder')}
             className="text-sm"
           />
-          <Button size="sm" onClick={onCreate} disabled={!newName || isCreating}>
+          <Button size="sm" aria-label={`${t('actions.create')}: ${t('admin.mediaPicker.newFolder')}`} onClick={onCreate} disabled={!newName || isCreating}>
             +
           </Button>
         </div>

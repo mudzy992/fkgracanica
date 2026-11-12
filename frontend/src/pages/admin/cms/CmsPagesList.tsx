@@ -1,4 +1,7 @@
+import { buttonVariants } from "../../../components/ui/button-variants";
+import { cn } from "../../../lib/utils";
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useCmsPages, useDeleteCmsPage } from '../../../hooks/use-cms-pages';
 import { useConfirm } from '../../../hooks/use-confirm';
 import { asArray } from '../../../lib/as-array';
@@ -8,6 +11,7 @@ import { Button } from '../../../components/ui/button';
 import { AdminDataTable, AdminPageShell } from '../../../components/admin/AdminPageShell';
 import { contentStatusLabel } from '../../../lib/content-status-labels';
 import type { CmsPage } from '../../../cms/types';
+import { runAction } from '../../../lib/action-errors';
 
 interface Props {
   onCreate: () => void;
@@ -18,32 +22,34 @@ function canDeletePage(page: CmsPage) {
 }
 
 export function CmsPagesList({ onCreate }: Props) {
-  const { data, isLoading } = useCmsPages(true);
+  const { t } = useTranslation();
+  const { data, isLoading, isError, refetch } = useCmsPages(true);
   const pages = asArray<CmsPage>(data);
   const remove = useDeleteCmsPage();
   const { confirm, dialog } = useConfirm();
 
   const onDelete = async (page: CmsPage) => {
-    if (!canDeletePage(page)) return;
     const ok = await confirm({
       title: 'Obrisati stranicu?',
       description: `${page.title} (${page.slug}) — samo nacrti se mogu obrisati.`,
       variant: 'danger',
       confirmLabel: 'Obriši',
     });
-    if (ok) void remove.mutateAsync(page.id);
+    if (ok) void runAction(remove.mutateAsync(page.id));
   };
 
   return (
     <>
       <AdminPageShell
-        title="CMS stranice"
+        isError={isError}
+        onRetry={() => void refetch()}
+        title={t('admin.cmsPages.title')}
         isLoading={isLoading}
-        actions={<Button onClick={onCreate}>Nova stranica</Button>}
+        actions={<Button onClick={onCreate}>{t('admin.cmsPages.new')}</Button>}
       >
         <AdminDataTable
           rows={pages}
-          empty="Nema stranica."
+          empty={t('admin.cmsPages.empty')}
           columns={[
             { key: 'title', header: 'Naslov', render: (r) => r.title },
             { key: 'slug', header: 'Slug', render: (r) => r.slug },
@@ -61,13 +67,16 @@ export function CmsPagesList({ onCreate }: Props) {
               header: '',
               render: (r) => (
                 <div className="flex flex-wrap gap-2">
-                  <Link to={`/admin/cms/pages/${r.id}`}>
-                    <Button size="sm" variant="outline">
-                      Uredi layout
-                    </Button>
-                  </Link>
+                  <Link to={`/admin/cms/pages/${r.id}`} className={cn(buttonVariants({variant: "outline", size: "sm"}))}>
+                  Uredi layout
+                </Link>
                   {canDeletePage(r) && (
-                    <Button size="sm" variant="outline" className="text-danger" onClick={() => void onDelete(r)}>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="text-danger"
+                      onClick={() => void onDelete(r)}
+                    >
                       Obriši
                     </Button>
                   )}
@@ -77,7 +86,7 @@ export function CmsPagesList({ onCreate }: Props) {
           ]}
         />
       </AdminPageShell>
-      <Seo title="CMS stranice" />
+      <Seo title={t('admin.cmsPages.title')} />
       {dialog}
     </>
   );

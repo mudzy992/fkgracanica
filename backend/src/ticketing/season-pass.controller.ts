@@ -1,7 +1,6 @@
 import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { SeasonPassService } from './season-pass.service';
-import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { PermissionsGuard } from '../common/guards/permissions.guard';
 import { RequirePermissions } from '../common/decorators/permissions.decorator';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
@@ -9,7 +8,6 @@ import type { AuthUser } from '../common/types/auth-user.type';
 
 @ApiTags('ticketing')
 @Controller('ticketing/season-pass')
-@UseGuards(JwtAuthGuard)
 @ApiBearerAuth()
 export class SeasonPassController {
   constructor(private readonly service: SeasonPassService) {}

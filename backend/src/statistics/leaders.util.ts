@@ -1,4 +1,3 @@
-import { Prisma } from '@prisma/client';
 import type { PrismaService } from '../prisma/prisma.service';
 
 type LeaderRow = {
@@ -16,7 +15,9 @@ export async function getSeasonLeaders(
 ): Promise<LeaderRow[]> {
   const stats = await prisma.playerStatistics.findMany({
     where: { seasonCompetitionId: seasonId, [field]: { gt: 0 } },
-    include: { player: { select: { id: true, firstName: true, lastName: true } } },
+    include: {
+      player: { select: { id: true, firstName: true, lastName: true } },
+    },
     orderBy: { [field]: 'desc' },
     take: limit,
   });

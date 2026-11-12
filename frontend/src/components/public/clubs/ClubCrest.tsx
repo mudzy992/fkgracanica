@@ -28,7 +28,7 @@ export function ClubCrest({ club, size = 'md', className }: Props) {
     );
   }
   return (
-    <img
+    <img loading="lazy" decoding="async"
       src={mediaUrl(crest, size === 'lg' ? 'medium' : 'thumb')}
       alt={club?.name ?? ''}
       className={cn('object-contain', sizes[size], className)}

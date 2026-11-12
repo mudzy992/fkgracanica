@@ -1,22 +1,14 @@
 import type { FormMatchEntry } from '../lib/form-types';
 
 export type ContentStatus = 'DRAFT' | 'PENDING' | 'PUBLISHED' | 'ARCHIVED';
-export type MatchStatus = 'SCHEDULED' | 'LIVE' | 'HALFTIME' | 'FINISHED' | 'POSTPONED' | 'CANCELLED';
+export type MatchStatus =
+  'SCHEDULED' | 'LIVE' | 'HALFTIME' | 'FINISHED' | 'POSTPONED' | 'CANCELLED';
 export type MatchReportStatus = 'DRAFT' | 'PENDING_APPROVAL' | 'APPROVED';
 
 export type MatchPeriod =
-  | 'FIRST_HALF'
-  | 'SECOND_HALF'
-  | 'EXTRA_FIRST'
-  | 'EXTRA_SECOND'
-  | 'PENALTIES';
+  'FIRST_HALF' | 'SECOND_HALF' | 'EXTRA_FIRST' | 'EXTRA_SECOND' | 'PENALTIES';
 
-export type LiveBreak =
-  | 'NONE'
-  | 'REGULAR_HT'
-  | 'ET_HT'
-  | 'POST_REGULATION'
-  | 'POST_EXTRA';
+export type LiveBreak = 'NONE' | 'REGULAR_HT' | 'ET_HT' | 'POST_REGULATION' | 'POST_EXTRA';
 
 export interface User {
   id: string;
@@ -177,6 +169,7 @@ export interface Match {
   awayClubId: string;
   homeScore: number;
   awayScore: number;
+  /** @deprecated BE-09d: izvedeno iz `roundRel.number` na backendu; koristi `roundRel`. */
   round?: number | null;
   roundId?: string | null;
   roundRel?: Pick<CompetitionRound, 'id' | 'number' | 'name'> | null;
@@ -200,6 +193,8 @@ export interface Match {
   homeClub?: Club;
   awayClub?: Club;
   events?: MatchEvent[];
+  /** True nakon prvog spremanja, uključujući namjerno praznu postavu. */
+  lineupConfigured?: boolean;
   lineups?: MatchLineup[];
   lineup?: MatchLineup[];
   liveComments?: LiveComment[];
@@ -234,7 +229,7 @@ export interface MatchLineup {
   positionX?: number | null;
   positionY?: number | null;
   isStarter: boolean;
-  player?: Player;
+  player?: Player | null;
 }
 
 export interface LiveComment {

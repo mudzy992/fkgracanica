@@ -65,7 +65,7 @@ export function newsItemToForm(item: import('../../types').NewsItem): NewsFormDa
   };
 }
 
-export function formToNewsBody(data: NewsFormData) {
+export function formToNewsBody(data: NewsFormData, previousVideoUrl?: string | null) {
   const tags = data.tagsCsv
     ?.split(',')
     .map((t) => t.trim())
@@ -77,7 +77,7 @@ export function formToNewsBody(data: NewsFormData) {
     excerpt,
     content: data.content,
     coverPath: data.coverPath || undefined,
-    videoUrl: data.videoUrl || undefined,
+    videoUrl: data.videoUrl === previousVideoUrl ? data.videoUrl : data.videoUrl || null,
     categoryId: data.categoryId || undefined,
     seoTitle: data.seoTitle || undefined,
     seoDesc: data.seoDesc || undefined,

@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { cn } from '../../lib/utils';
 import { useYouTubeStreamPlayer } from '../../hooks/use-youtube-stream-player';
 
@@ -9,9 +10,17 @@ interface Props {
 }
 
 export function LiveYouTubePlayer({ url, active = true, hidden = false, className }: Props) {
+  const { t } = useTranslation();
   const { containerRef, videoId } = useYouTubeStreamPlayer(url, active);
 
-  if (!videoId) return null;
+  if (!videoId) {
+    if (hidden || !url.trim()) return null;
+    return (
+      <p role="status" className="absolute inset-x-0 top-1/3 z-0 px-4 text-center text-sm text-white">
+        {t('video.liveUnavailable')}
+      </p>
+    );
+  }
 
   return (
     <div

@@ -10,8 +10,11 @@ import { Input } from '../../../components/ui/input';
 import { Badge } from '../../../components/ui/badge';
 import { CommentatorClockActions } from './CommentatorClockActions';
 import { CommentatorStreamDialog } from './CommentatorStreamDialog';
+import { useTranslation } from 'react-i18next';
+import { runAction } from '../../../lib/action-errors';
 
 export function CommentatorClockBar({ match }: { match: Match }) {
+  const { t } = useTranslation();
   const clock = useLiveClock(match);
   const setStoppage = useSetStoppage();
   const [mins, setMins] = useState(3);
@@ -20,15 +23,16 @@ export function CommentatorClockBar({ match }: { match: Match }) {
   const half = stoppageHalfIndex(match.matchPeriod);
 
   const submitStoppage = () => {
-    if (!half) return;
-    void setStoppage.mutateAsync({ matchId: match.id, half, minutes: mins });
+    void runAction(setStoppage.mutateAsync({ matchId: match.id, half: half!, minutes: mins }));
   };
 
   return (
     <div className="rounded-xl border border-white/10 bg-gradient-to-r from-slate-900 to-slate-800 p-3 text-white sm:p-4">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
-          <p className="text-[10px] uppercase tracking-widest text-slate-400">Minuta utakmice</p>
+          <p className="text-[10px] uppercase tracking-widest text-slate-400">
+            {t('admin.commentatorClock.matchMinute')}
+          </p>
           <p className="font-display text-3xl font-bold tabular-nums sm:text-4xl">{label}</p>
           {clock && <p className="mt-0.5 text-xs text-slate-300">{clock.periodLabel}</p>}
         </div>
@@ -54,7 +58,7 @@ export function CommentatorClockBar({ match }: { match: Match }) {
 
       {clock?.needsStoppageInput && match.status === 'LIVE' && half && (
         <div className="mt-3 flex flex-wrap items-end gap-2 rounded-lg bg-white/10 p-2.5">
-          <p className="w-full text-xs text-amber-200">Sudijska nadoknada</p>
+          <p className="w-full text-xs text-amber-200">{t('admin.commentatorClock.stoppage')}</p>
           <Input
             type="number"
             min={1}
@@ -63,7 +67,12 @@ export function CommentatorClockBar({ match }: { match: Match }) {
             onChange={(e) => setMins(Number(e.target.value))}
             className="h-8 w-20 bg-white/10 text-sm text-white"
           />
-          <Button size="sm" className="h-8 text-xs" onClick={submitStoppage} disabled={setStoppage.isPending}>
+          <Button
+            size="sm"
+            className="h-8 text-xs"
+            onClick={submitStoppage}
+            disabled={setStoppage.isPending}
+          >
             +{mins} min
           </Button>
         </div>

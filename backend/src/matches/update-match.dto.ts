@@ -1,6 +1,13 @@
 import { BadRequestException } from '@nestjs/common';
 import { Type } from 'class-transformer';
-import { IsDateString, IsEnum, IsInt, IsOptional, IsString, Min } from 'class-validator';
+import {
+  IsDateString,
+  IsEnum,
+  IsInt,
+  IsOptional,
+  IsString,
+  Min,
+} from 'class-validator';
 import { MatchStatus } from '@prisma/client';
 
 export class UpdateMatchDto {

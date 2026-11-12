@@ -8,7 +8,12 @@ import { JobsModule } from '../jobs/jobs.module';
 import { NotificationsModule } from '../notifications/notifications.module';
 
 @Module({
-  imports: [AuthModule, forwardRef(() => PaymentsModule), JobsModule, NotificationsModule],
+  imports: [
+    AuthModule,
+    forwardRef(() => PaymentsModule),
+    JobsModule,
+    NotificationsModule,
+  ],
   controllers: [MembershipController, MembershipPublicController],
   providers: [MembershipService],
   exports: [MembershipService],

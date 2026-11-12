@@ -1,4 +1,5 @@
 import { Check, Copy, Pencil, Trash2 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import type { MediaAsset } from '../../../hooks/use-media-admin';
 import { mediaUrl } from '../../../lib/media';
 import { cn } from '../../../lib/utils';
@@ -34,6 +35,7 @@ export function MediaAssetsGrid({
   onDelete,
   onEdit,
 }: Props) {
+  const { t } = useTranslation();
   if (!assets.length) {
     return <p className="p-6 text-center text-sm text-text-muted lg:hidden">{empty}</p>;
   }
@@ -47,12 +49,13 @@ export function MediaAssetsGrid({
             key={asset.id}
             className={cn(
               'overflow-hidden rounded-lg border bg-background',
-              selected ? 'border-primary ring-2 ring-primary/30' : 'border-slate-200',
+              selected ? 'border-primary ring-2 ring-primary/30' : 'border-[var(--border-subtle)]',
             )}
           >
-            <button
+            <Button
               type="button"
-              className="relative block w-full"
+              variant="ghost"
+              className="relative block h-auto w-full p-0"
               onClick={() => (selectionMode ? onToggleSelect(asset.id) : onEdit?.(asset))}
             >
               <img
@@ -70,7 +73,7 @@ export function MediaAssetsGrid({
                   {selected && <Check className="h-3 w-3" />}
                 </span>
               )}
-            </button>
+            </Button>
             <div className="space-y-1 p-2">
               <p className="truncate text-xs font-medium" title={asset.filename}>
                 {truncateName(asset.filename)}
@@ -85,7 +88,7 @@ export function MediaAssetsGrid({
                       variant="ghost"
                       className="h-7 flex-1 px-1"
                       onClick={() => onEdit(asset)}
-                      aria-label="Uredi"
+                      aria-label={t('actions.edit')}
                     >
                       <Pencil className="h-3.5 w-3.5" />
                     </Button>
@@ -96,11 +99,11 @@ export function MediaAssetsGrid({
                     variant="ghost"
                     className="h-7 flex-1 px-1"
                     onClick={() => onCopy(asset.originalPath)}
-                    aria-label="Kopiraj URL"
+                    aria-label={t('admin.mediaGrid.copyUrl')}
                   >
                     <Copy className="h-3.5 w-3.5" />
                     {copied === asset.originalPath && (
-                      <span className="sr-only">Kopirano</span>
+                      <span className="sr-only">{t('admin.mediaGrid.copied')}</span>
                     )}
                   </Button>
                   {onDelete ? (
@@ -110,7 +113,7 @@ export function MediaAssetsGrid({
                       variant="ghost"
                       className="h-7 flex-1 px-1 text-danger"
                       onClick={() => void onDelete(asset.id, asset.filename)}
-                      aria-label="Obriši"
+                      aria-label={t('actions.delete')}
                     >
                       <Trash2 className="h-3.5 w-3.5" />
                     </Button>

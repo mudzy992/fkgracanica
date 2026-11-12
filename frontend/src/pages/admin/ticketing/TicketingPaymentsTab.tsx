@@ -1,11 +1,18 @@
 import { useEffect, useState } from 'react';
-import { useTicketingAdminConfig, useUpdateTicketingAdminConfig } from '../../../hooks/use-ticketing-admin';
+import { useTranslation } from 'react-i18next';
+import {
+  useTicketingAdminConfig,
+  useUpdateTicketingAdminConfig,
+} from '../../../hooks/use-ticketing-admin';
 import { Badge } from '../../../components/ui/badge';
 import { Button } from '../../../components/ui/button';
+import { Card } from '../../../components/ui/card';
+import { Select } from '../../../components/ui/select';
 import { Input } from '../../../components/ui/input';
 import { Switch } from '../../../components/ui/switch';
 import { PaymentProviderCard } from './PaymentProviderCard';
 import { PaymentProviderHints } from './PaymentProviderHints';
+import { runAction } from '../../../lib/action-errors';
 
 const PROVIDERS = [
   { id: 'stripe', label: 'Stripe' },
@@ -14,6 +21,7 @@ const PROVIDERS = [
 ] as const;
 
 export function TicketingPaymentsTab() {
+  const { t } = useTranslation();
   const { data, isLoading } = useTicketingAdminConfig();
   const save = useUpdateTicketingAdminConfig();
   const [settings, setSettings] = useState<Record<string, string>>({});
@@ -34,16 +42,17 @@ export function TicketingPaymentsTab() {
   const set = (key: string, value: string) => setSettings((s) => ({ ...s, [key]: value }));
 
   const onSave = () => {
-    void save.mutateAsync({
+    void runAction(save.mutateAsync({
       ...settings,
       'ticketing.onlineEnabled': String(onlineEnabled),
       'membership.onlineEnabled': String(membershipOnline),
       'membership.annualPrice': membershipPrice,
       'payments.defaultProvider': defaultProvider,
-    });
+    }));
   };
 
-  if (isLoading || !data) return <p className="p-4 text-sm text-text-muted">Učitavanje...</p>;
+  if (isLoading || !data)
+    return <p className="p-4 text-sm text-text-muted">{t('admin.common.loading')}</p>;
 
   const canEnableOnline = data.onlineReady;
   const gates = {
@@ -54,12 +63,12 @@ export function TicketingPaymentsTab() {
 
   return (
     <div className="space-y-6 p-4">
-      <div className="rounded-lg border border-[var(--border-subtle)] p-4">
-        <p className="text-sm font-medium">Status online plaćanja</p>
+      <Card className="p-4">
+        <p className="text-sm font-medium">{t('admin.ticketingPayments.status')}</p>
         <Badge className="mt-2" variant={data.onlineReady ? 'success' : 'muted'}>
           {data.onlineReady ? 'Spremno' : 'Nije konfigurisano'}
         </Badge>
-      </div>
+      </Card>
 
       <PaymentProviderHints />
 
@@ -87,14 +96,17 @@ export function TicketingPaymentsTab() {
         Online kupovina članstva
       </label>
       <div>
-        <label className="mb-1 block text-sm text-text-muted">Godišnja članarina (KM)</label>
+        <label className="mb-1 block text-sm text-text-muted">
+          {t('admin.ticketingPayments.membershipPrice')}
+        </label>
         <Input value={membershipPrice} onChange={(e) => setMembershipPrice(e.target.value)} />
       </div>
 
       <div>
-        <label className="mb-1 block text-sm text-text-muted">Zadani servis plaćanja</label>
-        <select
-          className="flex h-10 w-full rounded-lg border border-[var(--border-subtle)] bg-background px-3 text-sm"
+        <label className="mb-1 block text-sm text-text-muted">
+          {t('admin.ticketingPayments.defaultProvider')}
+        </label>
+        <Select
           value={defaultProvider}
           onChange={(e) => setDefaultProvider(e.target.value)}
         >
@@ -103,7 +115,7 @@ export function TicketingPaymentsTab() {
               {p.label}
             </option>
           ))}
-        </select>
+        </Select>
       </div>
 
       {PROVIDERS.map((p) => (

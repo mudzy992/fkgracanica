@@ -1,8 +1,9 @@
+import { buttonVariants } from "../ui/button-variants";
 import { Link } from 'react-router-dom';
 import { useNextHomeMatch, useTicketingPublicConfig } from '../../hooks/use-ticketing';
-import { formatDateTime } from '../../lib/utils';
+import { cn, formatDateTime } from '../../lib/utils';
 import { Reveal } from '../../lib/motion/Reveal';
-import { Button } from '../ui/button';
+;
 import { Skeleton } from '../ui/skeleton';
 
 interface Props {
@@ -37,9 +38,7 @@ export function HomeNextMatchTicketsBanner({ title, text, buttonLabel }: Props) 
               <h2 className="text-2xl font-bold text-text sm:text-3xl">{defaultTitle}</h2>
               <p className="mt-2 max-w-lg text-text-muted">{defaultText}</p>
             </div>
-            <Link to={`/ulaznice?matchId=${match.id}`}>
-              <Button size="lg">{label}</Button>
-            </Link>
+            <Link to={`/ulaznice?matchId=${match.id}`} className={cn(buttonVariants({size: "lg"}))}>{label}</Link>
           </div>
         </Reveal>
       </div>

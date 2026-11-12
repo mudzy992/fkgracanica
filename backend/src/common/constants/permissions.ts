@@ -11,7 +11,10 @@ export const PERMISSIONS = [
   { key: 'cms.manage', description: 'Upravljanje CMS blokovima' },
   { key: 'media.read', description: 'Pregled medijske biblioteke' },
   { key: 'media.upload', description: 'Upload slika i kreiranje mapa' },
-  { key: 'media.manage', description: 'Upravljanje medijima (brisanje, zamjena)' },
+  {
+    key: 'media.manage',
+    description: 'Upravljanje medijima (brisanje, zamjena)',
+  },
   { key: 'news.manage', description: 'Upravljanje vijestima' },
   { key: 'news.submit', description: 'Predaja vijesti na odobravanje' },
   { key: 'news.approve', description: 'Odobravanje vijesti' },
@@ -32,13 +35,19 @@ export const PERMISSIONS = [
   { key: 'live.approve', description: 'Odobravanje live izvještaja' },
   { key: 'membership.manage', description: 'Upravljanje članstvom' },
   { key: 'ticketing.manage', description: 'Upravljanje ulaznicama' },
-  { key: 'admissions.scan', description: 'Skeniranje ulaza (ulaznice, sezonske, članske)' },
+  {
+    key: 'admissions.scan',
+    description: 'Skeniranje ulaza (ulaznice, sezonske, članske)',
+  },
   { key: 'hall-of-fame.manage', description: 'Upravljanje Hall of Fame' },
   { key: 'museum.manage', description: 'Upravljanje muzejom' },
   { key: 'analytics.read', description: 'Pregled analitike' },
   { key: 'dashboard.read', description: 'Pregled dashboard KPI' },
   { key: 'finance.read', description: 'Pregled finansijskih izvještaja' },
-  { key: 'app-releases.manage', description: 'Upravljanje Android app releaseima' },
+  {
+    key: 'app-releases.manage',
+    description: 'Upravljanje Android app releaseima',
+  },
 ] as const;
 
 export type PermissionKey = (typeof PERMISSIONS)[number]['key'];

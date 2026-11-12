@@ -4,7 +4,11 @@ export interface PeriodClockConfig {
   startDisplay: number;
   endMinute: number;
   periodLabel: string;
-  stoppageKey: 'stoppageFirstHalf' | 'stoppageSecondHalf' | 'stoppageExtraFirst' | 'stoppageExtraSecond';
+  stoppageKey:
+    | 'stoppageFirstHalf'
+    | 'stoppageSecondHalf'
+    | 'stoppageExtraFirst'
+    | 'stoppageExtraSecond';
 }
 
 export const PERIOD_CLOCK: Partial<Record<MatchPeriod, PeriodClockConfig>> = {
@@ -41,14 +45,20 @@ export interface StoppageMatch {
   stoppageExtraSecond: number;
 }
 
-export function displayMinuteForPeriod(period: MatchPeriod, minuteInPeriod: number): number {
+export function displayMinuteForPeriod(
+  period: MatchPeriod,
+  minuteInPeriod: number,
+): number {
   const config = PERIOD_CLOCK[period];
   if (!config) return 0;
   if (period === MatchPeriod.FIRST_HALF) return minuteInPeriod;
   return config.startDisplay + minuteInPeriod - 1;
 }
 
-export function stoppageForPeriod(match: StoppageMatch, period: MatchPeriod): number {
+export function stoppageForPeriod(
+  match: StoppageMatch,
+  period: MatchPeriod,
+): number {
   const key = PERIOD_CLOCK[period]?.stoppageKey;
   if (!key) return 0;
   return match[key];
@@ -72,5 +82,9 @@ export function stoppageHalfIndex(period: MatchPeriod): 1 | 2 | 3 | 4 | null {
 export function periodDuration(period: MatchPeriod): number {
   const config = PERIOD_CLOCK[period];
   if (!config) return 45;
-  return config.endMinute - config.startDisplay + (period === MatchPeriod.FIRST_HALF ? 0 : 1);
+  return (
+    config.endMinute -
+    config.startDisplay +
+    (period === MatchPeriod.FIRST_HALF ? 0 : 1)
+  );
 }

@@ -1,4 +1,5 @@
 import { formatDate, formatDateTime } from '../../lib/utils';
+import { useTranslation } from 'react-i18next';
 import {
   membershipStatusLabel,
   membershipStatusVariant,
@@ -18,6 +19,7 @@ interface Props {
 }
 
 export function MembershipDetailSheet({ membership, open, onOpenChange }: Props) {
+  const { t } = useTranslation();
   const { data: detail } = useMembershipDetail(membership?.id);
   const { data: settings } = usePublicSettings();
   const m = detail ?? membership;
@@ -29,21 +31,24 @@ export function MembershipDetailSheet({ membership, open, onOpenChange }: Props)
   };
 
   return (
-    <AdminFormSheet open={open} onOpenChange={onOpenChange} title="Detalj članstva" size="lg">
-      {m.card ? (
-        <MembershipCardPanel membership={withUser} />
-      ) : null}
+    <AdminFormSheet
+      open={open}
+      onOpenChange={onOpenChange}
+      title={t('admin.membershipForm.detail')}
+      size="lg"
+    >
+      {m.card ? <MembershipCardPanel membership={withUser} /> : null}
       <dl className="mt-6 space-y-4 border-t border-[var(--border-subtle)] pt-4 text-sm">
         <div>
-          <dt className="text-text-muted">Član</dt>
+          <dt className="text-text-muted">{t('admin.membershipForm.member')}</dt>
           <dd className="font-medium">{membershipUserName(m.user)}</dd>
         </div>
         <div>
-          <dt className="text-text-muted">Email</dt>
+          <dt className="text-text-muted">{t('admin.membershipForm.email')}</dt>
           <dd>{m.user?.email ?? '—'}</dd>
         </div>
         <div>
-          <dt className="text-text-muted">Status</dt>
+          <dt className="text-text-muted">{t('admin.membershipForm.status')}</dt>
           <dd>
             <Badge variant={membershipStatusVariant(m.status)}>
               {membershipStatusLabel(m.status)}
@@ -52,23 +57,23 @@ export function MembershipDetailSheet({ membership, open, onOpenChange }: Props)
         </div>
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
-            <dt className="text-text-muted">Početak</dt>
+            <dt className="text-text-muted">{t('admin.membershipForm.start')}</dt>
             <dd>{m.startDate ? formatDate(m.startDate) : '—'}</dd>
           </div>
           <div>
-            <dt className="text-text-muted">Istek</dt>
+            <dt className="text-text-muted">{t('admin.membershipForm.end')}</dt>
             <dd>{m.endDate ? formatDate(m.endDate) : '—'}</dd>
           </div>
         </div>
         {m.createdAt && (
           <div>
-            <dt className="text-text-muted">Kreirano</dt>
+            <dt className="text-text-muted">{t('admin.membershipForm.created')}</dt>
             <dd>{formatDateTime(m.createdAt)}</dd>
           </div>
         )}
         {settings?.['club.name'] && (
           <div>
-            <dt className="text-text-muted">Klub</dt>
+            <dt className="text-text-muted">{t('admin.membershipForm.club')}</dt>
             <dd>{settings['club.name']}</dd>
           </div>
         )}

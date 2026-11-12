@@ -1,10 +1,18 @@
 import { BadRequestException } from '@nestjs/common';
-import { confirmMembershipFlow, confirmTicketOrderFlow } from './stripe-confirm.flow';
+import {
+  confirmMembershipFlow,
+  confirmTicketOrderFlow,
+} from './stripe-confirm.flow';
 import { confirmSeasonPassFlow } from '../ticketing/season-pass-confirm.util';
-import { notifyMembershipActive, notifySeasonPassActive, notifyTicketPaid } from './payment-notify';
+import {
+  notifyMembershipActive,
+  notifySeasonPassActive,
+  notifyTicketPaid,
+} from './payment-notify';
 import type { PrismaService } from '../prisma/prisma.service';
 import type { JobsService } from '../jobs/jobs.module';
 import type { NotificationsService } from '../notifications/notifications.service';
+import { paymentEventKey, runPaymentEventOnce } from './payment-event.util';
 
 type Meta = Record<string, string>;
 
@@ -15,20 +23,42 @@ export async function applyStripePaidMeta(
   sessionId?: string,
   notifications?: NotificationsService,
 ) {
+  // BE-07/P-B07-2: svaka uplata se obrađuje najviše jednom (webhook + confirm-session).
   if (meta.type === 'tickets' && meta.orderId) {
-    const fresh = await confirmTicketOrderFlow(prisma, meta.orderId);
-    if (fresh) await notifyTicketPaid(prisma, jobs, meta.orderId, notifications);
+    const fresh = await runPaymentEventOnce(
+      prisma,
+      paymentEventKey('stripe', sessionId, 'tickets', meta.orderId),
+      () => confirmTicketOrderFlow(prisma, meta.orderId),
+    );
+    if (fresh)
+      await notifyTicketPaid(prisma, jobs, meta.orderId, notifications);
   }
   if (meta.type === 'membership' && meta.membershipId) {
-    const fresh = await confirmMembershipFlow(prisma, meta.membershipId);
-    if (fresh) await notifyMembershipActive(prisma, jobs, meta.membershipId, notifications);
+    const fresh = await runPaymentEventOnce(
+      prisma,
+      paymentEventKey('stripe', sessionId, 'membership', meta.membershipId),
+      () => confirmMembershipFlow(prisma, meta.membershipId),
+    );
+    if (fresh)
+      await notifyMembershipActive(
+        prisma,
+        jobs,
+        meta.membershipId,
+        notifications,
+      );
   }
   if (meta.type === 'season_pass' && meta.passId) {
-    const fresh = await confirmSeasonPassFlow(prisma, meta.passId, {
-      paymentProvider: 'stripe',
-      externalId: sessionId,
-    });
-    if (fresh) await notifySeasonPassActive(prisma, jobs, meta.passId, notifications);
+    const fresh = await runPaymentEventOnce(
+      prisma,
+      paymentEventKey('stripe', sessionId, 'season_pass', meta.passId),
+      () =>
+        confirmSeasonPassFlow(prisma, meta.passId, {
+          paymentProvider: 'stripe',
+          externalId: sessionId,
+        }),
+    );
+    if (fresh)
+      await notifySeasonPassActive(prisma, jobs, meta.passId, notifications);
   }
 }
 
@@ -44,11 +74,17 @@ export async function confirmStripeSeasonPass(
   if (meta.type !== 'season_pass' || !meta.passId) {
     throw new BadRequestException('Neispravna sesija plaćanja');
   }
-  const pass = await prisma.seasonPass.findFirst({ where: { id: meta.passId, userId } });
+  const pass = await prisma.seasonPass.findFirst({
+    where: { id: meta.passId, userId },
+  });
   if (!pass) throw new BadRequestException('Sezonska karta nije pronađena');
   if (session.payment_status === 'paid') {
     await applyStripePaidMeta(prisma, jobs, meta, sessionId, notifications);
     return { passId: meta.passId, status: 'ACTIVE' as const };
   }
-  return { passId: meta.passId, status: pass.status, paymentStatus: session.payment_status };
+  return {
+    passId: meta.passId,
+    status: pass.status,
+    paymentStatus: session.payment_status,
+  };
 }

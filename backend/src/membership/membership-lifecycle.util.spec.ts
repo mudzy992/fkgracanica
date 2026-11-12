@@ -20,18 +20,26 @@ describe('membership-lifecycle.util', () => {
   it('activate allows CANCELLED/EXPIRED, not ACTIVE', () => {
     expect(() => assertCanActivate(MembershipStatus.CANCELLED)).not.toThrow();
     expect(() => assertCanActivate(MembershipStatus.EXPIRED)).not.toThrow();
-    expect(() => assertCanActivate(MembershipStatus.ACTIVE)).toThrow(BadRequestException);
+    expect(() => assertCanActivate(MembershipStatus.ACTIVE)).toThrow(
+      BadRequestException,
+    );
   });
 
   it('renew allows ACTIVE/EXPIRED only', () => {
     expect(() => assertCanRenew(MembershipStatus.EXPIRED)).not.toThrow();
-    expect(() => assertCanRenew(MembershipStatus.PENDING)).toThrow(BadRequestException);
+    expect(() => assertCanRenew(MembershipStatus.PENDING)).toThrow(
+      BadRequestException,
+    );
   });
 
   it('suspend only ACTIVE; cancel rejects already CANCELLED', () => {
     expect(() => assertCanSuspend(MembershipStatus.ACTIVE)).not.toThrow();
-    expect(() => assertCanSuspend(MembershipStatus.PENDING)).toThrow(BadRequestException);
+    expect(() => assertCanSuspend(MembershipStatus.PENDING)).toThrow(
+      BadRequestException,
+    );
     expect(() => assertCanCancel(MembershipStatus.ACTIVE)).not.toThrow();
-    expect(() => assertCanCancel(MembershipStatus.CANCELLED)).toThrow(BadRequestException);
+    expect(() => assertCanCancel(MembershipStatus.CANCELLED)).toThrow(
+      BadRequestException,
+    );
   });
 });

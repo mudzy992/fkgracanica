@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { usePermissions, useRoles } from '../../hooks';
 import { useDeleteRole, useUpdateRolePermissions } from '../../hooks/use-users-admin';
 import { useAuth } from '../../lib/auth';
@@ -11,7 +12,9 @@ import { Button } from '../../components/ui/button';
 import { AdminDataTable, AdminPageShell } from '../../components/admin/AdminPageShell';
 import { AdminFormSheet } from '../../components/admin/AdminFormSheet';
 import { Skeleton } from '../../components/ui/skeleton';
+import { Switch } from '../../components/ui/switch';
 import { RolesAdminFormSheet } from './RolesAdminFormSheet';
+import { runAction } from '../../lib/action-errors';
 
 interface Props {
   embedded?: boolean;
@@ -32,9 +35,10 @@ interface Permission {
 }
 
 export function RolesPage({ embedded = false }: Props) {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const canUpdate = hasPermission(user?.permissions, 'rbac.update');
-  const { data: roles, isLoading } = useRoles();
+  const { data: roles, isLoading, isError, refetch } = useRoles();
   const { data: permissions } = usePermissions();
   const updatePerms = useUpdateRolePermissions();
   const deleteRole = useDeleteRole();
@@ -71,7 +75,7 @@ export function RolesPage({ embedded = false }: Props) {
       variant: 'danger',
       confirmLabel: 'Obriši',
     });
-    if (ok) void deleteRole.mutateAsync(role.id);
+    if (ok) void runAction(deleteRole.mutateAsync(role.id));
   };
 
   const createAction = canUpdate ? (
@@ -89,9 +93,7 @@ export function RolesPage({ embedded = false }: Props) {
   ) : (
     <>
       {embedded && createAction && (
-        <div className="flex justify-end border-b border-slate-200 p-4">
-          {createAction}
-        </div>
+        <div className="flex justify-end border-b border-[var(--border-subtle)] p-4">{createAction}</div>
       )}
       <AdminDataTable
         rows={roleList}
@@ -108,11 +110,11 @@ export function RolesPage({ embedded = false }: Props) {
               !canUpdate ? (
                 <span className="text-xs text-text-muted">—</span>
               ) : r.name === 'Administrator' ? (
-                <span className="text-xs text-text-muted">Sistemska</span>
+                <span className="text-xs text-text-muted">{t('admin.rolesPage.system')}</span>
               ) : (
                 <div className="flex gap-1">
                   <Button variant="outline" size="sm" onClick={() => openEdit(r)}>
-                    Uredi dozvole
+                    {t('admin.rolesPage.editPermissions')}
                   </Button>
                   {!isSystemRole(r.name) && (
                     <Button variant="ghost" size="sm" onClick={() => void onDelete(r)}>
@@ -137,9 +139,9 @@ export function RolesPage({ embedded = false }: Props) {
       >
         <div className="max-h-[60vh] space-y-2 overflow-y-auto">
           {permList.map((p) => (
-            <label key={p.key} className="flex cursor-pointer items-start gap-2 text-sm">
-              <input type="checkbox" checked={selected.includes(p.key)} onChange={() => toggle(p.key)} className="mt-1" />
-              <span className="font-medium">{p.description ?? p.key}</span>
+            <label key={p.key} className="flex cursor-pointer items-center justify-between gap-3 rounded-lg border border-[var(--border-subtle)] p-3">
+              <span className="text-sm font-medium">{p.description ?? p.key}</span>
+              <Switch checked={selected.includes(p.key)} onCheckedChange={() => toggle(p.key)} />
             </label>
           ))}
         </div>
@@ -167,9 +169,15 @@ export function RolesPage({ embedded = false }: Props) {
 
   return (
     <>
-      <Seo title="Uloge" />
+      <Seo title={t('admin.roles')} />
       {dialog}
-      <AdminPageShell title="Uloge i dozvole" isLoading={isLoading} actions={createAction}>
+      <AdminPageShell
+        isError={isError}
+        onRetry={() => void refetch()}
+        title={t('admin.usersAndRoles')}
+        isLoading={isLoading}
+        actions={createAction}
+      >
         {body}
       </AdminPageShell>
       {sheets}

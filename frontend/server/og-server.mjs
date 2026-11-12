@@ -1,20 +1,24 @@
 import express from 'express';
 import { readFileSync } from 'node:fs';
-import { dirname, join } from 'node:path';
+import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const dist = join(__dirname, '..', 'dist');
-const indexTemplate = readFileSync(join(dist, 'index.html'), 'utf8');
-
-const PORT = Number(process.env.PORT ?? 3000);
-const INTERNAL_API_URL = (process.env.INTERNAL_API_URL ?? 'http://localhost:3000/api/v1').replace(/\/$/, '');
 
 const CRAWLER_RE =
   /facebookexternalhit|Facebot|Twitterbot|WhatsApp|Viber|TelegramBot|LinkedInBot|Slackbot|Discordbot|Googlebot|bingbot|Applebot|Pinterest|Embedly/i;
 
-const cache = new Map();
 const CACHE_MS = 5 * 60 * 1000;
+const NOINDEX_PATHS = new Set(['/prijava', '/admin/login', '/placanje/monri']);
+
+function isNoindexPath(path) {
+  try {
+    return NOINDEX_PATHS.has(decodeURIComponent(path).replace(/\/+$/, '').toLowerCase());
+  } catch {
+    return false;
+  }
+}
 
 function isCrawler(ua) {
   return CRAWLER_RE.test(ua ?? '');
@@ -59,44 +63,59 @@ function injectMeta(html, meta) {
   return withoutOg.replace('</head>', `    ${buildMetaTags(meta)}\n  </head>`);
 }
 
-async function fetchShareMeta(path) {
-  const key = path || '/';
-  const hit = cache.get(key);
-  if (hit && hit.expires > Date.now()) return hit.data;
+/** Isti HTTP handler koriste produkcijski proces i izolovani integracijski testovi. */
+export function createOgApp({
+  distDir = dist,
+  internalApiUrl = process.env.INTERNAL_API_URL ?? 'http://localhost:3000/api/v1',
+  fetchImpl = fetch,
+} = {}) {
+  const indexTemplate = readFileSync(join(distDir, 'index.html'), 'utf8');
+  const apiUrl = internalApiUrl.replace(/\/$/, '');
+  const cache = new Map();
 
-  const res = await fetch(`${INTERNAL_API_URL}/seo/share?path=${encodeURIComponent(key)}`);
-  if (!res.ok) return null;
-  const data = await res.json();
-  cache.set(key, { data, expires: Date.now() + CACHE_MS });
-  return data;
+  async function fetchShareMeta(path) {
+    const key = path || '/';
+    const hit = cache.get(key);
+    if (hit && hit.expires > Date.now()) return hit.data;
+
+    const res = await fetchImpl(`${apiUrl}/seo/share?path=${encodeURIComponent(key)}`);
+    if (!res.ok) return null;
+    const data = await res.json();
+    cache.set(key, { data, expires: Date.now() + CACHE_MS });
+    return data;
+  }
+
+  const app = express();
+  app.use((req, res, next) => {
+    if (isNoindexPath(req.path)) res.setHeader('X-Robots-Tag', 'noindex, nofollow');
+    if (req.path === '/sw.js') res.setHeader('Cache-Control', 'no-cache');
+    next();
+  });
+  app.use(express.static(distDir, { index: false, maxAge: '1d' }));
+
+  app.get(/.*/, async (req, res, next) => {
+    if (req.path.includes('.')) return next();
+    const ua = req.get('user-agent') ?? '';
+    if (!isCrawler(ua)) return res.sendFile(join(distDir, 'index.html'));
+    try {
+      const meta = await fetchShareMeta(req.path);
+      if (meta) {
+        res.setHeader('Content-Type', 'text/html; charset=utf-8');
+        res.setHeader('Cache-Control', 'public, max-age=300');
+        return res.send(injectMeta(indexTemplate, meta));
+      }
+    } catch (err) {
+      console.error('[og-server] meta fetch failed:', err);
+    }
+    return res.sendFile(join(distDir, 'index.html'));
+  });
+  return app;
 }
 
-const app = express();
-app.use((req, res, next) => {
-  if (req.path === '/sw.js') res.setHeader('Cache-Control', 'no-cache');
-  next();
-});
-app.use(express.static(dist, { index: false, maxAge: '1d' }));
-
-app.get(/.*/, async (req, res, next) => {
-  if (req.path.includes('.')) return next();
-  const ua = req.get('user-agent') ?? '';
-  if (!isCrawler(ua)) {
-    return res.sendFile(join(dist, 'index.html'));
-  }
-  try {
-    const meta = await fetchShareMeta(req.path);
-    if (meta) {
-      res.setHeader('Content-Type', 'text/html; charset=utf-8');
-      res.setHeader('Cache-Control', 'public, max-age=300');
-      return res.send(injectMeta(indexTemplate, meta));
-    }
-  } catch (err) {
-    console.error('[og-server] meta fetch failed:', err);
-  }
-  return res.sendFile(join(dist, 'index.html'));
-});
-
-app.listen(PORT, () => {
-  console.log(`[og-server] listening on :${PORT}, API ${INTERNAL_API_URL}`);
-});
+if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+  const port = Number(process.env.PORT ?? 3000);
+  const apiUrl = (process.env.INTERNAL_API_URL ?? 'http://localhost:3000/api/v1').replace(/\/$/, '');
+  createOgApp({ internalApiUrl: apiUrl }).listen(port, () => {
+    console.log(`[og-server] listening on :${port}, API ${apiUrl}`);
+  });
+}

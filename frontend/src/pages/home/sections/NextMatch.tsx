@@ -25,7 +25,8 @@ export function NextMatch() {
             <CardHeader>
               <div className="flex items-center justify-between">
                 <CardTitle>
-                  {next.homeClub?.name ?? 'Domaćin'} vs {next.awayClub?.name ?? 'Gost'}
+                  {next.homeClub?.name ?? t('home.teamHome')} vs{' '}
+                  {next.awayClub?.name ?? t('home.teamAway')}
                 </CardTitle>
                 <Badge>{matchRoundLabel(next) ?? 'Utakmica'}</Badge>
               </div>

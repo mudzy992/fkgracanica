@@ -14,6 +14,7 @@ import { TicketPassCard } from './TicketPassCard';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
 import type { TicketOrderRow } from '../../types/ticketing';
+import { runAction } from '../../lib/action-errors';
 
 interface Props {
   order: TicketOrderRow;
@@ -30,8 +31,9 @@ export function TicketOrderCard({ order }: Props) {
   const canPayOnline = canPayOrderOnline(order, providers.length > 0);
 
   const payOnline = async (provider: typeof providers[number]) => {
-    const res = await checkout.mutateAsync({ orderId: order.id, provider });
-    if (res.url) window.location.href = res.url;
+    // P-FE06-44: `onSelect` se poziva sa `void`, pa odbijeni checkout mora biti prijavljen.
+    const result = await runAction(checkout.mutateAsync({ orderId: order.id, provider }));
+    if (result.ok && result.value.url) window.location.href = result.value.url;
   };
 
   return (
@@ -66,7 +68,7 @@ export function TicketOrderCard({ order }: Props) {
             size="sm"
             variant="outline"
             disabled={cancel.isPending}
-            onClick={() => void cancel.mutateAsync(order.id)}
+            onClick={() => void runAction(cancel.mutateAsync(order.id))}
           >
             Otkaži rezervaciju
           </Button>
@@ -76,7 +78,7 @@ export function TicketOrderCard({ order }: Props) {
             size="sm"
             variant="ghost"
             disabled={refund.isPending}
-            onClick={() => void refund.mutateAsync(order.id)}
+            onClick={() => void runAction(refund.mutateAsync(order.id))}
           >
             Zatraži povrat
           </Button>

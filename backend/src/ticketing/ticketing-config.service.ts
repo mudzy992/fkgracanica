@@ -36,7 +36,9 @@ export class TicketingConfigService {
   ) {}
 
   async getCategories(): Promise<TicketCategoryDef[]> {
-    const row = await this.prisma.setting.findUnique({ where: { key: 'ticketing.categories' } });
+    const row = await this.prisma.setting.findUnique({
+      where: { key: 'ticketing.categories' },
+    });
     return parseTicketCategories(row?.value);
   }
 
@@ -49,20 +51,29 @@ export class TicketingConfigService {
       parseTicketCategories(publicSettings['ticketing.categories']),
     );
     const membershipOnline =
-      (await this.payments.isMembershipOnlineAllowed()) && salesModes.onlineReady;
-    const offerSeason = await this.prisma.season.findFirst({ where: { isActive: true } });
-    const seasonPassPrice = Number(publicSettings['ticketing.seasonPassPrice']) || 0;
-    const seasonPassLabel = publicSettings['ticketing.seasonPassLabel'] || 'Sezonska karta';
+      (await this.payments.isMembershipOnlineAllowed()) &&
+      salesModes.onlineReady;
+    const offerSeason = await this.prisma.season.findFirst({
+      where: { isActive: true },
+    });
+    const seasonPassPrice =
+      Number(publicSettings['ticketing.seasonPassPrice']) || 0;
+    const seasonPassLabel =
+      publicSettings['ticketing.seasonPassLabel'] || 'Sezonska karta';
     const priv = await this.settings.getPrivate();
     const activeTicketMatch = await this.findActiveScheduledHomeMatch();
     return {
       categories,
-      stadiumCapacity: Number(publicSettings['ticketing.stadiumCapacity']) || 5000,
-      memberDiscountPercent: Number(publicSettings['ticketing.memberDiscountPercent']) || 0,
+      stadiumCapacity:
+        Number(publicSettings['ticketing.stadiumCapacity']) || 5000,
+      memberDiscountPercent:
+        Number(publicSettings['ticketing.memberDiscountPercent']) || 0,
       maxBoxOfficeTicketsPerUser:
         Number(publicSettings['ticketing.maxBoxOfficeTicketsPerUser']) || 4,
-      membershipAnnualPrice: Number(publicSettings['membership.annualPrice']) || 0,
-      ticketCardBackground: publicSettings['ticketing.ticketCardBackground'] || null,
+      membershipAnnualPrice:
+        Number(publicSettings['membership.annualPrice']) || 0,
+      ticketCardBackground:
+        publicSettings['ticketing.ticketCardBackground'] || null,
       activeTicketMatch,
       salesModes,
       onlineReady: salesModes.onlineReady,
@@ -73,25 +84,30 @@ export class TicketingConfigService {
       seasonPassPrice,
       seasonPassLabel,
       seasonPassAvailable:
-        !!offerSeason && seasonPassPrice > 0 && (salesModes.online || salesModes.boxOffice),
+        !!offerSeason &&
+        seasonPassPrice > 0 &&
+        (salesModes.online || salesModes.boxOffice),
     };
   }
 
   async getAdminConfig() {
-    const [pub, priv, salesModes, onlineReady, providerStatus] = await Promise.all([
-      this.settings.getPublic(),
-      this.settings.getPrivate(),
-      this.payments.getSalesModes(),
-      this.payments.isOnlinePaymentsReady(),
-      this.getProviderStatus(),
-    ]);
+    const [pub, priv, salesModes, onlineReady, providerStatus] =
+      await Promise.all([
+        this.settings.getPublic(),
+        this.settings.getPrivate(),
+        this.payments.getSalesModes(),
+        this.payments.isOnlinePaymentsReady(),
+        this.getProviderStatus(),
+      ]);
     const merged = { ...pub, ...priv };
     const config: Record<string, string> = {};
     for (const key of TICKETING_ADMIN_KEYS) {
       config[key] = merged[key] ?? '';
     }
     if (!config['ticketing.categories']) {
-      config['ticketing.categories'] = JSON.stringify(DEFAULT_TICKET_CATEGORIES);
+      config['ticketing.categories'] = JSON.stringify(
+        DEFAULT_TICKET_CATEGORIES,
+      );
     }
     return {
       settings: config,
@@ -132,7 +148,8 @@ export class TicketingConfigService {
       else priv[key] = value;
     }
     if (Object.keys(pub).length) await this.settings.updatePublic(pub, actorId);
-    if (Object.keys(priv).length) await this.settings.updatePrivate(priv, actorId);
+    if (Object.keys(priv).length)
+      await this.settings.updatePrivate(priv, actorId);
     return this.getAdminConfig();
   }
 

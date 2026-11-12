@@ -21,3 +21,12 @@ export function escapeHtml(s: string): string {
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;');
 }
+
+/**
+ * Atributska vrijednost (npr. `src`, `url('…')`): osim HTML znakova escapeuje i
+ * apostrof, jer se putanja koristi unutar jednostruko navedenog `url()`.
+ * Spremljene putanje se ne mijenjaju — escapeovanje vrijedi samo za generisani dokument.
+ */
+export function escapeAttribute(s: string): string {
+  return escapeHtml(s).replace(/'/g, '&#39;');
+}

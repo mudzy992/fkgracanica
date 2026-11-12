@@ -1,12 +1,19 @@
-import { createHash } from 'crypto';
 import * as fs from 'fs/promises';
-import * as path from 'path';
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { AppReleasePlatform, AppReleaseStatus } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { toPublicUrl } from '../upload/upload.util';
 import { resolveApkAbsPath } from './apk-download.util';
+import {
+  removeFileQuietly,
+  storeApk,
+  type StoredApk,
+} from './apk-storage.util';
 import { CreateAppReleaseDto } from './dto/create-app-release.dto';
 import { UpdateAppReleaseDto } from './dto/update-app-release.dto';
 
@@ -22,19 +29,15 @@ export class AppReleasesService {
     private readonly config: ConfigService,
   ) {}
 
-  async saveApk(file: Express.Multer.File) {
+  /** BE-08/P-B08-3: upis na disk bez 200 MB u RAM-u (vidi `apk-storage.util`). */
+  async saveApk(file: Express.Multer.File): Promise<StoredApk> {
     this.assertApkFile(file);
-    const uploadRoot = this.config.get<string>('UPLOAD_PATH', './uploads');
-    const now = new Date();
-    const relDir = path.join('app-releases', String(now.getFullYear()), String(now.getMonth() + 1).padStart(2, '0'));
-    await fs.mkdir(path.join(uploadRoot, relDir), { recursive: true });
-    const relPath = path.join(relDir, `app-${Date.now()}.apk`).replace(/\\/g, '/');
-    await fs.writeFile(path.join(uploadRoot, relPath), file.buffer);
-    return {
-      apkPath: relPath,
-      apkSha256: createHash('sha256').update(file.buffer).digest('hex'),
-      apkSizeBytes: file.size,
-    };
+    return storeApk(this.uploadRoot(), file);
+  }
+
+  /** BE-08/P-B08-1: tipizirani `uploadPath` (bez sirovog `UPLOAD_PATH`). */
+  private uploadRoot(): string {
+    return this.config.get<string>('uploadPath') ?? './uploads';
   }
 
   async create(dto: CreateAppReleaseDto, createdById: string) {
@@ -71,10 +74,13 @@ export class AppReleasesService {
     return this.prisma.appRelease.update({
       where: { id },
       data: {
-        releaseNotes: dto.releaseNotes !== undefined ? dto.releaseNotes.trim() || null : undefined,
+        releaseNotes:
+          dto.releaseNotes !== undefined
+            ? dto.releaseNotes.trim() || null
+            : undefined,
         forceUpdate: dto.forceUpdate,
         minSupportedVersionCode: dto.minSupportedVersionCode,
-        status: dto.status as AppReleaseStatus | undefined,
+        status: dto.status,
       },
     });
   }
@@ -84,7 +90,11 @@ export class AppReleasesService {
       const existing = await tx.appRelease.findUnique({ where: { id } });
       if (!existing) throw new NotFoundException('Release nije pronađen.');
       await tx.appRelease.updateMany({
-        where: { platform: existing.platform, status: AppReleaseStatus.PUBLISHED, id: { not: id } },
+        where: {
+          platform: existing.platform,
+          status: AppReleaseStatus.PUBLISHED,
+          id: { not: id },
+        },
         data: { status: AppReleaseStatus.RETIRED },
       });
       return tx.appRelease.update({
@@ -92,7 +102,10 @@ export class AppReleasesService {
         data: {
           status: AppReleaseStatus.PUBLISHED,
           publishedAt: existing.publishedAt ?? new Date(),
-          releaseNotes: patch?.releaseNotes !== undefined ? patch.releaseNotes.trim() || null : undefined,
+          releaseNotes:
+            patch?.releaseNotes !== undefined
+              ? patch.releaseNotes.trim() || null
+              : undefined,
           forceUpdate: patch?.forceUpdate,
           minSupportedVersionCode: patch?.minSupportedVersionCode,
         },
@@ -102,7 +115,10 @@ export class AppReleasesService {
 
   async findLatestAndroidPublic() {
     const latest = await this.prisma.appRelease.findFirst({
-      where: { platform: AppReleasePlatform.ANDROID, status: AppReleaseStatus.PUBLISHED },
+      where: {
+        platform: AppReleasePlatform.ANDROID,
+        status: AppReleaseStatus.PUBLISHED,
+      },
       orderBy: { versionCode: 'desc' },
     });
     if (!latest) return null;
@@ -121,12 +137,14 @@ export class AppReleasesService {
 
   async resolveLatestAndroidDownload() {
     const latest = await this.prisma.appRelease.findFirst({
-      where: { platform: AppReleasePlatform.ANDROID, status: AppReleaseStatus.PUBLISHED },
+      where: {
+        platform: AppReleasePlatform.ANDROID,
+        status: AppReleaseStatus.PUBLISHED,
+      },
       orderBy: { versionCode: 'desc' },
     });
     if (!latest) return null;
-    const uploadRoot = this.config.get<string>('UPLOAD_PATH', './uploads');
-    const absPath = resolveApkAbsPath(uploadRoot, latest.apkPath);
+    const absPath = resolveApkAbsPath(this.uploadRoot(), latest.apkPath);
     if (!absPath) return null;
     try {
       const st = await fs.stat(absPath);
@@ -144,9 +162,12 @@ export class AppReleasesService {
   }
 
   private assertApkFile(file: Express.Multer.File): void {
-    if (!file?.buffer?.length) throw new BadRequestException('Nijedna datoteka nije poslata.');
+    if (!file || (!file.buffer?.length && !file.path)) {
+      throw new BadRequestException('Nijedna datoteka nije poslata.');
+    }
     const name = (file.originalname || '').toLowerCase();
     if (!name.endsWith('.apk') || !APK_MIMES.has(file.mimetype)) {
+      void removeFileQuietly(file.path);
       throw new BadRequestException('Dozvoljen je samo APK fajl.');
     }
   }

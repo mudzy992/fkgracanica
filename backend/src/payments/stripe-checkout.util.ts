@@ -28,6 +28,7 @@ export async function createSimpleStripeCheckout(
     ],
     metadata: input.metadata,
   });
-  if (!session.url) throw new BadRequestException('Stripe session nije kreiran');
+  if (!session.url)
+    throw new BadRequestException('Stripe session nije kreiran');
   return { url: session.url, sessionId: session.id, provider: 'stripe' };
 }

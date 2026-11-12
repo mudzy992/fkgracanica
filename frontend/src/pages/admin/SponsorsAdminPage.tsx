@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { ArrowDown, ArrowUp, Pencil, Plus, Trash2 } from 'lucide-react';
 import { useSponsors } from '../../hooks';
 import { useDeleteSponsor, useReorderSponsors } from '../../hooks/use-content-admin';
@@ -10,11 +11,13 @@ import { Button } from '../../components/ui/button';
 import { AdminDataTable, AdminPageShell } from '../../components/admin/AdminPageShell';
 import { SponsorsAdminFormSheet } from './SponsorsAdminFormSheet';
 import type { Sponsor } from '../../types';
+import { runAction } from '../../lib/action-errors';
 
 export function SponsorsAdminPage() {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const canManage = hasPermission(user?.permissions, 'sponsors.manage');
-  const { data, isLoading } = useSponsors();
+  const { data, isLoading, isError, refetch } = useSponsors();
   const remove = useDeleteSponsor();
   const reorder = useReorderSponsors();
   const { confirm, dialog } = useConfirm();
@@ -24,10 +27,9 @@ export function SponsorsAdminPage() {
 
   const move = (index: number, dir: -1 | 1) => {
     const next = index + dir;
-    if (next < 0 || next >= rows.length) return;
     const ids = rows.map((r) => r.id);
     [ids[index], ids[next]] = [ids[next], ids[index]];
-    void reorder.mutateAsync(ids);
+    void runAction(reorder.mutateAsync(ids));
   };
 
   const onDelete = async (item: Sponsor) => {
@@ -37,19 +39,27 @@ export function SponsorsAdminPage() {
       confirmLabel: 'Obriši',
       variant: 'danger',
     });
-    if (ok) void remove.mutateAsync(item.id);
+    if (ok) void runAction(remove.mutateAsync(item.id));
   };
 
   return (
     <>
-      <Seo title="Sponzori" />
+      <Seo title={t('admin.sponsors')} />
       {dialog}
       <AdminPageShell
-        title="Sponzori"
+        isError={isError}
+        onRetry={() => void refetch()}
+        title={t('admin.sponsors')}
         isLoading={isLoading}
         actions={
           canManage ? (
-            <Button size="sm" onClick={() => { setEdit(null); setOpen(true); }}>
+            <Button
+              size="sm"
+              onClick={() => {
+                setEdit(null);
+                setOpen(true);
+              }}
+            >
               <Plus className="mr-1 h-4 w-4" />
               Novi
             </Button>
@@ -70,7 +80,14 @@ export function SponsorsAdminPage() {
                   <div className="flex gap-1">
                     {canManage && (
                       <>
-                        <Button variant="ghost" size="icon" disabled={index === 0} onClick={() => move(index, -1)}>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          disabled={index === 0}
+                          onClick={() => move(index, -1)}
+
+                          aria-label={t('admin.common.moveUp')}
+                        >
                           <ArrowUp className="h-4 w-4" />
                         </Button>
                         <Button
@@ -78,13 +95,29 @@ export function SponsorsAdminPage() {
                           size="icon"
                           disabled={index === rows.length - 1}
                           onClick={() => move(index, 1)}
+
+                          aria-label={t('admin.common.moveDown')}
                         >
                           <ArrowDown className="h-4 w-4" />
                         </Button>
-                        <Button variant="ghost" size="icon" onClick={() => { setEdit(r); setOpen(true); }}>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => {
+                            setEdit(r);
+                            setOpen(true);
+                          }}
+
+                          aria-label={t('actions.edit')}
+                        >
                           <Pencil className="h-4 w-4" />
                         </Button>
-                        <Button variant="ghost" size="icon" onClick={() => void onDelete(r)}>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => void onDelete(r)}
+                          aria-label={t('actions.delete')}
+                        >
                           <Trash2 className="h-4 w-4 text-danger" />
                         </Button>
                       </>
@@ -98,7 +131,10 @@ export function SponsorsAdminPage() {
       </AdminPageShell>
       <SponsorsAdminFormSheet
         open={open}
-        onOpenChange={(o) => { setOpen(o); if (!o) setEdit(null); }}
+        onOpenChange={(o) => {
+          setOpen(o);
+          if (!o) setEdit(null);
+        }}
         edit={edit}
       />
     </>

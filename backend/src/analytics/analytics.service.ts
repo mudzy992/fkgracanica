@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { aggregateClubMatches } from './analytics-team.util';
 
@@ -7,7 +11,9 @@ export class AnalyticsService {
   constructor(private readonly prisma: PrismaService) {}
 
   async getTeamAnalytics(seasonId?: string) {
-    const own = await this.prisma.club.findFirst({ where: { isOwnClub: true } });
+    const own = await this.prisma.club.findFirst({
+      where: { isOwnClub: true },
+    });
     if (!own) throw new NotFoundException('Vlastiti klub nije postavljen');
     const matches = await this.prisma.match.findMany({
       where: {
@@ -89,7 +95,14 @@ export class AnalyticsService {
         yellowCards: acc.yellowCards + row.yellowCards,
         redCards: acc.redCards + row.redCards,
       }),
-      { appearances: 0, goals: 0, assists: 0, minutes: 0, yellowCards: 0, redCards: 0 },
+      {
+        appearances: 0,
+        goals: 0,
+        assists: 0,
+        minutes: 0,
+        yellowCards: 0,
+        redCards: 0,
+      },
     );
     return { player, seasons: stats, totals };
   }

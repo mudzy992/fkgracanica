@@ -1,22 +1,44 @@
 import type { ReactNode } from 'react';
 import { Card, CardContent } from '../ui/card';
 import { Skeleton } from '../ui/skeleton';
+import { DataError } from '../common/DataError';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
 
 interface AdminListPageProps {
   title: string;
   isLoading?: boolean;
+  /**
+   * FE-04/P-FE04-1: admin tabele su imale samo `isLoading` — pad API-ja je izgledao
+   * kao prazna tabela („Nema podataka”), pa je administrator mislio da nema
+   * zapisa umjesto da vidi grešku i dugme za ponovni pokušaj.
+   */
+  isError?: boolean;
+  onRetry?: () => void;
   actions?: ReactNode;
   children: ReactNode;
 }
 
-export function AdminPageShell({ title, isLoading, actions, children }: AdminListPageProps) {
+export function AdminPageShell({
+  title,
+  isLoading,
+  isError,
+  onRetry,
+  actions,
+  children,
+}: AdminListPageProps) {
   return (
     <div>
       <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
         <h1 className="text-2xl font-bold text-text">{title}</h1>
         {actions}
       </div>
-      {isLoading ? (
+      {isError ? (
+        <Card>
+          <CardContent className="p-0">
+            <DataError onRetry={onRetry} />
+          </CardContent>
+        </Card>
+      ) : isLoading ? (
         <div className="space-y-3">
           {Array.from({ length: 5 }).map((_, i) => (
             <Skeleton key={i} className="h-12 w-full" />
@@ -59,32 +81,32 @@ export function AdminDataTable<T extends { id: string }>({
   }
   return (
     <div className="overflow-x-auto">
-      <table className="w-full text-sm">
-        <thead>
-          <tr className="border-b border-[var(--border-subtle)] text-left text-text-muted">
+      <Table>
+        <TableHeader>
+          <TableRow className="text-left text-text-muted hover:bg-transparent">
             {columns.map((col) => (
-              <th key={col.key} className={`${headerCellClassName} font-medium`}>
+              <TableHead key={col.key} className={`${headerCellClassName} font-medium`}>
                 {col.header}
-              </th>
+              </TableHead>
             ))}
-          </tr>
-        </thead>
-        <tbody>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
           {rows.map((row) => (
-            <tr
+            <TableRow
               key={row.id}
-              className={`border-b border-[var(--border-subtle)] hover:bg-surface/50${onRowClick ? ' cursor-pointer' : ''}${rowClassName?.(row) ? ` ${rowClassName(row)}` : ''}`}
+              className={`${onRowClick ? 'cursor-pointer' : ''}${rowClassName?.(row) ? ` ${rowClassName(row)}` : ''}`}
               onClick={onRowClick ? () => onRowClick(row) : undefined}
             >
               {columns.map((col) => (
-                <td key={col.key} className={cellClassName}>
+                <TableCell key={col.key} className={cellClassName}>
                   {col.render(row)}
-                </td>
+                </TableCell>
               ))}
-            </tr>
+            </TableRow>
           ))}
-        </tbody>
-      </table>
+        </TableBody>
+      </Table>
     </div>
   );
 }

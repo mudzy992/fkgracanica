@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Pencil, Plus, Trash2 } from 'lucide-react';
 import { usePlayers } from '../../../../hooks';
 import { useDeletePlayer } from '../../../../hooks/use-competition-admin';
@@ -11,8 +12,10 @@ import { Button } from '../../../../components/ui/button';
 import { AdminDataTable } from '../../../../components/admin/AdminPageShell';
 import { PlayersAdminFormSheet } from '../../PlayersAdminFormSheet';
 import type { Player } from '../../../../types';
+import { runAction } from '../../../../lib/action-errors';
 
 export function ClubPlayersTab({ clubId }: { clubId: string }) {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const canManage = hasPermission(user?.permissions, 'players.manage');
   const { data, isLoading: playersLoading } = usePlayers({ clubId });
@@ -28,18 +31,25 @@ export function ClubPlayersTab({ clubId }: { clubId: string }) {
       confirmLabel: 'Obriši',
       variant: 'danger',
     });
-    if (ok) void remove.mutateAsync(item.id);
+    if (ok) void runAction(remove.mutateAsync(item.id));
   };
 
-  if (playersLoading) return <p className="text-sm text-text-muted">Učitavanje...</p>;
+  if (playersLoading) return <p className="text-sm text-text-muted">{t('admin.common.loading')}</p>;
 
   return (
     <>
       {dialog}
       <div className="mb-4 flex justify-end">
         {canManage && (
-          <Button size="sm" onClick={() => { setEdit(null); setOpen(true); }}>
-            <Plus className="mr-1 h-4 w-4" />Novi igrač
+          <Button
+            size="sm"
+            onClick={() => {
+              setEdit(null);
+              setOpen(true);
+            }}
+          >
+            <Plus className="mr-1 h-4 w-4" />
+            Novi igrač
           </Button>
         )}
       </div>
@@ -52,7 +62,7 @@ export function ClubPlayersTab({ clubId }: { clubId: string }) {
             render: (r) => (
               <span className="flex items-center gap-2">
                 {r.firstName} {r.lastName}
-                {!r.isActive && <Badge variant="muted">Neaktivan</Badge>}
+                {!r.isActive && <Badge variant="muted">{t('admin.playerForm.inactive')}</Badge>}
               </span>
             ),
           },
@@ -64,10 +74,23 @@ export function ClubPlayersTab({ clubId }: { clubId: string }) {
             render: (r) =>
               canManage ? (
                 <div className="flex gap-1">
-                  <Button variant="ghost" size="icon" onClick={() => { setEdit(r); setOpen(true); }}>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => {
+                      setEdit(r);
+                      setOpen(true);
+                    }}
+                    aria-label={t('actions.edit')}
+                  >
                     <Pencil className="h-4 w-4" />
                   </Button>
-                  <Button variant="ghost" size="icon" onClick={() => void onDelete(r)}>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => void onDelete(r)}
+                    aria-label={t('actions.delete')}
+                  >
                     <Trash2 className="h-4 w-4 text-danger" />
                   </Button>
                 </div>
@@ -77,7 +100,10 @@ export function ClubPlayersTab({ clubId }: { clubId: string }) {
       />
       <PlayersAdminFormSheet
         open={open}
-        onOpenChange={(o) => { setOpen(o); if (!o) setEdit(null); }}
+        onOpenChange={(o) => {
+          setOpen(o);
+          if (!o) setEdit(null);
+        }}
         edit={edit}
         clubId={clubId}
       />

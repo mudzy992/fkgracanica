@@ -36,7 +36,7 @@ export function roundsPlayed(matches: unknown[]): number {
     const item = asRecord(match);
     if (asString(item.status) !== 'FINISHED') continue;
     const roundRel = asRecord(item.roundRel);
-    const n = Number(roundRel.number ?? item.round ?? 0);
+    const n = Number(roundRel.number ?? 0);
     if (n > max) max = n;
   }
   return max;

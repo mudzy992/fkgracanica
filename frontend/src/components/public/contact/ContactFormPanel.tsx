@@ -1,3 +1,4 @@
+import { useId } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -24,6 +25,7 @@ interface Props {
 }
 
 export function ContactFormPanel({ sent, pending, defaultValues, onSubmit }: Props) {
+  const id = useId();
   const {
     register,
     handleSubmit,
@@ -46,30 +48,31 @@ export function ContactFormPanel({ sent, pending, defaultValues, onSubmit }: Pro
         ) : (
           <form onSubmit={(e) => void handleSubmit(onSubmit)(e)} className="space-y-4">
             <div>
-              <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-text-muted">
+              <label htmlFor={`${id}-name`} className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-text-muted">
                 Ime
               </label>
-              <Input placeholder="Vaše ime" {...register('name')} />
+              <Input id={`${id}-name`} placeholder="Vaše ime" {...register('name')} />
               {errors.name && <p className="mt-1 text-xs text-danger">{errors.name.message}</p>}
             </div>
             <div>
-              <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-text-muted">
+              <label htmlFor={`${id}-email`} className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-text-muted">
                 Email
               </label>
-              <Input type="email" placeholder="vas@email.com" {...register('email')} />
+              <Input id={`${id}-email`} type="email" placeholder="vas@email.com" {...register('email')} />
               {errors.email && <p className="mt-1 text-xs text-danger">{errors.email.message}</p>}
             </div>
             <div>
-              <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-text-muted">
+              <label htmlFor={`${id}-subject`} className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-text-muted">
                 Naslov <span className="font-normal normal-case tracking-normal">(opcionalno)</span>
               </label>
-              <Input placeholder="Naslov poruke" {...register('subject')} />
+              <Input id={`${id}-subject`} placeholder="Naslov poruke" {...register('subject')} />
             </div>
             <div>
-              <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-text-muted">
+              <label htmlFor={`${id}-message`} className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-text-muted">
                 Poruka
               </label>
               <textarea
+                id={`${id}-message`}
                 className="flex min-h-36 w-full rounded-lg border border-[var(--border-subtle)] bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring-focus)]"
                 placeholder="Vaša poruka…"
                 {...register('message')}

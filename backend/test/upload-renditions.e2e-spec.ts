@@ -32,7 +32,11 @@ describe('Upload renditions (e2e)', () => {
     app.setGlobalPrefix('api/v1');
     app.useStaticAssets(uploadDir, { prefix: '/api/v1/uploads/files/' });
     app.useGlobalPipes(
-      new ValidationPipe({ whitelist: true, transform: true, forbidNonWhitelisted: true }),
+      new ValidationPipe({
+        whitelist: true,
+        transform: true,
+        forbidNonWhitelisted: true,
+      }),
     );
     await app.init();
 

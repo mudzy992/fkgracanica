@@ -3,6 +3,15 @@ import type { SearchFacet } from './dto/search-query.dto';
 
 const PREVIEW_LIMIT = 10;
 
+/**
+ * BE-08/P-B08-6 (odobreno 2026-11-03): pretraga je bila case-sensitive
+ * (`contains` bez `mode`), pa „gračanica” nije nalazilo „Gračanica”.
+ */
+const ci = (value: string) => ({
+  contains: value,
+  mode: 'insensitive' as const,
+});
+
 export function buildWhere(
   type: SearchFacet,
   q: string,
@@ -19,46 +28,73 @@ export function buildWhere(
     case 'news':
       return {
         status: ContentStatus.PUBLISHED,
-        OR: [{ title: { contains: q } }, { excerpt: { contains: q } }],
+        OR: [{ title: ci(q) }, { excerpt: ci(q) }],
       };
     case 'players':
-      return { OR: [{ firstName: { contains: q } }, { lastName: { contains: q } }] };
+      return {
+        OR: [{ firstName: ci(q) }, { lastName: ci(q) }],
+      };
     case 'clubs':
-      return { name: { contains: q } };
+      return { name: ci(q) };
     case 'matches':
       return {
         OR: [
-          { venue: { contains: q } },
-          { homeClub: { name: { contains: q } } },
-          { awayClub: { name: { contains: q } } },
+          { venue: ci(q) },
+          { homeClub: { name: ci(q) } },
+          { awayClub: { name: ci(q) } },
         ],
       };
     case 'galleries':
-      return { status: ContentStatus.PUBLISHED, title: { contains: q } };
+      return { status: ContentStatus.PUBLISHED, title: ci(q) };
     case 'trophies':
-      return { OR: [{ name: { contains: q } }, { competition: { contains: q } }] };
+      return {
+        OR: [{ name: ci(q) }, { competition: ci(q) }],
+      };
     case 'timeline':
-      return { OR: [{ title: { contains: q } }, { description: { contains: q } }] };
+      return {
+        OR: [{ title: ci(q) }, { description: ci(q) }],
+      };
     case 'hallOfFame':
       return {
         OR: [
-          { name: { contains: q } },
-          { role: { contains: q } },
-          { bio: { contains: q } },
-          { years: { contains: q } },
+          { name: ci(q) },
+          { role: ci(q) },
+          { bio: ci(q) },
+          { years: ci(q) },
         ],
       };
   }
 }
 
 export async function countSearchFacets(prisma: PrismaClient, q: string) {
-  const [news, players, clubs, matches, galleries, trophies, timeline, hallOfFame] = await Promise.all([
-    prisma.news.count({ where: buildWhere('news', q) as Prisma.NewsWhereInput }),
-    prisma.player.count({ where: buildWhere('players', q) as Prisma.PlayerWhereInput }),
-    prisma.club.count({ where: buildWhere('clubs', q) as Prisma.ClubWhereInput }),
-    prisma.match.count({ where: buildWhere('matches', q) as Prisma.MatchWhereInput }),
-    prisma.gallery.count({ where: buildWhere('galleries', q) as Prisma.GalleryWhereInput }),
-    prisma.trophy.count({ where: buildWhere('trophies', q) as Prisma.TrophyWhereInput }),
+  const [
+    news,
+    players,
+    clubs,
+    matches,
+    galleries,
+    trophies,
+    timeline,
+    hallOfFame,
+  ] = await Promise.all([
+    prisma.news.count({
+      where: buildWhere('news', q) as Prisma.NewsWhereInput,
+    }),
+    prisma.player.count({
+      where: buildWhere('players', q) as Prisma.PlayerWhereInput,
+    }),
+    prisma.club.count({
+      where: buildWhere('clubs', q) as Prisma.ClubWhereInput,
+    }),
+    prisma.match.count({
+      where: buildWhere('matches', q) as Prisma.MatchWhereInput,
+    }),
+    prisma.gallery.count({
+      where: buildWhere('galleries', q) as Prisma.GalleryWhereInput,
+    }),
+    prisma.trophy.count({
+      where: buildWhere('trophies', q) as Prisma.TrophyWhereInput,
+    }),
     prisma.clubTimelineEvent.count({
       where: buildWhere('timeline', q) as Prisma.ClubTimelineEventWhereInput,
     }),
@@ -66,7 +102,16 @@ export async function countSearchFacets(prisma: PrismaClient, q: string) {
       where: buildWhere('hallOfFame', q) as Prisma.HallOfFameEntryWhereInput,
     }),
   ]);
-  return { news, players, clubs, matches, galleries, trophies, timeline, hallOfFame };
+  return {
+    news,
+    players,
+    clubs,
+    matches,
+    galleries,
+    trophies,
+    timeline,
+    hallOfFame,
+  };
 }
 
 export async function findSearchFacet(
@@ -150,10 +195,28 @@ export async function previewAllFacets(prisma: PrismaClient, q: string) {
     'timeline',
     'hallOfFame',
   ];
-  const [news, players, clubs, matches, galleries, trophies, timeline, hallOfFame] = await Promise.all(
+  const [
+    news,
+    players,
+    clubs,
+    matches,
+    galleries,
+    trophies,
+    timeline,
+    hallOfFame,
+  ] = await Promise.all(
     types.map((type) => findSearchFacet(prisma, type, q, 0, PREVIEW_LIMIT)),
   );
-  return { news, players, clubs, matches, galleries, trophies, timeline, hallOfFame };
+  return {
+    news,
+    players,
+    clubs,
+    matches,
+    galleries,
+    trophies,
+    timeline,
+    hallOfFame,
+  };
 }
 
 export function emptySearchResponse() {

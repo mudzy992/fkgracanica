@@ -1,30 +1,72 @@
 @import "tailwindcss";
+
+/*
+ * FE-01/P-FE01-7 (odobreno): `dark:` se veže na `.dark` klasu, a NE na
+ * `prefers-color-scheme`. Aplikacija je dark-only (`<html class="dark">` +
+ * `lib/theme.tsx`), pa su `dark:` varijante dosad izgledale svjetlije
+ * korisnicima sa svijetlim OS-om.
+ */
+@custom-variant dark (&:where(.dark, .dark *));
 @import "./styles/premium-landing.css";
 
+/*
+ * FE-01 — JEDAN izvor istine za boje i tipografiju.
+ *
+ * Pravila (provjerava `scripts/standards/token-check.mjs`):
+ *   1. svi `--color-*` tokeni žive OVDJE (`@theme` → Tailwind utility klase);
+ *      `:root` ih NE redefiniše (izuzetak: `--color-*-rgb` companions).
+ *   2. `--color-*-rgb` su runtime-only tokeni za `rgba(var(--x-rgb), a)`
+ *      kompoziciju (Tailwind ih ne koristi kao utility klase, pa idu u `:root`).
+ *   3. nijedna komponenta ne smije koristiti proizvoljnu boju
+ *      (`bg-[#123456]`, `#hex`, `rgba(...)`) van allowliste (print/PDF dokumenti,
+ *      QR kodovi, vendor brand boje, showcase mock ekrani).
+ */
 @theme {
+  /* Brend / površine */
   --color-primary: #1e3a8a;
   --color-primary-light: #60a5fa;
+  --color-brand: #0066ff;
   --color-background: #050a14;
   --color-surface: #0a1525;
+  --color-surface-deep: #07111f;
+  --color-surface-night: #08111d;
+  --color-surface-story: #0b1320;
+  --color-surface-mock: #07101c;
+  --color-surface-chrome: #0a1628;
+  --color-wood-dark: #1a1207;
+  --color-frame-light: #f3f4f6;
+
+  /* Tekst / stanja */
   --color-text: #f8fafc;
   --color-text-muted: #94a3b8;
   --color-accent: #60a5fa;
   --color-success: #22c55e;
   --color-danger: #ef4444;
+
+  /* Vendor brand boje (plaćanje) — Stripe #635bff prilagođen za WCAG AA 4.5:1 sa #fff (4.49→4.63) */
+  --color-stripe: #6357ff;
+  --color-stripe-hover: #5851e5;
+  --color-paypal: #0070ba;
+  --color-paypal-hover: #005ea6;
+  --color-monri: #1a1a2e;
+  --color-monri-hover: #2d2d44;
+
+  /* Tipografija */
   --font-sans: 'Inter', system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   --font-display: 'Plus Jakarta Sans', 'Inter', system-ui, sans-serif;
+  --text-display: 3rem;
+  --text-h1: 2.25rem;
+  --text-h2: 1.5rem;
+  --text-body: 1rem;
 }
 
 :root {
-  --color-primary: #1e3a8a;
-  --color-primary-light: #60a5fa;
-  --color-background: #050a14;
-  --color-surface: #0a1525;
-  --color-text: #f8fafc;
-  --color-text-muted: #94a3b8;
-  --color-accent: #60a5fa;
-  --color-success: #22c55e;
-  --color-danger: #ef4444;
+  /* RGB companions — samo za rgba(var(--…-rgb), alpha) kompoziciju.
+     Vrijednosti su namjerno iste kao postojeći fallbackovi (bez vizuelne promjene). */
+  --color-primary-rgb: 59 130 246;
+  --color-brand-rgb: 0 102 255;
+
+  /* Gradijenti i efekti (runtime tokeni, nisu Tailwind utility klase) */
   --gradient-hero: linear-gradient(135deg, #1e293b 0%, #1e3a8a 45%, #2563eb 100%);
   --gradient-page-hero: linear-gradient(180deg, rgba(5, 10, 20, 0.95) 0%, transparent 100%);
   --hero-radial-accent: rgba(59, 130, 246, 0.06);
@@ -41,10 +83,6 @@
   --ring-focus: rgba(96, 165, 250, 0.5);
   --glass-bg: rgba(10, 21, 37, 0.82);
   --shadow-premium: 0 20px 50px -12px rgba(0, 0, 0, 0.45);
-  --text-display: 3rem;
-  --text-h1: 2.25rem;
-  --text-h2: 1.5rem;
-  --text-body: 1rem;
 }
 
 @layer base {
@@ -58,7 +96,7 @@
   }
 
   h1, h2, h3, .font-display {
-    font-family: var(--font-display);
+    font-family: var(--font-display, 'Plus Jakarta Sans', 'Inter', system-ui, sans-serif);
   }
 
   #root {
@@ -269,8 +307,8 @@
   }
 
   @keyframes live-goal-flash {
-    0%, 100% { box-shadow: 0 0 0 0 rgba(var(--color-primary-rgb, 59 130 246), 0.5); }
-    50% { box-shadow: 0 0 24px 4px rgba(var(--color-primary-rgb, 59 130 246), 0.35); }
+    0%, 100% { box-shadow: 0 0 0 0 rgba(var(--color-primary-rgb), 0.5); }
+    50% { box-shadow: 0 0 24px 4px rgba(var(--color-primary-rgb), 0.35); }
   }
 
   .live-toast-card {
@@ -299,7 +337,7 @@
   .nav-link-active {
     position: relative;
     background: transparent;
-    color: var(--color-primary);
+    color: var(--color-primary, #1e3a8a);
     font-weight: 600;
   }
 
@@ -311,6 +349,6 @@
     right: 0.75rem;
     height: 2px;
     border-radius: 1px;
-    background: var(--color-primary);
+    background: var(--color-primary, #1e3a8a);
   }
 }

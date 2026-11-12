@@ -9,10 +9,13 @@ import { Reveal } from '../../lib/motion/Reveal';
 import { Seo } from '../../components/seo/Seo';
 import { museumCategoryLabel } from '../../lib/museum-categories';
 import { EmptyState } from '../../components/public/EmptyState';
+import { DataError } from '../../components/common/DataError';
 import { Skeleton } from '../../components/ui/skeleton';
+import { useTranslation } from 'react-i18next';
 
 export function MuseumPage() {
-  const { data, isLoading } = useMuseum();
+  const { t } = useTranslation();
+  const { data, isLoading, isError, refetch } = useMuseum();
   const [year, setYear] = useState<number | undefined>();
   const [category, setCategory] = useState<string | undefined>();
 
@@ -40,7 +43,7 @@ export function MuseumPage() {
 
   return (
     <div className="pb-16 sm:pb-20">
-      <Seo title="Muzej" description="Artefakti i historija FK Gračanica" />
+      <Seo title={t('pages.museum.seoTitle')} description={t('pages.museum.seoDesc')} />
       <MuseumCinematicHero
         totalCount={data?.length ?? 0}
         yearCount={years.length}
@@ -59,22 +62,28 @@ export function MuseumPage() {
 
         <div className="mt-10">
           <Reveal>
-            <NewsSectionTitle>Zbirka</NewsSectionTitle>
+            <NewsSectionTitle>{t('pages.museum.collection')}</NewsSectionTitle>
           </Reveal>
-          {!isLoading && (filtered?.length ?? 0) === 0 && (
-            <EmptyState message="Nema predmeta u muzeju." />
+          {isError ? (
+            <DataError onRetry={() => void refetch()} />
+          ) : (
+            <>
+              {!isLoading && (filtered?.length ?? 0) === 0 && (
+                <EmptyState message={t('pages.museum.empty')} />
+              )}
+              <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                {isLoading
+                  ? Array.from({ length: 6 }).map((_, i) => (
+                      <Skeleton key={i} className="h-72 rounded-2xl" />
+                    ))
+                  : filtered?.map((item, i) => (
+                      <Reveal key={item.id} delay={Math.min(i * 0.05, 0.3)}>
+                        <MuseumExhibitCard item={item} />
+                      </Reveal>
+                    ))}
+              </div>
+            </>
           )}
-          <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {isLoading
-              ? Array.from({ length: 6 }).map((_, i) => (
-                  <Skeleton key={i} className="h-72 rounded-2xl" />
-                ))
-              : filtered?.map((item, i) => (
-                  <Reveal key={item.id} delay={Math.min(i * 0.05, 0.3)}>
-                    <MuseumExhibitCard item={item} />
-                  </Reveal>
-                ))}
-          </div>
         </div>
       </PageContainer>
     </div>

@@ -1,4 +1,4 @@
-/** Fixed 4-3-3 pitch grid used by match lineup editor and public pitch display. */
+/** Rezervna 4-3-3 mreža kada klupski raspored nije potpun ili valjan. */
 export const MATCH_FORMATION_SLOTS = [
   { positionX: 50, positionY: 90, label: 'GK' },
   { positionX: 20, positionY: 70, label: 'LB' },
@@ -19,9 +19,17 @@ export type SquadSlotLike = {
   playerId: string | null;
 };
 
-export function squadStartersByFormationIndex(slots: SquadSlotLike[]) {
+export function squadStartersByFormationIndex<T extends SquadSlotLike>(
+  slots: T[],
+): T[] {
   return slots
-    .filter((s) => !s.isBench && s.playerId)
-    .sort((a, b) => a.slotIndex - b.slotIndex)
-    .slice(0, MATCH_FORMATION_SLOTS.length);
+    .filter(
+      (s) =>
+        !s.isBench &&
+        s.playerId &&
+        Number.isInteger(s.slotIndex) &&
+        s.slotIndex >= 0 &&
+        s.slotIndex < MATCH_FORMATION_SLOTS.length,
+    )
+    .sort((a, b) => a.slotIndex - b.slotIndex);
 }

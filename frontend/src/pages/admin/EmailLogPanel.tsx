@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useQuery } from '@tanstack/react-query';
 import { api } from '../../lib/api';
 import { formatDateTime } from '../../lib/utils';
@@ -20,6 +21,7 @@ interface EmailLogResponse {
 }
 
 export function EmailLogPanel() {
+  const { t } = useTranslation();
   const [page, setPage] = useState(1);
   const { data, isLoading } = useQuery({
     queryKey: ['email-log', page],
@@ -29,13 +31,13 @@ export function EmailLogPanel() {
 
   const rows = data?.data ?? [];
 
-  if (isLoading) return <p className="p-4 text-sm text-text-muted">Učitavanje…</p>;
+  if (isLoading) return <p className="p-4 text-sm text-text-muted">{t('admin.common.loading')}</p>;
 
   if (!isLoading && rows.length === 0) {
     return (
       <div className="flex flex-col items-center gap-2 py-12 text-center">
-        <p className="text-sm font-medium">Nema grešaka u slanju emailova</p>
-        <p className="text-xs text-text-muted">Svi emailovi su uspješno isporučeni.</p>
+        <p className="text-sm font-medium">{t('admin.emailLog.noErrors')}</p>
+        <p className="text-xs text-text-muted">{t('admin.emailLog.allDelivered')}</p>
       </div>
     );
   }

@@ -290,6 +290,8 @@ model CmsMenuItem {
   updatedAt   DateTime      @updatedAt
 
   @@index([menuId, sortOrder])
+  @@index([pageId])
+  @@index([parentId])
 }
 
 // ─── News & Comments ─────────────────────────────────────────
@@ -333,6 +335,8 @@ model News {
   @@index([publishedAt])
   @@index([scheduledAt])
   @@index([categoryId])
+  @@index([authorId])
+  @@index([galleryId])
 }
 
 model NewsMatch {
@@ -379,6 +383,7 @@ model Comment {
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([newsId])
+  @@index([userId])
 }
 
 // ─── Gallery ─────────────────────────────────────────────────
@@ -698,7 +703,6 @@ model Match {
   awayClubId      String
   homeScore       Int               @default(0)
   awayScore       Int               @default(0)
-  round           Int?
   roundId         String?
   scheduledAt     DateTime
   venue           String?
@@ -724,6 +728,7 @@ model Match {
   awayClub        Club              @relation("AwayClub", fields: [awayClubId], references: [id])
   events          MatchEvent[]
   lineup          MatchLineup[]
+  lineupConfigured Boolean          @default(false)
   liveComments    LiveComment[]
   tickets         Ticket[]
   teamStats       TeamStatistics[]
@@ -735,6 +740,8 @@ model Match {
   @@index([roundId])
   @@index([status])
   @@index([scheduledAt])
+  @@index([homeClubId])
+  @@index([awayClubId])
 }
 
 model MatchHighlight {
@@ -794,6 +801,9 @@ model MatchEvent {
   createdBy   User?          @relation("EventCreator", fields: [createdById], references: [id], onDelete: SetNull)
 
   @@index([matchId])
+  @@index([playerId])
+  @@index([relatedPlayerId])
+  @@index([createdById])
 }
 
 model MatchLineup {
@@ -824,6 +834,7 @@ model LiveComment {
   user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
 
   @@index([matchId])
+  @@index([userId])
 }
 
 model PlayerStatistics {
@@ -879,6 +890,7 @@ model Membership {
   updatedAt DateTime         @updatedAt
   user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
   card      MembershipCard?
+  payment   Payment?
 
   @@index([userId])
   @@index([status])
@@ -916,6 +928,7 @@ model Ticket {
 
   @@index([matchId])
   @@index([status])
+  @@index([orderId])
 }
 
 model TicketOrder {
@@ -940,9 +953,11 @@ enum PaymentStatus {
   CANCELLED
 }
 
+// BE-07/Q-15: Payment red sada pokriva i članstvo (orderId ILI membershipId).
 model Payment {
   id            String        @id @default(cuid())
-  orderId       String        @unique
+  orderId       String?       @unique
+  membershipId  String?       @unique
   amount        Decimal       @db.Decimal(10, 2)
   status        PaymentStatus @default(PENDING_BOX_OFFICE)
   method        String        @default("box_office")
@@ -951,9 +966,25 @@ model Payment {
   confirmedAt   DateTime?
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
-  order         TicketOrder   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  order         TicketOrder?  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  membership    Membership?   @relation(fields: [membershipId], references: [id], onDelete: Cascade)
 
   @@index([externalId])
+}
+
+// BE-07/P-B07-2 (A): idempotencija obrade plaćanja — jedan (provider, externalId)
+// smije biti potvrđen samo jednom, pa retry webhooka / dvostruki confirm-session
+// ne mogu produžiti članstvo dva puta.
+model PaymentEvent {
+  id         String   @id @default(cuid())
+  provider   String
+  externalId String
+  kind       String
+  refId      String
+  createdAt  DateTime @default(now())
+
+  @@unique([provider, externalId])
+  @@index([refId])
 }
 
 // ─── Contact & Newsletter ──────────────────────────────────────
@@ -970,6 +1001,7 @@ model ContactMessage {
   user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
 
   @@index([isRead])
+  @@index([userId])
 }
 
 model NewsletterSubscriber {
@@ -1066,6 +1098,7 @@ model AppRelease {
 
   @@unique([platform, versionCode])
   @@index([platform, status, versionCode])
+  @@index([createdById])
 }
 
 model SeasonPassAdmission {

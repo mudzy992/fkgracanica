@@ -6,7 +6,8 @@ export const SHOWCASE_SETTINGS = [
     value: 'false',
     type: SettingType.BOOLEAN,
     scope: SettingScope.PRIVATE,
-    description: 'Javnost vidi prezentaciju platforme umjesto portala. Admin, prijava i staff rade.',
+    description:
+      'Javnost vidi prezentaciju platforme umjesto portala. Admin, prijava i staff rade.',
   },
   {
     key: 'showcase.launchNote',

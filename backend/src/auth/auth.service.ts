@@ -1,7 +1,4 @@
-import {
-  Injectable,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
@@ -9,10 +6,7 @@ import { randomBytes } from 'crypto';
 import { PrismaService } from '../prisma/prisma.service';
 import { parseExpiresToMs } from '../common/utils/parse-expires.util';
 import { AuditService } from '../audit/audit.service';
-import {
-  assertStoredAvatarPath,
-  removeAvatarFiles,
-} from './auth-avatar.util';
+import { assertStoredAvatarPath, removeAvatarFiles } from './auth-avatar.util';
 
 @Injectable()
 export class AuthService {
@@ -63,35 +57,47 @@ export class AuthService {
 
   async updatePreferences(
     userId: string,
-    dto: { notifyLiveMatch?: boolean; notifyPush?: boolean; notifyInApp?: boolean },
+    dto: {
+      notifyLiveMatch?: boolean;
+      notifyPush?: boolean;
+      notifyInApp?: boolean;
+    },
   ) {
     await this.prisma.user.update({ where: { id: userId }, data: dto });
     return this.me(userId);
   }
 
   async updateProfile(userId: string, avatarPath: string) {
-    const uploadRoot = this.config.get<string>('UPLOAD_PATH', './uploads');
+    const uploadRoot = this.config.get<string>('uploadPath') ?? './uploads';
     await assertStoredAvatarPath(uploadRoot, avatarPath);
     const user = await this.requireActiveUser(userId);
     if (user.avatarPath && user.avatarPath !== avatarPath) {
       await removeAvatarFiles(uploadRoot, user.avatarPath);
     }
-    await this.prisma.user.update({ where: { id: userId }, data: { avatarPath } });
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: { avatarPath },
+    });
     return this.me(userId);
   }
 
   async deleteProfileAvatar(userId: string) {
-    const uploadRoot = this.config.get<string>('UPLOAD_PATH', './uploads');
+    const uploadRoot = this.config.get<string>('uploadPath') ?? './uploads';
     const user = await this.requireActiveUser(userId);
     if (user.avatarPath) {
       await removeAvatarFiles(uploadRoot, user.avatarPath);
-      await this.prisma.user.update({ where: { id: userId }, data: { avatarPath: null } });
+      await this.prisma.user.update({
+        where: { id: userId },
+        data: { avatarPath: null },
+      });
     }
     return this.me(userId);
   }
 
   async logout(refreshToken: string, userId?: string) {
-    await this.prisma.refreshToken.deleteMany({ where: { token: refreshToken } });
+    await this.prisma.refreshToken.deleteMany({
+      where: { token: refreshToken },
+    });
     if (userId) {
       await this.audit.log({ actorId: userId, action: 'auth.logout' });
     }
@@ -114,7 +120,10 @@ export class AuthService {
       { sub: userId, email },
       {
         secret: this.config.getOrThrow<string>('JWT_ACCESS_SECRET'),
-        expiresIn: this.config.get<string>('JWT_ACCESS_EXPIRES', '15m') as `${number}m`,
+        expiresIn: this.config.get<string>(
+          'JWT_ACCESS_EXPIRES',
+          '15m',
+        ) as `${number}m`,
       },
     );
     const refreshToken = randomBytes(48).toString('hex');
@@ -169,7 +178,9 @@ export class AuthService {
     });
     return [
       ...new Set(
-        roles.flatMap((ur) => ur.role.permissions.map((rp) => rp.permission.key)),
+        roles.flatMap((ur) =>
+          ur.role.permissions.map((rp) => rp.permission.key),
+        ),
       ),
     ];
   }

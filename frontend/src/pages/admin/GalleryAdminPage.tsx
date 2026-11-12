@@ -1,4 +1,7 @@
+import { buttonVariants } from "../../components/ui/button-variants";
+import { cn } from "../../lib/utils";
 import { Pencil, Plus, Trash2 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import {
   useDeleteGallery,
@@ -14,12 +17,14 @@ import { Button } from '../../components/ui/button';
 import { AdminDataTable, AdminPageShell } from '../../components/admin/AdminPageShell';
 import { contentStatusLabel } from '../../lib/content-status-labels';
 import type { GalleryItem } from '../../types';
+import { runAction } from '../../lib/action-errors';
 
 export function GalleryAdminPage() {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const canManage = hasPermission(user?.permissions, 'gallery.manage');
   const canApprove = hasPermission(user?.permissions, 'gallery.approve');
-  const { data, isLoading } = useGalleryAdminList();
+  const { data, isLoading, isError, refetch } = useGalleryAdminList();
   const publish = useUpdateGalleryStatus();
   const remove = useDeleteGallery();
   const { confirm, dialog } = useConfirm();
@@ -31,24 +36,22 @@ export function GalleryAdminPage() {
       confirmLabel: 'Obriši',
       variant: 'danger',
     });
-    if (ok) void remove.mutateAsync(item.id);
+    if (ok) void runAction(remove.mutateAsync(item.id));
   };
 
   return (
     <>
-      <Seo title="Galerija" />
+      <Seo title={t('admin.gallery')} />
       {dialog}
       <AdminPageShell
-        title="Galerija"
+        isError={isError}
+        onRetry={() => void refetch()}
+        title={t('admin.gallery')}
         isLoading={isLoading}
         actions={
           canManage ? (
-            <Link to="/admin/gallery/new">
-              <Button size="sm">
-                <Plus className="mr-1 h-4 w-4" />
-                Nova
-              </Button>
-            </Link>
+            <Link to="/admin/gallery/new" className={cn(buttonVariants({size: "sm"}))}><Plus className="mr-1 h-4 w-4" />
+                Nova</Link>
           ) : undefined
         }
       >
@@ -64,26 +67,35 @@ export function GalleryAdminPage() {
                 </Link>
               ),
             },
-            { key: 'status', header: 'Status', render: (r) => <Badge>{contentStatusLabel(r.status)}</Badge> },
+            {
+              key: 'status',
+              header: 'Status',
+              render: (r) => <Badge>{contentStatusLabel(r.status)}</Badge>,
+            },
             {
               key: 'actions',
               header: 'Akcije',
               render: (r) => (
                 <div className="flex gap-1">
                   {canManage && (
-                    <Link to={`/admin/gallery/${r.id}/edit`}>
-                      <Button variant="ghost" size="icon">
-                        <Pencil className="h-4 w-4" />
-                      </Button>
-                    </Link>
+                    <Link to={`/admin/gallery/${r.id}/edit`} aria-label={t('actions.edit')} className={cn(buttonVariants({variant: "ghost", size: "icon"}))}><Pencil className="h-4 w-4" /></Link>
                   )}
                   {canApprove && r.status !== 'PUBLISHED' && (
-                    <Button size="sm" variant="outline" onClick={() => void publish.mutateAsync({ id: r.id, status: 'PUBLISHED' })}>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => void runAction(publish.mutateAsync({ id: r.id, status: 'PUBLISHED' }))}
+                    >
                       Objavi
                     </Button>
                   )}
                   {canManage && (
-                    <Button variant="ghost" size="icon" onClick={() => void onDelete(r)}>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => void onDelete(r)}
+                      aria-label={t('actions.delete')}
+                    >
                       <Trash2 className="h-4 w-4 text-danger" />
                     </Button>
                   )}

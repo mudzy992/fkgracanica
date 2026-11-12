@@ -1,5 +1,9 @@
 import { groupCalendarSeasons } from './calendar-season.util';
-import { ensureSingleLeagueCompetition, findDefaultLeagueEdition, pickDefaultSeason } from './league-season.util';
+import {
+  ensureSingleLeagueCompetition,
+  findDefaultLeagueEdition,
+  pickDefaultSeason,
+} from './league-season.util';
 
 describe('groupCalendarSeasons', () => {
   it('merges rows with the same yearStart/yearEnd into one calendar season', () => {
@@ -31,7 +35,9 @@ describe('league-season.util', () => {
 
   it('falls back to latest league season when none are active', () => {
     const inactive = seasons.map((s) => ({ ...s, isActive: false }));
-    expect(pickDefaultSeason(inactive, { leagueOnly: true })?.id).toBe('new-league');
+    expect(pickDefaultSeason(inactive, { leagueOnly: true })?.id).toBe(
+      'new-league',
+    );
   });
 
   it('without leagueOnly prefers latest active regardless of type', () => {

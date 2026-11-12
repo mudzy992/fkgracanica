@@ -37,16 +37,20 @@ export function UsersRolesPage() {
     return list;
   }, [canUsers, canRoles, t]);
 
-  if (!canUsers && !canRoles) return <Navigate to="/admin" replace />;
-
   const tabParam = searchParams.get('tab');
   const activeTab = resolveTab(tabParam, canUsers, canRoles);
+  const hasTab = canUsers || canRoles;
 
   useEffect(() => {
+    // P-FE06-29/30: bez ijednog taba preusmjeravanje ispod mora ostati na snazi —
+    // upis `?tab=` bi ga poništio i ostavio praznu stranicu.
+    if (!hasTab) return;
     if (tabParam !== activeTab) {
       setSearchParams({ tab: activeTab }, { replace: true });
     }
-  }, [tabParam, activeTab, setSearchParams]);
+  }, [hasTab, tabParam, activeTab, setSearchParams]);
+
+  if (!hasTab) return <Navigate to="/admin" replace />;
 
   const setTab = (tab: Tab) => setSearchParams({ tab }, { replace: true });
 

@@ -14,7 +14,10 @@ export class NotificationDeliveryService {
 
   constructor(private readonly jobs: JobsService) {}
 
-  async deliver(user: DeliveryUser, notification: { title: string; body: string; type: string; path?: string }) {
+  async deliver(
+    user: DeliveryUser,
+    notification: { title: string; body: string; type: string; path?: string },
+  ) {
     await Promise.all([
       this.sendEmail(user, notification),
       this.sendPush(user, notification),

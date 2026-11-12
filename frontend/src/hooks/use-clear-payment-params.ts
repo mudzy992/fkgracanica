@@ -5,15 +5,16 @@ export function useClearPaymentParams(done: boolean) {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { pathname } = useLocation();
-  const clearedRef = useRef(false);
+  const clearedRef = useRef<string | null>(null);
 
   useEffect(() => {
-    if (!done || clearedRef.current) return;
+    const current = searchParams.toString();
+    if (!done || clearedRef.current === current) return;
     const hasPaid = searchParams.get('paid');
     const hasSession = searchParams.get('session_id') || searchParams.get('token');
     if (!hasPaid && !hasSession) return;
 
-    clearedRef.current = true;
+    clearedRef.current = current;
     const next = new URLSearchParams(searchParams);
     next.delete('paid');
     next.delete('session_id');

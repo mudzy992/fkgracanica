@@ -5,6 +5,8 @@ import { PrismaService } from '../prisma/prisma.service';
 import { tallyCampaignEmail } from '../newsletter/newsletter-campaign-tally';
 import { RealtimeGateway } from '../realtime/realtime.gateway';
 import { RealtimeModule } from '../realtime/realtime.module';
+import { ConfigService } from '@nestjs/config';
+import { buildRedisTlsOptions } from '../common/utils/redis-tls.util';
 
 export type EmailPayload = {
   to: string;
@@ -17,22 +19,30 @@ export type EmailPayload = {
 @Injectable()
 export class JobsService implements OnModuleDestroy {
   private readonly logger = new Logger(JobsService.name);
-  private readonly connection: { url: string } | null;
+  private readonly connection: { url: string; tls?: { ca: Buffer } } | null;
   private readonly emailQueue: Queue | null;
   private readonly worker: Worker | null;
 
   constructor(
     private readonly prisma: PrismaService,
     private readonly realtime: RealtimeGateway,
+    // BE-06: migracija s process.env na ConfigService (BE-01 P2 konvencija)
+    private readonly config: ConfigService,
   ) {
-    const url = process.env.REDIS_URL;
+    const url = this.config.get<string>('redisUrl');
     if (!url) {
       this.connection = null;
       this.emailQueue = null;
       this.worker = null;
       return;
     }
-    this.connection = { url };
+    // BullMQ proslijeđuje { url, ...rest } ioredis-u: rediss:// pali TLS,
+    // a tls.ca (iz REDIS_TLS_CA) rješava "self-signed certificate in
+    // certificate chain" prema privatnom Coolify CA-u.
+    this.connection = {
+      url,
+      ...buildRedisTlsOptions(url, this.config.get<string>('redisTlsCa')),
+    };
     this.emailQueue = new Queue('email', { connection: this.connection });
     this.worker = new Worker(
       'email',
@@ -57,12 +67,18 @@ export class JobsService implements OnModuleDestroy {
   }
 
   private async sendEmail(payload: EmailPayload) {
-    const smtp = await this.prisma.setting.findMany({ where: { key: { startsWith: 'smtp.' } } });
+    const smtp = await this.prisma.setting.findMany({
+      where: { key: { startsWith: 'smtp.' } },
+    });
     const settings = smtp.reduce<Record<string, string>>((acc, item) => {
       acc[item.key] = item.value;
       return acc;
     }, {});
-    if (!settings['smtp.host'] || !settings['smtp.user'] || !settings['smtp.pass']) {
+    if (
+      !settings['smtp.host'] ||
+      !settings['smtp.user'] ||
+      !settings['smtp.pass']
+    ) {
       this.logger.warn(`SMTP unavailable for ${payload.to}`);
       await this.tally(payload.campaignId, false);
       return;

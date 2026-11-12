@@ -21,7 +21,10 @@ export type MembershipExportRow = {
   updatedAt: Date;
   amount: number;
   status: string;
+  provider: string;
   email: string;
+  /** `true` = iznos nije iz Payment reda (legacy/procjena). BE-07/Q-15. */
+  estimated: boolean;
 };
 
 export type SeasonPassExportRow = {
@@ -41,7 +44,7 @@ export type FinanceSummary = {
   to: string;
   tickets: { count: number; sum: number };
   seasonPass: { count: number; sum: number };
-  membership: { count: number; sum: number; estimated: true };
+  membership: { count: number; sum: number; estimated: boolean };
   totalSum: number;
   byProvider: Bucket[];
   byStatus: Bucket[];

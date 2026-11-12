@@ -1,4 +1,6 @@
+import { buttonVariants } from "../../../components/ui/button-variants";
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { FileText, Pencil, Plus, Radio, Trash2 } from 'lucide-react';
 import { useMatches } from '../../../hooks';
@@ -9,7 +11,7 @@ import { canEditReport } from '../../../lib/match-report';
 import { isRetrospectiveMatch } from '../../../lib/match-retrospective';
 import { hasPermission } from '../../../lib/permissions';
 import { matchStatusLabel } from '../../../lib/match-status-label';
-import { formatDateTime } from '../../../lib/utils';
+import { cn, formatDateTime } from '../../../lib/utils';
 import { Badge } from '../../../components/ui/badge';
 import { Button } from '../../../components/ui/button';
 import { AdminDataTable } from '../../../components/admin/AdminPageShell';
@@ -17,6 +19,7 @@ import type { Match } from '../../../types';
 import { MatchFormSheet } from './MatchFormSheet';
 import { MatchLineupSheet } from './MatchLineupSheet';
 import { isScheduledMatch, useRoundMatchesSorted } from './round-matches-utils';
+import { runAction } from '../../../lib/action-errors';
 
 interface Props {
   seasonId: string;
@@ -25,6 +28,7 @@ interface Props {
 }
 
 export function RoundMatchesPanel({ seasonId, roundId, canManage }: Props) {
+  const { t } = useTranslation();
   const { data, isLoading } = useMatches(seasonId, roundId);
   const rows = useRoundMatchesSorted(data);
   const { user } = useAuth();
@@ -42,16 +46,22 @@ export function RoundMatchesPanel({ seasonId, roundId, canManage }: Props) {
       variant: 'danger',
       confirmLabel: 'Obriši',
     });
-    if (ok) void remove.mutateAsync(match.id);
+    if (ok) void runAction(remove.mutateAsync(match.id));
   };
 
   return (
     <>
       {dialog}
-      <div className="flex items-center justify-between border-b border-slate-200 px-4 py-3">
-        <h3 className="text-sm font-semibold">Utakmice u kolu</h3>
+      <div className="flex items-center justify-between border-b border-[var(--border-subtle)] px-4 py-3">
+        <h3 className="text-sm font-semibold">{t('admin.roundMatches.title')}</h3>
         {canManage && (
-          <Button size="sm" onClick={() => { setEdit(null); setOpen(true); }}>
+          <Button
+            size="sm"
+            onClick={() => {
+              setEdit(null);
+              setOpen(true);
+            }}
+          >
             <Plus className="mr-1 h-4 w-4" />
             Utakmica
           </Button>
@@ -96,63 +106,77 @@ export function RoundMatchesPanel({ seasonId, roundId, canManage }: Props) {
           },
           { key: 'date', header: 'Datum', render: (r) => formatDateTime(r.scheduledAt) },
           ...(canManage || canLive
-            ? [{
-                key: 'actions',
-                header: 'Akcije',
-                render: (r: Match) => {
-                  const finished = r.status === 'FINISHED';
-                  const retro = isRetrospectiveMatch(r);
-                  const reportEditable = canEditReport(r);
-                  return (
-                    <div className="flex flex-wrap gap-1">
-                      {canLive && !finished && (
-                        <Link to={`/admin/live/${r.id}`}>
-                          <Button size="sm" variant="outline">
-                            <Radio className="mr-1 h-3 w-3" />
-                            Live
-                          </Button>
-                        </Link>
-                      )}
-                      {canLive && reportEditable && (
-                        <Link to={`/admin/matches/${r.id}/report`}>
-                          <Button size="sm" variant="outline">
-                            <FileText className="mr-1 h-3 w-3" />
-                            Izvještaj
-                          </Button>
-                        </Link>
-                      )}
-                      {canManage && (!finished || retro) && (
-                        <>
-                          {!finished && (
-                            <Button variant="ghost" size="icon" onClick={() => { setEdit(r); setOpen(true); }}>
-                              <Pencil className="h-4 w-4" />
+            ? [
+                {
+                  key: 'actions',
+                  header: 'Akcije',
+                  render: (r: Match) => {
+                    const finished = r.status === 'FINISHED';
+                    const retro = isRetrospectiveMatch(r);
+                    const reportEditable = canEditReport(r);
+                    return (
+                      <div className="flex flex-wrap gap-1">
+                        {canLive && !finished && (
+                          <Link to={`/admin/live/${r.id}`} className={cn(buttonVariants({variant: "outline", size: "sm"}))}><Radio className="mr-1 h-3 w-3" />
+                              Live</Link>
+                        )}
+                        {canLive && reportEditable && (
+                          <Link to={`/admin/matches/${r.id}/report`} className={cn(buttonVariants({variant: "outline", size: "sm"}))}><FileText className="mr-1 h-3 w-3" />
+                              Izvještaj</Link>
+                        )}
+                        {canManage && (!finished || retro) && (
+                          <>
+                            {!finished && (
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => {
+                                  setEdit(r);
+                                  setOpen(true);
+                                }}
+                                aria-label={t('actions.edit')}
+                              >
+                                <Pencil className="h-4 w-4" />
+                              </Button>
+                            )}
+                            <Button size="sm" variant="outline" onClick={() => setLineupId(r.id)}>
+                              Postava
                             </Button>
-                          )}
-                          <Button size="sm" variant="outline" onClick={() => setLineupId(r.id)}>
-                            Postava
-                          </Button>
-                          {!finished && (
-                            <Button variant="ghost" size="icon" onClick={() => void onDelete(r)}>
-                              <Trash2 className="h-4 w-4 text-danger" />
-                            </Button>
-                          )}
-                        </>
-                      )}
-                    </div>
-                  );
+                            {!finished && (
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => void onDelete(r)}
+                                aria-label={t('actions.delete')}
+                              >
+                                <Trash2 className="h-4 w-4 text-danger" />
+                              </Button>
+                            )}
+                          </>
+                        )}
+                      </div>
+                    );
+                  },
                 },
-              }]
+              ]
             : []),
         ]}
       />
       <MatchFormSheet
         open={open}
-        onOpenChange={(o) => { setOpen(o); if (!o) setEdit(null); }}
+        onOpenChange={(o) => {
+          setOpen(o);
+          if (!o) setEdit(null);
+        }}
         edit={edit}
         seasonId={seasonId}
         roundId={roundId}
       />
-      <MatchLineupSheet matchId={lineupId} open={!!lineupId} onOpenChange={(o) => !o && setLineupId(null)} />
+      <MatchLineupSheet
+        matchId={lineupId}
+        open={!!lineupId}
+        onOpenChange={(o) => !o && setLineupId(null)}
+      />
     </>
   );
 }

@@ -29,7 +29,7 @@ export function NewsCompactCard({ item, delay }: { item: NewsItem; delay: number
         <div className="glass-premium card-lift flex h-full flex-col overflow-hidden rounded-2xl md:flex-row">
           {item.coverPath && (
             <div className="relative h-48 w-full flex-shrink-0 overflow-hidden md:h-auto md:w-48">
-              <img
+              <img loading="lazy" decoding="async"
                 src={mediaUrl(item.coverPath, 'medium')}
                 alt=""
                 className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
@@ -66,7 +66,7 @@ export function NewsGridCard({ item, delay }: { item: NewsItem; delay: number })
         <div className="glass-premium card-lift overflow-hidden rounded-2xl">
           {item.coverPath && (
             <div className="relative h-44 overflow-hidden">
-              <img
+              <img loading="lazy" decoding="async"
                 src={mediaUrl(item.coverPath, 'medium')}
                 alt=""
                 className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
@@ -102,7 +102,7 @@ export function NewsFeaturedCard({ item }: { item: NewsItem }) {
       <Link to={`/vijesti/${item.slug}`} className="block h-full">
         <div className="card-lift relative min-h-[400px] overflow-hidden rounded-3xl">
           {item.coverPath && (
-            <img
+            <img loading="lazy" decoding="async"
               src={mediaUrl(item.coverPath, 'medium')}
               alt=""
               className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"

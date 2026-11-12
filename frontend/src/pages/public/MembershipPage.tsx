@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { Link, useLocation, useSearchParams } from 'react-router-dom';
 import { useMyMembership } from '../../hooks/use-membership';
 import { useTicketingPublicConfig } from '../../hooks/use-ticketing';
 import { useMembershipPaymentReturn } from '../../hooks/use-membership-payment-return';
@@ -8,17 +8,22 @@ import { LiveNotifyToggle } from '../../components/account/LiveNotifyToggle';
 import { ProfileAvatarEditor } from '../../components/account/ProfileAvatarEditor';
 import { MemberHomeStrip } from '../../components/membership/MemberHomeStrip';
 import { MembershipPurchasePanel } from '../../components/membership/MembershipPurchasePanel';
+import { PaymentReturnNotice } from '../../components/payments/PaymentReturnNotice';
 import { MyTicketsPanel } from '../../components/ticketing/MyTicketsPanel';
 import { AccountSectionTabs, type AccountTab } from '../../components/account/AccountSectionTabs';
 import { FormShell } from '../../components/public/forms/FormShell';
 import { PageHeroHeader } from '../../components/public/shell/PageHeroHeader';
 import { Seo } from '../../components/seo/Seo';
 import { Skeleton } from '../../components/ui/skeleton';
+import { buttonVariants } from '../../components/ui/button-variants';
 import { useAuth } from '../../lib/auth';
 import { parsePaymentProvider } from '../../lib/payment-providers';
+import { useTranslation } from 'react-i18next';
 
 export function MembershipPage() {
-  const { isAuthenticated, isLoading: authLoading } = useAuth();
+  const { t } = useTranslation();
+  const { isAuthenticated, isLoading: authLoading, user } = useAuth();
+  const location = useLocation();
   const [searchParams] = useSearchParams();
   const paidReturn = searchParams.get('paid') === '1';
   const sessionId = searchParams.get('session_id') || searchParams.get('token');
@@ -28,12 +33,14 @@ export function MembershipPage() {
   const { data: memberships, isLoading: membershipLoading } = useMyMembership();
   const [tab, setTab] = useState<AccountTab>('membership');
 
-  const { confirming, activated } = useMembershipPaymentReturn({
+  const paymentReturn = useMembershipPaymentReturn({
     paid: paidReturn,
     sessionId,
     provider,
+    userId: user?.id ?? null,
     enabled: isAuthenticated && !authLoading,
   });
+  const { confirming, activated } = paymentReturn;
   useClearPaymentParams(!confirming && (activated || !paidReturn || !sessionId));
 
   if (authLoading || configLoading || (isAuthenticated && membershipLoading) || confirming) {
@@ -45,25 +52,24 @@ export function MembershipPage() {
 
   return (
     <div className="pb-16">
-      <Seo title={accountMode ? 'Moj račun' : 'Članstvo'} />
+      <Seo
+        title={accountMode ? t('pages.membership.seoTitleAccount') : t('pages.membership.seoTitle')}
+      />
       <PageHeroHeader
-        eyebrow="Zajednica"
-        title={accountMode ? 'Moj račun' : 'Članstvo'}
+        eyebrow={t('pages.membership.eyebrow')}
+        title={accountMode ? t('pages.membership.titleAccount') : t('pages.membership.title')}
         subtitle={
-          accountMode
-            ? 'Članstvo, ulaznice i pregled vaših narudžbi.'
-            : 'Pridružite se klubu i podržite FK Gračanica kao registrirani član.'
+          accountMode ? t('pages.membership.subtitleAccount') : t('pages.membership.subtitle')
         }
       />
       <FormShell
         layout={accountMode ? 'full' : 'split'}
-        title={accountMode ? 'Moj račun' : 'Postani član'}
+        title={accountMode ? t('pages.membership.accountTitle') : t('pages.membership.joinTitle')}
         description={
-          accountMode
-            ? 'Pregledajte člansku karticu i kupljene ulaznice.'
-            : 'Ekskluzivne pogodnosti za članove kluba.'
+          accountMode ? t('pages.membership.accountSubtitle') : t('pages.membership.joinSubtitle')
         }
       >
+        {accountMode && <PaymentReturnNotice status={paymentReturn.status} onRetry={paymentReturn.retry} />}
         {accountMode && <MemberHomeStrip />}
         {accountMode && <ProfileAvatarEditor />}
         {accountMode && <LiveNotifyToggle />}
@@ -72,7 +78,14 @@ export function MembershipPage() {
         )}
 
         <div className={accountMode ? 'mt-6' : ''}>
-          {(!accountMode || tab === 'membership') && (
+          {!accountMode && paidReturn && sessionId ? (
+            <div className="space-y-3">
+              <p className="text-text-muted">{t('paymentReturn.signIn')}</p>
+              <Link to="/prijava" state={{ from: location }} className={buttonVariants()}>
+                {t('nav.login')}
+              </Link>
+            </div>
+          ) : (!accountMode || tab === 'membership') && (
             <MembershipPurchasePanel
               config={config}
               memberships={memberships}

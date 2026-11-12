@@ -18,7 +18,8 @@ mobile/    Expo (React Native)
 
 > Projekat je migriran sa MySQL na PostgreSQL. MySQL konfiguracija je
 > sačuvana kao backup u `backend/prisma-mysql-backup/` (nije aktivna).
-> Detalji: [`docs/mysql-to-postgres-migration.md`](docs/mysql-to-postgres-migration.md).
+> Detalji: [`docs/_retired/docs/mysql-to-postgres-migration.md`](docs/_retired/docs/mysql-to-postgres-migration.md)
+> (pensionisano — historijski zapis migracije).
 
 ## Setup
 
@@ -56,6 +57,10 @@ npm run dev:mobile    # Expo
 
 ## Dokumentacija
 
-- [aplikacijski-plan.md](aplikacijski-plan.md) — master plan
-- [.cursor/plans/fk-gracanica/](.cursor/plans/fk-gracanica/) — fazni plan
-- [.cursor/docs/matrices/](.cursor/docs/matrices/) — feature matrice
+Jedini izvor istine — `docs/` (nova dokumentacija) i `AUDIT/` (auditni dnevnik):
+
+- [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) — arhitektura sistema
+- [docs/INFRASTRUCTURE.md](docs/INFRASTRUCTURE.md) — infrastruktura i deploy
+- [docs/BACKEND.md](docs/BACKEND.md) / [docs/FRONTEND.md](docs/FRONTEND.md) / [docs/MOBILE.md](docs/MOBILE.md)
+- [docs/TESTING.md](docs/TESTING.md) · [docs/CI.md](docs/CI.md) · [docs/CONVENTIONS.md](docs/CONVENTIONS.md) · [docs/DECISIONS.md](docs/DECISIONS.md)
+- [docs/_retired/INDEX.md](docs/_retired/INDEX.md) — penzionisani dokumenti (samo historijska referenca)

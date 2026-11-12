@@ -53,7 +53,7 @@ export function ShowcasePage() {
   }, []);
 
   return (
-    <div id="top" className="min-h-dvh bg-[#050a14] text-white">
+    <div id="top" className="min-h-dvh bg-background text-white">
       <Seo
         title="Platforma u izradi"
         description="Pregled digitalne platforme FK Gračanica — web, admin i mobile."

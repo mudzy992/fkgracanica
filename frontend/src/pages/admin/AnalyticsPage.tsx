@@ -4,6 +4,7 @@ import { useSeasons } from '../../hooks';
 import { asArray } from '../../lib/as-array';
 import { Seo } from '../../components/seo/Seo';
 import { Button } from '../../components/ui/button';
+import { Select } from '../../components/ui/select';
 import { useTeamAnalytics } from '../../hooks/use-analytics';
 import { AnalyticsTeamPanel } from './analytics/AnalyticsTeamPanel';
 import { AnalyticsH2hPanel } from './analytics/AnalyticsH2hPanel';
@@ -12,11 +13,11 @@ import { AnalyticsVisitorsPanel } from './analytics/AnalyticsVisitorsPanel';
 
 type Tab = 'team' | 'h2h' | 'player' | 'visitors';
 
-const TABS: { id: Tab; label: string }[] = [
-  { id: 'team', label: 'Tim' },
-  { id: 'h2h', label: 'H2H' },
-  { id: 'player', label: 'Igrači' },
-  { id: 'visitors', label: 'Posjetioci' },
+const TABS: { id: Tab; labelKey: string }[] = [
+  { id: 'team', labelKey: 'admin.analyticsTabs.team' },
+  { id: 'h2h', labelKey: 'admin.analyticsTabs.h2h' },
+  { id: 'player', labelKey: 'admin.analyticsTabs.players' },
+  { id: 'visitors', labelKey: 'admin.analyticsTabs.visitors' },
 ];
 
 export function AnalyticsPage() {
@@ -33,33 +34,36 @@ export function AnalyticsPage() {
       <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
         <h1 className="text-2xl font-bold">{t('admin.analytics')}</h1>
         {tab === 'team' && (
-          <select
-            className="h-10 rounded-lg border border-[var(--border-subtle)] bg-background px-3 text-sm"
+          <Select
             value={seasonId}
             onChange={(e) => setSeasonId(e.target.value)}
           >
-            <option value="">Sve sezone</option>
+            <option value="">{t('admin.analyticsPage.allSeasons')}</option>
             {seasons.map((s) => (
-              <option key={s.id} value={s.id}>{s.name}</option>
+              <option key={s.id} value={s.id}>
+                {s.name}
+              </option>
             ))}
-          </select>
+          </Select>
         )}
       </div>
 
       <div className="mb-5 flex gap-2 border-b border-[var(--border-subtle)]">
-        {TABS.map((t) => (
-          <button
-            key={t.id}
-            onClick={() => setTab(t.id)}
+        {TABS.map(({ id, labelKey }) => (
+          <Button
+            key={id}
+            variant="ghost"
+            size="sm"
+            onClick={() => setTab(id)}
             className={[
-              'pb-2 text-sm font-medium transition-colors',
-              tab === t.id
-                ? 'border-b-2 border-primary text-text'
-                : 'text-text-muted hover:text-text',
+              'h-auto rounded-none border-b-2 px-1 pb-2 text-sm font-medium',
+              tab === id
+                ? 'border-primary text-text'
+                : 'border-transparent text-text-muted hover:text-text',
             ].join(' ')}
           >
-            {t.label}
-          </button>
+            {t(labelKey)}
+          </Button>
         ))}
       </div>
 
@@ -70,9 +74,11 @@ export function AnalyticsPage() {
       ) : tab === 'visitors' ? (
         <AnalyticsVisitorsPanel />
       ) : isError ? (
-        <Button variant="outline" onClick={() => void refetch()}>Pokušaj ponovo</Button>
+        <Button variant="outline" onClick={() => void refetch()}>
+          {t('actions.retry')}
+        </Button>
       ) : isLoading || !data ? (
-        <p className="text-sm text-text-muted">Učitavanje...</p>
+        <p className="text-sm text-text-muted">{t('admin.common.loading')}</p>
       ) : (
         <AnalyticsTeamPanel data={data} />
       )}

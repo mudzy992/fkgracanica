@@ -8,8 +8,13 @@ RUN npm ci
 
 FROM deps AS build
 COPY . .
-ARG DATABASE_URL=postgresql://build:build@localhost:5432/fkgracanica
-ENV DATABASE_URL=$DATABASE_URL
+# BE-09c/P-B09c-2 + CI-04/B-CI04-02: build NE dobija `DATABASE_URL`.
+# Prije je postojao build-arg; Coolify (docker-compose pack) izvozi `build.args`
+# u okruženje i za `up`, pa je taj dummy završio kao RUNTIME env i Prisma je
+# javljala `P1001 ... at build-arg-dummy.invalid:5432` iako je Coolify UI imao
+# ispravan URL. `prisma generate` ne otvara konekciju — `prisma.config.ts` uzima
+# placeholder ako varijable nema. Prava vrijednost dolazi samo iz runtime env-a
+# (compose `environment:`), a provjerava je `docker-entrypoint.sh`.
 RUN npx prisma generate
 RUN npm run build
 
@@ -23,12 +28,16 @@ RUN groupadd --system app && useradd --system --gid app --home-dir /app app
 COPY --from=build /app/package.json ./
 COPY --from=build /app/package-lock.json ./
 COPY --from=build /app/node_modules ./node_modules
+# BE-09c/P-B09c-3: devDependencies (jest, eslint, ts-node, typescript) ne idu u
+# produkcijsku sliku. `prisma` CLI ostaje jer ga CMD koristi za `migrate deploy`.
+RUN npm prune --omit=dev
 COPY --from=build /app/dist ./dist
 COPY --from=build /app/prisma ./prisma
 COPY --from=build /app/prisma.config.ts ./
-RUN mkdir -p /app/uploads && chown -R app:app /app
+COPY --from=build /app/docker-entrypoint.sh ./
+RUN mkdir -p /app/uploads && chmod +x /app/docker-entrypoint.sh && chown -R app:app /app
 USER app
 EXPOSE 3000
 HEALTHCHECK --interval=30s --timeout=5s --start-period=40s --retries=3 \
   CMD node -e "fetch('http://127.0.0.1:3000/api/v1/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
-CMD ["sh", "-c", "npx prisma migrate deploy && node dist/src/main.js"]
+CMD ["sh", "docker-entrypoint.sh"]

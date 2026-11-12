@@ -1,3 +1,4 @@
+import { Card } from '../../../components/ui/card';
 import type { VisitorTrendRow } from '../../../hooks/use-analytics';
 
 const BAR_COLORS = {
@@ -28,7 +29,7 @@ export function AnalyticsVisitorsTrendChart({ trend }: { trend: VisitorTrendRow[
           <span className={`h-2.5 w-2.5 rounded-sm ${BAR_COLORS.total}`} /> Ukupno
         </span>
       </div>
-      <div className="overflow-x-auto rounded-xl border border-[var(--border-subtle)] p-4">
+      <Card className="p-4 overflow-x-auto">
         <div className="flex min-w-[640px] items-end gap-2" style={{ height: '12rem' }}>
           {rows.map((row) => (
             <div key={row.date} className="flex min-w-0 flex-1 flex-col items-center gap-1">
@@ -46,7 +47,7 @@ export function AnalyticsVisitorsTrendChart({ trend }: { trend: VisitorTrendRow[
             </div>
           ))}
         </div>
-      </div>
+      </Card>
     </div>
   );
 }

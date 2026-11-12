@@ -3,7 +3,6 @@ import type { RefObject } from 'react';
 type Props = {
   uploadRef: RefObject<HTMLInputElement | null>;
   replaceRef: RefObject<HTMLInputElement | null>;
-  folderId?: string;
   replaceId: string | null;
   onUpload: (files: FileList) => void;
   onReplace: (file: File) => void;
@@ -12,7 +11,6 @@ type Props = {
 export function MediaPageFileInputs({
   uploadRef,
   replaceRef,
-  folderId,
   replaceId,
   onUpload,
   onReplace,
@@ -26,7 +24,7 @@ export function MediaPageFileInputs({
         multiple
         className="hidden"
         onChange={(e) => {
-          if (e.target.files?.length && folderId) onUpload(e.target.files);
+          if (e.target.files?.length) onUpload(e.target.files);
           e.target.value = '';
         }}
       />

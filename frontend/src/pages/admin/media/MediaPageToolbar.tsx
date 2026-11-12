@@ -2,6 +2,8 @@ import { Search, X } from 'lucide-react';
 import { Button } from '../../../components/ui/button';
 import { Input } from '../../../components/ui/input';
 import type { UploadQueueState } from '../../../hooks/use-media-upload-queue';
+import { useTranslation } from 'react-i18next';
+import { MediaUploadProgress } from './MediaUploadProgress';
 
 interface Props {
   search: string;
@@ -21,6 +23,8 @@ interface Props {
   uploadTitle?: string;
   onFolderChipClick?: () => void;
   uploadProgress?: UploadQueueState;
+  onRetryUploadRefresh?: () => void;
+  onClearUploadReport?: () => void;
   canUpload?: boolean;
   canManage?: boolean;
 }
@@ -55,13 +59,12 @@ export function MediaPageToolbar({
   uploadTitle,
   onFolderChipClick,
   uploadProgress,
+  onRetryUploadRefresh,
+  onClearUploadReport,
   canUpload = true,
   canManage = true,
 }: Props) {
-  const progressPct =
-    uploadProgress && uploadProgress.total > 0
-      ? Math.round((uploadProgress.done / uploadProgress.total) * 100)
-      : 0;
+  const { t } = useTranslation();
 
   return (
     <div className="space-y-2 border-b border-[var(--border-subtle)] px-3 py-3 sm:px-4">
@@ -82,18 +85,20 @@ export function MediaPageToolbar({
           <Input
             value={search}
             onChange={(e) => onSearchChange(e.target.value)}
-            placeholder="Pretraga po nazivu, tagu ili putanji…"
+            placeholder={t('admin.mediaToolbar.searchPlaceholder')}
             className="pl-9 pr-9"
           />
           {search && (
-            <button
+            <Button
               type="button"
-              className="absolute right-2 top-1/2 -translate-y-1/2 rounded p-1 text-text-muted hover:text-text"
+              variant="ghost"
+              size="icon"
+              className="absolute right-1 top-1/2 h-6 w-6 -translate-y-1/2"
               onClick={() => onSearchChange('')}
-              aria-label="Obriši pretragu"
+              aria-label={t('admin.mediaToolbar.clearSearch')}
             >
               <X className="h-4 w-4" />
-            </button>
+            </Button>
           )}
         </div>
         <div className="flex flex-wrap items-center gap-2">
@@ -126,24 +131,30 @@ export function MediaPageToolbar({
           ) : null}
         </div>
       </div>
-      <p className="text-xs text-text-muted">{hintText({ search, onSearchChange, globalSearch, debouncedSearch, totalResults, folderId, selectedFolderName, selectionMode, selectedCount, visibleCount, onToggleSelectionMode, onSelectAllVisible, onUploadClick, uploadDisabled, uploadTitle, onFolderChipClick, uploadProgress })}</p>
-      {uploadProgress?.isRunning && uploadProgress.total > 0 && (
-        <div className="space-y-1">
-          <div className="h-1.5 overflow-hidden rounded-full bg-surface">
-            <div
-              className="h-full bg-primary transition-all duration-300"
-              style={{ width: `${progressPct}%` }}
-            />
-          </div>
-          <p className="text-xs text-text-muted">
-            Upload {uploadProgress.done}/{uploadProgress.total}
-            {uploadProgress.failed > 0 ? ` (${uploadProgress.failed} greška)` : ''}
-          </p>
-        </div>
-      )}
-      {uploadProgress?.summary && !uploadProgress.isRunning && (
-        <p className="text-xs text-text-muted">{uploadProgress.summary}</p>
-      )}
+      <p className="text-xs text-text-muted">
+        {hintText({
+          search,
+          onSearchChange,
+          globalSearch,
+          debouncedSearch,
+          totalResults,
+          folderId,
+          selectedFolderName,
+          selectionMode,
+          selectedCount,
+          visibleCount,
+          onToggleSelectionMode,
+          onSelectAllVisible,
+          onUploadClick,
+          uploadDisabled,
+          uploadTitle,
+          onFolderChipClick,
+          uploadProgress,
+        })}
+      </p>
+      {uploadProgress ? (
+        <MediaUploadProgress progress={uploadProgress} onRetryRefresh={onRetryUploadRefresh} onClear={onClearUploadReport} />
+      ) : null}
     </div>
   );
 }

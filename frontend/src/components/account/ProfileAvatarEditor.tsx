@@ -2,6 +2,7 @@ import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Camera, Trash2 } from 'lucide-react';
 import { api, getAccessToken, getRefreshToken } from '../../lib/api';
+import { getApiErrorMessage } from '../../lib/api-error';
 import { useAuth } from '../../lib/auth';
 import { mediaUrl } from '../../lib/media';
 import { userInitials } from '../../lib/user-initials';
@@ -12,6 +13,7 @@ export function ProfileAvatarEditor() {
   const { user, applySession } = useAuth();
   const inputRef = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState(false);
+  const [error, setError] = useState('');
 
   if (!user) return null;
 
@@ -21,6 +23,7 @@ export function ProfileAvatarEditor() {
     const file = e.target.files?.[0];
     e.target.value = '';
     if (!file) return;
+    setError('');
     setBusy(true);
     try {
       const form = new FormData();
@@ -30,16 +33,21 @@ export function ProfileAvatarEditor() {
       });
       const { data } = await api.patch('/auth/profile', { avatarPath: upload.path });
       applySession({ ...user, ...data }, getAccessToken() ?? '', getRefreshToken() ?? '');
+    } catch (err) {
+      setError(getApiErrorMessage(err, t('profile.avatarUploadError')));
     } finally {
       setBusy(false);
     }
   };
 
   const onDelete = async () => {
+    setError('');
     setBusy(true);
     try {
       const { data } = await api.delete('/auth/profile/avatar');
       applySession({ ...user, ...data }, getAccessToken() ?? '', getRefreshToken() ?? '');
+    } catch (err) {
+      setError(getApiErrorMessage(err, t('profile.avatarDeleteError')));
     } finally {
       setBusy(false);
     }
@@ -80,6 +88,11 @@ export function ProfileAvatarEditor() {
           </Button>
         ) : null}
       </div>
+      {error && (
+        <p role="alert" className="w-full text-sm text-danger">
+          {error}
+        </p>
+      )}
       <input
         ref={inputRef}
         type="file"

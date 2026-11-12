@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { PaymentsReadinessService } from '../payments/payments-readiness.service';
 import { TicketingOrdersService } from './ticketing-orders.service';
@@ -17,6 +21,7 @@ import {
   getMaxBoxOfficeTicketsPerUser,
 } from './ticketing-user-limits.util';
 import type { TicketPaymentIntent } from './ticketing-sales.util';
+import type { AuthUser } from '../common/types/auth-user.type';
 
 @Injectable()
 export class TicketingService {
@@ -48,7 +53,13 @@ export class TicketingService {
 
   async confirmBoxOfficePayment(orderId: string) {
     const order = await this.orders.confirmBoxOfficePayment(orderId);
-    if (order) await notifyTicketPaid(this.prisma, this.jobs, orderId, this.notifications);
+    if (order)
+      await notifyTicketPaid(
+        this.prisma,
+        this.jobs,
+        orderId,
+        this.notifications,
+      );
     return order;
   }
 
@@ -83,13 +94,19 @@ export class TicketingService {
     }
     const capacity = await getStadiumCapacity(this.prisma);
     const occupied = await occupiedForMatch(this.prisma, matchId);
-    const memberDiscountPercent = userId ? await getMemberDiscountPercent(this.prisma, userId) : 0;
+    const memberDiscountPercent = userId
+      ? await getMemberDiscountPercent(this.prisma, userId)
+      : 0;
     const sales = await this.payments.getSalesModes();
     let userTickets = 0;
     let maxPerUser: number | null = null;
     let userRemainingQuota: number | null = null;
     if (userId) {
-      userTickets = await countUserActiveTicketsForMatch(this.prisma, userId, matchId);
+      userTickets = await countUserActiveTicketsForMatch(
+        this.prisma,
+        userId,
+        matchId,
+      );
       if (sales.boxOffice) {
         maxPerUser = await getMaxBoxOfficeTicketsPerUser(this.prisma);
         userRemainingQuota = Math.max(0, maxPerUser - userTickets);
@@ -129,12 +146,22 @@ export class TicketingService {
     });
   }
 
-  async findOrderById(orderId: string) {
+  /**
+   * BE-07/P-B07-3: narudžbu vidi samo vlasnik ili `ticketing.manage`.
+   * Prije je `user` bio ignorisan → bilo koji prijavljeni korisnik je mogao
+   * pročitati tuđu narudžbu **sa svim QR kodovima** (ulaz bez plaćanja).
+   * Za neovlaštene: 404 (ne otkrivamo ni postojanje narudžbe).
+   */
+  async findOrderById(orderId: string, user: AuthUser) {
     const order = await this.prisma.ticketOrder.findUnique({
       where: { id: orderId },
       include: ticketOrderInclude,
     });
     if (!order) throw new NotFoundException('Narudžba nije pronađena');
+    const canManage = (user?.permissions ?? []).includes('ticketing.manage');
+    if (order.userId !== user?.id && !canManage) {
+      throw new NotFoundException('Narudžba nije pronađena');
+    }
     return order;
   }
 }

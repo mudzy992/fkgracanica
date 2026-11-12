@@ -2,6 +2,7 @@ import { Button } from '../../../components/ui/button';
 import { formatEventPlayers } from '../../../lib/live-event-text';
 import { matchEventLabel } from '../../../lib/match-event-labels';
 import type { Match } from '../../../types';
+import { useTranslation } from 'react-i18next';
 
 interface Props {
   match: Match;
@@ -10,13 +11,14 @@ interface Props {
 }
 
 export function CommentatorEventLog({ match, onDelete, deletePending }: Props) {
+  const { t } = useTranslation();
   const events = [...(match.events ?? [])].reverse();
   return (
     <div>
-      <h3 className="text-sm font-semibold">Dnevnik događaja</h3>
+      <h3 className="text-sm font-semibold">{t('admin.eventLog.title')}</h3>
       <ul className="mt-2 max-h-56 space-y-1 overflow-y-auto rounded-lg border border-[var(--border-subtle)] p-2 text-sm">
         {events.length === 0 ? (
-          <li className="px-1 py-2 text-text-muted">Nema događaja.</li>
+          <li className="px-1 py-2 text-text-muted">{t('admin.eventLog.empty')}</li>
         ) : (
           events.map((ev) => (
             <li key={ev.id} className="flex items-start justify-between gap-2">

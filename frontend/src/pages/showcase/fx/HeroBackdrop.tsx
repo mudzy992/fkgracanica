@@ -12,7 +12,7 @@ export function HeroBackdrop() {
           backgroundSize: '18px 18px',
         }}
       />
-      <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-[#050a14] to-transparent" />
+      <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-background to-transparent" />
     </div>
   );
 }

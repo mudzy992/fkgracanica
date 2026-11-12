@@ -1,11 +1,8 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Pencil, Plus, Trash2 } from 'lucide-react';
 import { api } from '../../../lib/api';
-import {
-  useDeleteRound,
-  useRounds,
-  type RoundDeleteImpact,
-} from '../../../hooks/use-rounds';
+import { useDeleteRound, useRounds, type RoundDeleteImpact } from '../../../hooks/use-rounds';
 import { useConfirm } from '../../../hooks/use-confirm';
 import { roundLabel } from '../../../lib/round-utils';
 import { cn } from '../../../lib/utils';
@@ -13,6 +10,7 @@ import { Button } from '../../../components/ui/button';
 import type { CompetitionRound } from '../../../types';
 import { RoundFormSheet } from './RoundFormSheet';
 import { RoundCascadeDeleteDialog } from './RoundCascadeDeleteDialog';
+import { runAction } from '../../../lib/action-errors';
 
 interface Props {
   seasonId: string;
@@ -22,6 +20,7 @@ interface Props {
 }
 
 export function SeasonRoundsPanel({ seasonId, selectedRoundId, onSelectRound, canManage }: Props) {
+  const { t } = useTranslation();
   const { data: rounds, isLoading } = useRounds(seasonId);
   const remove = useDeleteRound();
   const { confirm, dialog } = useConfirm();
@@ -40,7 +39,7 @@ export function SeasonRoundsPanel({ seasonId, selectedRoundId, onSelectRound, ca
         variant: 'danger',
         confirmLabel: 'Obriši',
       });
-      if (ok) void remove.mutateAsync({ id: round.id, seasonId });
+      if (ok) void runAction(remove.mutateAsync({ id: round.id, seasonId }));
       return;
     }
     try {
@@ -70,7 +69,16 @@ export function SeasonRoundsPanel({ seasonId, selectedRoundId, onSelectRound, ca
       <RoundCascadeDeleteDialog
         open={!!cascadeRound && !!cascadeImpact}
         roundLabel={cascadeRound ? roundLabel(cascadeRound) : ''}
-        impact={cascadeImpact ?? { matchCount: 0, approvedReportCount: 0, ticketCount: 0, eventCount: 0, lineupCount: 0, commentCount: 0 }}
+        impact={
+          cascadeImpact ?? {
+            matchCount: 0,
+            approvedReportCount: 0,
+            ticketCount: 0,
+            eventCount: 0,
+            lineupCount: 0,
+            commentCount: 0,
+          }
+        }
         isPending={remove.isPending}
         onOpenChange={(o) => {
           if (!o) {
@@ -80,37 +88,80 @@ export function SeasonRoundsPanel({ seasonId, selectedRoundId, onSelectRound, ca
         }}
         onConfirm={() => void onCascadeConfirm()}
       />
-      <div className="flex items-center justify-between border-b border-slate-200 px-4 py-3">
-        <h3 className="text-sm font-semibold">Kola</h3>
+      <div className="flex items-center justify-between border-b border-[var(--border-subtle)] px-4 py-3">
+        <h3 className="text-sm font-semibold">{t('admin.roundsPanel.rounds')}</h3>
         {canManage && (
-          <Button size="sm" variant="outline" onClick={() => { setEdit(null); setOpen(true); }}>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => {
+              setEdit(null);
+              setOpen(true);
+            }}
+          >
             <Plus className="mr-1 h-4 w-4" />
-            Kolo
+            {t('admin.roundsPanel.round')}
           </Button>
         )}
       </div>
-      <div className="divide-y divide-slate-100">
-        {isLoading && <p className="p-4 text-sm text-text-muted">Učitavanje...</p>}
-        {!isLoading && !(rounds ?? []).length && <p className="p-4 text-sm text-text-muted">Dodajte prvo kolo.</p>}
+      <div className="divide-y divide-[var(--border-subtle)]/50">
+        {isLoading && <p className="p-4 text-sm text-text-muted">{t('admin.common.loading')}</p>}
+        {!isLoading && !(rounds ?? []).length && (
+          <p className="p-4 text-sm text-text-muted">{t('admin.roundsPanel.empty')}</p>
+        )}
         {(rounds ?? []).map((round) => (
-          <button
+          <div
             key={round.id}
-            type="button"
-            onClick={() => onSelectRound(round.id)}
-            className={cn('flex w-full items-center justify-between px-4 py-3 text-left text-sm hover:bg-surface', selectedRoundId === round.id && 'bg-primary/5')}
+            className={cn(
+              'flex w-full items-center justify-between px-4 py-3 text-sm hover:bg-surface',
+              selectedRoundId === round.id && 'bg-primary/5',
+            )}
           >
-            <span className="font-medium">{roundLabel(round)}</span>
-            <span className="text-text-muted">{round._count?.matches ?? 0} utakm.</span>
+            <Button
+              variant="ghost"
+              onClick={() => onSelectRound(round.id)}
+              className="flex flex-1 items-center justify-between rounded-none px-0 text-left font-normal hover:bg-transparent h-auto py-0 focus-visible:ring-2 focus-visible:ring-accent"
+            >
+              <span className="font-medium">{roundLabel(round)}</span>
+              <span className="text-text-muted">
+                {t('admin.roundsPanel.matches', { count: round._count?.matches ?? 0 })}
+              </span>
+            </Button>
             {canManage && (
-              <span className="flex gap-1" onClick={(e) => e.stopPropagation()} role="presentation">
-                <Button variant="ghost" size="icon" onClick={() => { setEdit(round); setOpen(true); }}><Pencil className="h-3.5 w-3.5" /></Button>
-                <Button variant="ghost" size="icon" onClick={(e) => void onDelete(round, e)}><Trash2 className="h-3.5 w-3.5 text-danger" /></Button>
+              <span className="ml-2 flex shrink-0 gap-1">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => {
+                    setEdit(round);
+                    setOpen(true);
+                  }}
+                  aria-label={t('actions.edit')}
+                >
+                  <Pencil className="h-3.5 w-3.5" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={(e) => void onDelete(round, e)}
+                  aria-label={t('actions.delete')}
+                >
+                  <Trash2 className="h-3.5 w-3.5 text-danger" />
+                </Button>
               </span>
             )}
-          </button>
+          </div>
         ))}
       </div>
-      <RoundFormSheet open={open} onOpenChange={(o) => { setOpen(o); if (!o) setEdit(null); }} edit={edit} seasonId={seasonId} />
+      <RoundFormSheet
+        open={open}
+        onOpenChange={(o) => {
+          setOpen(o);
+          if (!o) setEdit(null);
+        }}
+        edit={edit}
+        seasonId={seasonId}
+      />
     </>
   );
 }

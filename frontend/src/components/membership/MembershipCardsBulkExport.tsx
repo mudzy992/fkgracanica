@@ -38,7 +38,6 @@ export function MembershipCardsBulkExport({ memberships, disabled }: Props) {
 
   const run = async (mode: 'print' | 'download') => {
     const cards = toPrintData();
-    if (!cards.length) return;
     setBusy(true);
     try {
       const html = await buildMembershipCardsHtml(cards, `Članske kartice — ${clubName}`);

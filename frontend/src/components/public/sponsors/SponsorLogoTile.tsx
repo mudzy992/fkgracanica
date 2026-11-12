@@ -46,7 +46,7 @@ export function SponsorLogoTile({ sponsor, meta }: Props) {
       )}
     >
       {sponsor.logoPath ? (
-        <img
+        <img loading="lazy" decoding="async"
           src={mediaUrl(sponsor.logoPath, meta.variant === 'hero' ? 'medium' : 'thumb')}
           alt={sponsor.name}
           className={styles.logo}

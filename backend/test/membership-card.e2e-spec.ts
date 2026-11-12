@@ -21,7 +21,11 @@ describe('Membership card (e2e)', () => {
     app = moduleFixture.createNestApplication();
     app.setGlobalPrefix('api/v1');
     app.useGlobalPipes(
-      new ValidationPipe({ whitelist: true, transform: true, forbidNonWhitelisted: true }),
+      new ValidationPipe({
+        whitelist: true,
+        transform: true,
+        forbidNonWhitelisted: true,
+      }),
     );
     await app.init();
 
@@ -57,9 +61,9 @@ describe('Membership card (e2e)', () => {
       .set('Authorization', `Bearer ${accessToken}`);
 
     expect(mine.status).toBe(200);
-    const active = (mine.body as { status: string; card?: { qrCode: string } }[]).find(
-      (m) => m.status === 'ACTIVE',
-    );
+    const active = (
+      mine.body as { status: string; card?: { qrCode: string } }[]
+    ).find((m) => m.status === 'ACTIVE');
     expect(active?.card?.qrCode).toBe(activated.body.card.qrCode);
   });
 

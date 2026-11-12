@@ -19,12 +19,16 @@ describe('validateSeasonPass', () => {
       season: { name: '2026' },
       user: { email: 'a@b.c' },
     });
-    await expect(validateSeasonPass(prisma as never, 'pass_x')).rejects.toThrow(BadRequestException);
+    await expect(validateSeasonPass(prisma as never, 'pass_x')).rejects.toThrow(
+      BadRequestException,
+    );
   });
 
   it('throws when pass missing', async () => {
     prisma.seasonPass.findUnique.mockResolvedValue(null);
-    await expect(validateSeasonPass(prisma as never, 'x', 'm1')).rejects.toThrow(NotFoundException);
+    await expect(
+      validateSeasonPass(prisma as never, 'x', 'm1'),
+    ).rejects.toThrow(NotFoundException);
   });
 
   it('creates admission once', async () => {
@@ -66,7 +70,9 @@ describe('validateSeasonPass', () => {
       awayClub: { name: 'Gost' },
     });
     prisma.seasonPassAdmission.findUnique.mockResolvedValue(null);
-    const result = await validateSeasonPass(prisma as never, 'pass_x', 'm1', { commit: false });
+    const result = await validateSeasonPass(prisma as never, 'pass_x', 'm1', {
+      commit: false,
+    });
     expect(result.status).toBe('ACTIVE');
     expect(prisma.seasonPassAdmission.create).not.toHaveBeenCalled();
   });

@@ -24,7 +24,11 @@ describe('Notifications (e2e)', () => {
     app = moduleFixture.createNestApplication();
     app.setGlobalPrefix('api/v1');
     app.useGlobalPipes(
-      new ValidationPipe({ whitelist: true, transform: true, forbidNonWhitelisted: true }),
+      new ValidationPipe({
+        whitelist: true,
+        transform: true,
+        forbidNonWhitelisted: true,
+      }),
     );
     await app.init();
 
@@ -67,7 +71,9 @@ describe('Notifications (e2e)', () => {
       .set('Authorization', `Bearer ${accessToken}`)
       .expect(200);
 
-    const stillUnread = (unread.body.data as { id: string }[]).some((n) => n.id === notif.id);
+    const stillUnread = (unread.body.data as { id: string }[]).some(
+      (n) => n.id === notif.id,
+    );
     expect(stillUnread).toBe(false);
 
     await request(app.getHttpServer())

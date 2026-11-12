@@ -8,6 +8,8 @@ interface Props {
   values: Record<string, string>;
   draft: Record<string, string>;
   readOnly?: boolean;
+  invalidKey?: string;
+  errorId?: string;
   onDraft: (key: string, value: string) => void;
 }
 
@@ -21,7 +23,7 @@ export function keysForSettingsGroup(
   });
 }
 
-export function SettingsFieldGroupPanel({ group, values, draft, readOnly, onDraft }: Props) {
+export function SettingsFieldGroupPanel({ group, values, draft, readOnly, onDraft, invalidKey, errorId }: Props) {
   const keys = keysForSettingsGroup(group, values);
   if (!keys.length) return null;
 
@@ -37,6 +39,8 @@ export function SettingsFieldGroupPanel({ group, values, draft, readOnly, onDraf
           value={values[key] ?? ''}
           draftValue={draft[key]}
           readOnly={readOnly}
+          invalid={key === invalidKey}
+          errorId={errorId}
           onDraft={(v) => onDraft(key, v)}
         />
       ))}

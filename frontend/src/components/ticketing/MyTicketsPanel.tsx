@@ -1,3 +1,5 @@
+import { buttonVariants } from "../ui/button-variants";
+import { cn } from "../../lib/utils";
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useMyTicketOrders, useMySeasonPass } from '../../hooks/use-ticketing';
@@ -37,11 +39,7 @@ export function MyTicketsPanel({ paymentSuccess }: Props) {
             <h3 className="font-display text-lg font-semibold text-text">Moje ulaznice</h3>
             <p className="text-sm text-text-muted">Pregled po utakmicama — kliknite za detalje.</p>
           </div>
-          <Link to="/ulaznice">
-            <Button size="sm" variant="outline">
-              Kupi ulaznice
-            </Button>
-          </Link>
+          <Link to="/ulaznice" className={cn(buttonVariants({variant: "outline", size: "sm"}))}>Kupi ulaznice</Link>
         </div>
 
         {paymentSuccess && (

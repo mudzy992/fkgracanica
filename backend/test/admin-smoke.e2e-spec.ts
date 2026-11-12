@@ -24,7 +24,11 @@ describe('Admin smoke (e2e)', () => {
     app = moduleFixture.createNestApplication();
     app.setGlobalPrefix('api/v1');
     app.useGlobalPipes(
-      new ValidationPipe({ whitelist: true, transform: true, forbidNonWhitelisted: true }),
+      new ValidationPipe({
+        whitelist: true,
+        transform: true,
+        forbidNonWhitelisted: true,
+      }),
     );
     await app.init();
 
@@ -73,7 +77,9 @@ describe('Admin smoke (e2e)', () => {
     expect(published.status).toBe(200);
     expect(published.body.status).toBe('PUBLISHED');
 
-    const list = await request(app.getHttpServer()).get('/api/v1/news/published');
+    const list = await request(app.getHttpServer()).get(
+      '/api/v1/news/published',
+    );
     expect(list.status).toBe(200);
     const found = (list.body as { id: string }[]).some((n) => n.id === newsId);
     expect(found).toBe(true);

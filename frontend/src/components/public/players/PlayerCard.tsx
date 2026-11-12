@@ -15,7 +15,7 @@ export function PlayerCard({ player, compact, linkable = true }: Props) {
   const inner = (
     <>
       {player.photoPath ? (
-        <img
+        <img loading="lazy" decoding="async"
           src={mediaUrl(player.photoPath, 'thumb')}
           alt=""
           className={cn('rounded-full object-cover', compact ? 'h-10 w-10' : 'h-14 w-14')}

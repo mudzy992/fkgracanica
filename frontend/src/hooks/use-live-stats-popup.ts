@@ -27,8 +27,7 @@ export function useLiveStatsPopup(items: LiveStatItem[]) {
     };
 
     const showNext = (excludeId?: string) => {
-      const next = pickRandomStatItem(items, excludeId);
-      if (!next) return;
+      const next = pickRandomStatItem(items, excludeId)!;
       setActive(next);
       setVisible(true);
       schedule(randBetween(SHOW_MS.min, SHOW_MS.max), () => {
