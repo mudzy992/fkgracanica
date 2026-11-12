@@ -120,7 +120,9 @@ export function NewsAdminPage() {
               header: 'Akcije',
               render: (r) => (
                 <div className="flex flex-wrap gap-2">
-                  <Link to={`/admin/news/${r.id}/edit`} className={cn(buttonVariants({variant: "outline", size: "sm"}))}>Uredi</Link>
+                  <Link to={`/admin/news/${r.id}/edit`} className={cn(buttonVariants({variant: "outline", size: "sm"}))}>
+                    Uredi
+                  </Link>
                   {r.status === 'DRAFT' && canSubmit && !canApprove && (
                     <Button
                       size="sm"
@@ -142,7 +144,9 @@ export function NewsAdminPage() {
                     </Button>
                   )}
                   {r.status === 'PUBLISHED' && (
-                    <Link to={`/vijesti/${r.slug}`} target="_blank" rel="noreferrer" className={cn(buttonVariants({variant: "outline", size: "sm"}))}>Pregled</Link>
+                    <Link to={`/vijesti/${r.slug}`} target="_blank" rel="noreferrer" className={cn(buttonVariants({variant: "outline", size: "sm"}))}>
+                  Pregled
+                </Link>
                   )}
                   {r.status === 'PUBLISHED' && (
                     <Button size="sm" variant="ghost" onClick={() => archive(r)}>

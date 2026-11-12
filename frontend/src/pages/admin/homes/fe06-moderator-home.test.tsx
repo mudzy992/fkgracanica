@@ -159,8 +159,8 @@ describe('ModeratorHome — red čekanja', () => {
 
   it('prikazuje sve brze akcije', () => {
     renderHome();
-    expect(screen.getByRole('button', { name: 'admin.content.newsQueue' })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'admin.livePending' })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'admin.commsInbox' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'admin.content.newsQueue' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'admin.livePending' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'admin.commsInbox' })).toBeInTheDocument();
   });
 });

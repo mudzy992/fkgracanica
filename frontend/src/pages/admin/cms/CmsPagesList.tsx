@@ -67,7 +67,9 @@ export function CmsPagesList({ onCreate }: Props) {
               header: '',
               render: (r) => (
                 <div className="flex flex-wrap gap-2">
-                  <Link to={`/admin/cms/pages/${r.id}`} className={cn(buttonVariants({variant: "outline", size: "sm"}))}>Uredi layout</Link>
+                  <Link to={`/admin/cms/pages/${r.id}`} className={cn(buttonVariants({variant: "outline", size: "sm"}))}>
+                  Uredi layout
+                </Link>
                   {canDeletePage(r) && (
                     <Button
                       size="sm"

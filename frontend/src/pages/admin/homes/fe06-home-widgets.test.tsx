@@ -64,8 +64,8 @@ describe('HomeQuickActions', () => {
     );
     const links = screen.getAllByRole('link');
     expect(links.map((l) => l.getAttribute('href'))).toEqual(['/admin/news', '/admin/comms']);
-    expect(screen.getByRole('button', { name: 'red vijesti' })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'sanduče' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'red vijesti' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'sanduče' })).toBeInTheDocument();
   });
 
   it('prazna lista nema dugmadi', () => {

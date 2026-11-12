@@ -112,9 +112,9 @@ describe('CommentatorHome — tabla', () => {
 
   it('prikazuje brze akcije za primarnu, live i draft utakmicu', () => {
     renderHome();
-    expect(screen.getByRole('button', { name: 'admin.commentator.openDesk' })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'admin.commentator.publicLive' })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'admin.commentator.report' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'admin.commentator.openDesk' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'admin.commentator.publicLive' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'admin.commentator.report' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'admin.commentator.publicLive' })).toHaveAttribute(
       'href',
       '/live/m1',

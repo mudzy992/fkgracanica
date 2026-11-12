@@ -50,7 +50,9 @@ export function MatchReportPage() {
     return (
       <div className="space-y-4 p-4">
         <p className="text-text-muted">{t('admin.matchReport.approvedLocked')}</p>
-        <Link to={`/utakmice/${data.id}`} className={cn(buttonVariants({variant: "outline", size: "sm"}))}>Detalji utakmice</Link>
+        <Link to={`/utakmice/${data.id}`} className={cn(buttonVariants({variant: "outline", size: "sm"}))}>
+          Detalji utakmice
+        </Link>
       </div>
     );
   }

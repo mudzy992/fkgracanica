@@ -71,7 +71,7 @@ describe('MatchFinishedReadOnly', () => {
   it('nudi uređivanje izvještaja kad je dozvoljeno i izvještaj u nacrtu', () => {
     renderFinished();
     expect(screen.getByRole('link').getAttribute('href')).toBe('/admin/matches/m1/report');
-    expect(screen.getByRole('button', { name: 't:admin.matchFinished.editReport' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 't:admin.matchFinished.editReport' })).toBeInTheDocument();
   });
 
   it('bez dozvole nema linka za izvještaj', () => {

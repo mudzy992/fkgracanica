@@ -50,7 +50,9 @@ export function LivePendingPage() {
             header: t('admin.common.actions'),
             render: (r) => (
               <div className="flex flex-wrap gap-2">
-                <Link to={`/utakmice/${r.id}`} className={cn(buttonVariants({variant: "outline", size: "sm"}))}>Pregled</Link>
+                <Link to={`/utakmice/${r.id}`} className={cn(buttonVariants({variant: "outline", size: "sm"}))}>
+                  Pregled
+                </Link>
                 <Button
                   size="sm"
                   onClick={() => void runAction(approve.mutateAsync(r.id))}
