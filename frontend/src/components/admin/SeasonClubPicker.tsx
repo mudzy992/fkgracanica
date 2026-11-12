@@ -1,4 +1,6 @@
 import { cn } from '../../lib/utils';
+import { Button } from '../ui/button';
+import { Switch } from '../ui/switch';
 import { useTranslation } from 'react-i18next';
 
 interface ClubOption {
@@ -28,26 +30,24 @@ export function SeasonClubPicker({ clubs, value, onChange, className }: Props) {
       <div className="flex items-center justify-between gap-2">
         <p className="text-sm font-medium">{t('admin.season.participants')}</p>
         <div className="flex gap-2 text-xs">
-          <button type="button" className="text-primary hover:underline" onClick={selectAll}>
+          <Button type="button" variant="ghost" size="sm" className="h-auto p-0 text-xs text-primary hover:bg-transparent hover:underline" onClick={selectAll}>
             {t('admin.season.selectAll')}
-          </button>
+          </Button>
           <span className="text-text-muted">·</span>
-          <button type="button" className="text-text-muted hover:underline" onClick={clearAll}>
+          <Button type="button" variant="ghost" size="sm" className="h-auto p-0 text-xs text-text-muted hover:bg-transparent hover:underline" onClick={clearAll}>
             {t('admin.season.clear')}
-          </button>
+          </Button>
         </div>
       </div>
       <div className="max-h-48 space-y-2 overflow-y-auto rounded-xl border border-[var(--border-subtle)] p-3">
         {clubs.map((club) => (
           <label
             key={club.id}
-            className="flex cursor-pointer items-center gap-3 rounded-lg px-2 py-1.5 hover:bg-slate-50"
+            className="flex cursor-pointer items-center gap-3 rounded-lg px-2 py-1.5 hover:bg-surface"
           >
-            <input
-              type="checkbox"
+            <Switch
               checked={value.includes(club.id)}
-              onChange={() => toggle(club.id)}
-              className="h-4 w-4 rounded border-slate-300"
+              onCheckedChange={() => toggle(club.id)}
             />
             <span className="text-sm">
               {club.name}

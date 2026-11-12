@@ -35,7 +35,7 @@ export function FormationPitch({
         'relative overflow-hidden rounded-2xl shadow-lg',
         premium
           ? 'border border-primary/20 bg-gradient-to-b from-emerald-900/95 via-emerald-800/85 to-emerald-950 shadow-[0_0_48px_rgba(0,102,255,0.12)]'
-          : 'border border-slate-200 bg-green-700',
+          : 'border border-[var(--border-subtle)] bg-green-700',
         horizontal
           ? 'aspect-[16/9] w-full'
           : cn('aspect-[3/4] w-full mx-auto', enlarged ? 'max-w-lg' : 'max-w-md'),

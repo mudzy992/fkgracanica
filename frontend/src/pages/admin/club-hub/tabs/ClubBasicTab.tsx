@@ -89,7 +89,7 @@ export function ClubBasicTab({ club }: { club: Club }) {
       />
       <MediaPicker value={crestPath} onChange={setCrestPath} label={t('admin.club.crest')} />
       {canManage && (
-        <label className="flex items-center justify-between rounded-lg border border-slate-200 p-3">
+        <label className="flex items-center justify-between rounded-lg border border-[var(--border-subtle)] p-3">
           <div>
             <span className="text-sm font-medium">{t('admin.club.ownClub')}</span>
             <p className="text-xs text-text-muted">{t('admin.club.ownClubHint')}</p>

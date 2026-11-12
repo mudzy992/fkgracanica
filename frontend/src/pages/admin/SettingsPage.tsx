@@ -131,7 +131,7 @@ export function SettingsPage() {
         </div>
 
         {activeTab?.description && activeTab.kind === 'modules' && (
-          <p className="border-b border-slate-100 px-5 py-3 text-xs leading-relaxed text-text-muted">
+          <p className="border-b border-[var(--border-subtle)] px-5 py-3 text-xs leading-relaxed text-text-muted">
             {activeTab.description}. Modul koji ovisi o drugom ne može biti uključen bez roditelja,
             niti roditelj isključen dok je ovisni modul aktivan.
           </p>

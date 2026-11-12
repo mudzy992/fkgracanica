@@ -93,7 +93,7 @@ export function TrophiesAdminFormSheet({ open, onOpenChange, edit }: Props) {
           onChange={setImagePath}
           label={t('admin.trophyForm.image')}
         />
-        <label className="flex items-center justify-between gap-3 rounded-lg border border-slate-200 p-3">
+        <label className="flex items-center justify-between gap-3 rounded-lg border border-[var(--border-subtle)] p-3">
           <div>
             <p className="text-sm font-medium">{t('admin.trophyForm.featured')}</p>
             <p className="text-xs text-text-muted">{t('admin.trophyForm.featuredHint')}</p>

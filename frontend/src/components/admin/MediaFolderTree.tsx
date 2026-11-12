@@ -53,17 +53,18 @@ function FolderNode({
             autoFocus
           />
         ) : (
-          <button
+          <Button
             type="button"
+            variant="ghost"
             onClick={() => onSelect(folder.id)}
             className={cn(
-              'flex flex-1 items-center justify-between rounded-lg px-3 py-2 text-left text-sm',
-              selectedId === folder.id ? 'bg-primary/10 text-primary-light' : 'hover:bg-surface',
+              'flex h-auto flex-1 items-center justify-between rounded-lg px-3 py-2 text-left text-sm font-normal',
+              selectedId === folder.id ? 'bg-primary/10 text-primary-light hover:bg-primary/10' : 'hover:bg-surface',
             )}
           >
             <span>{folder.name}</span>
             <span className="text-xs text-text-muted">{folder._count?.assets ?? 0}</span>
-          </button>
+          </Button>
         )}
         {!editing && (onRename || onDelete) ? (
           <div className="flex gap-1">
@@ -118,16 +119,17 @@ export function MediaFolderTree({
 
   return (
     <div className={cn('space-y-3 border-r border-[var(--border-subtle)] p-4', className)}>
-      <button
+      <Button
         type="button"
+        variant="ghost"
         onClick={() => onSelect(undefined)}
         className={cn(
-          'w-full rounded-lg px-3 py-2 text-left text-sm',
-          !selectedId ? 'bg-primary/10 text-primary-light' : 'hover:bg-surface',
+          'h-auto w-full justify-start rounded-lg px-3 py-2 text-left text-sm font-normal',
+          !selectedId ? 'bg-primary/10 text-primary-light hover:bg-primary/10' : 'hover:bg-surface',
         )}
       >
         {t('admin.mediaFolders.all')}
-      </button>
+      </Button>
       {roots.map((folder) => (
         <FolderNode
           key={folder.id}

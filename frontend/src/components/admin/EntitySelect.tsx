@@ -3,6 +3,8 @@ import { useTranslation } from 'react-i18next';
 import { api } from '../../lib/api';
 import { asArray } from '../../lib/as-array';
 import { cn } from '../../lib/utils';
+import { Button } from '../ui/button';
+import { Select } from '../ui/select';
 
 interface StaticProps {
   options: { id: string; label: string }[];
@@ -32,10 +34,9 @@ export function EntitySelect<T extends object>(props: StaticProps | AsyncProps<T
     return (
       <div className="space-y-1">
         {label && <label className="block text-sm font-medium">{label}</label>}
-        <select
+        <Select
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          className="w-full rounded-lg border border-[var(--border-subtle)] bg-background px-3 py-2 text-sm"
         >
           <option value="">{placeholder ?? t('admin.common.select')}</option>
           {options.map((o) => (
@@ -43,7 +44,7 @@ export function EntitySelect<T extends object>(props: StaticProps | AsyncProps<T
               {o.label}
             </option>
           ))}
-        </select>
+        </Select>
       </div>
     );
   }
@@ -94,17 +95,19 @@ function AsyncEntitySelect<T extends object>(props: AsyncProps<T>) {
         const id = String((item as Record<string, unknown>)[valueKey]);
         const active = multiple ? (Array.isArray(value) ? value : []).includes(id) : value === id;
         return (
-          <button
+          <Button
             key={id}
             type="button"
+            variant={active ? 'default' : 'outline'}
+            size="sm"
             onClick={() => toggle(id)}
             className={cn(
-              'rounded-lg border px-2 py-1 text-xs',
-              active ? 'border-primary bg-primary text-white' : 'border-[var(--border-subtle)]',
+              'h-auto rounded-lg px-2 py-1 text-xs',
+              active ? 'border-primary' : 'border-[var(--border-subtle)]',
             )}
           >
             {labelOf(item)}
-          </button>
+          </Button>
         );
       })}
     </div>

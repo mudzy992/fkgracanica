@@ -26,7 +26,7 @@ export function SponsorsSection() {
                 href={s.url ?? '#'}
                 target="_blank"
                 rel="noreferrer"
-                className="flex items-center justify-center rounded-lg border border-slate-200 bg-background p-4"
+                className="flex items-center justify-center rounded-lg border border-[var(--border-subtle)] bg-background p-4"
               >
                 {s.logoPath ? (
                   <img

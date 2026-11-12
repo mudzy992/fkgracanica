@@ -132,7 +132,7 @@ export function PlayersAdminFormSheet({ open, onOpenChange, edit, clubId: fixedC
           rows={3}
           placeholder={t('admin.playerForm.bio')}
         />
-        <label className="flex items-center justify-between gap-3 rounded-lg border border-slate-200 p-3">
+        <label className="flex items-center justify-between gap-3 rounded-lg border border-[var(--border-subtle)] p-3">
           <span className="text-sm font-medium">{t('admin.playerForm.active')}</span>
           <Switch checked={isActive} onCheckedChange={setIsActive} />
         </label>

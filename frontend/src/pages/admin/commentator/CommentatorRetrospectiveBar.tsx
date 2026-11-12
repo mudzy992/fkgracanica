@@ -30,7 +30,7 @@ export function CommentatorRetrospectiveBar({ match, minute, onMinuteChange }: P
   };
 
   return (
-    <div className="rounded-xl border border-slate-200 bg-gradient-to-r from-slate-900 to-slate-800 p-3 text-white sm:p-4">
+    <div className="rounded-xl border border-[var(--border-subtle)] bg-gradient-to-r from-slate-900 to-slate-800 p-3 text-white sm:p-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <p className="text-[10px] uppercase tracking-widest text-slate-400">

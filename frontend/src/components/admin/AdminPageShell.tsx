@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 import { Card, CardContent } from '../ui/card';
 import { Skeleton } from '../ui/skeleton';
 import { DataError } from '../common/DataError';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
 
 interface AdminListPageProps {
   title: string;
@@ -80,32 +81,32 @@ export function AdminDataTable<T extends { id: string }>({
   }
   return (
     <div className="overflow-x-auto">
-      <table className="w-full text-sm">
-        <thead>
-          <tr className="border-b border-[var(--border-subtle)] text-left text-text-muted">
+      <Table>
+        <TableHeader>
+          <TableRow className="text-left text-text-muted hover:bg-transparent">
             {columns.map((col) => (
-              <th key={col.key} className={`${headerCellClassName} font-medium`}>
+              <TableHead key={col.key} className={`${headerCellClassName} font-medium`}>
                 {col.header}
-              </th>
+              </TableHead>
             ))}
-          </tr>
-        </thead>
-        <tbody>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
           {rows.map((row) => (
-            <tr
+            <TableRow
               key={row.id}
-              className={`border-b border-[var(--border-subtle)] hover:bg-surface/50${onRowClick ? ' cursor-pointer' : ''}${rowClassName?.(row) ? ` ${rowClassName(row)}` : ''}`}
+              className={`${onRowClick ? 'cursor-pointer' : ''}${rowClassName?.(row) ? ` ${rowClassName(row)}` : ''}`}
               onClick={onRowClick ? () => onRowClick(row) : undefined}
             >
               {columns.map((col) => (
-                <td key={col.key} className={cellClassName}>
+                <TableCell key={col.key} className={cellClassName}>
                   {col.render(row)}
-                </td>
+                </TableCell>
               ))}
-            </tr>
+            </TableRow>
           ))}
-        </tbody>
-      </table>
+        </TableBody>
+      </Table>
     </div>
   );
 }

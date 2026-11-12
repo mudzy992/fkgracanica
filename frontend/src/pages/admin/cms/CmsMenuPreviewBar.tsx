@@ -40,7 +40,7 @@ export function CmsMenuPreviewBar({ items, moduleFlags }: Props) {
                       ? 'bg-amber-500/15 text-amber-800 ring-1 ring-amber-500/30'
                       : item.isSystem
                         ? 'bg-primary/10 text-primary'
-                        : 'bg-white text-text shadow-sm ring-1 ring-slate-200',
+                        : 'bg-white text-text shadow-sm ring-1 ring-[var(--border-subtle)]',
                   )}
                 >
                   {item.label}

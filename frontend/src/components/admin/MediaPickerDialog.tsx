@@ -135,12 +135,13 @@ export function MediaPickerDialog({
                 {assets.map((a) => {
                   const selected = picked.has(a.originalPath);
                   return (
-                    <button
+                    <Button
                       key={a.id}
                       type="button"
+                      variant="ghost"
                       onClick={() => toggle(a.originalPath)}
                       className={cn(
-                        'relative overflow-hidden rounded-lg border transition',
+                        'relative h-auto overflow-hidden rounded-lg border p-0 transition',
                         selected
                           ? 'border-primary-light ring-2 ring-primary-light/40'
                           : 'border-[var(--border-subtle)] hover:border-primary-light/50',
@@ -156,7 +157,7 @@ export function MediaPickerDialog({
                           <Check className="h-3 w-3" />
                         </span>
                       )}
-                    </button>
+                    </Button>
                   );
                 })}
               </div>

@@ -88,7 +88,7 @@ export function ClubsAdminFormSheet({ open, onOpenChange, edit }: Props) {
           placeholder={t('admin.clubForm.descriptionPublic')}
         />
         <MediaPicker value={crestPath} onChange={setCrestPath} label={t('admin.club.crest')} />
-        <label className="flex items-center justify-between gap-3 rounded-lg border border-slate-200 p-3">
+        <label className="flex items-center justify-between gap-3 rounded-lg border border-[var(--border-subtle)] p-3">
           <div>
             <span className="text-sm font-medium">{t('admin.club.ownClub')}</span>
             <p className="text-xs text-text-muted">{t('admin.club.ownClubHint')}</p>

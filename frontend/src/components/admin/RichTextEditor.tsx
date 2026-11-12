@@ -122,18 +122,19 @@ export function RichTextEditor({ value, onChange, className, tall }: Props) {
           {isLoading && <p className="text-sm text-text-muted">{t('admin.common.loading')}</p>}
           <div className="grid grid-cols-3 gap-2">
             {assets.map((a) => (
-              <button
+              <Button
                 key={a.id}
                 type="button"
+                variant="ghost"
                 onClick={() => insertImage(a.originalPath)}
-                className="overflow-hidden rounded-lg border border-[var(--border-subtle)] hover:border-primary"
+                className="h-auto overflow-hidden rounded-lg border border-[var(--border-subtle)] p-0 hover:border-primary"
               >
                 <img
                   src={mediaUrl(a.thumbPath ?? a.originalPath, 'thumb')}
                   alt={a.filename}
                   className="aspect-square w-full object-cover"
                 />
-              </button>
+              </Button>
             ))}
           </div>
           <Button

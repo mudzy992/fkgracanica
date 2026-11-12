@@ -1,5 +1,6 @@
 import { useRef } from 'react';
 import { Button } from '../ui/button';
+import { Textarea } from '../ui/textarea';
 import { cn } from '../../lib/utils';
 
 const TAG_ACTIONS = [
@@ -60,7 +61,7 @@ export function CustomHtmlEditor({ value, onChange, className }: Props) {
           </Button>
         ))}
       </div>
-      <textarea
+      <Textarea
         ref={ref}
         value={value}
         onChange={(e) => onChange(e.target.value)}

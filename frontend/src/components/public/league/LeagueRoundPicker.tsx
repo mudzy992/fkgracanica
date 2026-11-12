@@ -14,7 +14,7 @@ export function LeagueRoundPicker({ rounds, value, onChange }: Props) {
     <select
       value={value ?? ''}
       onChange={(e) => onChange(e.target.value ? Number(e.target.value) : null)}
-      className="rounded-lg border border-slate-200 bg-background px-3 py-2 text-sm"
+      className="rounded-lg border border-[var(--border-subtle)] bg-background px-3 py-2 text-sm"
       aria-label="Prikaz tabele"
     >
       <option value="">Ukupna tabela</option>

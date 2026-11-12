@@ -43,16 +43,16 @@ describe('SeasonClubPicker', () => {
         onChange={vi.fn()}
       />,
     );
-    const boxes = screen.getAllByRole('checkbox') as HTMLInputElement[];
-    expect(boxes[0].checked).toBe(true);
-    expect(boxes[1].checked).toBe(false);
+    const boxes = screen.getAllByRole('switch');
+    expect(boxes[0].getAttribute('aria-checked')).toBe('true');
+    expect(boxes[1].getAttribute('aria-checked')).toBe('false');
     expect(screen.getByText('admin.season.ownClub')).toBeTruthy();
   });
 
   it('klik dodaje i uklanja klub iz izbora', async () => {
     const onChange = vi.fn();
     render(<SeasonClubPicker clubs={[club('a'), club('b')]} value={['a']} onChange={onChange} />);
-    const boxes = screen.getAllByRole('checkbox');
+    const boxes = screen.getAllByRole('switch');
     await userEvent.click(boxes[1]);
     expect(onChange).toHaveBeenCalledWith(['a', 'b']);
     await userEvent.click(boxes[0]);

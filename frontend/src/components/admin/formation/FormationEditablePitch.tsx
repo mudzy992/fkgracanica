@@ -5,6 +5,7 @@ import { POSITION_LABELS } from '../../../lib/player-utils';
 import { playerDndId, squadSlotDndId } from '../../../lib/formation-dnd';
 import type { ClubSquadSlot } from '../../../types/club-hub';
 import { cn } from '../../../lib/utils';
+import { Button } from '../../../components/ui/button';
 import { mapPitchPosition } from '../../../lib/pitch-coords';
 import { PitchMarkings } from '../../public/clubs/PitchMarkings';
 
@@ -34,13 +35,14 @@ function EditableSlot({
   const dragStyle = drag.transform ? { transform: CSS.Translate.toString(drag.transform) } : undefined;
 
   return (
-    <button
+    <Button
       ref={setRef}
       type="button"
+      variant="ghost"
       onClick={() => onSlotClick(slot)}
       {...(slot.playerId ? { ...drag.listeners, ...drag.attributes } : {})}
       className={cn(
-        'absolute z-10 flex -translate-x-1/2 -translate-y-1/2 flex-col items-center rounded-lg p-1 transition-shadow',
+        'absolute z-10 flex h-auto -translate-x-1/2 -translate-y-1/2 flex-col items-center rounded-lg p-1 transition-shadow hover:bg-transparent',
         slot.playerId && 'cursor-grab',
         (isOver || active) && 'ring-2 ring-yellow-300 ring-offset-1 ring-offset-green-700',
         drag.isDragging && 'opacity-50',
@@ -63,7 +65,7 @@ function EditableSlot({
           ? `${slot.player.firstName[0]}. ${slot.player.lastName}`
           : POSITION_LABELS[slot.lineRole as keyof typeof POSITION_LABELS]}
       </span>
-    </button>
+    </Button>
   );
 }
 
@@ -93,7 +95,7 @@ export function FormationEditablePitch({ slots, activeSlot, onSlotClick, horizon
 
   return (
     <div
-      className={`relative w-full overflow-hidden rounded-2xl border border-slate-200 bg-green-700 shadow-lg ${
+      className={`relative w-full overflow-hidden rounded-2xl border border-[var(--border-subtle)] bg-green-700 shadow-lg ${
         horizontal ? 'aspect-[16/9]' : 'aspect-[3/4]'
       } ${pending ? 'opacity-70' : ''}`}
     >

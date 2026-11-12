@@ -27,7 +27,7 @@ export function LeagueTable() {
           <CardContent className="overflow-x-auto p-0">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-slate-200 text-left text-text-muted">
+                <tr className="border-b border-[var(--border-subtle)] text-left text-text-muted">
                   <th className="p-3">#</th>
                   <th className="p-3">{t('home.tableClub')}</th>
                   <th className="p-3">{t('home.tablePlayed')}</th>
@@ -41,7 +41,7 @@ export function LeagueTable() {
               </thead>
               <tbody>
                 {(standings ?? []).map((row, i) => (
-                  <tr key={row.clubId} className="border-b border-slate-100">
+                  <tr key={row.clubId} className="border-b border-[var(--border-subtle)]">
                     <td className="p-3">{i + 1}</td>
                     <td className="p-3 font-medium">{row.clubName}</td>
                     <td className="p-3">{row.played}</td>

@@ -4,6 +4,7 @@ import { CSS } from '@dnd-kit/utilities';
 import type { Player } from '../../../types';
 import { playerDndId } from '../../../lib/formation-dnd';
 import { cn } from '../../../lib/utils';
+import { Button } from '../../../components/ui/button';
 
 function DraggableChip({ player }: { player: Player }) {
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
@@ -13,12 +14,13 @@ function DraggableChip({ player }: { player: Player }) {
   const style = transform ? { transform: CSS.Translate.toString(transform) } : undefined;
 
   return (
-    <button
+    <Button
       ref={setNodeRef}
       type="button"
+      variant="ghost"
       style={style}
       className={cn(
-        'cursor-grab rounded-full border border-[var(--border-subtle)] bg-background px-3 py-1.5 text-xs font-medium shadow-sm',
+        'h-auto cursor-grab rounded-full border border-[var(--border-subtle)] bg-background px-3 py-1.5 text-xs font-medium shadow-sm hover:bg-background',
         isDragging && 'z-50 opacity-60 ring-2 ring-primary',
       )}
       {...listeners}
@@ -26,7 +28,7 @@ function DraggableChip({ player }: { player: Player }) {
     >
       {player.number ? `${player.number} ` : ''}
       {player.firstName} {player.lastName}
-    </button>
+    </Button>
   );
 }
 

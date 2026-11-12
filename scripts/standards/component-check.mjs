@@ -21,7 +21,7 @@ import { join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const ROOT = resolve(join(new URL('.', import.meta.url).pathname, '../..'));
-const ROOTS = ['frontend/src/pages/admin']; // audit opseg 147 fajlova, components/admin ima opravdane izuzetke (hidden/file, showcase)
+const ROOTS = ['frontend/src/pages/admin','frontend/src/components/admin']; // Val2 proširenje 2026-11-12: obuhvat 169+22 fajla (pages+components)
 const THRESHOLD = 0; // strogo 0% — nakon migracije sve je kroz kit (Button/Input/Textarea/Select/Table), izuzetak samo hidden/file
 
 function files(dir) {

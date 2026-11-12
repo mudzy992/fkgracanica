@@ -56,7 +56,7 @@ export function CommentatorCommentPanel({ match, reportMode, eventMinute = 0 }: 
       )}
       <ul className="max-h-48 space-y-2 overflow-y-auto text-sm">
         {comments.map((c: LiveComment) => (
-          <li key={c.id} className="rounded border border-slate-100 bg-surface p-2">
+          <li key={c.id} className="rounded border border-[var(--border-subtle)] bg-surface p-2">
             {c.minute != null && (
               <span className="font-semibold text-primary">{c.minute}&apos; </span>
             )}
