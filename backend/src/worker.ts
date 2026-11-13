@@ -1,3 +1,4 @@
+import { Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { WorkerModule } from './worker.module';
 
@@ -13,16 +14,15 @@ import { WorkerModule } from './worker.module';
  * SIGTERM/SIGINT (Coolify restart).
  */
 async function bootstrap() {
+  const logger = new Logger('Worker');
   const app = await NestFactory.createApplicationContext(WorkerModule, {
     logger: ['log', 'error', 'warn', 'debug'],
   });
   // Nest ApplicationContext already calls app.init() internally.
   // Keep process alive — Worker is running inside JobsService.
-  // eslint-disable-next-line no-console
-  console.log('[worker] started (JOBS_MODE=worker, email queue)');
+  logger.log('[worker] started (JOBS_MODE=worker, email queue)');
   const shutdown = async (signal: string) => {
-    // eslint-disable-next-line no-console
-    console.log(`[worker] ${signal} — zatvaram...`);
+    logger.log(`[worker] ${signal} — zatvaram...`);
     await app.close();
     process.exit(0);
   };
@@ -31,7 +31,7 @@ async function bootstrap() {
 }
 
 bootstrap().catch((err) => {
-  // eslint-disable-next-line no-console
-  console.error('[worker] fatal', err);
+  const logger = new Logger('Worker');
+  logger.error('[worker] fatal', err instanceof Error ? err.stack : String(err));
   process.exit(1);
 });
