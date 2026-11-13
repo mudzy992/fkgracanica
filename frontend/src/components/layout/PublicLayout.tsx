@@ -72,14 +72,14 @@ export function PublicLayout() {
             : 'border-b border-transparent bg-transparent',
         )}
       >
-        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
+        <div className="mx-auto flex h-14 max-w-7xl items-center justify-between gap-2 px-4 sm:px-6 lg:h-16 lg:gap-4">
           <PublicSiteLogo crestUrl={crestUrl} clubName={clubName} light />
-          <nav className="hidden items-center gap-1 xl:flex">
+          <nav className="hidden items-center gap-0.5 whitespace-nowrap xl:flex xl:gap-1">
             <PublicNavItems items={navItems} premium />
           </nav>
-          <div className="flex items-center gap-2">
+          <div className="flex shrink-0 items-center gap-1.5 lg:gap-2">
             <LanguageSwitcher className="hidden sm:block" />
-            <div className="hidden lg:block">
+            <div className="hidden shrink-0 lg:block">
               <PublicAuthButton />
             </div>
             <Link

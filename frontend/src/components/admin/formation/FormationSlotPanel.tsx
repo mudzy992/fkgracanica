@@ -17,28 +17,28 @@ export function FormationSlotPanel({ slot, players, onPick, onRemove, onClose }:
   const roleText = slot.isBench ? t('admin.formation.pickForBench') : t('admin.formation.pickForPosition');
 
   return (
-    <Card className="rounded-xl border border-primary/30 bg-primary/5 p-4">
-      <div className="mb-3 flex items-start justify-between gap-2">
+    <Card className="rounded-xl border border-primary/30 bg-primary/5 p-3">
+      <div className="mb-2.5 flex items-start justify-between gap-2">
         <div>
-          <p className="text-sm font-medium">
+          <p className="text-[13px] font-medium md:text-sm">
             {slot.player
               ? `${slot.player.firstName} ${slot.player.lastName}`
               : t('admin.formation.emptyPosition')}
           </p>
-          <p className="text-xs text-text-muted">{roleText}</p>
+          <p className="text-[11px] text-text-muted md:text-xs">{roleText}</p>
         </div>
         <div className="flex gap-1">
           {slot.playerId && (
-            <Button size="sm" variant="outline" className="text-danger" onClick={onRemove}>
+            <Button size="sm" variant="outline" className="h-7 px-2.5 text-[13px] text-danger md:h-8" onClick={onRemove}>
               {t('admin.formation.remove')}
             </Button>
           )}
-          <Button size="sm" variant="ghost" onClick={onClose}>
+          <Button size="sm" variant="ghost" className="h-7 px-2.5 text-[13px] md:h-8" onClick={onClose}>
             {t('admin.formation.close')}
           </Button>
         </div>
       </div>
-      <div className="flex max-h-48 flex-wrap gap-2 overflow-y-auto">
+      <div className="flex max-h-40 flex-wrap gap-1.5 overflow-y-auto">
         {players.map((p) => (
           <Button
             key={p.id}

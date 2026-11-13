@@ -40,10 +40,10 @@ export function PublicNavItems({
           ? 'nav-link-premium nav-link-premium-active'
           : 'nav-link-premium'
         : cn(
-            'rounded-lg px-3 py-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring-focus)]',
+            'whitespace-nowrap rounded-lg px-3 py-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring-focus)]',
             isActive ? 'nav-link-active text-primary-light' : 'text-text hover:bg-surface',
           ),
-      mobile && 'w-full text-left !text-base !normal-case !tracking-normal',
+      mobile && 'w-full whitespace-normal text-left !text-base !normal-case !tracking-normal',
     );
 
   return (

@@ -21,7 +21,7 @@ export function PublicAuthButton({ onNavigate, mobile }: Props) {
       <Link
         to="/prijava"
         onClick={onNavigate}
-        className={cn(buttonVariants({ size: mobile ? 'default' : 'sm' }), mobile && 'w-full')}
+        className={cn(buttonVariants({ size: mobile ? 'default' : 'sm' }), 'shrink-0 whitespace-nowrap', mobile && 'w-full')}
       >
         {t('nav.login')}
       </Link>

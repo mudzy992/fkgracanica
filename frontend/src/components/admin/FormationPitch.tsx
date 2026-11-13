@@ -25,12 +25,12 @@ export function FormationPitch({ slots, players, onSlotChange }: FormationPitchP
     <div
       className={cn(
         'relative mx-auto overflow-hidden rounded-2xl border border-white/10 bg-green-700 shadow-[inset_0_1px_0_rgba(255,255,255,0.08),0_8px_32px_rgba(0,0,0,0.35)]',
-        'aspect-[3/4] max-w-md',
+        'aspect-[3/4] max-w-sm',
       )}
     >
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(255,255,255,0.06),transparent_70%)]" aria-hidden />
-      <div className="absolute inset-4 rounded-lg border-2 border-white/35" />
-      <div className="absolute left-1/2 top-1/2 h-20 w-20 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white/35" />
+      <div className="absolute inset-3 rounded-lg border-2 border-white/35 lg:inset-4" />
+      <div className="absolute left-1/2 top-1/2 h-16 w-16 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white/35 lg:h-20 lg:w-20" />
       <div className="absolute left-1/2 top-1/2 h-2 w-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white" aria-hidden />
       {slots.map((slot, i) => {
         const player = players.find((p) => p.id === slot.playerId);
@@ -43,14 +43,14 @@ export function FormationPitch({ slots, players, onSlotChange }: FormationPitchP
         return (
           <div
             key={i}
-            className="absolute flex w-32 -translate-x-1/2 -translate-y-1/2 flex-col items-center"
+            className="absolute flex w-28 -translate-x-1/2 -translate-y-1/2 flex-col items-center lg:w-32"
             style={{ left: `${slot.positionX}%`, top: `${slot.positionY}%` }}
           >
             <Select
               value={slot.playerId}
               onChange={(e) => onSlotChange(i, e.target.value)}
               aria-label={`Pozicija ${slot.label}`}
-              className="mb-1.5 h-7 w-full rounded-md border border-[var(--border-subtle)] bg-white px-2 py-1 text-xs font-medium text-background shadow-md focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+              className="mb-1 h-6 w-full rounded-md border border-[var(--border-subtle)] bg-white px-1.5 py-0 text-[11px] font-medium leading-none text-background shadow-md focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 md:h-7 md:px-2 md:text-xs"
             >
               <option value="">{slot.label}</option>
               {available.map((p) => (
@@ -59,7 +59,7 @@ export function FormationPitch({ slots, players, onSlotChange }: FormationPitchP
                 </option>
               ))}
             </Select>
-            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary text-xs font-bold text-white shadow-[0_2px_8px_rgba(0,0,0,0.35)] ring-1 ring-white/15">
+            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-[11px] font-bold text-white shadow-[0_2px_8px_rgba(0,0,0,0.35)] ring-1 ring-white/15 md:h-9 md:w-9 md:text-xs">
               {player?.number ?? slot.label}
             </div>
           </div>

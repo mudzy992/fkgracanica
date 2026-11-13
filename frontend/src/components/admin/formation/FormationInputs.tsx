@@ -43,9 +43,9 @@ export function FormationInputs({ def, mid, fwd, onDef, onMid, onFwd, onApply, a
   const presetValue = PRESETS.find((p) => p.def === def && p.mid === mid && p.fwd === fwd)?.label ?? '';
 
   return (
-    <Card className="space-y-3 bg-surface p-3">
-      <div className="flex flex-wrap items-center gap-3">
-        <label className="flex items-center gap-2 text-sm">
+    <Card className="space-y-2.5 bg-surface p-2.5">
+      <div className="flex flex-wrap items-center gap-2">
+        <label className="flex items-center gap-1.5 text-[13px] md:text-sm">
           <span className="font-medium text-text-muted">{t('admin.formation.preset')}</span>
           <Select
             value={presetValue}
@@ -69,10 +69,10 @@ export function FormationInputs({ def, mid, fwd, onDef, onMid, onFwd, onApply, a
           </Select>
         </label>
         <span className="hidden text-text-muted sm:inline">·</span>
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex flex-wrap items-center gap-1.5">
           {fields.map(({ key, labelKey, valueKey }) => (
-            <label key={key} className="flex items-center gap-1.5 text-sm">
-              <span className="w-8 font-medium text-text-muted">{t(labelKey)}</span>
+            <label key={key} className="flex items-center gap-1 text-[13px] md:text-sm">
+              <span className="w-7 font-medium text-text-muted md:w-8">{t(labelKey)}</span>
               <Input
                 type="number"
                 min={1}

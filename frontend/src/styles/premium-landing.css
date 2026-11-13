@@ -85,7 +85,7 @@
   }
 
   .nav-link-premium {
-    @apply rounded-md px-3 py-2 text-xs font-semibold uppercase tracking-wider text-white/70 transition-all hover:bg-white/5 hover:text-white;
+    @apply whitespace-nowrap rounded-md px-2.5 py-1.5 text-xs font-semibold uppercase tracking-wider text-white/70 transition-all hover:bg-white/5 hover:text-white lg:px-3 lg:py-2;
   }
 
   .nav-link-premium-active {
