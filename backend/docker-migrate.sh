@@ -28,12 +28,17 @@ echo "[migrator] DATABASE_URL = $(mask "$DATABASE_URL")"
 echo "[migrator] pokrećem migracije..."
 
 # P-CI04-2 hotfix: dual fallback (Prisma 7 vs 8)
+# FIX 2026-11-13: nakon `npm prune` fix-a lokalni bin uvijek postoji na
+# ./node_modules/.bin/prisma (ili /app/node_modules/.bin/prisma); `npx prisma`
+# je vukao `prisma@8.0.0-rc.33` (latest) i padao sa CLI.COMMAND_MOVED.
+# Zato prvo probamo oba apsolutna puta, pa tek onda pinani npx (7.8.0).
 PRISMA_BIN="./node_modules/.bin/prisma"
-if [ ! -x "$PRISMA_BIN" ]; then PRISMA_BIN="npx prisma"; fi
+if [ ! -x "$PRISMA_BIN" ]; then PRISMA_BIN="/app/node_modules/.bin/prisma"; fi
+if [ ! -x "$PRISMA_BIN" ]; then PRISMA_BIN="npx --yes prisma@7.8.0"; fi
 
 if $PRISMA_BIN migrate deploy; then
   echo "[migrator] migracije OK (migrate deploy)"
-elif $PRISMA_BIN db migrate 2>&1; then
+elif $PRISMA_BIN db migrate; then
   echo "[migrator] migracije OK (db migrate fallback)"
 else
   echo "[migrator] FATAL: migracije nisu uspjele" >&2

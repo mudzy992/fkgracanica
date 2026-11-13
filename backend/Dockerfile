@@ -41,8 +41,16 @@ ENV LC_ALL=C.UTF-8
 RUN apt-get update && apt-get install -y --no-install-recommends openssl && rm -rf /var/lib/apt/lists/*
 RUN groupadd --system app && useradd --system --gid app --home-dir /app app
 # Root lock + hoistane zavisnosti (prune uklanja devDeps svih workspace-a).
+# FIX 2026-11-13: migrator je pao sa `Cannot find module 'dotenv'` + `npx` je vukao
+# `prisma@8.0.0-rc.33` jer `npm prune` u /app sa samo root manifestima briše
+# backend deps (dotenv, prisma, @prisma/* nisu u root package.json). Zato prije
+# prune-a kopiramo i workspace manifeste — `npm prune` tada zna da zadrži
+# production deps svih workspace-a.
 COPY --from=build /app/package.json ./package.json
 COPY --from=build /app/package-lock.json ./package-lock.json
+COPY --from=build /app/backend/package.json ./backend/package.json
+COPY --from=build /app/frontend/package.json ./frontend/package.json
+COPY --from=build /app/mobile/package.json ./mobile/package.json
 COPY --from=build /app/node_modules ./node_modules
 # BE-09c/P-B09c-3: devDependencies (jest, eslint, ts-node, typescript) ne idu u
 # produkcijsku sliku. `prisma` CLI ostaje jer ga CMD koristi za `migrate deploy`.

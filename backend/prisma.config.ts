@@ -1,10 +1,16 @@
-import { config as loadEnv } from 'dotenv';
 import { resolve } from 'path';
-
-loadEnv({ path: resolve(__dirname, '../.env') });
-loadEnv();
-
+import { createRequire } from 'module';
 import { defineConfig } from 'prisma/config';
+
+// dotenv je opcionalan u produkciji (env već dolazi iz Coolifya / Docker env).
+// Raniji `import { config } from 'dotenv'` je pucao sa CLI.CONFIG_UNREADABLE
+// kad `npm prune` u runner fazi ukloni dotenv — fallback na try/catch.
+try {
+  const require = createRequire(import.meta.url);
+  const { config: loadEnv } = require('dotenv');
+  loadEnv({ path: resolve(__dirname, '../.env') });
+  loadEnv();
+} catch {}
 
 /**
  * CI-04 / B-CI04-02 (2026-11-03): **nema više `env('DATABASE_URL')`**.
