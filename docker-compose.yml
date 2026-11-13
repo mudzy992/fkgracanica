@@ -9,8 +9,11 @@ services:
     image: fkgracanica-backend:prod
 
     build:
-      context: ./backend
-      dockerfile: Dockerfile
+      # P-CI04-1 (2026-11-13): backend se gradi iz root konteksta (npm workspace)
+      # — isti lock kao CI i frontend (prije: ./backend sa zasebnim
+      # backend/package-lock.json koji je tiho driftovao).
+      context: .
+      dockerfile: backend/Dockerfile
       # CI-04/B-CI04-02: NEMA `DATABASE_URL` u build.args. Coolify izvozi
       # build-args i u runtime env, pa je dummy vrijednost pregazila pravi
       # DATABASE_URL iz `environment:` bloka ispod (P1001 na `.invalid` host).

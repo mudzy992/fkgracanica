@@ -1,22 +1,32 @@
 # syntax=docker/dockerfile:1
+# P-CI04-1 (2026-11-13): backend se gradi iz **root** konteksta (npm workspace)
+# — isti `package-lock.json` kao CI i frontend (prije: ./backend sa zasebnim
+# backend/package-lock.json koji je tiho driftovao, vidi CI-04/B-CI04-01 i
+# INF-01/F-019). Frontend je već prebačen na root u CI-04; backend je bio
+# posljednji standalone lock (P-CI04-1).
 
 FROM node:22-bookworm-slim AS deps
 WORKDIR /app
 RUN apt-get update && apt-get install -y --no-install-recommends openssl && rm -rf /var/lib/apt/lists/*
+# Manifesti svih workspace-a: `npm ci` validira cijeli tree iz root locka.
 COPY package.json package-lock.json ./
-RUN npm ci
+COPY backend/package.json ./backend/
+COPY frontend/package.json ./frontend/
+COPY mobile/package.json ./mobile/
+RUN npm ci --no-audit --no-fund
 
 FROM deps AS build
-COPY . .
+WORKDIR /app
+COPY backend ./backend
 # BE-09c/P-B09c-2 + CI-04/B-CI04-02: build NE dobija `DATABASE_URL`.
 # Prije je postojao build-arg; Coolify (docker-compose pack) izvozi `build.args`
 # u okruženje i za `up`, pa je taj dummy završio kao RUNTIME env i Prisma je
-# javljala `P1001 ... at build-arg-dummy.invalid:5432` iako je Coolify UI imao
-# ispravan URL. `prisma generate` ne otvara konekciju — `prisma.config.ts` uzima
-# placeholder ako varijable nema. Prava vrijednost dolazi samo iz runtime env-a
-# (compose `environment:`), a provjerava je `docker-entrypoint.sh`.
-RUN npx prisma generate
-RUN npm run build
+# javljala `P1001 ... at build-arg-dummy.invalid:5432`. `prisma generate` ne
+# otvara konekciju — `backend/prisma.config.ts` uzima placeholder ako varijable
+# nema. Prava vrijednost dolazi samo iz runtime `environment:` bloka, a provjerava
+# je `docker-entrypoint.sh`.
+RUN npm run db:generate
+RUN npm run build -w backend
 
 FROM node:22-bookworm-slim AS runner
 WORKDIR /app
@@ -25,16 +35,17 @@ ENV LANG=C.UTF-8
 ENV LC_ALL=C.UTF-8
 RUN apt-get update && apt-get install -y --no-install-recommends openssl && rm -rf /var/lib/apt/lists/*
 RUN groupadd --system app && useradd --system --gid app --home-dir /app app
-COPY --from=build /app/package.json ./
-COPY --from=build /app/package-lock.json ./
+# Root lock + hoistane zavisnosti (prune uklanja devDeps svih workspace-a).
+COPY --from=build /app/package.json ./package.json
+COPY --from=build /app/package-lock.json ./package-lock.json
 COPY --from=build /app/node_modules ./node_modules
 # BE-09c/P-B09c-3: devDependencies (jest, eslint, ts-node, typescript) ne idu u
 # produkcijsku sliku. `prisma` CLI ostaje jer ga CMD koristi za `migrate deploy`.
 RUN npm prune --omit=dev
-COPY --from=build /app/dist ./dist
-COPY --from=build /app/prisma ./prisma
-COPY --from=build /app/prisma.config.ts ./
-COPY --from=build /app/docker-entrypoint.sh ./
+COPY --from=build /app/backend/dist ./dist
+COPY --from=build /app/backend/prisma ./prisma
+COPY --from=build /app/backend/prisma.config.ts ./prisma.config.ts
+COPY --from=build /app/backend/docker-entrypoint.sh ./docker-entrypoint.sh
 RUN mkdir -p /app/uploads && chmod +x /app/docker-entrypoint.sh && chown -R app:app /app
 USER app
 EXPOSE 3000
