@@ -1,14 +1,19 @@
 import { resolve } from 'path';
-import { createRequire } from 'module';
+import { createRequire } from 'node:module';
 import { defineConfig } from 'prisma/config';
 
 // dotenv je opcionalan u produkciji (env već dolazi iz Coolifya / Docker env).
 // Raniji `import { config } from 'dotenv'` je pucao sa CLI.CONFIG_UNREADABLE
 // kad `npm prune` u runner fazi ukloni dotenv — fallback na try/catch.
+// Koristimo createRequire(process.cwd()) umjesto import.meta.url da tsc
+// (nodenext, CommonJS output) ne javlja TS1470 za import.meta.
 try {
-  const require = createRequire(import.meta.url);
+  const require = createRequire(resolve(process.cwd(), 'package.json'));
   const { config: loadEnv } = require('dotenv');
-  loadEnv({ path: resolve(__dirname, '../.env') });
+  // __dirname je dostupan u CommonJS buildu (nest build), a u ESM (prisma CLI)
+  // ga polyfill-a Node; fallback na process.cwd() ako nije definiran.
+  const baseDir = typeof __dirname !== 'undefined' ? __dirname : process.cwd();
+  loadEnv({ path: resolve(baseDir, '../.env') });
   loadEnv();
 } catch {}
 
