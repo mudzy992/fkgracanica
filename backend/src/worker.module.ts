@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { join } from 'path';
 import { PrismaModule } from './prisma/prisma.module';
+import { AuditModule } from './audit/audit.module';
 import { JobsModule } from './jobs/jobs.module';
 import configuration from './config/configuration';
 import { validateEnv } from './config/env.validate';
@@ -30,6 +31,7 @@ import { validateEnv } from './config/env.validate';
       validate: validateEnv,
     }),
     PrismaModule,
+    AuditModule,
     JobsModule,
   ],
 })
