@@ -15,15 +15,17 @@ describe('PublicAuthButton — varijante (2 grane mobile)', () => {
     render(<MemoryRouter><PublicAuthButton mobile /></MemoryRouter>);
     const link = screen.getByRole('link');
     expect(link.className).toContain('w-full');
-    // size default gives h-11 vs sm h-9 — check h-10 present
-    expect(link.className).toContain('h-11');
+    // primary AA/AAA: default h-10 (40px AAA, iOS 16px) — na <md 40px, lg 44px
+    expect(link.className).toContain('h-10');
   });
 
   it('mobile false koristi sm size bez w-full', () => {
     render(<MemoryRouter><PublicAuthButton /></MemoryRouter>);
     const link = screen.getByRole('link');
     expect(link.className).not.toContain('w-full');
-    expect(link.className).toContain('h-9');
+    // kompakt AA: sm h-8 (32≥24) text-[14px] 4.5
+    expect(link.className).toContain('h-8');
+    expect(link.className).toContain('text-[14px]');
   });
 
   it('mobile undefined također sm bez w-full', () => {

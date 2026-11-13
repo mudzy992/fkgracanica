@@ -57,7 +57,7 @@ export function FormationInputs({ def, mid, fwd, onDef, onMid, onFwd, onApply, a
                 onFwd(pr.fwd);
               }
             }}
-            className="h-9 w-28"
+            className="h-10 w-28 text-[16px] md:h-8 md:text-[14px]"
             aria-label={t('admin.formation.selectFormation')}
           >
             <option value="">{t('admin.formation.custom')}</option>
@@ -79,7 +79,7 @@ export function FormationInputs({ def, mid, fwd, onDef, onMid, onFwd, onApply, a
                 max={9}
                 value={values[valueKey]}
                 onChange={(e) => setters[valueKey](e.target.value)}
-                className="h-9 w-14 px-2 text-center"
+                className="h-10 w-14 px-2 text-center text-[16px] md:h-8 md:text-[14px]"
                 aria-label={t(labelKey)}
               />
             </label>

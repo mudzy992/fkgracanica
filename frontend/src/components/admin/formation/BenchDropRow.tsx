@@ -29,10 +29,12 @@ export function BenchDropRow({ slot, active, onSelect }: Props) {
       ref={setRef}
       type="button"
       variant="ghost"
+      size="sm"
       onClick={onSelect}
+      aria-label={slot.player ? `${slot.player.firstName} ${slot.player.lastName}` : t('admin.formation.emptySpot')}
       {...(slot.playerId ? { ...drag.listeners, ...drag.attributes } : {})}
       className={cn(
-        'flex h-auto w-full items-center justify-between rounded-lg border px-3 py-2 text-sm font-normal hover:bg-surface',
+        'flex w-full items-center justify-between rounded-lg border px-3 text-[14px] font-normal hover:bg-surface',
         slot.playerId && 'cursor-grab',
         active || isOver ? 'border-primary bg-primary/5' : 'border-[var(--border-subtle)]',
         drag.isDragging && 'opacity-50',

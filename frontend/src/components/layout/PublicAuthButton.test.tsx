@@ -23,9 +23,8 @@ describe('PublicAuthButton accessibility', () => {
     render(<MemoryRouter><PublicAuthButton /></MemoryRouter>);
     const link = screen.getByRole('link', { name: 'Prijavi se' });
     expect(link).toHaveAttribute('href', '/prijava');
-    // AAA responsive sm: h-8 na bazi + lg:h-9 — jsdom vidi h-8, lg:h-9 kao klasu
-    expect(link).toHaveClass('h-8');
-    expect(link).toHaveClass('lg:h-9');
+    // Kompakt WCAG 2.2 AA: sm je h-8 (32≥24) text-[14px] (AA 4.5) — dovoljno visok, kompaktan
+    expect(link).toHaveClass('h-8', 'text-[14px]');
     expect(link.querySelector('button')).toBeNull();
   });
 

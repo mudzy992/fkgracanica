@@ -1,8 +1,14 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
+  "plugins": ["react", "typescript", "oxc", "jsx_a11y"],
   "rules": {
     "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
+    "react/only-export-components": ["warn", { "allowConstantExport": true }],
+    "jsx_a11y/alt-text": "error",
+    "jsx_a11y/aria-props": "error",
+    "jsx_a11y/aria-role": "error",
+    "jsx_a11y/click-events-have-key-events": "warn",
+    "jsx_a11y/no-noninteractive-element-interactions": "warn",
+    "jsx_a11y/label-has-associated-control": "off"
   }
 }
