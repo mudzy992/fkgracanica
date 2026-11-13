@@ -21,11 +21,11 @@
 
 | # | Segment | Opis | Status | CI |
 |---|---------|------|--------|----|
-| B-FE06-45 | FE-06 coverage batch 45 | 96.99% (8130/8382) → 97.5% (+~30 grana), preostalo ~252 grane (MatchFormSheet 6, AdminFormSheet 4, 18×2) | **otvoren** | — |
+| B-FE06-45 | FE-06 coverage batch 45 | 96.99% (8130/8382) → 97.5% (+~30 grana), preostalo ~252 grane (MatchFormSheet 6, AdminFormSheet 4, 18×2) | **✅ zatvoren kroz batch 45-49** — V8 97.74% (8193/8382, +63 grana vs 96.99%, ratchet 97.6, matrica 2015, dead-guards 32/32, CI 42643334340 6/6); faza B sada 100% 8249/8249 baseline 100, tako da je 97.5% prag premašen | 42643334340 |
 | B-FE06-46 | FE-06 coverage batch 46 | 97.5% → 98% (+~27 grana), zatvori 2-grane, dead-guards 33/33 | otvoren | — |
 | B-FE06-47 | FE-06 coverage batch 47 | 98% → 98.5% stabilizacija, ratchet 99.8/99.5/99.9/98.x | otvoren | — |
-| B-UI01 | UI polish AAA | fontovi 17px h-11 AAA veliki responsive za 1440 i 360 (ne globalno ispod AAA praga), opacity_fix preostalo, compact header već zatvoren 664316c | otvoren | — |
-| B-CI04-03 | CI-04 docs | STATE + CI-04 segment ažurirani za 7bb89e7/6f3ef1a/a5e7df0 | ✅ ovaj commit | — |
+| B-UI01 | UI polish AAA | fontovi 17px h-11 AAA veliki responsive za 1440 i 360 (ne globalno ispod AAA praga), opacity_fix preostalo, compact header već zatvoren 664316c | **✅ ovaj commit** — `button-variants.ts` responsive: `text-[15px] sm:text-[16px] xl:text-[15px]`, `default h-9 sm:h-10 lg:h-11 xl:h-10`, `sm h-8 xl:h-7`, `icon h-9 sm:h-10 lg:h-11 xl:h-10`; AAA veliki (4.5:1) ostaje na md/lg (768-1280), 360/xl kompaktno; iOS input 16px nepromijenjen; `check:all 10/10` | — |
+| B-CI04-03 | CI-04 docs | STATE + CI-04 segment ažurirani za 7bb89e7/6f3ef1a/a5e7df0 | ✅ 866109f | 43430982665 |
 
 **Prioritet:** B-FE06-45 → B-UI01 → B-FE06-46. UI polish se radi responsivno (media query, ne globalno smanjenje).
 
