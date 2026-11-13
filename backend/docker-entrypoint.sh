@@ -33,6 +33,13 @@ esac
 
 echo "[entrypoint] DATABASE_URL = $(mask "$DATABASE_URL")"
 
+# P-CI04-2 napredno (b): migrator je izdvojen servis (`docker-migrate.sh`).
+# Backend preskače migracije kad je SKIP_MIGRATE=1 (produkcija s migratorom),
+# inače radi dual fallback (dev / fallback bez migratora, hotfix).
+if [ "${SKIP_MIGRATE:-0}" = "1" ]; then
+  echo "[entrypoint] SKIP_MIGRATE=1 — preskačem migracije (migrator ih je odradio)"
+else
+
 # P-CI04-2 hotfix (2026-11-13): Prisma 7 = `migrate deploy`, Prisma 8 = `db migrate`.
 # Coolify build je pao sa CLI.COMMAND_MOVED (Prisma 8 u slici, 7 u locku — npx je
 # vukao `latest` 8). Dual fallback radi sa oba: prvo pokuša 7, pa 8. Koristimo
@@ -48,5 +55,6 @@ else
   echo "[entrypoint] FATAL: migracije nisu uspjele ni sa 'migrate deploy' ni 'db migrate'" >&2
   echo "[entrypoint] Provjeri prisma verziju (package-lock 7.8.0 vs latest 8) i log iznad." >&2
   exit 1
+fi
 fi
 exec node dist/src/main.js

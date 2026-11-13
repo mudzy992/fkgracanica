@@ -1,4 +1,4 @@
-# syntax=docker/dockerfile:1
+# syntax=docker/dockerfile:1.6
 # INF-01 (I-01-08): bez `npm install --package-lock-only` — gradnja ne
 # regeneriše lock unutar slike.
 #
@@ -19,7 +19,8 @@ COPY backend/package.json ./backend/
 COPY frontend/package.json ./frontend/
 COPY mobile/package.json ./mobile/
 
-RUN npm ci --no-audit --no-fund
+# P-CI04-2 napredno (a) BuildKit cache — isti kao backend/Dockerfile.
+RUN --mount=type=cache,target=/root/.npm npm ci --no-audit --no-fund
 
 COPY frontend ./frontend
 

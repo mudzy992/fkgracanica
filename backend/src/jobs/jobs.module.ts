@@ -1,4 +1,4 @@
-import { Injectable, Logger, Module, OnModuleDestroy } from '@nestjs/common';
+import { Injectable, Logger, Module, OnModuleDestroy, Optional } from '@nestjs/common';
 import { Queue, Worker } from 'bullmq';
 import nodemailer from 'nodemailer';
 import { PrismaService } from '../prisma/prisma.service';
@@ -25,7 +25,9 @@ export class JobsService implements OnModuleDestroy {
 
   constructor(
     private readonly prisma: PrismaService,
-    private readonly realtime: RealtimeGateway,
+    // P-CI04-2: realtime je opcionalan — worker servis ne mora imati WS gateway,
+    // a i api-only/worker-only mode radi bez njega (tally samo preskače emit).
+    @Optional() private readonly realtime: RealtimeGateway | undefined,
     // BE-06: migracija s process.env na ConfigService (BE-01 P2 konvencija)
     private readonly config: ConfigService,
   ) {
@@ -36,6 +38,19 @@ export class JobsService implements OnModuleDestroy {
       this.worker = null;
       return;
     }
+    // P-CI04-2 napredno: JOBS_MODE — izolacija Queue/Worker po procesu.
+    // both (default, dev/test): Queue + Worker u jednom procesu (kompatibilno);
+    // api: samo Queue (backend ne procesira, samo enqueue);
+    // worker: samo Worker (worker servis procesira, ne enqueue).
+    const rawMode = this.config.get<string>('jobsMode') ?? 'both';
+    const mode = rawMode.toLowerCase();
+    const wantQueue = mode === 'both' || mode === 'api';
+    const wantWorker = mode === 'both' || mode === 'worker';
+    if (!wantQueue && !wantWorker) {
+      this.logger.warn(`JOBS_MODE=${rawMode} nepoznat — padam na both`);
+    }
+    const effectiveQueue = wantQueue || (!wantWorker && mode !== 'worker');
+    const effectiveWorker = wantWorker || (!wantQueue && mode !== 'api');
     // BullMQ proslijeđuje { url, ...rest } ioredis-u: rediss:// pali TLS,
     // a tls.ca (iz REDIS_TLS_CA) rješava "self-signed certificate in
     // certificate chain" prema privatnom Coolify CA-u.
@@ -43,12 +58,24 @@ export class JobsService implements OnModuleDestroy {
       url,
       ...buildRedisTlsOptions(url, this.config.get<string>('redisTlsCa')),
     };
-    this.emailQueue = new Queue('email', { connection: this.connection });
-    this.worker = new Worker(
-      'email',
-      async (job) => this.sendEmail(job.data as EmailPayload),
-      { connection: this.connection, limiter: { max: 10, duration: 60_000 } },
-    );
+    if (effectiveQueue) {
+      this.emailQueue = new Queue('email', { connection: this.connection });
+      this.logger.log(`Jobs Queue email inicijalizovan (JOBS_MODE=${mode})`);
+    } else {
+      this.emailQueue = null;
+      this.logger.log(`Jobs Queue preskočen (JOBS_MODE=${mode})`);
+    }
+    if (effectiveWorker) {
+      this.worker = new Worker(
+        'email',
+        async (job) => this.sendEmail(job.data as EmailPayload),
+        { connection: this.connection, limiter: { max: 10, duration: 60_000 } },
+      );
+      this.logger.log(`Jobs Worker email inicijalizovan (JOBS_MODE=${mode})`);
+    } else {
+      this.worker = null;
+      this.logger.log(`Jobs Worker preskočen (JOBS_MODE=${mode})`);
+    }
   }
 
   enqueueEmailLater(payload: EmailPayload) {
@@ -110,7 +137,7 @@ export class JobsService implements OnModuleDestroy {
 
   private async tally(campaignId: string | undefined, ok: boolean) {
     const snap = await tallyCampaignEmail(this.prisma, campaignId, ok);
-    if (snap) this.realtime.emitNewsletterCampaign(snap);
+    if (snap) this.realtime?.emitNewsletterCampaign(snap);
   }
 
   async onModuleDestroy() {

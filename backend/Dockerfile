@@ -1,4 +1,4 @@
-# syntax=docker/dockerfile:1
+# syntax=docker/dockerfile:1.6
 # P-CI04-1 (2026-11-13): backend se gradi iz **root** konteksta (npm workspace)
 # — isti `package-lock.json` kao CI i frontend (prije: ./backend sa zasebnim
 # backend/package-lock.json koji je tiho driftovao, vidi CI-04/B-CI04-01 i
@@ -13,7 +13,12 @@ COPY package.json package-lock.json ./
 COPY backend/package.json ./backend/
 COPY frontend/package.json ./frontend/
 COPY mobile/package.json ./mobile/
-RUN npm ci --no-audit --no-fund
+# P-CI04-2 napredno (a) BuildKit cache — `npm ci` kešira tarball-ove u
+# BuildKit cache mountu (`/root/.npm`), pa Coolify redeploy bez promjene
+# locka preskače download (2-3 min → ~20 s). Zahtijeva DOCKER_BUILDKIT=1
+# (Coolify ga pali automatski od Docker 23; lokalno `DOCKER_BUILDKIT=1`
+# `docker compose build`). Bez BuildKita fallback je običan `npm ci`.
+RUN --mount=type=cache,target=/root/.npm npm ci --no-audit --no-fund
 
 FROM deps AS build
 WORKDIR /app
@@ -46,7 +51,8 @@ COPY --from=build /app/backend/dist ./dist
 COPY --from=build /app/backend/prisma ./prisma
 COPY --from=build /app/backend/prisma.config.ts ./prisma.config.ts
 COPY --from=build /app/backend/docker-entrypoint.sh ./docker-entrypoint.sh
-RUN mkdir -p /app/uploads && chmod +x /app/docker-entrypoint.sh && chown -R app:app /app
+COPY --from=build /app/backend/docker-migrate.sh ./docker-migrate.sh
+RUN mkdir -p /app/uploads && chmod +x /app/docker-entrypoint.sh /app/docker-migrate.sh && chown -R app:app /app
 USER app
 EXPOSE 3000
 HEALTHCHECK --interval=30s --timeout=5s --start-period=40s --retries=3 \

@@ -2,8 +2,54 @@
 # Jedini izvor istine za infrastrukturu. Stari Traefik stack penzionisan je u
 # docs/_retired/docker-compose1.yaml (NE KORISTITI).
 # Audit/hardening nalazi: AUDIT/segments/INF-01.md
-#
+# P-CI04-2 napredno (2026-11-13): BuildKit cache + migrator + worker + parallel
+#   - backend/frontend Dockerfile koriste `--mount=type=cache,target=/root/.npm`
+#     (2-3 min → ~20 s kad lock nije diran).
+#   - migrator servis izdvojen — backend više ne čeka `migrate deploy` u
+#     entrypointu (SKIP_MIGRATE=1), nego depends_on migrator
+#     (service_completed_successfully). Brži boot, idempotentno.
+#   - worker servis izdvojen — BullMQ Queue (api) / Worker (worker) preko
+#     JOBS_MODE env (both/api/worker). Isti image kao backend, drugi CMD.
+#   - `docker compose build --parallel` (vidi scripts/docker-prod-build.sh)
+#     + BuildKit cache smanjuju 10 min → ~3-4 min (bez promjene locka).
+#   - Uslovni build po `git diff` je u scripts/docker-prod-build.sh
+#     (preskače nepromijenjen servis) i u CI workflow `paths` filtru —
+#     Coolify build uvijek radi oba, ali layer cache ih čini jeftinim.
+
 services:
+
+  migrator:
+    image: fkgracanica-backend:prod
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    # P-CI04-2 (b): izdvojeni migrator — isti image kao backend, ali
+    # naredba je samo migracija (bez `node dist/src/main.js`).
+    command: ["sh", "docker-migrate.sh"]
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: "${DATABASE_URL:?DATABASE_URL nije postavljen u Coolify env (Application → Environment Variables)}"
+      # TLS CA za Prisma CLI (NODE_EXTRA_CERTS) — migrator se spaja na DB
+      NODE_EXTRA_CERTS: /etc/ssl/certs/coolify-ca.crt
+      # Ostale varijable nisu nužne za migraciju, ali ih ostavljamo za
+      # konzistentnost sa backend env validacijom (ako ih migrator ikad zatraži).
+      REDIS_URL: "${REDIS_URL:-}"
+      REDIS_TLS_CA: /run/secrets/redis-ca.crt
+    volumes:
+      - /data/coolify/ssl/coolify-ca.crt:/etc/ssl/certs/coolify-ca.crt:ro
+      - /data/coolify/ssl/redis-core/redis-ca.crt:/run/secrets/redis-ca.crt:ro
+    networks:
+      - db_net
+      - redis_net
+    security_opt:
+      - "no-new-privileges:true"
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    # Jednokratan posao — ne restartuje se; backend čeka da završi sa 0.
+    restart: "no"
 
   backend:
     image: fkgracanica-backend:prod
@@ -55,6 +101,10 @@ services:
       ADMIN_EMAIL: "${ADMIN_EMAIL:?ADMIN_EMAIL nije postavljen}"
       ADMIN_PASSWORD: "${ADMIN_PASSWORD:?ADMIN_PASSWORD nije postavljen}"
 
+      # P-CI04-2 napredno:
+      SKIP_MIGRATE: "1"
+      JOBS_MODE: "${JOBS_MODE:-api}"
+
     volumes:
       - /mnt/shared-app-files/fkgracanica:/app/uploads
       # TLS CA za Redis (rediss://) — vidi REDIS_URL u .env
@@ -65,6 +115,11 @@ services:
     networks:
       - db_net
       - redis_net
+
+    # P-CI04-2 (b): backend čeka da migrator uspješno završi migracije.
+    depends_on:
+      migrator:
+        condition: service_completed_successfully
 
     # INF-01 (I-01-04): nema eskalacije privilegija unutar kontejnera.
     security_opt:
@@ -80,6 +135,50 @@ services:
 
     restart: unless-stopped
 
+  worker:
+    image: fkgracanica-backend:prod
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    # P-CI04-2 (c): izdvojeni worker — isti image kao backend, ali CMD je
+    # `node dist/src/worker.js` (JOBS_MODE=worker → samo BullMQ Worker).
+    command: ["node", "dist/src/worker.js"]
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: "${DATABASE_URL:?DATABASE_URL nije postavljen u Coolify env (Application → Environment Variables)}"
+      DB_PROVIDER: "${DB_PROVIDER:-postgresql}"
+      REDIS_URL: "${REDIS_URL:-}"
+      REDIS_TLS_CA: /run/secrets/redis-ca.crt
+      NODE_EXTRA_CERTS: /etc/ssl/certs/coolify-ca.crt
+      UPLOAD_PATH: "${UPLOAD_PATH:-/app/uploads}"
+      API_PUBLIC_URL: "${API_PUBLIC_URL:?API_PUBLIC_URL nije postavljen}"
+      SOCKET_IO_PATH: "${SOCKET_IO_PATH:-/socket.io}"
+      CORS_ORIGINS: "${CORS_ORIGINS:-*}"
+      JWT_ACCESS_SECRET: "${JWT_ACCESS_SECRET:?JWT_ACCESS_SECRET nije postavljen}"
+      JWT_REFRESH_SECRET: "${JWT_REFRESH_SECRET:?JWT_REFRESH_SECRET nije postavljen}"
+      JWT_ACCESS_EXPIRES: "${JWT_ACCESS_EXPIRES:-15m}"
+      JWT_REFRESH_EXPIRES: "${JWT_REFRESH_EXPIRES:-7d}"
+      ADMIN_EMAIL: "${ADMIN_EMAIL:?ADMIN_EMAIL nije postavljen}"
+      ADMIN_PASSWORD: "${ADMIN_PASSWORD:?ADMIN_PASSWORD nije postavljen}"
+      JOBS_MODE: "worker"
+    volumes:
+      - /mnt/shared-app-files/fkgracanica:/app/uploads
+      - /data/coolify/ssl/redis-core/redis-ca.crt:/run/secrets/redis-ca.crt:ro
+      - /data/coolify/ssl/coolify-ca.crt:/etc/ssl/certs/coolify-ca.crt:ro
+    networks:
+      - db_net
+      - redis_net
+    depends_on:
+      migrator:
+        condition: service_completed_successfully
+    security_opt:
+      - "no-new-privileges:true"
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    restart: unless-stopped
 
   frontend:
     image: fkgracanica-frontend:prod
@@ -101,7 +200,8 @@ services:
       INTERNAL_API_URL: "${INTERNAL_API_URL:-http://backend:3000/api/v1}"
 
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy
 
     # INF-01 (I-01-04): isto kao backend — bez eskalacije privilegija.
     security_opt:

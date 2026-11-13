@@ -39,4 +39,10 @@ export default () => ({
   socketIoPath: process.env.SOCKET_IO_PATH ?? '/socket.io',
   adminEmail: process.env.ADMIN_EMAIL,
   adminPassword: process.env.ADMIN_PASSWORD,
+
+  // P-CI04-2 napredno: izolacija BullMQ workera.
+  // JOBS_MODE=both (default, unutar jednog procesa — dev/test),
+  // JOBS_MODE=api   (samo Queue, bez Workera — backend servis),
+  // JOBS_MODE=worker(samo Worker, bez Queue — worker servis).
+  jobsMode: (process.env.JOBS_MODE ?? 'both').toLowerCase(),
 });
