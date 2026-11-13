@@ -26,7 +26,7 @@
 | B-FE06-47 | FE-06 coverage batch 47 | 98% → 98.5% stabilizacija, ratchet 99.8/99.5/99.9/98.x | **✅ zatvoren kroz batch 58-62** — V8 98.07%→99.14% (8221→8237/8308, +16 grana vs 98.07%, +44 vs 97.74%; ratchet 99.0, matrica 2085, dead-guards 3/3, CI 42823229587 6/6); faza B sada 100% 8249/8249 baseline 100, prag 98.5% premašen | 42823229587 |
 | B-UI01 | UI polish AAA | fontovi 17px h-11 AAA veliki responsive za 1440 i 360 (ne globalno ispod AAA praga), opacity_fix preostalo, compact header već zatvoren 664316c | **✅ 5c9d4af** — `button-variants.ts` responsive: `text-[15px] sm:text-[16px] xl:text-[15px]`, `default h-9 sm:h-10 lg:h-11 xl:h-10`, `sm h-8 xl:h-7`, `icon h-9 sm:h-10 lg:h-11 xl:h-10`; AAA veliki (4.5:1) ostaje na md/lg (768-1280), 360/xl kompaktno; iOS input 16px nepromijenjen; `check:all 10/10` | 43434608517 |
 | B-CI04-03 | CI-04 docs | STATE + CI-04 segment ažurirani za 7bb89e7/6f3ef1a/a5e7df0 | ✅ 866109f | 43430982665 |
-| B-FE06-48 | FE-06 coverage batch 48 | 99.14% (8237/8308) → 99.5% (+~25 grana), ratchet 99.1, matrica 2106, dead-guards 3/3 | otvoren | — |
+| B-FE06-48 | FE-06 coverage batch 48 | 99.14% (8237/8308) → 99.5% (+~25 grana), ratchet 99.1, matrica 2106, dead-guards 3/3 | **u toku — batch48 22/22 PASS** `fe06-batch48.test.ts` (resolveClubVenue 4, isPastDatetime 4, isRetrospectiveMatch 4, clampScore 4, canSendManualStatus 3, matchStatusOptions 2, Date.now granica 1) — 22 testa 11ms, matrica 2170 (2169→2170), check:all 10/10, CI 5e5dc87 6/6 | 43484744742 |
 
 **Prioritet:** B-FE06-48 (99.14%→99.5%) → B-FE06-49 (99.5%→100%) — B-FE06-45/46/47 + B-UI01 + B-CI04-03 zatvoreni.
 
