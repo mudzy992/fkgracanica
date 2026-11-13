@@ -22,7 +22,10 @@ import { validateEnv } from './config/env.validate';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: [join(__dirname, '..', '..', '.env'), join(__dirname, '..', '.env')],
+      envFilePath: [
+        join(__dirname, '..', '..', '.env'),
+        join(__dirname, '..', '.env'),
+      ],
       load: [configuration],
       validate: validateEnv,
     }),

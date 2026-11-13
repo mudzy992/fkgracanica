@@ -32,6 +32,9 @@ async function bootstrap() {
 
 bootstrap().catch((err) => {
   const logger = new Logger('Worker');
-  logger.error('[worker] fatal', err instanceof Error ? err.stack : String(err));
+  logger.error(
+    '[worker] fatal',
+    err instanceof Error ? err.stack : String(err),
+  );
   process.exit(1);
 });

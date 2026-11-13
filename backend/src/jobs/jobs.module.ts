@@ -1,4 +1,10 @@
-import { Injectable, Logger, Module, OnModuleDestroy, Optional } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  Module,
+  OnModuleDestroy,
+  Optional,
+} from '@nestjs/common';
 import { Queue, Worker } from 'bullmq';
 import nodemailer from 'nodemailer';
 import { PrismaService } from '../prisma/prisma.service';
