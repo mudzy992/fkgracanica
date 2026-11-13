@@ -295,7 +295,8 @@ jobs:
       - name: prisma generate
         run: npm run db:generate
       - name: prisma migrate deploy
-        run: npx prisma migrate deploy
+        # P-CI04-2 hotfix (2026-11-13): Prisma 7 = `migrate deploy`, Prisma 8 = `db migrate`. Dual fallback.
+        run: npx prisma migrate deploy || npx prisma db migrate
         working-directory: backend
       - name: prisma seed (RBAC + settings + admin + demo)
         run: npm run prisma:seed -w backend
@@ -379,7 +380,7 @@ jobs:
           done
       - name: Generiši Prisma klijent, migriraj praznu bazu i učitaj test seed
         run: |
-          if ! (npm run db:generate && cd backend && npx prisma migrate deploy && npx ts-node prisma/seed/browser-smoke.ts) > "$RUNNER_TEMP/browser-setup.log" 2>&1; then
+          if ! (npm run db:generate && cd backend && (npx prisma migrate deploy || npx prisma db migrate) && npx ts-node prisma/seed/browser-smoke.ts) > "$RUNNER_TEMP/browser-setup.log" 2>&1; then
             cat "$RUNNER_TEMP/browser-setup.log"
             node -e "const t=require('fs').readFileSync(process.env.RUNNER_TEMP+'/browser-setup.log','utf8').split('\n').slice(-35).join(' ').slice(-3200).replaceAll('%','%25').replaceAll('\r','%0D'); console.log('::error title=browser setup::'+t)"
             exit 1

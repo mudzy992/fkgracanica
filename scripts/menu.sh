@@ -32,7 +32,7 @@ case $izbor in
           echo "Otkazano."
           exit 1
         fi
-        cd "$ROOT_DIR/backend" && npx prisma migrate deploy
+        cd "$ROOT_DIR/backend" && (npx prisma migrate deploy || npx prisma db migrate)
         ;;
     4)
         echo "Pokrećem: GIT commit/push..."

@@ -33,5 +33,20 @@ esac
 
 echo "[entrypoint] DATABASE_URL = $(mask "$DATABASE_URL")"
 
-npx prisma migrate deploy
+# P-CI04-2 hotfix (2026-11-13): Prisma 7 = `migrate deploy`, Prisma 8 = `db migrate`.
+# Coolify build je pao sa CLI.COMMAND_MOVED (Prisma 8 u slici, 7 u locku — npx je
+# vukao `latest` 8). Dual fallback radi sa oba: prvo pokuša 7, pa 8. Koristimo
+# lokalni bin ako postoji da ne vučemo latest sa registryja.
+echo "[entrypoint] pokrećem migracije..."
+PRISMA_BIN="./node_modules/.bin/prisma"
+if [ ! -x "$PRISMA_BIN" ]; then PRISMA_BIN="npx prisma"; fi
+if $PRISMA_BIN migrate deploy; then
+  echo "[entrypoint] migracije OK (migrate deploy)"
+elif $PRISMA_BIN db migrate 2>&1; then
+  echo "[entrypoint] migracije OK (db migrate fallback)"
+else
+  echo "[entrypoint] FATAL: migracije nisu uspjele ni sa 'migrate deploy' ni 'db migrate'" >&2
+  echo "[entrypoint] Provjeri prisma verziju (package-lock 7.8.0 vs latest 8) i log iznad." >&2
+  exit 1
+fi
 exec node dist/src/main.js
