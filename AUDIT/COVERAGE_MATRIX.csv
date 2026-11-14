@@ -1140,6 +1140,7 @@
 "frontend/src/lib/fe06-batch-meta.test.ts","frontend","src","105","pokriveno testom","FE-06 coverage batch: 8 unit testova (takmičenja, meta ulaznice, inicijali, SEO)","FE-06","2026-11-05"
 "frontend/src/lib/fe06-batch-utils.test.ts","frontend","src","134","pokriveno testom","FE-06 coverage batch: 12 unit testova (pozicije, kola, pozicije na tabeli, članstvo)","FE-06","2026-11-05"
 "frontend/src/lib/fe06-batch48.test.ts","frontend","src","100","nepregledano","","",""
+"frontend/src/lib/fe06-batch49.test.ts","frontend","src","85","nepregledano","","",""
 "frontend/src/lib/fe06-batch60-lib2.test.ts","frontend","src","111","nepregledano","","",""
 "frontend/src/lib/fe06-batch60-lib3.test.ts","frontend","src","20","nepregledano","","",""
 "frontend/src/lib/fe06-batch61-html.test.tsx","frontend","src","13","nepregledano","","",""
