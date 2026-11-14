@@ -29,8 +29,9 @@
 | B-FE06-48 | FE-06 coverage batch 48 | 99.14% (8237/8308) → 99.5% (+~25 grana), ratchet 99.1, matrica 2106, dead-guards 3/3 | **✅ zatvoren kroz batch48** — V8 99.14%→99.5%+ (8237→8260/8308, +23 grana, ratchet 99.4, matrica 2170, dead-guards 0/0, CI 43504402738 6/6); faza B sada 100% 8249/8249 baseline 100, prag 99.5% premašen | 43504402738 |
 | B-FE06-49 | FE-06 coverage batch 49 | 99.5% → 100% (+~15 grana), ratchet 99.5, matrica 2170, dead-guards 0/0 | **✅ zatvoren kroz batch49** — V8 99.5%→100% (8260→8249/8249 100%, +~15 grana, ratchet 99.9, matrica 2171, dead-guards 0/0, CI 43585576755 6/6); faza B sada 100% 8249/8249 baseline 100, prag 100% dostignut | 43585576755 |
 | B-FE06-50 | FE-06 coverage batch 50 | 100% polish — održavanje 100% (8249/8249), matrica 2171, dead-guards 0/0, ratchet 100 | **✅ zatvoren kroz polish** — V8 100% (8249/8249 100% održano, matrica 1258/2170 +2 pokriveno, ratchet 100, dead-guards 0/0, CI 43592915494 6/6); faza B ostaje 100% 8249/8249 baseline 100, prag 100% održan | 43592915494 |
+| B-MOB01 | Mobile audit asis | expo ~57.0.16 / RN 0.86.2, 292 fajla (app 7 + src 200+, lib/hooks/components/features), matrica 1/292 (291 nepregledano, 1 popravljeno BE-09d), parity vs web — asis presjek prije P-MOB | otvoren | — |
 
-**Prioritet:** — backlog 2026-11-14 prazan (B-FE06-45/46/47/48/49/50 + B-UI01 + B-CI04-03 svi zatvoreni); sljedeće B-FE06-51 ili pauza.
+**Prioritet:** B-MOB01 (Mobile audit asis) — FE-06 100% zatvoren (B-FE06-45/46/47/48/49/50 + B-UI01 + B-CI04-03), mobile 1/292 asis otvoren.
 
 ## Šta je urađeno (hronološki)
 
