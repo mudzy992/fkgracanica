@@ -2117,6 +2117,7 @@
 "mobile/src/lib/mob-batch07.test.ts","mobile","src","162","pokriveno testom","P-MOB07: 12 unit testova (visitor/upload-media/realtime)","Mobile","2026-11-14"
 "mobile/src/lib/mob-batch08.test.ts","mobile","src","169","pokriveno testom","P-MOB08: 11 unit testova (push clear/ensure + api login/fetch/logout)","Mobile","2026-11-14"
 "mobile/src/lib/mob-batch09.test.ts","mobile","src","164","pokriveno testom","P-MOB09: 10 unit testova (share-media/use-public-settings)","Mobile","2026-11-14"
+"mobile/src/lib/mob-batch10.test.ts","mobile","src","139","pokriveno testom","P-MOB10: 10 unit testova (api interceptori 401/refresh)","Mobile","2026-11-14"
 "mobile/src/lib/open-maps.ts","mobile","src","19","nepregledano","","",""
 "mobile/src/lib/permissions.ts","mobile","src","51","nepregledano","","",""
 "mobile/src/lib/push.ts","mobile","src","68","nepregledano","","",""
