@@ -2119,6 +2119,7 @@
 "mobile/src/lib/mob-batch09.test.ts","mobile","src","164","pokriveno testom","P-MOB09: 10 unit testova (share-media/use-public-settings)","Mobile","2026-11-14"
 "mobile/src/lib/mob-batch10.test.ts","mobile","src","139","pokriveno testom","P-MOB10: 10 unit testova (api interceptori 401/refresh)","Mobile","2026-11-14"
 "mobile/src/lib/mob-batch11.test.ts","mobile","src","136","pokriveno testom","P-MOB11: 11 unit testova (heritage-utils/museum-filter/sponsor-tiers/format-match/home-surface)","Mobile","2026-11-14"
+"mobile/src/lib/mob-batch12.test.ts","mobile","src","173","pokriveno testom","P-MOB12: 11 unit testova (pick-home-matches/pick-hero/map-standings/map-league/admission/heritage-tab)","Mobile","2026-11-14"
 "mobile/src/lib/open-maps.ts","mobile","src","19","nepregledano","","",""
 "mobile/src/lib/permissions.ts","mobile","src","51","nepregledano","","",""
 "mobile/src/lib/push.ts","mobile","src","68","nepregledano","","",""
