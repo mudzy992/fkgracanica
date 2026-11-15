@@ -21,7 +21,7 @@ vi.mock('expo-device', () => ({
 vi.mock('expo-notifications', () => ({
   setNotificationHandler: vi.fn(),
   requestPermissionsAsync: vi.fn(async () => ({ granted: true })),
-  getExpoPushTokenAsync: vi.fn(async () => ({ data: 'ExponentPushToken[xxx]' })),
+  getExpoPushTokenAsync: vi.fn(async () => ({ data: 'example-xxx-token' })),
   addNotificationResponseReceivedListener: vi.fn(() => ({ remove: vi.fn() })),
 }));
 
@@ -98,9 +98,9 @@ describe('mob-batch08 — P-MOB08 lib', () => {
       granted: true,
     } as never);
     vi.mocked(Notifications.getExpoPushTokenAsync).mockResolvedValueOnce({
-      data: 'ExponentPushToken[same]',
+      data: 'example-same-xxx',
     } as never);
-    vi.mocked(SecureStore.getItemAsync).mockResolvedValueOnce('ExponentPushToken[same]');
+    vi.mocked(SecureStore.getItemAsync).mockResolvedValueOnce('example-same-xxx');
     await ensurePushRegistration();
     expect(postSpy).not.toHaveBeenCalled();
   });
@@ -110,18 +110,18 @@ describe('mob-batch08 — P-MOB08 lib', () => {
       granted: true,
     } as never);
     vi.mocked(Notifications.getExpoPushTokenAsync).mockResolvedValueOnce({
-      data: 'ExponentPushToken[new]',
+      data: 'example-new-xxx',
     } as never);
     vi.mocked(SecureStore.getItemAsync).mockResolvedValueOnce('old');
     postSpy.mockResolvedValueOnce({ data: {} } as never);
     await ensurePushRegistration();
     expect(postSpy).toHaveBeenCalledWith('/notifications/devices', {
-      token: 'ExponentPushToken[new]',
+      token: 'example-new-xxx',
       platform: 'iOS',
     });
     expect(SecureStore.setItemAsync).toHaveBeenCalledWith(
       'fk_push_token',
-      'ExponentPushToken[new]',
+      'example-new-xxx',
     );
   });
 
