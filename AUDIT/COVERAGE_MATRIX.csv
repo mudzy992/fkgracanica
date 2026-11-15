@@ -2113,6 +2113,7 @@
 "mobile/src/lib/mob-batch03.test.ts","mobile","src","120","pokriveno testom","P-MOB03: 11 unit testova (league-season, flatten-editions, media, youtube-id)","Mobile","2026-11-14"
 "mobile/src/lib/mob-batch04.test.ts","mobile","src","128","pokriveno testom","P-MOB04: 11 unit testova (kpiLabel, deskCounts, filterCommentatorDesk, resolveListStatus, webOrigin, youtube-embed, search-nav)","Mobile","2026-11-14"
 "mobile/src/lib/mob-batch05.test.ts","mobile","src","94","pokriveno testom","P-MOB05: 8 unit testova (match-events, theme, parseCheckoutKind, finishCheckoutReturn)","Mobile","2026-11-14"
+"mobile/src/lib/mob-batch06.test.ts","mobile","src","110","pokriveno testom","P-MOB06: 12 unit testova (api token store/openMaps)","Mobile","2026-11-14"
 "mobile/src/lib/open-maps.ts","mobile","src","19","nepregledano","","",""
 "mobile/src/lib/permissions.ts","mobile","src","51","nepregledano","","",""
 "mobile/src/lib/push.ts","mobile","src","68","nepregledano","","",""
