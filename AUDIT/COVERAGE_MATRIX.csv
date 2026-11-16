@@ -2135,6 +2135,7 @@
 "mobile/src/lib/mob-batch25.test.ts","mobile","src","99","pokriveno testom","P-MOB25: 11 unit testova (heritage + home-surface)","Mobile","2026-11-14"
 "mobile/src/lib/mob-batch26.test.ts","mobile","src","150","pokriveno testom","P-MOB26: 11 unit testova (load-heritage)","Mobile","2026-11-14"
 "mobile/src/lib/mob-batch27.test.ts","mobile","src","127","pokriveno testom","P-MOB27: 11 unit testova (start-mobile-checkout)","Mobile","2026-11-14"
+"mobile/src/lib/mob-batch28.test.ts","mobile","src","88","pokriveno testom","P-MOB28: 11 unit testova (pure helpers)","Mobile","2026-11-14"
 "mobile/src/lib/open-maps.ts","mobile","src","19","nepregledano","","",""
 "mobile/src/lib/permissions.ts","mobile","src","51","nepregledano","","",""
 "mobile/src/lib/push.ts","mobile","src","68","nepregledano","","",""
