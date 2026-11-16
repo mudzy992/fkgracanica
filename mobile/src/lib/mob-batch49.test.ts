@@ -1,0 +1,23 @@
+import { describe, expect, it, vi } from 'vitest';
+vi.mock('react-native', () => ({ Platform: { OS: 'android' } }));
+vi.mock('expo-application', () => ({ nativeBuildVersion: '42' }));
+vi.mock('expo-file-system/legacy', () => ({ getInfoAsync: vi.fn(), readAsStringAsync: vi.fn(), createDownloadResumable: vi.fn(), cacheDirectory: '/tmp/', getContentUriAsync: vi.fn(), deleteAsync: vi.fn(), EncodingType: { Base64: 'base64' } }));
+vi.mock('expo-intent-launcher', () => ({ startActivityAsync: vi.fn() }));
+vi.mock('expo-secure-store', () => ({ getItemAsync: vi.fn(), setItemAsync: vi.fn(), deleteItemAsync: vi.fn() }));
+vi.mock('./api', () => ({ API_URL: 'https://api.fkgracanica.ba101.top/api/v1', api: { get: vi.fn(), post: vi.fn() } }));
+import { Sha256, base64ToBytes } from '../features/app-update/sha256';
+import { decideUpdate, resolveApkAbsoluteUrl, isAndroid, getLocalVersionCode } from '../features/app-update/apk-update';
+import { newsBodyEditorHtml } from '../components/writer/news-body-html';
+describe('mob-batch49 — P-MOB49 sha256/apk/news-body', () => {
+  it('Sha256 empty', () => { const h=new Sha256(); expect(h.hex()).toBe('e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'); });
+  it('Sha256 abc', () => { const h=new Sha256(); h.update(new TextEncoder().encode('abc')); expect(h.hex()).toBe('ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad'); });
+  it('Sha256 incremental', () => { const a=new Sha256(); a.update(new TextEncoder().encode('a')); a.update(new TextEncoder().encode('bc')); const b=new Sha256(); b.update(new TextEncoder().encode('abc')); expect(a.hex()).toBe(b.hex()); });
+  it('base64ToBytes', () => { const bytes=base64ToBytes('aGVsbG8='); expect(Array.from(bytes)).toEqual([104,101,108,108,111]); });
+  it('decideUpdate none', () => { const r={versionCode:42, minSupportedVersionCode:40, forceUpdate:false, version:'1', apkUrl:'/a', apkSha256:'x', apkSizeBytes:1, releaseNotes:null, publishedAt:null} as any; expect(decideUpdate(42,r).kind).toBe('none'); });
+  it('decideUpdate soft', () => { const r={versionCode:43, minSupportedVersionCode:40, forceUpdate:false, version:'1', apkUrl:'/a', apkSha256:'x', apkSizeBytes:1, releaseNotes:null, publishedAt:null} as any; expect(decideUpdate(42,r).kind).toBe('soft'); });
+  it('decideUpdate force via flag', () => { const r={versionCode:43, minSupportedVersionCode:40, forceUpdate:true, version:'1', apkUrl:'/a', apkSha256:'x', apkSizeBytes:1, releaseNotes:null, publishedAt:null} as any; expect(decideUpdate(42,r).kind).toBe('force'); });
+  it('decideUpdate force via minSupported', () => { const r={versionCode:43, minSupportedVersionCode:45, forceUpdate:false, version:'1', apkUrl:'/a', apkSha256:'x', apkSizeBytes:1, releaseNotes:null, publishedAt:null} as any; expect(decideUpdate(42,r).kind).toBe('force'); });
+  it('resolveApkAbsoluteUrl absolute', () => { expect(resolveApkAbsoluteUrl('https://cdn.example.com/a.apk')).toBe('https://cdn.example.com/a.apk'); });
+  it('resolveApkAbsoluteUrl relative', () => { expect(resolveApkAbsoluteUrl('/apk/app.apk')).toBe('https://api.fkgracanica.ba101.top/apk/app.apk'); });
+  it('newsBodyEditorHtml', () => { const html=newsBodyEditorHtml('<p>hi</p>'); expect(html).toContain('<p>hi</p>'); expect(html).toContain('contenteditable'); });
+});
