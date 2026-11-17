@@ -138,4 +138,48 @@ describe('AdminHome', () => {
     renderHome();
     expect(screen.getByRole('link', { name: 'admin.finance' }).getAttribute('href')).toBe('/admin/finance');
   });
+
+  it('osvježi dugme prikazuje lastUpdated i poziva refetch', async () => {
+    state.permissions = [
+      'dashboard.read',
+      'membership.manage',
+      'news.approve',
+      'live.approve',
+      'contact.read',
+      'finance.read',
+      'news.manage',
+      'analytics.read',
+    ];
+    state.kpis = { data, isLoading: false, isError: false, refetch: vi.fn(), isFetching: false, dataUpdatedAt: Date.now() } as unknown as typeof state.kpis;
+    renderHome();
+    expect(screen.getByText('admin.home.lastUpdated')).toBeTruthy();
+    const btn = screen.getByRole('button', { name: 'admin.home.refresh' });
+    expect(btn).not.toBeDisabled();
+    await userEvent.click(btn);
+    expect(state.kpis.refetch).toHaveBeenCalled();
+  });
+
+  it('osvježi dugme je disabled dok se osvježava', () => {
+    state.permissions = [
+      'dashboard.read',
+      'membership.manage',
+      'news.approve',
+      'live.approve',
+      'contact.read',
+      'finance.read',
+      'news.manage',
+      'analytics.read',
+    ];
+    state.kpis = { data, isLoading: false, isError: false, refetch: vi.fn(), isFetching: true, dataUpdatedAt: Date.now() } as unknown as typeof state.kpis;
+    renderHome();
+    const btn = screen.getByRole('button', { name: 'admin.common.loading' });
+    expect(btn).toBeDisabled();
+  });
+
+  it('greška dugme je disabled dok se ponovo učitava', () => {
+    state.kpis = { data: undefined, isLoading: false, isError: true, refetch: vi.fn(), isFetching: true } as unknown as typeof state.kpis;
+    renderHome();
+    const btn = screen.getByRole('button', { name: 'admin.common.loading' });
+    expect(btn).toBeDisabled();
+  });
 });
