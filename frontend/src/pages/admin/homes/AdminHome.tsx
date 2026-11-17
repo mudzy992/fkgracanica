@@ -30,7 +30,7 @@ const ACTION_PERMISSIONS: Record<string, string> = {
 
 function KpiSkeletonGrid() {
   return (
-    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4" aria-busy="true" aria-live="polite">
+    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4" aria-busy="true">
       {Array.from({ length: 8 }).map((_, i) => (
         <Card key={i} className="h-[118px] border-[var(--border-subtle)] bg-surface/50">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -66,7 +66,6 @@ function KpiRow({
         const raw = data[key as keyof DashboardKpis];
         const value = raw ?? '—';
         const label = t(`admin.kpi.${key}`, { defaultValue: KPI_LABELS[key] ?? key });
-        const ariaLabel = `${label}: ${value}`;
         const inner = (
           <Card className="h-full border-[var(--border-subtle)] bg-surface/50 transition-colors hover:border-primary/25 hover:bg-surface/80">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -74,9 +73,7 @@ function KpiRow({
               {Icon ? <Icon className="h-4 w-4 text-primary-light/70" aria-hidden /> : null}
             </CardHeader>
             <CardContent>
-              <p className="text-3xl font-bold tabular-nums text-primary-light" aria-label={ariaLabel}>
-                {value}
-              </p>
+              <p className="text-3xl font-bold tabular-nums text-primary-light">{value}</p>
               {href ? (
                 <p className={`mt-3 text-xs ${adminLinkClass}`}>{t('admin.home.open')}</p>
               ) : null}
@@ -87,15 +84,12 @@ function KpiRow({
           <Link
             key={key}
             to={href}
-            aria-label={ariaLabel}
             className="block rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-light"
           >
             {inner}
           </Link>
         ) : (
-          <div key={key} aria-label={ariaLabel}>
-            {inner}
-          </div>
+          <div key={key}>{inner}</div>
         );
       })}
     </div>
@@ -135,11 +129,7 @@ export function AdminHome() {
       <p className="mb-6 text-sm text-text-muted">{t('admin.home.subtitle')}</p>
       <PlatformStatusTeaser />
       {isError ? (
-        <div
-          role="alert"
-          aria-live="assertive"
-          className="flex flex-col items-center gap-4 py-12"
-        >
+        <div role="alert" className="flex flex-col items-center gap-4 py-12">
           <p className="text-text-muted">{t('admin.home.kpiError')}</p>
           <Button variant="outline" onClick={() => void refetch()} disabled={isFetching}>
             {isFetching ? t('admin.common.loading') : t('actions.retry')}
@@ -168,7 +158,6 @@ export function AdminHome() {
                 size="sm"
                 onClick={() => void refetch()}
                 disabled={isFetching}
-                aria-label={t('actions.retry')}
               >
                 {isFetching ? t('admin.common.loading') : t('admin.home.refresh', { defaultValue: 'Osvježi' })}
               </Button>

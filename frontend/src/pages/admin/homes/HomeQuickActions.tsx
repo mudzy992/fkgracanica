@@ -1,7 +1,6 @@
-import { buttonVariants } from "../../../components/ui/button-variants";
-import { cn } from "../../../lib/utils";
+import { buttonVariants } from '../../../components/ui/button-variants';
+import { cn } from '../../../lib/utils';
 import { Link } from 'react-router-dom';
-;
 
 export type HomeAction = {
   to: string;
