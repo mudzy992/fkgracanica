@@ -93,4 +93,14 @@ describe('AdminHome — varijante (4 grane: Icon/href/label fallback)', () => {
     expect(screen.queryByRole('link', { name: /finance/ })).toBeNull();
     expect(screen.getByText('admin.home.title')).toBeInTheDocument();
   });
+
+  it('nedostajući KPI vrijednosti prikazuju em dash', () => {
+    state.cfg.KPI_ROUTES = {} as Record<string, string>;
+    state.cfg.KPI_LABELS = {} as Record<string, string>;
+    state.cfg.QUEUE_KPI_KEYS = ['missingKey'] as readonly string[];
+    state.cfg.HEALTH_KPI_KEYS = [] as readonly string[];
+    state.kpis = { data: {} as unknown, isLoading: false, isError: false, refetch: vi.fn() };
+    renderHome();
+    expect(screen.getByText('—')).toBeInTheDocument();
+  });
 });

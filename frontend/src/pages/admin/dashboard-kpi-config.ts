@@ -104,6 +104,5 @@ export function canViewKpi(
 ): boolean {
   const required = KPI_PERMISSIONS[key];
   if (!required) return true;
-  if (required === 'dashboard.read') return true;
   return hasPerm(permissions, required);
 }
