@@ -239,7 +239,9 @@
       "commentatorTitle": "Commentator — dashboard",
       "commentatorHint": "Scoreboard, events and report submission. No calendar or competitions.",
       "commentatorHintShort": "Scoreboard, events, reports.",
-      "matchesError": "Could not load matches."
+      "matchesError": "Could not load matches.",
+      "refresh": "Refresh",
+      "lastUpdated": "Updated at {{time}}"
     },
     "content": {
       "news": "News",

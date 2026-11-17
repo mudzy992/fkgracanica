@@ -239,7 +239,9 @@
       "commentatorTitle": "Komentator — kontrolna tabla",
       "commentatorHint": "Semafor, događaji i predaja izvještaja. Bez kalendara i takmičenja.",
       "commentatorHintShort": "Semafor, događaji, izvještaji.",
-      "matchesError": "Nije moguće učitati utakmice."
+      "matchesError": "Nije moguće učitati utakmice.",
+      "refresh": "Osvježi",
+      "lastUpdated": "Ažurirano u {{time}}"
     },
     "content": {
       "news": "Vijesti",
