@@ -78,3 +78,32 @@ export const HEALTH_KPI_KEYS = [
   'publishedNews',
   'uniqueVisitorsTotal30d',
 ] as const;
+
+export const KPI_PERMISSIONS: Record<string, string> = {
+  users: 'users.read',
+  members: 'membership.manage',
+  activeMemberships: 'membership.manage',
+  publishedNews: 'news.manage',
+  matches: 'matches.manage',
+  goals: 'matches.manage',
+  ticketsSold: 'finance.read',
+  pendingNews: 'news.approve',
+  pendingGalleries: 'gallery.approve',
+  pendingLive: 'live.approve',
+  pendingMemberships: 'membership.manage',
+  unreadInbox: 'contact.read',
+  uniqueVisitorsWeb: 'analytics.read',
+  uniqueVisitorsMobile: 'analytics.read',
+  uniqueVisitorsTotal30d: 'analytics.read',
+};
+
+export function canViewKpi(
+  key: string,
+  permissions: string[] | undefined,
+  hasPerm: (perms: string[] | undefined, k: string) => boolean,
+): boolean {
+  const required = KPI_PERMISSIONS[key];
+  if (!required) return true;
+  if (required === 'dashboard.read') return true;
+  return hasPerm(permissions, required);
+}

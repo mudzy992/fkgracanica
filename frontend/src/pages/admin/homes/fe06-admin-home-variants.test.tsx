@@ -26,6 +26,13 @@ vi.mock('../dashboard-kpi-config', () => ({
   get KPI_ICONS() { return state.cfg.KPI_ICONS; },
   get QUEUE_KPI_KEYS() { return state.cfg.QUEUE_KPI_KEYS; },
   get HEALTH_KPI_KEYS() { return state.cfg.HEALTH_KPI_KEYS; },
+  get KPI_PERMISSIONS() { return (state.cfg as unknown as { KPI_PERMISSIONS?: Record<string,string> }).KPI_PERMISSIONS ?? {}; },
+  canViewKpi: (key: string, perms: string[] | undefined, hasPerm: (p: string[] | undefined, k: string) => boolean) => {
+    const permsMap = (state.cfg as unknown as { KPI_PERMISSIONS?: Record<string,string> }).KPI_PERMISSIONS ?? {};
+    const req = permsMap[key];
+    if (!req) return !!state.cfg.KPI_ROUTES[key];
+    return hasPerm(perms, req);
+  },
 }));
 vi.mock('lucide-react', async () => {
   const actual = await vi.importActual<typeof import('lucide-react')>('lucide-react');

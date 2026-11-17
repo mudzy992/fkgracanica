@@ -48,14 +48,15 @@ const renderHome = () =>
 
 describe('AdminHome', () => {
   beforeEach(() => {
-    state.kpis = { data: undefined, isLoading: false, isError: false, refetch: vi.fn() };
-    state.permissions = [];
+    state.kpis = { data: undefined, isLoading: false, isError: false, refetch: vi.fn(), isFetching: false, dataUpdatedAt: undefined } as unknown as typeof state.kpis;
+    state.permissions = ['dashboard.read', 'cms.manage', 'users.read', 'settings.read', 'live.approve'];
     state.seo = [];
     state.teaser = 0;
   });
 
   it('prikazuje naslov, podnaslov, SEO i teaser statusa', () => {
-    state.kpis = { data, isLoading: false, isError: false, refetch: vi.fn() };
+    state.permissions = ['dashboard.read', 'cms.manage', 'users.read', 'settings.read', 'live.approve', 'membership.manage', 'news.approve', 'contact.read', 'finance.read', 'news.manage', 'analytics.read'];
+    state.kpis = { data, isLoading: false, isError: false, refetch: vi.fn(), isFetching: false, dataUpdatedAt: Date.now() } as unknown as typeof state.kpis;
     renderHome();
     expect(state.seo).toContain('admin.home.metaTitle');
     expect(state.teaser).toBe(1);
@@ -63,25 +64,36 @@ describe('AdminHome', () => {
     expect(screen.getByText('admin.home.subtitle')).toBeTruthy();
   });
 
-  it('dok nema podataka prikazuje se učitavanje bez KPI sekcija', () => {
-    state.kpis = { data: undefined, isLoading: true, isError: false, refetch: vi.fn() };
+  it('dok nema podataka prikazuje se učitavanje sa skeletonom', () => {
+    state.kpis = { data: undefined, isLoading: true, isError: false, refetch: vi.fn(), dataUpdatedAt: undefined, isFetching: false } as unknown as typeof state.kpis;
     renderHome();
-    expect(screen.getByText('admin.common.loading')).toBeTruthy();
-    expect(screen.queryByText('admin.home.queue')).toBeNull();
+    expect(screen.getByText('admin.home.queue')).toBeTruthy();
     expect(screen.queryByText('admin.home.health')).toBeNull();
+    expect(document.querySelector('[aria-busy="true"]')).toBeTruthy();
   });
 
   it('greška prikazuje poruku i ponovno učitavanje bez KPI sekcija', async () => {
-    state.kpis = { data: undefined, isLoading: false, isError: true, refetch: vi.fn() };
+    state.kpis = { data: undefined, isLoading: false, isError: true, refetch: vi.fn(), isFetching: false } as unknown as typeof state.kpis;
     renderHome();
     expect(screen.getByText('admin.home.kpiError')).toBeTruthy();
+    expect(screen.getByRole('alert')).toBeTruthy();
     expect(screen.queryByText('admin.home.queue')).toBeNull();
     await userEvent.click(screen.getByRole('button', { name: 'actions.retry' }));
     expect(state.kpis.refetch).toHaveBeenCalled();
   });
 
   it('KPI vrijednosti su prikazane u redovima i vode na svoje rute', () => {
-    state.kpis = { data, isLoading: false, isError: false, refetch: vi.fn() };
+    state.permissions = [
+      'dashboard.read',
+      'membership.manage',
+      'news.approve',
+      'live.approve',
+      'contact.read',
+      'finance.read',
+      'news.manage',
+      'analytics.read',
+    ];
+    state.kpis = { data, isLoading: false, isError: false, refetch: vi.fn(), isFetching: false } as unknown as typeof state.kpis;
     renderHome();
     expect(screen.getByText('admin.home.queue')).toBeTruthy();
     expect(screen.getByText('admin.home.health')).toBeTruthy();
@@ -92,13 +104,24 @@ describe('AdminHome', () => {
   });
 
   it('svih osam KPI kartica su linkovi sa oznakom Otvori', () => {
-    state.kpis = { data, isLoading: false, isError: false, refetch: vi.fn() };
+    state.permissions = [
+      'dashboard.read',
+      'membership.manage',
+      'news.approve',
+      'live.approve',
+      'contact.read',
+      'finance.read',
+      'news.manage',
+      'analytics.read',
+    ];
+    state.kpis = { data, isLoading: false, isError: false, refetch: vi.fn(), isFetching: false } as unknown as typeof state.kpis;
     renderHome();
     expect(screen.getAllByText('admin.home.open')).toHaveLength(8);
   });
 
   it('quick akcije sadrže osnovne rute bez finansija bez dozvole', () => {
-    state.kpis = { data, isLoading: false, isError: false, refetch: vi.fn() };
+    state.permissions = ['dashboard.read', 'cms.manage', 'users.read', 'settings.read', 'live.approve'];
+    state.kpis = { data, isLoading: false, isError: false, refetch: vi.fn(), isFetching: false } as unknown as typeof state.kpis;
     renderHome();
     expect(screen.getByRole('link', { name: 'admin.cms' }).getAttribute('href')).toBe('/admin/cms');
     expect(screen.getByRole('link', { name: 'admin.usersAndRoles' }).getAttribute('href')).toBe('/admin/users');
@@ -110,8 +133,8 @@ describe('AdminHome', () => {
   });
 
   it('finansije su dostupne uz finance.read', () => {
-    state.permissions = ['finance.read'];
-    state.kpis = { data, isLoading: false, isError: false, refetch: vi.fn() };
+    state.permissions = ['dashboard.read', 'cms.manage', 'users.read', 'settings.read', 'live.approve', 'finance.read'];
+    state.kpis = { data, isLoading: false, isError: false, refetch: vi.fn(), isFetching: false } as unknown as typeof state.kpis;
     renderHome();
     expect(screen.getByRole('link', { name: 'admin.finance' }).getAttribute('href')).toBe('/admin/finance');
   });

@@ -183,10 +183,14 @@ export function usePrivateSettings() {
   });
 }
 
-export function useDashboardKpis() {
+export function useDashboardKpis(enabled = true) {
   return useQuery({
     queryKey: ['dashboard', 'kpis'],
     queryFn: async () => (await api.get<DashboardKpis>('/dashboard/kpis')).data,
+    enabled,
+    staleTime: 30_000,
+    retry: 1,
+    refetchOnWindowFocus: false,
   });
 }
 

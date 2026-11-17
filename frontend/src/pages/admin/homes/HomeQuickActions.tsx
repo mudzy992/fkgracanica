@@ -10,8 +10,9 @@ export type HomeAction = {
 };
 
 export function HomeQuickActions({ items }: { items: HomeAction[] }) {
+  if (items.length === 0) return null;
   return (
-    <div className="mt-6 flex flex-wrap gap-1.5">
+    <nav aria-label="Brze akcije" className="mt-6 flex flex-wrap gap-1.5">
       {items.map((item) => (
         <Link
           key={`${item.to}-${item.label}`}
@@ -21,6 +22,6 @@ export function HomeQuickActions({ items }: { items: HomeAction[] }) {
           {item.label}
         </Link>
       ))}
-    </div>
+    </nav>
   );
 }
