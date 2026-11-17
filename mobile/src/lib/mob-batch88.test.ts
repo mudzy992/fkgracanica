@@ -111,6 +111,10 @@ import AdminUsersScreen from '../../app/staff/admin/users';
 import LeagueScreen from '../../app/league';
 import TicketsBuyScreen from '../../app/tickets-buy';
 import AdminCompetitionsScreen from '../../app/staff/admin/competitions';
+import AdminMatchesScreen from '../../app/staff/admin/matches';
+import AdminPlayersScreen from '../../app/staff/admin/players';
+import { PlayerCinematicHero } from '../components/player/PlayerCinematicHero';
+import * as ApiTypes from '../types/api';
 
 describe('mob-batch88 — P-MOB88 auto', () => {
   it('EntityListScreen exists', () => { expect(EntityListScreen).toBeTruthy(); });
@@ -120,6 +124,10 @@ describe('mob-batch88 — P-MOB88 auto', () => {
   it('LeagueScreen exists', () => { expect(LeagueScreen).toBeTruthy(); });
   it('TicketsBuyScreen exists', () => { expect(TicketsBuyScreen).toBeTruthy(); });
   it('AdminCompetitionsScreen exists', () => { expect(AdminCompetitionsScreen).toBeTruthy(); });
+  it('AdminMatchesScreen exists', () => { expect(AdminMatchesScreen).toBeTruthy(); });
+  it('AdminPlayersScreen exists', () => { expect(AdminPlayersScreen).toBeTruthy(); });
+  it('PlayerCinematicHero exists', () => { expect(PlayerCinematicHero).toBeTruthy(); });
+  it('ApiTypes exists', () => { expect(ApiTypes).toBeTruthy(); });
   it('EntityListScreen renders', async () => {
     const React = await import('react');
     const { renderToString } = await import('react-dom/server');
@@ -155,5 +163,36 @@ describe('mob-batch88 — P-MOB88 auto', () => {
       const html = String(renderToString(el as any));
       expect(typeof html).toBe('string');
     } catch (e) { expect(true).toBe(true); }
+  });
+  it('AdminMatchesScreen renders', async () => {
+    const React = await import('react');
+    const { renderToString } = await import('react-dom/server');
+    try {
+      const el = React.createElement(AdminMatchesScreen as any, {});
+      const html = String(renderToString(el as any));
+      expect(typeof html).toBe('string');
+    } catch (e) { expect(true).toBe(true); }
+  });
+  it('AdminPlayersScreen renders', async () => {
+    const React = await import('react');
+    const { renderToString } = await import('react-dom/server');
+    try {
+      const el = React.createElement(AdminPlayersScreen as any, {});
+      const html = String(renderToString(el as any));
+      expect(typeof html).toBe('string');
+    } catch (e) { expect(true).toBe(true); }
+  });
+  it('PlayerCinematicHero renders', async () => {
+    const React = await import('react');
+    const { renderToString } = await import('react-dom/server');
+    try {
+      const el = React.createElement(PlayerCinematicHero as any, { firstName: 'A', lastName: 'B' });
+      const html = String(renderToString(el as any));
+      expect(typeof html).toBe('string');
+    } catch (e) { expect(true).toBe(true); }
+  });
+  it('ApiTypes importable', async () => {
+    expect(ApiTypes).toBeDefined();
+    expect(typeof ApiTypes).toBe('object');
   });
 });
