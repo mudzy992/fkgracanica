@@ -1,0 +1,20 @@
+import { describe, expect, it } from 'vitest';
+import { leagueBs, leagueEn } from '../i18n/league';
+import { liveBs, liveEn } from '../i18n/live';
+import { newsBs, newsEn } from '../i18n/news';
+import { playerBs, playerEn } from '../i18n/player';
+import { teamBs, teamEn } from '../i18n/team';
+import { ticketsBs, ticketsEn } from '../i18n/tickets';
+describe('mob-batch55 — P-MOB55 i18n batch2', () => {
+  it('leagueBs', () => { expect(leagueBs.leagueTitle).toBe('Liga'); expect(leagueBs.leagueKicker).toBe('Prvenstvo'); });
+  it('leagueEn mirrors', () => { expect(Object.keys(leagueEn)).toEqual(Object.keys(leagueBs)); expect(leagueEn.leagueTitle).toBe('League'); });
+  it('liveBs', () => { expect(liveBs.matchLive).toBe('Uživo'); expect(liveBs.matchFinished).toBe('Završena'); });
+  it('liveEn mirrors', () => { expect(Object.keys(liveEn)).toEqual(Object.keys(liveBs)); expect(liveEn.matchLive).toBe('Live'); });
+  it('newsBs', () => { expect(newsBs.shareNews).toBe('Podijeli vijest'); expect(newsBs.watchVideo).toBe('Pogledaj video'); });
+  it('newsEn mirrors', () => { expect(Object.keys(newsEn)).toEqual(Object.keys(newsBs)); });
+  it('playerBs', () => { expect(playerBs.playerAbout).toBe('O igraču'); expect(playerBs.playerNotFound).toContain('nije pronađen'); });
+  it('playerEn mirrors', () => { expect(Object.keys(playerEn)).toEqual(Object.keys(playerBs)); });
+  it('teamBs', () => { expect(teamBs.teamKicker).toContain('kadar'); expect(teamBs.teamFormation).toBe('Formacija'); });
+  it('teamEn mirrors', () => { expect(Object.keys(teamEn)).toEqual(Object.keys(teamBs)); });
+  it('ticketsBs', () => { expect(ticketsBs.soldOut).toBe('Rasprodano'); expect(ticketsBs.payOnline).toBe('Plati online'); });
+});
