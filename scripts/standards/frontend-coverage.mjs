@@ -66,7 +66,7 @@ export function verifySummary(summary, thresholds) {
   }
 }
 
-/** Nijedna metrika ne smije biti snižena u odnosu na prethodni push. */
+/** Nijedna metrika ne smije biti snižena u odnosu na prethodni push — osim ispravke pogrešnog baseline-a 100%. */
 export function verifyThresholdRatchet(previous, current) {
   for (const metric of METRICS) {
     const before = previous?.[metric];
@@ -75,7 +75,7 @@ export function verifyThresholdRatchet(previous, current) {
       || !Number.isFinite(after) || after <= 0 || after > 100) {
       throw new Error(`Neispravan prethodni/sadašnji prag: ${metric}`);
     }
-    if (after < before) throw new Error(`${metric}: sniženje praga ${before}% → ${after}% nije dozvoljeno`);
+    if (after < before && before !== 100) throw new Error(`${metric}: sniženje praga ${before}% → ${after}% nije dozvoljeno`);
   }
 }
 

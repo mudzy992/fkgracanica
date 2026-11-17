@@ -241,7 +241,8 @@
       "commentatorHintShort": "Semafor, događaji, izvještaji.",
       "matchesError": "Nije moguće učitati utakmice.",
       "refresh": "Osvježi",
-      "lastUpdated": "Ažurirano u {{time}}"
+      "lastUpdated": "Ažurirano u {{time}}",
+      "quickActions": "Brze akcije"
     },
     "content": {
       "news": "Vijesti",

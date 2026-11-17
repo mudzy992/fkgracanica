@@ -241,7 +241,8 @@
       "commentatorHintShort": "Scoreboard, events, reports.",
       "matchesError": "Could not load matches.",
       "refresh": "Refresh",
-      "lastUpdated": "Updated at {{time}}"
+      "lastUpdated": "Updated at {{time}}",
+      "quickActions": "Quick actions"
     },
     "content": {
       "news": "News",
