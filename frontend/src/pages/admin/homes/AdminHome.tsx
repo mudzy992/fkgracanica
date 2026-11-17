@@ -112,11 +112,9 @@ export function AdminHome() {
   if (hasPermission(user?.permissions, 'finance.read')) {
     baseActions.push({ to: '/admin/finance', label: t('admin.finance') });
   }
-  const actions = baseActions.filter((a) => {
-    const req = ACTION_PERMISSIONS[a.to];
-    if (!req) return true;
-    return hasPermission(user?.permissions, req);
-  });
+  const actions = baseActions.filter((a) =>
+    hasPermission(user?.permissions, ACTION_PERMISSIONS[a.to]),
+  );
 
   const lastUpdated = dataUpdatedAt
     ? new Date(dataUpdatedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
