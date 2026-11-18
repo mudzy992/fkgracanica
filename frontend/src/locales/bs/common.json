@@ -152,6 +152,7 @@
     "cmdkActions": "Brze akcije",
     "common": {
       "loading": "Učitavanje…",
+      "loadError": "Greška pri učitavanju.",
       "select": "Odaberi…",
       "error": "Došlo je do greške.",
       "yes": "Da",
@@ -458,6 +459,7 @@
       "name": "Naziv kluba *"
     },
     "calendar": {
+      "title": "Sezona",
       "seasonNotFound": "Sezona nije pronađena.",
       "competition": "Takmičenje",
       "participants": "Učesnici"
@@ -704,6 +706,7 @@
       "editTitle": "Uredi: {{title}}"
     },
     "seasonHub": {
+      "title": "Sezona",
       "notFound": "Takmičenje u sezoni nije pronađeno."
     },
     "galleryEditor": {
@@ -793,7 +796,9 @@
     "roundMatches": {
       "title": "Utakmice u kolu",
       "scheduled": "Zakazano",
-      "retro": "Retro"
+      "retro": "Retro",
+      "live": "Live",
+      "report": "Izvještaj"
     },
     "financeFilters": {
       "status": "Status uplate",

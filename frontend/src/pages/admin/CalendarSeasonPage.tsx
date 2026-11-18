@@ -52,7 +52,7 @@ export function CalendarSeasonPage() {
           ) : isLoading ? <Skeleton className="h-7 w-48" /> : null}
         </div>
         {canManage && season ? (
-          <Button size="sm" onClick={() => { setEdit(null); setOpen(true); }} disabled={deleteEdition.isPending}><Plus className="mr-1 h-4 w-4" />{t('admin.calendar.competition')}</Button>
+          <Button size="sm" onClick={() => { setEdit(null); setOpen(true); }} disabled={deleteEdition.isPending}><Plus className="mr-1 h-4 w-4" />{t('admin.calendar.competition', { defaultValue: 'Takmičenje' })}</Button>
         ) : null}
         {lastUpdated ? (
           <div className="flex items-center gap-3 text-xs text-text-muted">

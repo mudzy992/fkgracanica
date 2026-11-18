@@ -15,7 +15,7 @@ const state = vi.hoisted(() => ({
   sheet: {} as Record<string, unknown>,
 }));
 
-vi.mock('react-i18next', () => ({ useTranslation: () => ({ t: (k: string) => k }) }));
+vi.mock('react-i18next', () => ({ useTranslation: () => ({ t: (k: string, opts?: { defaultValue?: string }) => opts?.defaultValue ?? k }) }));
 vi.mock('../../hooks', () => ({ useSeasons: () => ({ data: state.seasons, isLoading: state.isLoading }) }));
 vi.mock('../../hooks/use-season-admin', () => ({
   useDeleteSeasonCompetition: () => ({ mutateAsync: state.remove }),

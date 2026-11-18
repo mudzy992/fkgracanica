@@ -152,6 +152,7 @@
     "cmdkActions": "Quick actions",
     "common": {
       "loading": "Loading…",
+      "loadError": "Failed to load.",
       "select": "Select…",
       "error": "Something went wrong.",
       "yes": "Yes",
@@ -458,6 +459,7 @@
       "name": "Club name *"
     },
     "calendar": {
+      "title": "Season",
       "seasonNotFound": "Season not found.",
       "competition": "Competition",
       "participants": "Participants"
@@ -704,6 +706,7 @@
       "editTitle": "Edit: {{title}}"
     },
     "seasonHub": {
+      "title": "Season",
       "notFound": "Competition in season not found."
     },
     "galleryEditor": {
@@ -793,7 +796,9 @@
     "roundMatches": {
       "title": "Matches in the round",
       "scheduled": "Scheduled",
-      "retro": "Retro"
+      "retro": "Retro",
+      "live": "Live",
+      "report": "Report"
     },
     "financeFilters": {
       "status": "Payment status",
