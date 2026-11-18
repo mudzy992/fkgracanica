@@ -48,9 +48,9 @@ beforeEach(() => {
 
 describe('SeasonRoundsPanel — prikaz', () => {
   it('dok se kola učitavaju prikazuje poruku, bez liste', () => {
-    state.rounds = { data: [], isLoading: true };
+    state.rounds = { data: [], isLoading: true } as unknown as typeof state.rounds;
     renderPanel();
-    expect(screen.getByText('admin.common.loading')).toBeInTheDocument();
+    expect(document.querySelector('[aria-busy="true"]')).toBeTruthy();
     expect(screen.queryByText('admin.roundsPanel.empty')).toBeNull();
   });
 

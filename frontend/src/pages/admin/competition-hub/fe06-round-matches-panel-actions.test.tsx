@@ -68,11 +68,11 @@ describe('RoundMatchesPanel — live i izvještaj', () => {
       match({ id: 'ok', status: 'FINISHED', reportStatus: 'APPROVED' }),
     ];
     renderPanel();
-    expect(within(row('draft')).getByRole('link', { name: /Izvještaj/ })).toHaveAttribute(
+    expect(within(row('draft')).getByRole('link', { name: /admin\.roundMatches\.report/ })).toHaveAttribute(
       'href',
       '/admin/matches/draft/report',
     );
-    expect(within(row('ok')).queryByRole('link', { name: /Izvještaj/ })).toBeNull();
+    expect(within(row('ok')).queryByRole('link', { name: /admin\.roundMatches\.report/ })).toBeNull();
   });
 
   it('bez live.manage nema live ni izvještaj linkova', () => {

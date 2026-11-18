@@ -289,10 +289,16 @@ export function useCompetitions() {
   });
 }
 
-export function useSeasons() {
+export function useSeasons(
+  options?: Omit<import('@tanstack/react-query').UseQueryOptions<unknown[]>, 'queryKey' | 'queryFn'>,
+) {
   return useQuery({
     queryKey: ['seasons'],
     queryFn: async () => asArray((await api.get('/seasons')).data),
+    staleTime: 30_000,
+    retry: 1,
+    refetchOnWindowFocus: false,
+    ...options,
   });
 }
 

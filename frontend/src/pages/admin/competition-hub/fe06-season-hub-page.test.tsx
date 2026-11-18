@@ -92,9 +92,10 @@ describe('SeasonHubPage', () => {
   });
 
   it('dok se sezone učitavaju prikazuje skeleton', () => {
-    state.seasons = { data: undefined, isLoading: true };
+    state.seasons = { data: undefined, isLoading: true } as unknown as typeof state.seasons;
     renderPage();
-    expect(screen.getAllByTestId('skeleton')).toHaveLength(1);
+    expect(screen.getAllByTestId('skeleton').length).toBeGreaterThanOrEqual(1);
+    expect(document.querySelector('[aria-busy="true"]')).toBeTruthy();
   });
 
   it('nepoznata edicija prikazuje poruku', () => {

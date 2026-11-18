@@ -1,5 +1,5 @@
-import { buttonVariants } from "../../components/ui/button-variants";
-import { cn } from "../../lib/utils";
+import { buttonVariants } from '../../components/ui/button-variants';
+import { cn } from '../../lib/utils';
 import { Link, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ArrowLeft, Pencil, Plus, Trash2 } from 'lucide-react';
@@ -18,145 +18,79 @@ import { adminLinkClass } from '../../lib/admin-styles';
 import { type CalendarSeason } from '../../lib/season-utils';
 import { SeasonEditionFormSheet, type SeasonEditionRow } from './SeasonEditionFormSheet';
 import { runAction } from '../../lib/action-errors';
-import { Card } from "../../components/ui/card";
-
+import { Card } from '../../components/ui/card';
 export function CalendarSeasonPage() {
   const { t } = useTranslation();
   const { seasonId = '' } = useParams();
-  const { data: seasons, isLoading } = useSeasons();
+  const { data: seasons, isLoading, isError, isFetching, dataUpdatedAt, refetch } = useSeasons();
   const { user } = useAuth();
   const canManage = hasPermission(user?.permissions, 'competitions.manage');
   const deleteEdition = useDeleteSeasonCompetition();
   const { confirm, dialog } = useConfirm();
   const [open, setOpen] = useState(false);
   const [edit, setEdit] = useState<SeasonEditionRow | null>(null);
-
   const season = ((seasons as CalendarSeason[] | undefined) ?? []).find((s) => s.id === seasonId);
   const rows = (season?.competitions as SeasonEditionRow[] | undefined) ?? [];
-
+  const lastUpdated = dataUpdatedAt ? new Date(dataUpdatedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : null;
   const onDelete = async (item: SeasonEditionRow) => {
-    const ok = await confirm({
-      title: 'Ukloniti takmičenje iz sezone?',
-      description: item.competition?.name ?? item.id,
-      variant: 'danger',
-      confirmLabel: 'Ukloni',
-    });
+    const ok = await confirm({ title: 'Ukloniti takmičenje iz sezone?', description: item.competition?.name ?? item.id, variant: 'danger', confirmLabel: 'Ukloni' });
     if (ok) void runAction(deleteEdition.mutateAsync({ seasonId, editionId: item.id }));
   };
-
-  if (isLoading) return <Skeleton className="mx-4 mt-8 h-64" />;
-  if (!season) return <p className="p-8 text-text-muted">{t('admin.calendar.seasonNotFound')}</p>;
-
+  const showNotFound = !isLoading && !isError && !season;
   return (
     <div className="space-y-6 pb-8">
-      <Seo title={season.name} />
+      <Seo title={season?.name ?? t('admin.calendar.title', { defaultValue: 'Sezona' })} />
       {dialog}
       <div className="flex flex-wrap items-center gap-3">
-        <Link to="/admin/competitions" aria-label={t('actions.back')} className={cn(buttonVariants({variant: "ghost", size: "icon"}))}><ArrowLeft className="h-4 w-4" /></Link>
+        <Link to="/admin/competitions" aria-label={t('actions.back')} className={cn(buttonVariants({ variant: 'ghost', size: 'icon' }))}><ArrowLeft className="h-4 w-4" /></Link>
         <div className="min-w-0 flex-1">
-          <div className="flex flex-wrap items-center gap-2">
-            <h1 className="text-2xl font-bold">{season.name}</h1>
-            {season.isActive && (
-              <Badge variant="success">{t('admin.competitionsAdmin.colActive')}</Badge>
-            )}
-          </div>
-          <p className="text-sm text-text-muted">
-            {season.yearStart}/{season.yearEnd}
-          </p>
+          {season ? (
+            <>
+              <div className="flex flex-wrap items-center gap-2"><h1 className="text-2xl font-bold">{season.name}</h1>{season.isActive && <Badge variant="success">{t('admin.competitionsAdmin.colActive')}</Badge>}</div>
+              <p className="text-sm text-text-muted">{season.yearStart}/{season.yearEnd}</p>
+            </>
+          ) : isLoading ? <Skeleton className="h-7 w-48" /> : null}
         </div>
-        {canManage && (
-          <Button
-            size="sm"
-            onClick={() => {
-              setEdit(null);
-              setOpen(true);
-            }}
-          >
-            <Plus className="mr-1 h-4 w-4" />
-            Takmičenje
-          </Button>
-        )}
+        {canManage && season ? (
+          <Button size="sm" onClick={() => { setEdit(null); setOpen(true); }} disabled={deleteEdition.isPending}><Plus className="mr-1 h-4 w-4" />Takmičenje</Button>
+        ) : null}
+        {lastUpdated ? (
+          <div className="flex items-center gap-3 text-xs text-text-muted">
+            <span>{t('admin.home.lastUpdated', { defaultValue: 'Ažurirano u {{time}}', time: lastUpdated })}</span>
+            <Button variant="outline" size="sm" onClick={() => void refetch()} disabled={isFetching}>{isFetching ? t('admin.common.loading') : t('admin.home.refresh', { defaultValue: 'Osvježi' })}</Button>
+          </div>
+        ) : null}
       </div>
-      <Card className="overflow-hidden rounded-2xl border border-[var(--border-subtle)] bg-background">
-        <AdminDataTable
-          rows={rows}
-          empty="Nema takmičenja u ovoj sezoni."
-          columns={[
-            {
-              key: 'name',
-              header: t('admin.calendar.competition'),
-              render: (r) => r.competition?.name ?? '—',
-            },
-            {
-              key: 'league',
-              header: t('admin.competitionsAdmin.colLeague'),
-              render: (r) =>
-                r.competition?.isLeague ? (
-                  <Badge variant="success">{t('admin.competitionsAdmin.league')}</Badge>
-                ) : (
-                  <Badge variant="muted">{t('admin.competitionsAdmin.other')}</Badge>
-                ),
-            },
-            {
-              key: 'participants',
-              header: t('admin.calendar.participants'),
-              render: (r) => r.participants?.length ?? 0,
-            },
-            {
-              key: 'hub',
-              header: 'Kola',
-              render: (r) => (
-                <Link
-                  to={`/admin/seasons/${seasonId}/competitions/${r.id}`}
-                  className={`text-sm ${adminLinkClass}`}
-                >
-                  Upravljaj
-                </Link>
-              ),
-            },
-            ...(canManage
-              ? [
-                  {
-                    key: 'actions',
-                    header: 'Akcije',
-                    render: (r: SeasonEditionRow) => (
-                      <div className="flex gap-1">
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => {
-                            setEdit(r);
-                            setOpen(true);
-                          }}
-                          aria-label={t('actions.edit')}
-                        >
-                          <Pencil className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => void onDelete(r)}
-                          aria-label={t('actions.delete')}
-                        >
-                          <Trash2 className="h-4 w-4 text-danger" />
-                        </Button>
-                      </div>
-                    ),
-                  },
-                ]
-              : []),
-          ]}
-        />
-      </Card>
-      <SeasonEditionFormSheet
-        open={open}
-        onOpenChange={(o) => {
-          setOpen(o);
-          if (!o) setEdit(null);
-        }}
-        seasonId={seasonId}
-        editEdition={edit}
-      />
+      {isError ? (
+        <div role="alert" className="flex flex-col items-center gap-4 py-8">
+          <p className="text-sm text-text-muted">{t('admin.common.loadError', { defaultValue: 'Greška pri učitavanju.' })}</p>
+          <Button variant="outline" onClick={() => void refetch()} disabled={isFetching}>{isFetching ? t('admin.common.loading') : t('actions.retry', { defaultValue: 'Pokušaj ponovo' })}</Button>
+        </div>
+      ) : isLoading ? (
+        <div aria-busy="true" className="space-y-4"><Skeleton className="h-7 w-48" /><Skeleton className="h-64 w-full" /></div>
+      ) : showNotFound ? (
+        <p role="status" className="p-8 text-text-muted">{t('admin.calendar.seasonNotFound')}</p>
+      ) : (
+        <Card className="overflow-hidden rounded-2xl border border-[var(--border-subtle)] bg-background">
+          <AdminDataTable
+            rows={rows}
+            empty="Nema takmičenja u ovoj sezoni."
+            columns={[
+              { key: 'name', header: t('admin.calendar.competition'), render: (r) => r.competition?.name ?? '—' },
+              { key: 'league', header: t('admin.competitionsAdmin.colLeague'), render: (r) => (r.competition?.isLeague ? <Badge variant="success">{t('admin.competitionsAdmin.league')}</Badge> : <Badge variant="muted">{t('admin.competitionsAdmin.other')}</Badge>) },
+              { key: 'participants', header: t('admin.calendar.participants'), render: (r) => r.participants?.length ?? 0 },
+              { key: 'hub', header: 'Kola', render: (r) => <Link to={`/admin/seasons/${seasonId}/competitions/${r.id}`} className={`text-sm ${adminLinkClass}`}>Upravljaj</Link> },
+              ...(canManage ? [{ key: 'actions', header: 'Akcije', render: (r: SeasonEditionRow) => (
+                <div className="flex gap-1">
+                  <Button variant="ghost" size="icon" onClick={() => { setEdit(r); setOpen(true); }} aria-label={t('actions.edit')} disabled={deleteEdition.isPending}><Pencil className="h-4 w-4" /></Button>
+                  <Button variant="ghost" size="icon" onClick={() => void onDelete(r)} aria-label={t('actions.delete')} disabled={deleteEdition.isPending}><Trash2 className="h-4 w-4 text-danger" /></Button>
+                </div>
+              ) }] : []),
+            ]}
+          />
+        </Card>
+      )}
+      <SeasonEditionFormSheet open={open} onOpenChange={(o) => { setOpen(o); if (!o) setEdit(null); }} seasonId={seasonId} editEdition={edit} />
     </div>
   );
 }

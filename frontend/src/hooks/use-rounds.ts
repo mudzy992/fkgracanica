@@ -11,12 +11,20 @@ export type RoundDeleteImpact = {
   commentCount: number;
 };
 
-export function useRounds(seasonId?: string) {
+export function useRounds(
+  seasonId?: string,
+  options?: Omit<import('@tanstack/react-query').UseQueryOptions<CompetitionRound[]>, 'queryKey' | 'queryFn'>,
+) {
+  const { enabled: optEnabled, ...rest } = options ?? {};
   return useQuery({
     queryKey: ['rounds', seasonId],
     queryFn: async () =>
       (await api.get<CompetitionRound[]>('/rounds', { params: { seasonId } })).data,
-    enabled: !!seasonId,
+    staleTime: 30_000,
+    retry: 1,
+    refetchOnWindowFocus: false,
+    ...rest,
+    enabled: !!seasonId && (optEnabled ?? true),
   });
 }
 

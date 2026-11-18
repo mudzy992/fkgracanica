@@ -6,9 +6,13 @@ import { AdminDataTableDouble, adminShellState } from './admin-shell-doubles';
 export const roundMatchesState = {
   matches: undefined as Match[] | undefined,
   isLoading: false,
+  isError: false,
+  isFetching: false,
+  refetch: vi.fn(),
   perms: [] as string[],
   confirm: vi.fn(),
-  remove: vi.fn(),
+  remove: vi.fn() as unknown as ReturnType<typeof vi.fn> & { isPending?: boolean },
+  removePending: false,
   form: {} as Record<string, unknown>,
   lineup: {} as Record<string, unknown>,
 };
@@ -16,11 +20,16 @@ export const roundMatchesState = {
 export function resetRoundMatchesState(matches: Match[] = [roundMatch()]) {
   roundMatchesState.matches = matches;
   roundMatchesState.isLoading = false;
+  roundMatchesState.isError = false;
+  roundMatchesState.isFetching = false;
+  roundMatchesState.refetch = vi.fn();
   roundMatchesState.perms = ['live.manage'];
   roundMatchesState.confirm.mockReset();
   roundMatchesState.confirm.mockResolvedValue(true);
   roundMatchesState.remove.mockReset();
   roundMatchesState.remove.mockResolvedValue({});
+  (roundMatchesState.remove as unknown as Record<string, unknown>).isPending = false;
+  roundMatchesState.removePending = false;
   roundMatchesState.form = {};
   roundMatchesState.lineup = {};
   adminShellState.actions = null;
@@ -46,6 +55,9 @@ export function matchesHooksModule() {
     useMatches: (seasonId: string, roundId: string) => ({
       data: roundMatchesState.matches,
       isLoading: roundMatchesState.isLoading,
+      isError: roundMatchesState.isError,
+      isFetching: roundMatchesState.isFetching,
+      refetch: roundMatchesState.refetch,
       seasonId,
       roundId,
     }),
@@ -53,7 +65,12 @@ export function matchesHooksModule() {
 }
 
 export function competitionAdminModule() {
-  return { useDeleteMatch: () => ({ mutateAsync: roundMatchesState.remove }) };
+  return {
+    useDeleteMatch: () => ({
+      mutateAsync: roundMatchesState.remove,
+      isPending: (roundMatchesState.remove as unknown as Record<string, unknown>).isPending ?? roundMatchesState.removePending,
+    }),
+  };
 }
 
 export function confirmModule() {

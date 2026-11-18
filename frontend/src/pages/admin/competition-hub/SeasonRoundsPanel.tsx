@@ -7,6 +7,7 @@ import { useConfirm } from '../../../hooks/use-confirm';
 import { roundLabel } from '../../../lib/round-utils';
 import { cn } from '../../../lib/utils';
 import { Button } from '../../../components/ui/button';
+import { Skeleton } from '../../../components/ui/skeleton';
 import type { CompetitionRound } from '../../../types';
 import { RoundFormSheet } from './RoundFormSheet';
 import { RoundCascadeDeleteDialog } from './RoundCascadeDeleteDialog';
@@ -21,7 +22,7 @@ interface Props {
 
 export function SeasonRoundsPanel({ seasonId, selectedRoundId, onSelectRound, canManage }: Props) {
   const { t } = useTranslation();
-  const { data: rounds, isLoading } = useRounds(seasonId);
+  const { data: rounds, isLoading, isError, isFetching, refetch } = useRounds(seasonId);
   const remove = useDeleteRound();
   const { confirm, dialog } = useConfirm();
   const [open, setOpen] = useState(false);
@@ -98,61 +99,80 @@ export function SeasonRoundsPanel({ seasonId, selectedRoundId, onSelectRound, ca
               setEdit(null);
               setOpen(true);
             }}
+            disabled={remove.isPending}
           >
             <Plus className="mr-1 h-4 w-4" />
             {t('admin.roundsPanel.round')}
           </Button>
         )}
       </div>
-      <div className="divide-y divide-[var(--border-subtle)]/50">
-        {isLoading && <p className="p-4 text-sm text-text-muted">{t('admin.common.loading')}</p>}
-        {!isLoading && !(rounds ?? []).length && (
-          <p className="p-4 text-sm text-text-muted">{t('admin.roundsPanel.empty')}</p>
-        )}
-        {(rounds ?? []).map((round) => (
-          <div
-            key={round.id}
-            className={cn(
-              'flex w-full items-center justify-between px-4 py-3 text-sm hover:bg-surface',
-              selectedRoundId === round.id && 'bg-primary/5',
-            )}
-          >
-            <Button
-              variant="ghost"
-              onClick={() => onSelectRound(round.id)}
-              className="flex flex-1 items-center justify-between rounded-none px-0 text-left font-normal hover:bg-transparent h-auto py-0 focus-visible:ring-2 focus-visible:ring-accent"
+      {isError ? (
+        <div role="alert" className="flex flex-col items-center gap-3 p-4">
+          <p className="text-sm text-text-muted">{t('admin.common.loadError', { defaultValue: 'Greška pri učitavanju.' })}</p>
+          <Button variant="outline" size="sm" onClick={() => void refetch()} disabled={isFetching}>
+            {isFetching ? t('admin.common.loading') : t('actions.retry', { defaultValue: 'Pokušaj ponovo' })}
+          </Button>
+        </div>
+      ) : isLoading ? (
+        <div aria-busy="true" className="space-y-2 p-4">
+          <Skeleton className="h-10 w-full" />
+          <Skeleton className="h-10 w-full" />
+          <Skeleton className="h-10 w-full" />
+        </div>
+      ) : !(rounds ?? []).length ? (
+        <p role="status" className="p-4 text-sm text-text-muted">
+          {t('admin.roundsPanel.empty')}
+        </p>
+      ) : (
+        <div className="divide-y divide-[var(--border-subtle)]/50">
+          {(rounds ?? []).map((round) => (
+            <div
+              key={round.id}
+              className={cn(
+                'flex w-full items-center justify-between px-4 py-3 text-sm hover:bg-surface',
+                selectedRoundId === round.id && 'bg-primary/5',
+              )}
             >
-              <span className="font-medium">{roundLabel(round)}</span>
-              <span className="text-text-muted">
-                {t('admin.roundsPanel.matches', { count: round._count?.matches ?? 0 })}
-              </span>
-            </Button>
-            {canManage && (
-              <span className="ml-2 flex shrink-0 gap-1">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => {
-                    setEdit(round);
-                    setOpen(true);
-                  }}
-                  aria-label={t('actions.edit')}
-                >
-                  <Pencil className="h-3.5 w-3.5" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={(e) => void onDelete(round, e)}
-                  aria-label={t('actions.delete')}
-                >
-                  <Trash2 className="h-3.5 w-3.5 text-danger" />
-                </Button>
-              </span>
-            )}
-          </div>
-        ))}
-      </div>
+              <Button
+                variant="ghost"
+                onClick={() => onSelectRound(round.id)}
+                className="flex flex-1 items-center justify-between rounded-none px-0 text-left font-normal hover:bg-transparent h-auto py-0 focus-visible:ring-2 focus-visible:ring-accent"
+                disabled={remove.isPending}
+              >
+                <span className="font-medium">{roundLabel(round)}</span>
+                <span className="text-text-muted">
+                  {t('admin.roundsPanel.matches', { count: round._count?.matches ?? 0 })}
+                </span>
+              </Button>
+              {canManage && (
+                <span className="ml-2 flex shrink-0 gap-1">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => {
+                      setEdit(round);
+                      setOpen(true);
+                    }}
+                    aria-label={t('actions.edit')}
+                    disabled={remove.isPending}
+                  >
+                    <Pencil className="h-3.5 w-3.5" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={(e) => void onDelete(round, e)}
+                    aria-label={t('actions.delete')}
+                    disabled={remove.isPending}
+                  >
+                    <Trash2 className="h-3.5 w-3.5 text-danger" />
+                  </Button>
+                </span>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
       <RoundFormSheet
         open={open}
         onOpenChange={(o) => {

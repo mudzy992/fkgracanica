@@ -84,8 +84,10 @@ beforeEach(() => {
 describe('CalendarSeasonPage — učitavanje i zaglavlje', () => {
   it('dok sezone nisu učitane prikazuje skeleton', () => {
     state.isLoading = true;
+    state.seasons = undefined as unknown as typeof state.seasons;
     const { container } = renderPage();
     expect(container.querySelector('.h-64')).toBeInTheDocument();
+    expect(document.querySelector('[aria-busy="true"]')).toBeTruthy();
     expect(screen.queryByText('Sezona 2025/26')).toBeNull();
   });
 

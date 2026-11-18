@@ -22,9 +22,9 @@ function wrap(ui: React.ReactNode) {
 }
 describe('fe06 RoundMatchesPanel branch53', () => {
   it('isLoading true → empty loading branch', () => {
-    (useMatches as unknown as ReturnType<typeof vi.fn>).mockReturnValue({ data: undefined, isLoading: true });
+    (useMatches as unknown as ReturnType<typeof vi.fn>).mockReturnValue({ data: undefined, isLoading: true, isError: false, isFetching: false, refetch: vi.fn() });
     render(wrap(<RoundMatchesPanel seasonId="s1" roundId="r1" canManage={false} />));
-    expect(screen.getByText('Učitavanje...')).toBeInTheDocument();
+    expect(document.querySelector('[aria-busy="true"]')).toBeTruthy();
   });
   it('canManage false → no button branch', () => {
     (useMatches as unknown as ReturnType<typeof vi.fn>).mockReturnValue({ data: [], isLoading: false });

@@ -91,7 +91,7 @@ describe('RoundMatchesPanel — tabela', () => {
     state.matches = [];
     state.isLoading = true;
     const { unmount } = renderPanel();
-    expect(screen.getByText('Učitavanje...')).toBeInTheDocument();
+    expect(document.querySelector('[aria-busy="true"]')).toBeTruthy();
     unmount();
     state.isLoading = false;
     renderPanel();
