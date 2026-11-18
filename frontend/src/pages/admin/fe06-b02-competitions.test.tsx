@@ -90,6 +90,16 @@ describe('B02 CompetitionsAdminPage — P1/P2', () => {
     expect(btn.textContent).toMatch(/loading/i);
   });
 
+  it('seasons error retry — enabled poziva refetch', async () => {
+    state.seasons = { data: seasons as unknown[], isLoading: false, isError: true, isFetching: false, dataUpdatedAt: 0, refetch: vi.fn() } as unknown as typeof state.seasons;
+    render(wrap(<CompetitionsAdminPage />));
+    const alert = screen.getByRole('alert');
+    const btn = within(alert).getByRole('button');
+    expect(btn).not.toBeDisabled();
+    await userEvent.click(btn);
+    expect(state.seasons.refetch).toHaveBeenCalled();
+  });
+
   it('seasons loading — aria-busy skeleton, competitions tabela i dalje vidljiva', () => {
     state.seasons = { data: seasons as unknown[], isLoading: true, isError: false, isFetching: true, dataUpdatedAt: 0, refetch: vi.fn() } as unknown as typeof state.seasons;
     render(wrap(<CompetitionsAdminPage />));

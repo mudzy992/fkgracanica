@@ -1506,7 +1506,7 @@
 "frontend/src/pages/admin/fe06-admin-panels.test.tsx","frontend","src","98","pokriveno testom","FE-06 coverage batch 19–22: novi test fajl (vitest)","FE-06","2026-11-06"
 "frontend/src/pages/admin/fe06-admin-widgets-part2.test.tsx","frontend","src","109","pokriveno testom","FE-06 coverage batch 19–22: novi test fajl (vitest)","FE-06","2026-11-06"
 "frontend/src/pages/admin/fe06-admin-widgets.test.tsx","frontend","src","141","pokriveno testom","FE-06 coverage batch 19–22: novi test fajl (vitest)","FE-06","2026-11-06"
-"frontend/src/pages/admin/fe06-b02-competitions.test.tsx","frontend","src","169","pokriveno testom","B-02: 10 testova P1/P2 (error/loading/status/lastUpdated/delete disabled per-type)","B-02","2026-11-18"
+"frontend/src/pages/admin/fe06-b02-competitions.test.tsx","frontend","src","179","pokriveno testom","B-02: 11 testova P1/P2 (error/loading/status/lastUpdated/delete disabled per-type + seasons retry enabled)","B-02","2026-11-18"
 "frontend/src/pages/admin/fe06-b02-form.test.tsx","frontend","src","102","pokriveno testom","B-02: 6 testova forma (trim, yearOrder alert/disable, pending disabled, error alert)","B-02","2026-11-18"
 "frontend/src/pages/admin/fe06-batch60-admin-a.test.tsx","frontend","src","116","pokriveno testom","B-FE07: legacy FE-06 test batch — pokriveno postojećim testovima, zatvaranje 2026-11-17","FE-07","2026-11-17"
 "frontend/src/pages/admin/fe06-batch60-cms2.test.tsx","frontend","src","39","pokriveno testom","B-FE07: legacy FE-06 test batch — pokriveno postojećim testovima, zatvaranje 2026-11-17","FE-07","2026-11-17"
