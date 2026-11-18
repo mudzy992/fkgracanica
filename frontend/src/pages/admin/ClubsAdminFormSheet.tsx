@@ -44,10 +44,10 @@ export function ClubsAdminFormSheet({ open, onOpenChange, edit }: Props) {
     setFeedback(null);
     try {
       const body = {
-        name,
-        city: city || undefined,
-        stadium: stadium || undefined,
-        description: description || undefined,
+        name: name.trim(),
+        city: city.trim() || undefined,
+        stadium: stadium.trim() || undefined,
+        description: description.trim() || undefined,
         crestPath: crestPath || undefined,
         isOwnClub,
       };
@@ -95,10 +95,14 @@ export function ClubsAdminFormSheet({ open, onOpenChange, edit }: Props) {
           </div>
           <Switch checked={isOwnClub} onCheckedChange={setIsOwnClub} />
         </label>
-        {feedback && <p className="text-sm text-danger">{feedback}</p>}
+        {feedback && (
+          <p role="alert" className="text-sm text-danger">
+            {feedback}
+          </p>
+        )}
         <Button
           onClick={() => void save()}
-          disabled={!name || create.isPending || update.isPending}
+          disabled={!name.trim() || create.isPending || update.isPending}
         >
           {edit ? 'Spremi' : 'Kreiraj'}
         </Button>

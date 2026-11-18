@@ -8,6 +8,7 @@ interface Props {
   /** Retry iz react-query hooka (`refetch`); bez njega se prikazuje samo poruka. */
   onRetry?: () => void;
   className?: string;
+  disabled?: boolean;
 }
 
 /**
@@ -16,7 +17,7 @@ interface Props {
  * stanje) i korisnik nije imao retry. `role="alert"` da ekranski čitači odmah
  * objave grešku. Zajednička komponenta za javni i admin sloj.
  */
-export function DataError({ message, onRetry, className }: Props) {
+export function DataError({ message, onRetry, className, disabled }: Props) {
   const { t } = useTranslation();
   return (
     <div
@@ -27,7 +28,7 @@ export function DataError({ message, onRetry, className }: Props) {
         {message ?? t('common.loadError', 'Podatke nije moguće učitati.')}
       </p>
       {onRetry && (
-        <Button variant="outline" size="sm" onClick={onRetry}>
+        <Button variant="outline" size="sm" onClick={onRetry} disabled={Boolean(disabled)}>
           {t('actions.retry', 'Pokušaj ponovo')}
         </Button>
       )}

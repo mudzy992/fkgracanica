@@ -111,34 +111,56 @@ export function useClubTimeline() {
   });
 }
 
-export function usePlayers(options?: { clubId?: string; activeOnly?: boolean }) {
+export function usePlayers(
+  options?: { clubId?: string; activeOnly?: boolean } & Omit<
+    import('@tanstack/react-query').UseQueryOptions<Player[]>,
+    'queryKey' | 'queryFn'
+  >,
+) {
+  const { clubId, activeOnly, ...queryOptions } = options ?? {};
   return useQuery({
-    queryKey: ['players', options?.clubId, options?.activeOnly],
+    queryKey: ['players', clubId, activeOnly],
     queryFn: async () =>
       asArray<Player>(
         (
           await api.get('/players', {
             params: {
-              clubId: options?.clubId,
-              activeOnly: options?.activeOnly ? 'true' : undefined,
+              clubId,
+              activeOnly: activeOnly ? 'true' : undefined,
             },
           })
         ).data,
       ),
+    staleTime: 30_000,
+    retry: 1,
+    refetchOnWindowFocus: false,
+    ...queryOptions,
   });
 }
 
-export function useClubs() {
+export function useClubs(
+  options?: Omit<import('@tanstack/react-query').UseQueryOptions<Club[]>, 'queryKey' | 'queryFn'>,
+) {
   return useQuery({
     queryKey: ['clubs'],
     queryFn: async () => asArray<Club>((await api.get('/clubs')).data),
+    staleTime: 30_000,
+    retry: 1,
+    refetchOnWindowFocus: false,
+    ...options,
   });
 }
 
-export function useOwnClub() {
+export function useOwnClub(
+  options?: Omit<import('@tanstack/react-query').UseQueryOptions<Club | null>, 'queryKey' | 'queryFn'>,
+) {
   return useQuery({
     queryKey: ['clubs', 'own'],
     queryFn: async () => (await api.get<Club | null>('/clubs/own')).data,
+    staleTime: 30_000,
+    retry: 1,
+    refetchOnWindowFocus: false,
+    ...options,
   });
 }
 

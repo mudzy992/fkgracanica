@@ -58,12 +58,14 @@ export function PlayersAdminFormSheet({ open, onOpenChange, edit, clubId: fixedC
     setIsActive(edit?.isActive ?? true);
   }, [open, edit, ownClub?.id, fixedClubId]);
 
+  const isNumberInvalid = number !== '' && (Number.isNaN(Number(number)) || Number(number) < 1 || Number(number) > 99);
+
   const save = async () => {
     setFeedback(null);
     try {
       const body = {
-        firstName,
-        lastName,
+        firstName: firstName.trim(),
+        lastName: lastName.trim(),
         clubId: fixedClubId || clubId || undefined,
         position,
         number: number ? Number(number) : undefined,
@@ -120,6 +122,8 @@ export function PlayersAdminFormSheet({ open, onOpenChange, edit, clubId: fixedC
           value={number}
           onChange={(e) => setNumber(e.target.value)}
           placeholder={t('admin.playerForm.shirt')}
+          min={1}
+          max={99}
         />
         <MediaPicker
           value={photoPath}
@@ -136,10 +140,14 @@ export function PlayersAdminFormSheet({ open, onOpenChange, edit, clubId: fixedC
           <span className="text-sm font-medium">{t('admin.playerForm.active')}</span>
           <Switch checked={isActive} onCheckedChange={setIsActive} />
         </label>
-        {feedback && <p className="text-sm text-danger">{feedback}</p>}
+        {feedback && (
+          <p role="alert" className="text-sm text-danger">
+            {feedback}
+          </p>
+        )}
         <Button
           onClick={() => void save()}
-          disabled={!firstName || !lastName || create.isPending || update.isPending}
+          disabled={!firstName.trim() || !lastName.trim() || isNumberInvalid || create.isPending || update.isPending}
         >
           {edit ? t('actions.save') : t('actions.create')}
         </Button>

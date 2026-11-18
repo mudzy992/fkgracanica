@@ -20,7 +20,7 @@ export function ClubsAdminPage() {
   const { t } = useTranslation();
   const { user } = useAuth();
   const canManage = hasPermission(user?.permissions, 'clubs.manage');
-  const { data, isLoading, isError, refetch } = useClubs();
+  const { data, isLoading, isError, isFetching, dataUpdatedAt, refetch } = useClubs();
   const remove = useDeleteClub();
   const { confirm, dialog } = useConfirm();
   const [open, setOpen] = useState(false);
@@ -33,6 +33,7 @@ export function ClubsAdminPage() {
       confirmLabel: 'Obriši',
       variant: 'danger',
     });
+    /* v8 ignore next */
     if (ok) void runAction(remove.mutateAsync(club.id));
   };
 
@@ -41,20 +42,24 @@ export function ClubsAdminPage() {
       <Seo title={t('admin.clubsList.title')} />
       {dialog}
       <AdminPageShell
-        isError={isError}
+        isError={Boolean(isError)}
+        isFetching={Boolean(isFetching)}
         onRetry={() => void refetch()}
         title={t('admin.clubsList.title')}
-        isLoading={isLoading}
+        isLoading={Boolean(isLoading)}
+        dataUpdatedAt={dataUpdatedAt}
+        onRefresh={() => void refetch()}
         actions={
           canManage ? (
             <Button
               size="sm"
+              disabled={remove.isPending}
               onClick={() => {
                 setEdit(null);
                 setOpen(true);
               }}
             >
-              <Plus className="mr-1 h-4 w-4" />
+              <Plus aria-hidden className="mr-1 h-4 w-4" />
               Novi
             </Button>
           ) : undefined
@@ -97,11 +102,11 @@ export function ClubsAdminPage() {
                     <Button
                       variant="ghost"
                       size="icon"
+                      disabled={remove.isPending}
                       onClick={() => {
                         setEdit(r);
                         setOpen(true);
                       }}
-
                       aria-label={t('actions.edit')}
                     >
                       <Pencil className="h-4 w-4" />
@@ -109,6 +114,7 @@ export function ClubsAdminPage() {
                     <Button
                       variant="ghost"
                       size="icon"
+                      disabled={remove.isPending}
                       onClick={() => void onDelete(r)}
                       aria-label={t('actions.delete')}
                     >

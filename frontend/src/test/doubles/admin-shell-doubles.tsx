@@ -8,29 +8,62 @@ export const adminShellState = {
   title: '',
   isLoading: false,
   isError: false,
+  isFetching: false,
   retried: 0,
+  refreshed: 0,
+  dataUpdatedAt: 0 as number | undefined,
   actions: null as ReactNode,
 };
 
-export function AdminPageShellDouble({ title, isLoading, isError, onRetry, actions, children }: {
-  title: string; isLoading?: boolean; isError?: boolean;
-  onRetry?: () => void; actions?: ReactNode; children: ReactNode;
+export function AdminPageShellDouble({
+  title,
+  isLoading,
+  isError,
+  isFetching,
+  onRetry,
+  actions,
+  children,
+  dataUpdatedAt,
+  onRefresh,
+}: {
+  title: string;
+  isLoading?: boolean;
+  isError?: boolean;
+  isFetching?: boolean;
+  onRetry?: () => void;
+  actions?: ReactNode;
+  children: ReactNode;
+  dataUpdatedAt?: number;
+  onRefresh?: () => void;
 }) {
   adminShellState.title = title;
   adminShellState.isLoading = !!isLoading;
   adminShellState.isError = !!isError;
+  adminShellState.isFetching = !!isFetching;
+  adminShellState.dataUpdatedAt = dataUpdatedAt;
   adminShellState.actions = actions ?? null;
+  const lastUpdated = dataUpdatedAt ? new Date(dataUpdatedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : null;
   return (
     <div>
       <h1>{title}</h1>
       <div data-testid="actions">{actions}</div>
-      {isError && (
+      {lastUpdated && onRefresh ? (
         <div>
+          <span>Ažurirano u {lastUpdated}</span>
+          <button disabled={Boolean(isFetching)} onClick={() => { adminShellState.refreshed += 1; onRefresh?.(); }}>
+            {isFetching ? 'Učitavanje...' : 'Osvježi'}
+          </button>
+        </div>
+      ) : null}
+      {isError && (
+        <div role="alert">
           <p>greška-učitavanja</p>
-          <button onClick={() => { adminShellState.retried += 1; onRetry?.(); }}>pokušaj-ponovo</button>
+          <button disabled={Boolean(isFetching)} onClick={() => { adminShellState.retried += 1; onRetry?.(); }}>
+            pokušaj-ponovo
+          </button>
         </div>
       )}
-      {isLoading ? <p>učitavanje</p> : children}
+      {isLoading ? <p aria-busy="true">učitavanje</p> : children}
     </div>
   );
 }
@@ -39,7 +72,7 @@ export function AdminDataTableDouble({ rows, columns, empty, onRowClick, rowClas
   rows: AdminRow[]; columns: AdminColumn[]; empty?: string;
   onRowClick?: (row: AdminRow) => void; rowClassName?: (row: AdminRow) => string | undefined;
 }) {
-  return rows.length === 0 ? <p>{empty}</p> : (
+  return rows.length === 0 ? <p role="status">{empty}</p> : (
     <div>
       {rows.map((row) => (
         <div key={row.id} data-testid={`row-${row.id}`} className={rowClassName?.(row)}
