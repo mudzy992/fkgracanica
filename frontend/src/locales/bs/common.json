@@ -281,7 +281,8 @@
       "draftReports": "Nacrti izvještaja",
       "draftReportsHint": "Još nisu predati",
       "awaitingApproval": "Čeka odobrenje",
-      "awaitingApprovalHint": "Kod moderatora"
+      "awaitingApprovalHint": "Kod moderatora",
+      "deskLabel": "Desk lista"
     },
     "match": {
       "homeTeam": "Domaćin",

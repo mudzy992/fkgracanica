@@ -281,7 +281,8 @@
       "draftReports": "Report drafts",
       "draftReportsHint": "Not submitted yet",
       "awaitingApproval": "Awaiting approval",
-      "awaitingApprovalHint": "With the moderator"
+      "awaitingApprovalHint": "With the moderator",
+      "deskLabel": "Desk list"
     },
     "match": {
       "homeTeam": "Home",
