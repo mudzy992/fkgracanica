@@ -62,7 +62,6 @@ beforeEach(() => {
   state.confirm = vi.fn(async () => true);
   state.deletePlayer = { mutateAsync: vi.fn(async () => ({})), isPending: false } as unknown as typeof state.deletePlayer;
   adminShellState.retried = 0;
-  // @ts-expect-error refreshed is for test
   adminShellState.refreshed = 0;
   adminShellState.title = '';
 });
