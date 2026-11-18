@@ -3,10 +3,16 @@ import { api } from '../lib/api';
 import { asArray } from '../lib/as-array';
 import type { GalleryItem } from '../types';
 
-export function useGalleryAdminList() {
+export function useGalleryAdminList(
+  options?: Omit<import('@tanstack/react-query').UseQueryOptions<GalleryItem[]>, 'queryKey' | 'queryFn'>,
+) {
   return useQuery({
     queryKey: ['gallery', 'admin'],
     queryFn: async () => asArray<GalleryItem>((await api.get('/gallery')).data),
+    staleTime: 30_000,
+    retry: 1,
+    refetchOnWindowFocus: false,
+    ...options,
   });
 }
 

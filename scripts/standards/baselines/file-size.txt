@@ -18,4 +18,6 @@ backend/src/search/search-queries.util.ts
 backend/src/showcase/catalog-modules.ts
 backend/src/ticketing/ticketing-orders.service.ts
 frontend/src/pages/admin/homes/ModeratorHome.tsx
+frontend/src/pages/admin/homes/WriterHome.tsx
 frontend/src/pages/admin/homes/fe06-moderator-home.test.tsx
+frontend/src/pages/admin/homes/fe06-writer-home.test.tsx

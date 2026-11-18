@@ -9,21 +9,35 @@ const state = vi.hoisted(() => ({
   loading: false,
   undefinedNews: false,
   undefinedAlbums: false,
+  isError: false,
+  isFetching: false,
+  permissions: ['news.manage', 'gallery.manage', 'media.read', 'media.upload'] as string[],
 }));
 
 vi.mock('react-i18next', () => ({ useTranslation: () => ({ t: (k: string) => `t:${k}` }) }));
 vi.mock('../../../components/seo/Seo', () => ({ Seo: () => null }));
+vi.mock('../../../lib/auth', () => ({ useAuth: () => ({ user: { permissions: state.permissions } }) }));
 vi.mock('../../../hooks', () => ({
-  useNewsList: (status: 'DRAFT' | 'PENDING' | 'PUBLISHED') => ({
+  useNewsList: (status: 'DRAFT' | 'PENDING' | 'PUBLISHED', _cat: unknown, opts?: { enabled?: boolean }) => ({
     data: state.undefinedNews ? undefined : state.news[status],
     isLoading: state.loading,
+    isError: state.isError,
+    isFetching: state.isFetching,
+    dataUpdatedAt: Date.now(),
+    refetch: vi.fn(),
+    ...(opts?.enabled === false ? { data: state.undefinedNews ? undefined : state.news[status] } : {}),
   }),
   usePublicSettings: () => ({ data: {} }),
 }));
 vi.mock('../../../hooks/use-content-admin', () => ({
-  useGalleryAdminList: () => ({
+  useGalleryAdminList: (opts?: { enabled?: boolean }) => ({
     data: state.undefinedAlbums ? undefined : [{ id: 'g1' }, { id: 'g2' }],
     isLoading: state.loading,
+    isError: state.isError,
+    isFetching: state.isFetching,
+    dataUpdatedAt: Date.now(),
+    refetch: vi.fn(),
+    ...(opts?.enabled === false ? { data: state.undefinedAlbums ? undefined : [{ id: 'g1' }, { id: 'g2' }] } : {}),
   }),
 }));
 
@@ -49,6 +63,9 @@ beforeEach(() => {
   state.loading = false;
   state.undefinedNews = false;
   state.undefinedAlbums = false;
+  state.isError = false;
+  state.isFetching = false;
+  state.permissions = ['news.manage', 'gallery.manage', 'media.read', 'media.upload'];
 });
 
 describe('WriterHome', () => {
@@ -69,11 +86,12 @@ describe('WriterHome', () => {
     expect(screen.getByText('Na odobrenju')).toBeInTheDocument();
   });
 
-  it('dok se učitava prikazuje tri tačke', () => {
+  it('dok se učitava prikazuje skeleton a ne tri tačke', () => {
     state.loading = true;
-    wrap(<WriterHome />);
-    expect(screen.getAllByText('…').length).toBeGreaterThanOrEqual(4);
-    expect(screen.getByText('t:admin.content.noDrafts')).toBeInTheDocument();
+    state.isFetching = true;
+    const { container } = wrap(<WriterHome />);
+    expect(container.querySelectorAll('[aria-busy=\"true\"]').length).toBeGreaterThanOrEqual(1);
+    expect(screen.queryAllByText('…').length).toBe(0);
   });
 
   it('prazni redovi prikazuju nule i poruku', () => {
