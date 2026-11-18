@@ -12,11 +12,15 @@ interface MatchScore {
   penaltyAwayScore?: number;
 }
 
-export function useMatchRealtime(matchId: string | undefined) {
+export function useMatchRealtime(
+  matchId: string | undefined,
+  options?: { enabled?: boolean },
+) {
   const qc = useQueryClient();
+  const enabled = options?.enabled ?? true;
 
   useEffect(() => {
-    if (!matchId) return;
+    if (!matchId || !enabled) return undefined;
     const socket = getRealtimeSocket();
 
     const join = () => socket.emit('match:join', { matchId });
@@ -63,5 +67,5 @@ export function useMatchRealtime(matchId: string | undefined) {
       socket.off('match:status', onStatus);
       socket.emit('match:leave', { matchId });
     };
-  }, [matchId, qc]);
+  }, [matchId, qc, enabled]);
 }

@@ -18,7 +18,7 @@ export function CommentatorLiveHero({ match }: { match: Match }) {
       <div className="flex flex-wrap items-center justify-between gap-3">
         <Badge
           variant={matchStatusTone(match.status)}
-          className={live ? 'animate-pulse bg-danger text-white' : undefined}
+          className={live ? 'motion-safe:animate-pulse bg-danger text-white' : undefined}
         >
           {matchStatusLabel(match.status)}
         </Badge>

@@ -142,7 +142,11 @@ export function useOwnClub() {
   });
 }
 
-export function useMatches(seasonId?: string, roundId?: string) {
+export function useMatches(
+  seasonId?: string,
+  roundId?: string,
+  options?: Omit<import('@tanstack/react-query').UseQueryOptions<Match[]>, 'queryKey' | 'queryFn'>,
+) {
   return useQuery({
     queryKey: ['matches', seasonId, roundId ?? 'all'],
     queryFn: async () =>
@@ -152,14 +156,26 @@ export function useMatches(seasonId?: string, roundId?: string) {
           ...(roundId ? { roundId } : {}),
         },
       })).data),
+    staleTime: 30_000,
+    retry: 1,
+    refetchOnWindowFocus: false,
+    ...options,
   });
 }
 
-export function useMatch(id: string) {
+export function useMatch(
+  id: string,
+  options?: Omit<import('@tanstack/react-query').UseQueryOptions<Match>, 'queryKey' | 'queryFn'>,
+) {
+  const { enabled: optEnabled, ...rest } = options ?? {};
   return useQuery({
     queryKey: ['matches', id],
     queryFn: async () => (await api.get<Match>(`/matches/${id}`)).data,
-    enabled: !!id,
+    staleTime: 30_000,
+    retry: 1,
+    refetchOnWindowFocus: false,
+    ...rest,
+    enabled: !!id && (optEnabled ?? true),
   });
 }
 

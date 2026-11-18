@@ -1,8 +1,8 @@
 import { buttonVariants } from "../../../components/ui/button-variants";
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { ClubCrest } from '../../../components/public/clubs/ClubCrest';
 import { Badge } from '../../../components/ui/badge';
-;
 import { Skeleton } from '../../../components/ui/skeleton';
 import { reportStatusLabel } from '../../../lib/match-report';
 import { matchStatusLabel, matchStatusTone } from '../../../lib/match-status-label';
@@ -29,7 +29,13 @@ function DeskRow({ match }: { match: Match }) {
         <Badge variant={matchStatusTone(match.status)} className="text-[10px]">
           {matchStatusLabel(match.status)}
         </Badge>
-        <Link to={deskHref(match)} className={cn(buttonVariants({size: "sm"}))}>{deskCtaLabel(match)}</Link>
+        <Link
+          to={deskHref(match)}
+          aria-label={`${deskCtaLabel(match)}: ${matchTitle(match)}`}
+          className={cn(buttonVariants({ size: 'sm' }))}
+        >
+          {deskCtaLabel(match)}
+        </Link>
       </div>
     </li>
   );
@@ -42,9 +48,13 @@ export function CommentatorDeskList({
   matches: Match[];
   isLoading: boolean;
 }) {
+  const { t } = useTranslation();
   if (isLoading) {
     return (
-      <div className="space-y-2 rounded-xl border border-[var(--border-subtle)] p-4">
+      <div
+        className="space-y-2 rounded-xl border border-[var(--border-subtle)] p-4"
+        aria-busy="true"
+      >
         <Skeleton className="h-12 w-full" />
         <Skeleton className="h-12 w-full" />
         <Skeleton className="h-12 w-full" />
@@ -62,11 +72,16 @@ export function CommentatorDeskList({
   return (
     <div className="space-y-6">
       {groups.map((group) => (
-        <section key={group.key}>
+        <section key={group.key} aria-label={group.label}>
           <h2 className="mb-3 text-sm font-semibold text-text-muted">{group.label}</h2>
-          <ul className="divide-y divide-[var(--border-subtle)] rounded-xl border border-[var(--border-subtle)]">
-            {group.matches.map((match) => (
-              <DeskRow key={match.id} match={match} />
+          <ul
+            className="divide-y divide-[var(--border-subtle)] rounded-xl border border-[var(--border-subtle)]"
+            aria-label={t('admin.commentator.deskLabel', {
+              defaultValue: group.label,
+            })}
+          >
+            {group.matches.map((matchItem) => (
+              <DeskRow key={matchItem.id} match={matchItem} />
             ))}
           </ul>
         </section>
