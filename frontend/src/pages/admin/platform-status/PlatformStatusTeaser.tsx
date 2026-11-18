@@ -10,7 +10,7 @@ export function PlatformStatusTeaser() {
   const { t } = useTranslation();
   const { user } = useAuth();
   const enabled = hasPermission(user?.permissions, 'dashboard.read');
-  const { data } = usePlatformStatus(enabled);
+  const { data } = usePlatformStatus({ enabled });
 
   if (!enabled || !data) return null;
 

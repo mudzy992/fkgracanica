@@ -40,13 +40,15 @@ export function StatusGroupCard({
       </CardHeader>
       <CardContent className="flex-1 pt-0">
         {modules.length ? (
-          <ul>
+          <ul aria-label={label}>
             {modules.map((mod) => (
               <ModuleRow key={mod.id} mod={mod} />
             ))}
           </ul>
         ) : (
-          <p className="text-sm text-text-muted">{t('admin.stanjeEmpty')}</p>
+          <p role="status" className="text-sm text-text-muted">
+            {t('admin.stanjeEmpty')}
+          </p>
         )}
       </CardContent>
     </Card>

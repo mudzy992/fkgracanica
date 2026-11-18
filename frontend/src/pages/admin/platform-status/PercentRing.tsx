@@ -5,7 +5,15 @@ export function PercentRing({ percent, size = 120 }: { percent: number; size?: n
   const labelClass = size >= 100 ? 'text-2xl' : 'text-sm';
 
   return (
-    <div className="relative shrink-0 text-primary-light" style={{ width: size, height: size }}>
+    <div
+      className="relative shrink-0 text-primary-light"
+      style={{ width: size, height: size }}
+      role="progressbar"
+      aria-valuenow={percent}
+      aria-valuemin={0}
+      aria-valuemax={100}
+      aria-label={`${percent}%`}
+    >
       <svg width={size} height={size} viewBox="0 0 140 140" className="-rotate-90" aria-hidden>
         <circle
           cx="70"
