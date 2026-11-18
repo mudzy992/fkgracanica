@@ -7,5 +7,18 @@
         "double-guard": "Isti uslov je već provjeren pri renderovanju ili u drugom izrazu, pa je ova grana redundantna.",
         "synthetic-event": "Grana brani sintetičke događaje; stvarni DOM događaji uvijek nose `Element` kao `target`."
     },
-    "guards": []
+    "guards": [
+        {
+            "file": "frontend/src/pages/admin/competition-hub/RoundMatchesPanel.tsx",
+            "line": 50,
+            "kind": "disabled-ui",
+            "why": "Retry dugme je disabled dok isFetching=true — onClick grana void refetch() nije dostižna u tom stanju; test pokriva enabled klik."
+        },
+        {
+            "file": "frontend/src/pages/admin/competition-hub/SeasonRoundsPanel.tsx",
+            "line": 112,
+            "kind": "disabled-ui",
+            "why": "Retry dugme je disabled dok isFetching=true — onClick grana void refetch() nije dostižna u tom stanju; test pokriva enabled klik."
+        }
+    ]
 }
