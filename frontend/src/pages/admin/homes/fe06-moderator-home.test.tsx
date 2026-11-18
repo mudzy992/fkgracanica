@@ -144,11 +144,13 @@ describe('ModeratorHome — KPI i posjete', () => {
     expect(state.news.refetch).toHaveBeenCalled();
   });
 
-  it('visitors error prikazuje alert', () => {
+  it('visitors error prikazuje alert', async () => {
     state.visitors = { data: undefined, isLoading: false, isError: true, isFetching: false, dataUpdatedAt: 0, refetch: vi.fn() } as unknown as typeof state.visitors;
     renderHome();
     // two alerts possible (kpi + visitors) — visitors alert is second
     expect(screen.getAllByRole('alert').length).toBeGreaterThanOrEqual(1);
+    await userEvent.click(screen.getByRole('button', { name: 'actions.retry' }));
+    expect(state.visitors.refetch).toHaveBeenCalled();
   });
 
   it('KPI bez permisije nema link', () => {
@@ -250,10 +252,21 @@ describe('ModeratorHome — red čekanja', () => {
     expect(document.querySelectorAll('[aria-busy="true"]').length).toBeGreaterThanOrEqual(1);
   });
 
-  it('queue error prikazuje alert', () => {
-    state.news = { data: undefined, isLoading: false, isError: true, isFetching: false, dataUpdatedAt: 0, status: '', refetch: vi.fn() } as unknown as typeof state.news;
+  it('queue error prikazuje alert', async () => {
+    const newsRefetch = vi.fn();
+    const galleryRefetch = vi.fn();
+    const liveRefetch = vi.fn();
+    state.news = { data: undefined, isLoading: false, isError: true, isFetching: false, dataUpdatedAt: 0, status: '', refetch: newsRefetch } as unknown as typeof state.news;
+    state.gallery = { data: undefined, isLoading: false, isError: false, isFetching: false, dataUpdatedAt: 0, refetch: galleryRefetch } as unknown as typeof state.gallery;
+    state.live = { data: undefined, isLoading: false, isError: false, isFetching: false, dataUpdatedAt: 0, refetch: liveRefetch } as unknown as typeof state.live;
     renderHome();
     expect(screen.getAllByRole('alert').length).toBeGreaterThanOrEqual(1);
+    const retryBtns = screen.getAllByRole('button', { name: 'actions.retry' });
+    // zadnje dugme je queue retry (kpi retry je prvo)
+    await userEvent.click(retryBtns[retryBtns.length - 1]);
+    expect(newsRefetch).toHaveBeenCalled();
+    expect(galleryRefetch).toHaveBeenCalled();
+    expect(liveRefetch).toHaveBeenCalled();
   });
 
   it('queue ima aria-label', () => {
