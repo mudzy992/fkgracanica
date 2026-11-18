@@ -67,6 +67,7 @@ export function ClubsAdminPage() {
       >
         <AdminDataTable
           rows={data ?? []}
+          emptyRole="status"
           columns={[
             {
               key: 'crest',

@@ -66,6 +66,7 @@ export function PlayersAdminPage() {
       >
         <AdminDataTable
           rows={data ?? []}
+          emptyRole="status"
           columns={[
             {
               key: 'name',

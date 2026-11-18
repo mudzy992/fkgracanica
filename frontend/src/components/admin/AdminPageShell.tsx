@@ -83,6 +83,7 @@ export function AdminDataTable<T extends { id: string }>({
   rows,
   columns,
   empty = 'Nema podataka',
+  emptyRole,
   onRowClick,
   rowClassName,
   cellClassName = 'p-4',
@@ -91,16 +92,20 @@ export function AdminDataTable<T extends { id: string }>({
   rows: T[];
   columns: Column<T>[];
   empty?: string;
+  /** B-03: Clubs/Players empty live region; za Media bez role da ne duplicira upload status. */
+  emptyRole?: 'status' | 'alert';
   onRowClick?: (row: T) => void;
   rowClassName?: (row: T) => string | undefined;
   cellClassName?: string;
   headerCellClassName?: string;
 }) {
   if (!rows.length) {
-    return (
-      <p role="status" className="p-6 text-center text-text-muted">
+    return emptyRole ? (
+      <p role={emptyRole} className="p-6 text-center text-text-muted">
         {empty}
       </p>
+    ) : (
+      <p className="p-6 text-center text-text-muted">{empty}</p>
     );
   }
   return (
