@@ -556,7 +556,8 @@
       "leagueHint": "Shown on /liga and the home page table.",
       "yearStart": "Start year",
       "yearEnd": "End year",
-      "activeSeason": "Active season"
+      "activeSeason": "Active season",
+      "yearOrderError": "Start year cannot be greater than end year."
     },
     "newsAdmin": {
       "allCategories": "All categories",

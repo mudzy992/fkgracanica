@@ -23,3 +23,4 @@ frontend/src/pages/admin/homes/WriterHome.tsx
 frontend/src/pages/admin/homes/fe06-commentator-home.test.tsx
 frontend/src/pages/admin/homes/fe06-moderator-home.test.tsx
 frontend/src/pages/admin/homes/fe06-writer-home.test.tsx
+frontend/src/pages/admin/CompetitionsAdminPage.tsx

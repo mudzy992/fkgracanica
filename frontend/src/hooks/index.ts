@@ -282,10 +282,16 @@ export function useAuditLog(params: Record<string, string | number | undefined> 
   });
 }
 
-export function useCompetitions() {
+export function useCompetitions(
+  options?: Omit<import('@tanstack/react-query').UseQueryOptions<unknown[]>, 'queryKey' | 'queryFn'>,
+) {
   return useQuery({
     queryKey: ['competitions'],
     queryFn: async () => asArray((await api.get('/competitions')).data),
+    staleTime: 30_000,
+    retry: 1,
+    refetchOnWindowFocus: false,
+    ...options,
   });
 }
 

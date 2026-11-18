@@ -556,7 +556,8 @@
       "leagueHint": "Prikazuje se na /liga i tabeli na naslovnoj.",
       "yearStart": "Godina početka",
       "yearEnd": "Godina kraja",
-      "activeSeason": "Aktivna sezona"
+      "activeSeason": "Aktivna sezona",
+      "yearOrderError": "Početna godina ne može biti veća od krajnje."
     },
     "newsAdmin": {
       "allCategories": "Sve kategorije",

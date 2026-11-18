@@ -135,10 +135,13 @@ export function CompetitionsAdminFormSheet({
             </div>
           </>
         )}
-        {error && <p className="text-sm text-danger">{error}</p>}
+        {mode === 'season' && yearStart > yearEnd && (
+          <p role="alert" className="text-sm text-danger">{t('admin.competitionForm.yearOrderError', { defaultValue: 'Početna godina ne može biti veća od krajnje.' })}</p>
+        )}
+        {error && <p role="alert" className="text-sm text-danger">{error}</p>}
         <Button
           onClick={() => void save()}
-          disabled={!name || createComp.isPending || createSeason.isPending}
+          disabled={!name.trim() || createComp.isPending || updateComp.isPending || createSeason.isPending || updateSeason.isPending || (mode === 'season' && yearStart > yearEnd)}
         >
           {editCompetition || editSeason ? 'Spremi' : 'Kreiraj'}
         </Button>

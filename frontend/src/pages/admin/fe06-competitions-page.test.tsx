@@ -10,12 +10,12 @@ type Row = Record<string, unknown> & { id: string };
 type Column = { key: string; header: string; render: (row: Row) => ReactNode };
 
 const state = vi.hoisted(() => ({
-  competitions: { data: [] as unknown[], isLoading: false },
-  seasons: { data: [] as unknown[], isLoading: false },
+  competitions: { data: [] as unknown[], isLoading: false, isError: false, isFetching: false, dataUpdatedAt: 0, refetch: vi.fn() },
+  seasons: { data: [] as unknown[], isLoading: false, isError: false, isFetching: false, dataUpdatedAt: 0, refetch: vi.fn() },
   canManage: true,
   confirm: vi.fn(async () => true),
-  deleteComp: { mutateAsync: vi.fn(async () => ({})) },
-  deleteSeason: { mutateAsync: vi.fn(async () => ({})) },
+  deleteComp: { mutateAsync: vi.fn(async () => ({})), isPending: false },
+  deleteSeason: { mutateAsync: vi.fn(async () => ({})), isPending: false },
   sheet: null as null | { open: boolean; mode: unknown; editCompetition: unknown; editSeason: unknown },
   closeSheet: vi.fn(),
 }));
@@ -41,15 +41,15 @@ vi.mock('./CompetitionsAdminFormSheet', () => ({
   },
 }));
 vi.mock('../../components/admin/AdminPageShell', () => ({
-  AdminPageShell: ({ title, isLoading, actions, children }: { title: string; isLoading?: boolean; actions?: ReactNode; children: ReactNode }) => (
+  AdminPageShell: ({ title, actions, children }: { title: string; actions?: ReactNode; children: ReactNode }) => (
     <div>
       <h1>{title}</h1>
       {actions}
-      {isLoading ? <p>učitavanje</p> : children}
+      {children}
     </div>
   ),
   AdminDataTable: ({ rows, columns, empty }: { rows: Row[]; columns: Column[]; empty?: string }) =>
-    rows.length === 0 ? <p>{empty}</p> : (
+    rows.length === 0 ? <p role="status">{empty}</p> : (
       <div data-testid="table">
         {rows.map((row) => (
           <div key={row.id} data-testid={`row-${String(row.name)}`}>
@@ -72,12 +72,12 @@ const competitions = [
 const renderPage = () => render(<MemoryRouter><CompetitionsAdminPage /></MemoryRouter>);
 
 beforeEach(() => {
-  state.competitions = { data: competitions, isLoading: false };
-  state.seasons = { data: seasons, isLoading: false };
+  state.competitions = { data: competitions, isLoading: false, isError: false, isFetching: false, dataUpdatedAt: 0, refetch: vi.fn() } as unknown as typeof state.competitions;
+  state.seasons = { data: seasons, isLoading: false, isError: false, isFetching: false, dataUpdatedAt: 0, refetch: vi.fn() } as unknown as typeof state.seasons;
   state.canManage = true;
   state.confirm = vi.fn(async () => true);
-  state.deleteComp = { mutateAsync: vi.fn(async () => ({})) };
-  state.deleteSeason = { mutateAsync: vi.fn(async () => ({})) };
+  state.deleteComp = { mutateAsync: vi.fn(async () => ({})), isPending: false } as unknown as typeof state.deleteComp;
+  state.deleteSeason = { mutateAsync: vi.fn(async () => ({})), isPending: false } as unknown as typeof state.deleteSeason;
   state.sheet = null;
 });
 
@@ -156,24 +156,27 @@ describe('CompetitionsAdminPage', () => {
     expect(state.deleteComp.mutateAsync).not.toHaveBeenCalled();
   });
 
-  it('dok se podaci učitavaju ne prikazuju se tabele; prazne liste daju poruke', () => {
-    state.seasons = { data: seasons, isLoading: true };
-    const { unmount } = renderPage();
-    expect(screen.getByText('učitavanje')).toBeInTheDocument();
-    expect(screen.queryByTestId('table')).toBeNull();
+  it('dok se podaci učitavaju prikazuje se skeleton po sekciji; prazne liste daju poruke', () => {
+    state.seasons = { data: seasons, isLoading: true, isError: false, isFetching: false, dataUpdatedAt: 0, refetch: vi.fn() } as unknown as typeof state.seasons;
+    state.competitions = { data: competitions, isLoading: false, isError: false, isFetching: false, dataUpdatedAt: 0, refetch: vi.fn() } as unknown as typeof state.competitions;
+    const { unmount, container } = renderPage();
+    expect(container.querySelector('[aria-busy="true"]')).toBeTruthy();
+    expect(screen.getByTestId('row-Premijer liga')).toBeInTheDocument();
+    expect(screen.queryByTestId('row-2025/26')).toBeNull();
     unmount();
-    state.seasons = { data: [], isLoading: false };
-    state.competitions = { data: [], isLoading: false };
+    state.seasons = { data: [], isLoading: false, isError: false, isFetching: false, dataUpdatedAt: 0, refetch: vi.fn() } as unknown as typeof state.seasons;
+    state.competitions = { data: [], isLoading: false, isError: false, isFetching: false, dataUpdatedAt: 0, refetch: vi.fn() } as unknown as typeof state.competitions;
     renderPage();
     expect(screen.getAllByText(/emptySeasons|emptyCompetitions|Nema/i)).toHaveLength(2);
+    expect(screen.getAllByRole('status')).toHaveLength(2);
   });
 });
 
 /** Batch 35 — pokriva `?? []` grane i onOpenChange(true) */
 describe('CompetitionsAdminPage — grane (batch 35)', () => {
   it('undefined podaci koriste prazne liste bez greške', () => {
-    state.competitions = { data: undefined as unknown as unknown[], isLoading: false };
-    state.seasons = { data: undefined as unknown as unknown[], isLoading: false };
+    state.competitions = { data: undefined as unknown as unknown[], isLoading: false, isError: false, isFetching: false, dataUpdatedAt: 0, refetch: vi.fn() } as unknown as typeof state.competitions;
+    state.seasons = { data: undefined as unknown as unknown[], isLoading: false, isError: false, isFetching: false, dataUpdatedAt: 0, refetch: vi.fn() } as unknown as typeof state.seasons;
     renderPage();
     expect(screen.getAllByText(/emptySeasons|emptyCompetitions|Nema/i)).toHaveLength(2);
   });
