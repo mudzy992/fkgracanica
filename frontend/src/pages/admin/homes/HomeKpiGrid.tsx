@@ -34,6 +34,7 @@ export function HomeKpiGrid({ items }: { items: HomeKpi[] }) {
           <Link
             key={item.key}
             to={item.href}
+            aria-label={`${item.label}: ${item.value}`}
             className="block rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-light"
           >
             {inner}

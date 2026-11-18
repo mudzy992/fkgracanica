@@ -28,7 +28,11 @@ export function usePublishedNews(categoryId?: string) {
   });
 }
 
-export function useNewsList(status?: string, categoryId?: string) {
+export function useNewsList(
+  status?: string,
+  categoryId?: string,
+  options?: Omit<import('@tanstack/react-query').UseQueryOptions<NewsItem[]>, 'queryKey' | 'queryFn'>,
+) {
   return useQuery({
     queryKey: ['news', status, categoryId],
     queryFn: async () =>
@@ -40,6 +44,10 @@ export function useNewsList(status?: string, categoryId?: string) {
           },
         })).data,
       ),
+    staleTime: 30_000,
+    retry: 1,
+    refetchOnWindowFocus: false,
+    ...options,
   });
 }
 
@@ -57,13 +65,20 @@ export function useNewsItem(idOrSlug: string) {
   });
 }
 
-export function useGalleryList(status?: string) {
+export function useGalleryList(
+  status?: string,
+  options?: Omit<import('@tanstack/react-query').UseQueryOptions<GalleryItem[]>, 'queryKey' | 'queryFn'>,
+) {
   return useQuery({
     queryKey: ['gallery', status],
     queryFn: async () =>
       asArray<GalleryItem>(
         (await api.get('/gallery', { params: status ? { status } : { status: 'PUBLISHED' } })).data,
       ),
+    staleTime: 30_000,
+    retry: 1,
+    refetchOnWindowFocus: false,
+    ...options,
   });
 }
 

@@ -92,11 +92,18 @@ export function useVisitorTrend(days = 30) {
   });
 }
 
-export function useVisitorTotals(days = 30) {
+export function useVisitorTotals(
+  days = 30,
+  options?: Omit<import('@tanstack/react-query').UseQueryOptions<VisitorTotals>, 'queryKey' | 'queryFn'>,
+) {
   return useQuery({
     queryKey: ['analytics', 'visitors', 'totals', days],
     queryFn: async () =>
       (await api.get<VisitorTotals>('/public-analytics/totals', { params: { days } })).data,
+    staleTime: 30_000,
+    retry: 1,
+    refetchOnWindowFocus: false,
+    ...options,
   });
 }
 

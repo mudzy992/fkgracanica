@@ -7,10 +7,16 @@ function patchMatch(qc: ReturnType<typeof useQueryClient>, data: Match) {
   qc.setQueryData(['matches', data.id], (old: Match | undefined) => (old ? { ...old, ...data } : data));
 }
 
-export function usePendingLiveReports() {
+export function usePendingLiveReports(
+  options?: Omit<import('@tanstack/react-query').UseQueryOptions<Match[]>, 'queryKey' | 'queryFn'>,
+) {
   return useQuery({
     queryKey: ['live', 'pending'],
     queryFn: async () => (await api.get<Match[]>('/live/pending')).data,
+    staleTime: 30_000,
+    retry: 1,
+    refetchOnWindowFocus: false,
+    ...options,
   });
 }
 

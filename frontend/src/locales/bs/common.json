@@ -265,7 +265,9 @@
       "newsQueue": "Red vijesti",
       "galleryQueue": "Red galerija",
       "emptyQueue": "Nema stavki na čekanju.",
-      "approve": "Odobri"
+      "approve": "Odobri",
+      "approveLabel": "Odobri {{title}}",
+      "queueLabel": "Red čekanja"
     },
     "commentator": {
       "liveOnDesk": "Uživo na desku",

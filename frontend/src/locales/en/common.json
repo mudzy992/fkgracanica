@@ -265,7 +265,9 @@
       "newsQueue": "News queue",
       "galleryQueue": "Gallery queue",
       "emptyQueue": "Nothing pending.",
-      "approve": "Approve"
+      "approve": "Approve",
+      "approveLabel": "Approve {{title}}",
+      "queueLabel": "Approval queue"
     },
     "commentator": {
       "liveOnDesk": "Live on the desk",
