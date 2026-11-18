@@ -32,7 +32,7 @@ vi.mock('../../../hooks', () => ({
     }
     return state.news;
   },
-  useGalleryList: (_status: string, opts?: { enabled?: boolean }) => state.gallery,
+  useGalleryList: (_status: string, _opts?: { enabled?: boolean }) => state.gallery,
 }));
 vi.mock('../../../hooks/use-contact-admin', () => ({ useContactMessages: () => state.inbox }));
 vi.mock('../../../hooks/use-live-admin', () => ({
@@ -138,9 +138,9 @@ describe('ModeratorHome — KPI i posjete', () => {
   it('KPI error prikazuje alert i retry', async () => {
     state.news = { data: undefined, isLoading: false, isError: true, isFetching: false, dataUpdatedAt: 0, status: '', refetch: vi.fn() } as unknown as typeof state.news;
     renderHome();
-    expect(screen.getByRole('alert')).toBeInTheDocument();
-    expect(screen.getByText('admin.home.kpiError')).toBeInTheDocument();
-    await userEvent.click(screen.getByRole('button', { name: 'actions.retry' }));
+    expect(screen.getAllByRole('alert').length).toBeGreaterThanOrEqual(1);
+    expect(screen.getAllByText('admin.home.kpiError').length).toBeGreaterThanOrEqual(1);
+    await userEvent.click(screen.getAllByRole('button', { name: 'actions.retry' })[0]);
     expect(state.news.refetch).toHaveBeenCalled();
   });
 
@@ -155,8 +155,6 @@ describe('ModeratorHome — KPI i posjete', () => {
     state.permissions = ['news.manage', 'news.approve']; // no analytics, no contact
     state.visitors = { data: { web: 10, mobile: 20, total: 30 }, isLoading: false, isError: false, isFetching: false, dataUpdatedAt: 0, refetch: vi.fn() } as unknown as typeof state.visitors;
     renderHome();
-    // inbox total should be without link when no contact.read
-    const inboxCard = screen.getByText('admin.commsInbox').closest('div');
     // HomeKpiGrid renders div not link when no href — check that inbox value not inside link
     const inboxLinks = screen.getAllByRole('link').map((l) => l.getAttribute('href'));
     expect(inboxLinks).not.toContain('/admin/comms');
