@@ -8,7 +8,7 @@ import {
   roundMatchesState as state,
 } from '../../../test/doubles/round-matches-panel-doubles';
 
-vi.mock('react-i18next', () => ({ useTranslation: () => ({ t: (k: string) => k }) }));
+vi.mock('react-i18next', () => ({ useTranslation: () => ({ t: (k: string, opts?: { defaultValue?: string }) => opts?.defaultValue ?? k }) }));
 vi.mock('../../../hooks', async () =>
   (await import('../../../test/doubles/round-matches-panel-doubles')).matchesHooksModule(),
 );

@@ -58,7 +58,7 @@ export function RoundMatchesPanel({ seasonId, roundId, canManage }: Props) {
           empty="Nema utakmica u ovom kolu."
           columns={[
             { key: 'match', header: 'Utakmica', render: (r) => (
-              <div className="flex flex-wrap items-center gap-2"><span>{r.homeClub?.name} {r.homeScore}:{r.awayScore} {r.awayClub?.name}</span>{isScheduledMatch(r) && <Badge variant="default" className="text-[10px]">Zakazano</Badge>}{isRetrospectiveMatch(r) && <Badge variant="muted" className="text-[10px]">Retro</Badge>}</div>
+              <div className="flex flex-wrap items-center gap-2"><span>{r.homeClub?.name} {r.homeScore}:{r.awayScore} {r.awayClub?.name}</span>{isScheduledMatch(r) && <Badge variant="default" className="text-[10px]">{t('admin.roundMatches.scheduled', { defaultValue: 'Zakazano' })}</Badge>}{isRetrospectiveMatch(r) && <Badge variant="muted" className="text-[10px]">{t('admin.roundMatches.retro', { defaultValue: 'Retro' })}</Badge>}</div>
             ) },
             { key: 'status', header: 'Status', render: (r) => <Badge variant={r.status === 'SCHEDULED' ? 'default' : 'muted'}>{matchStatusLabel(r.status)}</Badge> },
             { key: 'date', header: 'Datum', render: (r) => formatDateTime(r.scheduledAt) },

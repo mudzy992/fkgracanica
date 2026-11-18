@@ -791,7 +791,9 @@
       "ack": "Razumijem da se podaci ne mogu vratiti"
     },
     "roundMatches": {
-      "title": "Utakmice u kolu"
+      "title": "Utakmice u kolu",
+      "scheduled": "Zakazano",
+      "retro": "Retro"
     },
     "financeFilters": {
       "status": "Status uplate",

@@ -791,7 +791,9 @@
       "ack": "I understand the data cannot be restored"
     },
     "roundMatches": {
-      "title": "Matches in the round"
+      "title": "Matches in the round",
+      "scheduled": "Scheduled",
+      "retro": "Retro"
     },
     "financeFilters": {
       "status": "Payment status",

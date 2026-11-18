@@ -52,7 +52,7 @@ export function CalendarSeasonPage() {
           ) : isLoading ? <Skeleton className="h-7 w-48" /> : null}
         </div>
         {canManage && season ? (
-          <Button size="sm" onClick={() => { setEdit(null); setOpen(true); }} disabled={deleteEdition.isPending}><Plus className="mr-1 h-4 w-4" />Takmičenje</Button>
+          <Button size="sm" onClick={() => { setEdit(null); setOpen(true); }} disabled={deleteEdition.isPending}><Plus className="mr-1 h-4 w-4" />{t('admin.calendar.competition')}</Button>
         ) : null}
         {lastUpdated ? (
           <div className="flex items-center gap-3 text-xs text-text-muted">
@@ -79,7 +79,7 @@ export function CalendarSeasonPage() {
               { key: 'name', header: t('admin.calendar.competition'), render: (r) => r.competition?.name ?? '—' },
               { key: 'league', header: t('admin.competitionsAdmin.colLeague'), render: (r) => (r.competition?.isLeague ? <Badge variant="success">{t('admin.competitionsAdmin.league')}</Badge> : <Badge variant="muted">{t('admin.competitionsAdmin.other')}</Badge>) },
               { key: 'participants', header: t('admin.calendar.participants'), render: (r) => r.participants?.length ?? 0 },
-              { key: 'hub', header: 'Kola', render: (r) => <Link to={`/admin/seasons/${seasonId}/competitions/${r.id}`} className={`text-sm ${adminLinkClass}`}>Upravljaj</Link> },
+              { key: 'hub', header: t('admin.roundsPanel.rounds'), render: (r) => <Link to={`/admin/seasons/${seasonId}/competitions/${r.id}`} className={`text-sm ${adminLinkClass}`}>{t('admin.clubsList.manage', { defaultValue: 'Upravljaj' })}</Link> },
               ...(canManage ? [{ key: 'actions', header: 'Akcije', render: (r: SeasonEditionRow) => (
                 <div className="flex gap-1">
                   <Button variant="ghost" size="icon" onClick={() => { setEdit(r); setOpen(true); }} aria-label={t('actions.edit')} disabled={deleteEdition.isPending}><Pencil className="h-4 w-4" /></Button>
