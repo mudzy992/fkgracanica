@@ -37,6 +37,12 @@
             "line": 111,
             "kind": "disabled-ui",
             "why": "Retry dugme je disabled dok isFetching=true — onClick grana void refetch() nije dostižna u tom stanju; test pokriva enabled klik i isFetching disabled."
+        },
+        {
+            "file": "frontend/src/pages/admin/DashboardPage.tsx",
+            "line": 20,
+            "kind": "double-guard",
+            "why": "Explicit if (kind==='admin') već pokriva admin — fallback return je redundantna zaštita za nepoznat kind koji resolveStaffHome ne vraća (admin>moderator>commentator>writer); pokriveno kroz admin test, mrtva grana iz plana A-01 korak 1."
         }
     ]
 }
