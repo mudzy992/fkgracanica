@@ -61,7 +61,7 @@ describe('AnalyticsPage', () => {
   it('prikazuje četiri taba sa labelama', () => {
     render(<AnalyticsPage />);
     ['admin.analyticsTabs.team', 'admin.analyticsTabs.h2h', 'admin.analyticsTabs.players', 'admin.analyticsTabs.visitors'].forEach(
-      (label) => expect(screen.getByRole('button', { name: label })).toBeTruthy(),
+      (label) => expect(screen.getByRole('tab', { name: label })).toBeTruthy(),
     );
   });
 
@@ -89,7 +89,7 @@ describe('AnalyticsPage', () => {
   it('dok se tim učitava prikazuje poruku', () => {
     state.team = { data: undefined, isLoading: true, isError: false, refetch: vi.fn() };
     render(<AnalyticsPage />);
-    expect(screen.getByText('admin.common.loading')).toBeTruthy();
+    expect(document.querySelector('[aria-busy="true"]')).toBeTruthy();
     expect(screen.queryByTestId('team-panel')).toBeNull();
   });
 
@@ -103,18 +103,18 @@ describe('AnalyticsPage', () => {
   it('tabovi mijenjaju panel, a filter sezone ostaje samo na tim tabu', async () => {
     state.team = { data: { played: 1 }, isLoading: false, isError: false, refetch: vi.fn() };
     render(<AnalyticsPage />);
-    await userEvent.click(screen.getByRole('button', { name: 'admin.analyticsTabs.h2h' }));
+    await userEvent.click(screen.getByRole('tab', { name: 'admin.analyticsTabs.h2h' }));
     expect(screen.getByTestId('h2h-panel')).toBeTruthy();
     expect(screen.queryByTestId('team-panel')).toBeNull();
     expect(screen.queryByRole('combobox')).toBeNull();
 
-    await userEvent.click(screen.getByRole('button', { name: 'admin.analyticsTabs.players' }));
+    await userEvent.click(screen.getByRole('tab', { name: 'admin.analyticsTabs.players' }));
     expect(screen.getByTestId('player-panel')).toBeTruthy();
 
-    await userEvent.click(screen.getByRole('button', { name: 'admin.analyticsTabs.visitors' }));
+    await userEvent.click(screen.getByRole('tab', { name: 'admin.analyticsTabs.visitors' }));
     expect(screen.getByTestId('visitors-panel')).toBeTruthy();
 
-    await userEvent.click(screen.getByRole('button', { name: 'admin.analyticsTabs.team' }));
+    await userEvent.click(screen.getByRole('tab', { name: 'admin.analyticsTabs.team' }));
     expect(screen.getByTestId('team-panel')).toBeTruthy();
     expect(screen.getByRole('combobox')).toBeTruthy();
   });
