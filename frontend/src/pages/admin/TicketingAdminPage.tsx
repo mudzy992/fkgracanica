@@ -11,11 +11,11 @@ import { useTranslation } from 'react-i18next';
 
 type Tab = 'orders' | 'settings' | 'payments' | 'season';
 
-const TABS: { key: Tab; label: string }[] = [
-  { key: 'orders', label: 'Narudžbe' },
-  { key: 'season', label: 'Sezona' },
-  { key: 'settings', label: 'Postavke' },
-  { key: 'payments', label: 'Online plaćanje' },
+const TABS: { key: Tab; labelKey: string; fallback: string }[] = [
+  { key: 'orders', labelKey: 'admin.ticketingTab.orders', fallback: 'Narudžbe' },
+  { key: 'season', labelKey: 'admin.ticketingTab.season', fallback: 'Sezona' },
+  { key: 'settings', labelKey: 'admin.ticketingTab.settings', fallback: 'Postavke' },
+  { key: 'payments', labelKey: 'admin.ticketingTab.payments', fallback: 'Online plaćanje' },
 ];
 
 export function TicketingAdminPage() {
@@ -30,15 +30,18 @@ export function TicketingAdminPage() {
       <AdminPageShell
         title={t('admin.ticketing')}
         actions={
-          <div className="flex flex-wrap gap-2">
-            {TABS.map((t) => (
+          <div role="tablist" className="flex flex-wrap gap-2">
+            {TABS.map((tabDef) => (
               <Button
-                key={t.key}
+                key={tabDef.key}
+                role="tab"
+                aria-selected={tab === tabDef.key}
+                aria-pressed={tab === tabDef.key}
                 size="sm"
-                variant={tab === t.key ? 'default' : 'outline'}
-                onClick={() => setTab(t.key)}
+                variant={tab === tabDef.key ? 'default' : 'outline'}
+                onClick={() => setTab(tabDef.key)}
               >
-                {t.label}
+                {t(tabDef.labelKey, { defaultValue: tabDef.fallback })}
               </Button>
             ))}
           </div>

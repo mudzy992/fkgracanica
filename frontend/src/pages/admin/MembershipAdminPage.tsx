@@ -106,17 +106,17 @@ export function MembershipAdminPage() {
           </div>
         }
       >
-        <AdminDataTable
-          rows={items}
+        <AdminDataTable<MembershipRow>
+          rows={items as MembershipRow[]}
           empty="Nema članstava."
-          onRowClick={setSelected}
+          onRowClick={(r: MembershipRow) => setSelected(r)}
           columns={[
-            { key: 'name', header: 'Ime', render: (r) => membershipUserName(r.user) },
-            { key: 'email', header: 'Email', render: (r) => r.user?.email ?? '—' },
+            { key: 'name', header: 'Ime', render: (r: MembershipRow) => membershipUserName(r.user) },
+            { key: 'email', header: 'Email', render: (r: MembershipRow) => r.user?.email ?? '—' },
             {
               key: 'status',
               header: 'Status',
-              render: (r) => (
+              render: (r: MembershipRow) => (
                 <Badge variant={membershipStatusVariant(r.status)}>
                   {membershipStatusLabel(r.status)}
                 </Badge>
@@ -125,17 +125,17 @@ export function MembershipAdminPage() {
             {
               key: 'endDate',
               header: 'Istek',
-              render: (r) => (r.endDate ? formatDate(r.endDate) : '—'),
+              render: (r: MembershipRow) => (r.endDate ? formatDate(r.endDate) : '—'),
             },
             {
               key: 'card',
               header: 'Kartica',
-              render: (r) => r.card?.cardNumber ?? '—',
+              render: (r: MembershipRow) => r.card?.cardNumber ?? '—',
             },
             {
               key: 'actions',
               header: 'Akcije',
-              render: (r) =>
+              render: (r: MembershipRow) =>
                 canManage ? (
                   <div className="flex flex-wrap gap-2" onClick={(e) => e.stopPropagation()}>
                     <Button size="sm" variant="outline" onClick={() => setSelected(r)}>

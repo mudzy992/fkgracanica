@@ -727,6 +727,12 @@
       "copyUrl": "Kopiraj URL",
       "copied": "Kopirano"
     },
+    "ticketingTab": {
+      "orders": "Narudžbe",
+      "season": "Sezona",
+      "settings": "Postavke",
+      "payments": "Online plaćanje"
+    },
     "ticketingPayments": {
       "status": "Status online plaćanja",
       "membershipPrice": "Godišnja članarina (KM)",

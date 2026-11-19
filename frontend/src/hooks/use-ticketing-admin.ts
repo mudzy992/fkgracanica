@@ -5,11 +5,17 @@ import type { TicketOrderRow } from '../types/ticketing';
 
 import type { TicketingAdminConfig } from '../types/ticketing-config';
 
-export function useTicketingAdminConfig() {
+export function useTicketingAdminConfig(
+  options?: Omit<import('@tanstack/react-query').UseQueryOptions<TicketingAdminConfig>, 'queryKey' | 'queryFn'>,
+) {
   return useQuery({
     queryKey: ['ticketing', 'admin', 'config'],
     queryFn: async () =>
       (await api.get<TicketingAdminConfig>('/ticketing/admin/config')).data,
+    staleTime: 30_000,
+    retry: 1,
+    refetchOnWindowFocus: false,
+    ...options,
   });
 }
 
@@ -27,19 +33,32 @@ export function useUpdateTicketingAdminConfig() {
 
 export type TicketingAdminOrder = TicketOrderRow;
 
-export function useTicketingAdminOrders() {
+export function useTicketingAdminOrders(
+  options?: Omit<import('@tanstack/react-query').UseQueryOptions<TicketingAdminOrder[]>, 'queryKey' | 'queryFn'>,
+) {
   return useQuery({
     queryKey: ['ticketing', 'admin', 'orders'],
     queryFn: async () =>
       asArray<TicketingAdminOrder>((await api.get('/ticketing/admin/orders')).data),
+    staleTime: 30_000,
+    retry: 1,
+    refetchOnWindowFocus: false,
+    ...options,
   });
 }
 
-export function useTicketingOrderDetail(orderId?: string) {
+export function useTicketingOrderDetail(
+  orderId?: string,
+  options?: Omit<import('@tanstack/react-query').UseQueryOptions<TicketingAdminOrder>, 'queryKey' | 'queryFn'>,
+) {
   return useQuery({
     queryKey: ['ticketing', 'orders', orderId],
     queryFn: async () => (await api.get<TicketingAdminOrder>(`/ticketing/orders/${orderId}`)).data,
+    staleTime: 30_000,
+    retry: 1,
+    refetchOnWindowFocus: false,
     enabled: !!orderId,
+    ...options,
   });
 }
 
@@ -89,7 +108,9 @@ export function useValidateTicket() {
   });
 }
 
-export function useSeasonPassAdminList() {
+export function useSeasonPassAdminList(
+  options?: Omit<import('@tanstack/react-query').UseQueryOptions<{ id: string; status: string; label: string; price: string; createdAt: string; user: { email: string; firstName: string | null; lastName: string | null }; season: { name: string } }[]>, 'queryKey' | 'queryFn'>,
+) {
   return useQuery({
     queryKey: ['ticketing', 'season-pass', 'admin'],
     queryFn: async () =>
@@ -102,6 +123,10 @@ export function useSeasonPassAdminList() {
         user: { email: string; firstName: string | null; lastName: string | null };
         season: { name: string };
       }>((await api.get('/ticketing/season-pass/admin')).data),
+    staleTime: 30_000,
+    retry: 1,
+    refetchOnWindowFocus: false,
+    ...options,
   });
 }
 

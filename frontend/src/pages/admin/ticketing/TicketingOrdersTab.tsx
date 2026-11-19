@@ -31,7 +31,7 @@ export function TicketingOrdersTab() {
   const { t } = useTranslation();
   const { user } = useAuth();
   const canManage = hasPermission(user?.permissions, 'ticketing.manage');
-  const { data, isLoading } = useTicketingAdminOrders();
+  const { data, isLoading, isError, isFetching, dataUpdatedAt, refetch } = useTicketingAdminOrders();
   const confirmPayment = useConfirmTicketingPayment();
   const confirmRefund = useConfirmTicketingRefund();
   const { confirm, dialog } = useConfirm();
@@ -58,12 +58,43 @@ export function TicketingOrdersTab() {
     if (ok) void action(id);
   };
 
-  if (isLoading) return <p className="p-4 text-sm text-text-muted">{t('admin.common.loading')}</p>;
+  if (isLoading) {
+    return (
+      <div aria-busy="true" className="animate-pulse space-y-3 p-4">
+        <div className="h-8 w-1/3 rounded bg-muted" />
+        <div className="h-12 w-full rounded bg-muted" />
+        <div className="h-12 w-full rounded bg-muted" />
+        <div className="h-12 w-full rounded bg-muted" />
+        <p className="sr-only">{t('admin.common.loading')}</p>
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div role="alert" className="flex flex-col gap-3 p-4">
+        <p className="text-sm text-danger">{t('admin.common.loadError', { defaultValue: 'Greška pri učitavanju.' })}</p>
+        <Button onClick={() => refetch()} disabled={Boolean(isFetching)} size="sm" variant="outline">
+          {isFetching ? t('admin.common.loading') : 'Pokušaj ponovo'}
+        </Button>
+      </div>
+    );
+  }
+
+  const lastUpdated = dataUpdatedAt
+    ? new Date(dataUpdatedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    : null;
 
   return (
     <>
       {dialog}
-      <div className="mb-4 flex flex-wrap gap-2 px-4 pt-4">
+      <div className="mb-3 flex items-center justify-end gap-3 px-4 pt-4 text-xs text-text-muted">
+        {lastUpdated ? <span>{t('admin.home.lastUpdated', { defaultValue: 'Ažurirano u {{time}}', time: lastUpdated })}</span> : null}
+        <Button variant="outline" size="sm" onClick={() => refetch()} disabled={Boolean(isFetching)}>
+          {isFetching ? t('admin.common.loading') : 'Osvježi'}
+        </Button>
+      </div>
+      <div className="mb-4 flex flex-wrap gap-2 px-4">
         {FILTERS.map((f) => (
           <Button
             key={f.key}
@@ -80,31 +111,31 @@ export function TicketingOrdersTab() {
           <TicketingValidatePanel />
         </div>
       )}
-      <AdminDataTable
-        rows={orders}
+      <AdminDataTable<TicketingAdminOrder>
+        rows={orders as TicketingAdminOrder[]}
         empty="Nema narudžbi."
-        onRowClick={setSelected}
+        onRowClick={(r: TicketingAdminOrder) => setSelected(r)}
         columns={[
-          { key: 'id', header: 'ID', render: (r) => r.id.slice(0, 8) },
-          { key: 'user', header: 'Korisnik', render: (r) => r.user?.email ?? '—' },
-          { key: 'match', header: 'Utakmica', render: (r) => matchLabel(r.tickets?.[0]?.match) },
+          { key: 'id', header: 'ID', render: (r: TicketingAdminOrder) => r.id.slice(0, 8) },
+          { key: 'user', header: 'Korisnik', render: (r: TicketingAdminOrder) => r.user?.email ?? '—' },
+          { key: 'match', header: 'Utakmica', render: (r: TicketingAdminOrder) => matchLabel(r.tickets?.[0]?.match) },
           {
             key: 'status',
             header: 'Status',
-            render: (r) => (
+            render: (r: TicketingAdminOrder) => (
               <Badge variant={orderStatusVariant(r.status)}>{orderStatusLabel(r.status)}</Badge>
             ),
           },
-          { key: 'total', header: 'Iznos', render: (r) => `${String(r.total)} KM` },
+          { key: 'total', header: 'Iznos', render: (r: TicketingAdminOrder) => `${String(r.total)} KM` },
           {
             key: 'date',
             header: 'Datum',
-            render: (r) => (r.createdAt ? formatDateTime(r.createdAt) : '—'),
+            render: (r: TicketingAdminOrder) => (r.createdAt ? formatDateTime(r.createdAt) : '—'),
           },
           {
             key: 'actions',
             header: 'Akcije',
-            render: (r) =>
+            render: (r: TicketingAdminOrder) =>
               canManage ? (
                 <div className="flex flex-wrap gap-2" onClick={(e) => e.stopPropagation()}>
                   <Button size="sm" variant="outline" onClick={() => setSelected(r)}>

@@ -14,7 +14,7 @@ import { runAction } from '../../../lib/action-errors';
 
 export function TicketingSettingsTab() {
   const { t } = useTranslation();
-  const { data, isLoading } = useTicketingAdminConfig();
+  const { data, isLoading, isError, isFetching, dataUpdatedAt, refetch } = useTicketingAdminConfig();
   const save = useUpdateTicketingAdminConfig();
   const [capacity, setCapacity] = useState('5000');
   const [discount, setDiscount] = useState('10');
@@ -50,10 +50,42 @@ export function TicketingSettingsTab() {
     }));
   };
 
-  if (isLoading) return <p className="text-sm text-text-muted">{t('admin.common.loading')}</p>;
+  if (isLoading) {
+    return (
+      <div aria-busy="true" className="animate-pulse space-y-3 p-4">
+        <div className="h-8 w-1/3 rounded bg-muted" />
+        <div className="h-12 w-full rounded bg-muted" />
+        <div className="h-12 w-full rounded bg-muted" />
+        <p className="sr-only">{t('admin.common.loading')}</p>
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div role="alert" className="flex flex-col gap-3 p-4">
+        <p className="text-sm text-danger">{t('admin.common.loadError', { defaultValue: 'Greška pri učitavanju.' })}</p>
+        <Button onClick={() => refetch()} disabled={Boolean(isFetching)} size="sm" variant="outline">
+          {isFetching ? t('admin.common.loading') : 'Pokušaj ponovo'}
+        </Button>
+      </div>
+    );
+  }
+
+  const lastUpdated = dataUpdatedAt
+    ? new Date(dataUpdatedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    : null;
 
   return (
     <div className="space-y-6 p-4">
+      {lastUpdated ? (
+        <div className="flex items-center justify-end gap-3 text-xs text-text-muted">
+          <span>{t('admin.home.lastUpdated', { defaultValue: 'Ažurirano u {{time}}', time: lastUpdated })}</span>
+          <Button variant="outline" size="sm" onClick={() => refetch()} disabled={Boolean(isFetching)}>
+            {isFetching ? t('admin.common.loading') : 'Osvježi'}
+          </Button>
+        </div>
+      ) : null}
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
           <label className="mb-1 block text-sm text-text-muted">

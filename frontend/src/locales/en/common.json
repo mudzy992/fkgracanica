@@ -727,6 +727,12 @@
       "copyUrl": "Copy URL",
       "copied": "Copied"
     },
+    "ticketingTab": {
+      "orders": "Orders",
+      "season": "Season",
+      "settings": "Settings",
+      "payments": "Online payment"
+    },
     "ticketingPayments": {
       "status": "Online payment status",
       "membershipPrice": "Annual membership (KM)",
