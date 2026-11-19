@@ -25,7 +25,12 @@ const state = vi.hoisted(() => ({
   locationState: null as unknown,
 }));
 
-vi.mock('react-i18next', () => ({ useTranslation: () => ({ t: (k: string) => k }) }));
+vi.mock('react-i18next', () => ({
+  useTranslation: () => ({
+    t: (k: string, opts?: Record<string, unknown>) =>
+      (opts?.defaultValue as string | undefined) ?? k,
+  }),
+}));
 vi.mock('../../lib/auth', () => ({ useAuth: () => ({ user: { permissions: state.permissions } }) }));
 vi.mock('../../lib/staff-home', () => ({ resolveStaffHome: () => state.home }));
 vi.mock('../../components/seo/Seo', () => ({
@@ -87,20 +92,23 @@ describe('TicketingAdminPage', () => {
 
   it('prikazuje četiri taba', () => {
     renderPage();
+    expect(screen.getByRole('tablist')).toBeTruthy();
+    const tabs = screen.getAllByRole('tab');
+    expect(tabs).toHaveLength(4);
     ['Narudžbe', 'Sezona', 'Postavke', 'Online plaćanje'].forEach((label) =>
-      expect(screen.getByRole('button', { name: label })).toBeTruthy(),
+      expect(screen.getByRole('tab', { name: label })).toBeTruthy(),
     );
   });
 
   it('klik na tabove mijenja sadržaj', async () => {
     renderPage();
-    await userEvent.click(screen.getByRole('button', { name: 'Sezona' }));
+    await userEvent.click(screen.getByRole('tab', { name: 'Sezona' }));
     expect(screen.getByTestId('tab-season')).toBeTruthy();
-    await userEvent.click(screen.getByRole('button', { name: 'Postavke' }));
+    await userEvent.click(screen.getByRole('tab', { name: 'Postavke' }));
     expect(screen.getByTestId('tab-settings')).toBeTruthy();
-    await userEvent.click(screen.getByRole('button', { name: 'Online plaćanje' }));
+    await userEvent.click(screen.getByRole('tab', { name: 'Online plaćanje' }));
     expect(screen.getByTestId('tab-payments')).toBeTruthy();
-    await userEvent.click(screen.getByRole('button', { name: 'Narudžbe' }));
+    await userEvent.click(screen.getByRole('tab', { name: 'Narudžbe' }));
     expect(screen.getByTestId('tab-orders')).toBeTruthy();
   });
 });
