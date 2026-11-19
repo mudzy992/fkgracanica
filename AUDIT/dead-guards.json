@@ -19,6 +19,18 @@
             "line": 112,
             "kind": "disabled-ui",
             "why": "Retry dugme je disabled dok isFetching=true — onClick grana void refetch() nije dostižna u tom stanju; test pokriva enabled klik."
+        },
+        {
+            "file": "frontend/src/pages/admin/gallery/GalleryEditorPage.tsx",
+            "line": 105,
+            "kind": "disabled-ui",
+            "why": "Retry dugme u error stanju je disabled dok isFetching=true — void refetch() grana nije dostižna; test pokriva enabled klik."
+        },
+        {
+            "file": "frontend/src/pages/admin/gallery/GalleryEditorPage.tsx",
+            "line": 113,
+            "kind": "disabled-ui",
+            "why": "Osvježi dugme je disabled dok isFetching=true — void refetch() grana nije dostižna; test pokriva enabled klik."
         }
     ]
 }

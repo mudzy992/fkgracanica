@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
@@ -80,7 +80,7 @@ describe('B04 GalleryEditorPage — error, trim, alert', () => {
     expect(screen.getByRole('heading', { name: /Uredi galeriju/ })).toBeInTheDocument();
     const alert = screen.getByRole('alert');
     expect(alert).toBeInTheDocument();
-    const btn = screen.getByRole('button');
+    const btn = within(alert).getByRole('button');
     expect(btn).toBeDisabled();
     expect(alert).toHaveTextContent(/Greška pri učitavanju/);
   });

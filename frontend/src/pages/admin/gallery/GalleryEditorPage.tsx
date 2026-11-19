@@ -68,37 +68,11 @@ export function GalleryEditorPage() {
     }
   };
 
-  if (id && isError) {
-    return (
-      <>
-        <Seo title={id ? 'Uredi galeriju' : 'Nova galerija'} />
-        <div className="mb-6 flex flex-wrap items-start justify-between gap-3">
-          <div>
-            <Link to="/admin/gallery" className="text-xs text-text-muted hover:underline">
-              ← Galerija
-            </Link>
-            <h1 className="text-2xl font-bold text-text">
-              {id ? 'Uredi galeriju' : 'Nova galerija'}
-            </h1>
-          </div>
-          <div className="flex gap-2">
-            <Link to="/admin/gallery" className={cn(buttonVariants({variant: "outline"}))}>{t('actions.back')}</Link>
-          </div>
-        </div>
-        <div role="alert" className="flex flex-col items-center gap-4 py-8">
-          <p className="text-sm text-text-muted">{t('admin.common.loadError', { defaultValue: 'Greška pri učitavanju.' })}</p>
-          <Button variant="outline" onClick={() => void refetch()} disabled={Boolean(isFetching)}>
-            {isFetching ? t('admin.common.loading') : t('actions.retry', { defaultValue: 'Pokušaj ponovo' })}
-          </Button>
-        </div>
-      </>
-    );
-  }
-
   if (id && isLoading) return <Skeleton className="h-96" />;
 
   const photos = detail?.photos ?? [];
   const lastUpdated = dataUpdatedAt ? new Date(dataUpdatedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : null;
+  const showInitialError = Boolean(id && isError && !detail);
 
   return (
     <>
@@ -125,6 +99,14 @@ export function GalleryEditorPage() {
           </Button>
         </div>
       </div>
+      {showInitialError ? (
+        <div role="alert" className="flex flex-col items-center gap-4 py-8">
+          <p className="text-sm text-text-muted">{t('admin.common.loadError', { defaultValue: 'Greška pri učitavanju.' })}</p>
+          <Button variant="outline" onClick={() => void refetch()} disabled={Boolean(isFetching)}>
+            {isFetching ? t('admin.common.loading') : t('actions.retry', { defaultValue: 'Pokušaj ponovo' })}
+          </Button>
+        </div>
+      ) : null}
       {id && lastUpdated ? (
         <div className="mb-3 flex items-center justify-end gap-3 text-xs text-text-muted">
           <span>{t('admin.home.lastUpdated', { defaultValue: 'Ažurirano u {{time}}', time: lastUpdated })}</span>

@@ -122,7 +122,8 @@ export function MediaPage() {
 
   const dataUpdatedAt = Math.max(fu ?? 0, au ?? 0) || undefined;
   const isFetching = Boolean(ff || af);
-  const isError = Boolean(fe || ae);
+  // DataError samo za inicijalno učitavanje bez uspješnog fetch-a; background refresh greške obrađuje MediaUploadProgress (refreshFailed) da ne duplicira role=alert.
+  const isError = Boolean((fe && !fu) || (ae && !au));
 
   return (
     <>
