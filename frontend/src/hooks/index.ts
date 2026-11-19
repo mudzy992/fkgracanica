@@ -311,7 +311,18 @@ export {
 
 export function useAuditLog(
   params: Record<string, string | number | undefined> = {},
-  options?: Omit<import('@tanstack/react-query').UseQueryOptions<unknown>, 'queryKey' | 'queryFn'>,
+  options?: Omit<
+    import('@tanstack/react-query').UseQueryOptions<
+      import('../types/pagination').PaginatedResponse<{
+        id: string;
+        action: string;
+        createdAt: string;
+        actor?: { email: string } | null;
+        entity?: string | null;
+      }>
+    >,
+    'queryKey' | 'queryFn'
+  >,
 ) {
   return useQuery({
     queryKey: ['audit', params],
