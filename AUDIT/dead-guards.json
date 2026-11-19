@@ -127,6 +127,24 @@
             "line": 94,
             "kind": "double-guard",
             "why": "embedded isError early return — test pokriva standalone isError (embedded=false) sa AdminPageShell+Seo; embedded=true vraća samo dialog+err fragment za tab view i nije pokriven direktnim testom, ali dijeli isti err element (F-01 isError branch)."
+        },
+        {
+            "file": "frontend/src/pages/admin/analytics/AnalyticsVisitorsPanel.tsx",
+            "line": 39,
+            "kind": "disabled-ui",
+            "why": "Retry dugme je disabled dok isFetching=true — void totalsQ.refetch() grana u handleRetry nije dostižna u tom stanju; test pokriva enabled klik (F-03 visitors error)."
+        },
+        {
+            "file": "frontend/src/pages/admin/analytics/AnalyticsVisitorsPanel.tsx",
+            "line": 40,
+            "kind": "disabled-ui",
+            "why": "Retry dugme je disabled dok isFetching=true — void trendQ.refetch() grana u handleRetry nije dostižna; test pokriva enabled klik."
+        },
+        {
+            "file": "frontend/src/pages/admin/analytics/AnalyticsVisitorsPanel.tsx",
+            "line": 41,
+            "kind": "disabled-ui",
+            "why": "Retry dugme je disabled dok isFetching=true — void geoQ.refetch() grana u handleRetry nije dostižna; test pokriva enabled klik."
         }
     ]
 }
