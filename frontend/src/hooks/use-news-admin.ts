@@ -26,10 +26,16 @@ export interface NewsWriteBody {
   relatedPlayerIds?: string[];
 }
 
-export function useNewsCategories() {
+export function useNewsCategories(
+  options?: Omit<import('@tanstack/react-query').UseQueryOptions<NewsCategory[]>, 'queryKey' | 'queryFn'>,
+) {
   return useQuery({
     queryKey: ['news-categories'],
     queryFn: async () => asArray<NewsCategory>((await api.get('/news-categories')).data),
+    staleTime: 30_000,
+    retry: 1,
+    refetchOnWindowFocus: false,
+    ...options,
   });
 }
 
@@ -81,11 +87,19 @@ export function useDeleteNews() {
   });
 }
 
-export function useNewsById(id?: string) {
+export function useNewsById(
+  id?: string,
+  options?: Omit<import('@tanstack/react-query').UseQueryOptions<NewsItem>, 'queryKey' | 'queryFn'>,
+) {
+  const { enabled: optEnabled, ...rest } = (options ?? {}) as { enabled?: boolean } & Record<string, unknown>;
   return useQuery({
     queryKey: ['news', 'id', id],
     queryFn: async () => (await api.get<NewsItem>(`/news/${id}`)).data,
-    enabled: !!id,
+    staleTime: 30_000,
+    retry: 1,
+    refetchOnWindowFocus: false,
+    ...rest,
+    enabled: !!id && (optEnabled ?? true),
   });
 }
 

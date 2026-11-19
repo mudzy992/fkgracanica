@@ -19,10 +19,11 @@ interface Props {
 
 export function NewsCategoriesDialog({ open, onOpenChange }: Props) {
   const { t } = useTranslation();
-  const { data: raw } = useNewsCategories();
+  const { data: raw, isFetching } = useNewsCategories();
   const categories = asArray<NewsCategory>(raw);
   const create = useCreateNewsCategory();
   const remove = useDeleteNewsCategory();
+  const isMutating = create.isPending || remove.isPending;
   const [name, setName] = useState('');
   const [error, setError] = useState('');
   const dirty = name.trim().length > 0;
@@ -57,12 +58,12 @@ export function NewsCategoriesDialog({ open, onOpenChange }: Props) {
             placeholder={t('admin.newsCategories.newPlaceholder')}
             onKeyDown={(e) => e.key === 'Enter' && void onAdd()}
           />
-          <Button onClick={() => void onAdd()} disabled={!name.trim() || create.isPending}>
+          <Button onClick={() => void onAdd()} disabled={!name.trim() || isMutating}>
             Dodaj
           </Button>
         </div>
-        {error && <p className="text-sm text-danger">{error}</p>}
-        <ul className="divide-y divide-[var(--border-subtle)] rounded-lg border border-[var(--border-subtle)]">
+        {error && <p role="alert" className="text-sm text-danger">{error}</p>}
+        <ul aria-busy={isFetching || undefined} className="divide-y divide-[var(--border-subtle)] rounded-lg border border-[var(--border-subtle)]">
           {categories.length === 0 && (
             <li className="p-3 text-sm text-text-muted">{t('admin.newsCategories.empty')}</li>
           )}
@@ -76,7 +77,7 @@ export function NewsCategoriesDialog({ open, onOpenChange }: Props) {
                 size="sm"
                 variant="ghost"
                 onClick={() => onDelete(cat)}
-                disabled={remove.isPending}
+                disabled={isMutating}
               >
                 Obriši
               </Button>

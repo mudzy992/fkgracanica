@@ -24,7 +24,7 @@ export function NewsEditorPage() {
   const { id } = useParams<{ id: string }>();
   const isEdit = Boolean(id);
   const navigate = useNavigate();
-  const { data: item, isLoading } = useNewsById(id);
+  const { data: item, isLoading, isError, isFetching, dataUpdatedAt, refetch } = useNewsById(id);
   const create = useCreateNews();
   const update = useUpdateNews();
   const [error, setError] = useState('');
@@ -73,6 +73,9 @@ export function NewsEditorPage() {
 
   if (isEdit && isLoading) return <Skeleton className="h-96" />;
 
+  const lastUpdated = dataUpdatedAt ? new Date(dataUpdatedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : null;
+  const showInitialError = Boolean(isEdit && isError && !item);
+
   return (
     <>
       <Seo title={isEdit ? 'Uredi vijest' : 'Nova vijest'} />
@@ -96,12 +99,28 @@ export function NewsEditorPage() {
           <Button
             type="submit"
             form="news-editor-form"
-            disabled={formState.isSubmitting}
+            disabled={formState.isSubmitting || create.isPending || update.isPending}
           >
             {isEdit ? 'Sačuvaj' : 'Kreiraj (nacrt)'}
           </Button>
         </div>
       </div>
+      {showInitialError ? (
+        <div role="alert" className="flex flex-col items-center gap-4 py-8">
+          <p className="text-sm text-text-muted">{t('admin.common.loadError', { defaultValue: 'Greška pri učitavanju.' })}</p>
+          <Button variant="outline" onClick={() => void refetch()} disabled={Boolean(isFetching)}>
+            {isFetching ? t('admin.common.loading') : t('actions.retry', { defaultValue: 'Pokušaj ponovo' })}
+          </Button>
+        </div>
+      ) : null}
+      {isEdit && lastUpdated ? (
+        <div className="mb-3 flex items-center justify-end gap-3 text-xs text-text-muted">
+          <span>{t('admin.home.lastUpdated', { defaultValue: 'Ažurirano u {{time}}', time: lastUpdated })}</span>
+          <Button variant="outline" size="sm" onClick={() => void refetch()} disabled={Boolean(isFetching)}>
+            {isFetching ? t('admin.common.loading') : t('admin.home.refresh', { defaultValue: 'Osvježi' })}
+          </Button>
+        </div>
+      ) : null}
       <form
         id="news-editor-form"
         onSubmit={(e) => void handleSubmit(onSubmit)(e)}

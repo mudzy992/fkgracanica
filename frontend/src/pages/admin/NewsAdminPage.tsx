@@ -39,13 +39,16 @@ export function NewsAdminPage() {
   const canApprove = hasPermission(perms, 'news.approve');
   const canManage = hasPermission(perms, 'news.manage');
   const [categoryId, setCategoryId] = useState('');
-  const { data: categoriesRaw } = useNewsCategories();
+  const { data: categoriesRaw, isFetching: cf, dataUpdatedAt: cu, refetch: cr } = useNewsCategories();
   const categories = asArray<NewsCategory>(categoriesRaw);
-  const { data, isLoading, isError, refetch } = useNewsList(undefined, categoryId || undefined);
+  const { data, isLoading, isError, isFetching: nf, dataUpdatedAt: nu, refetch } = useNewsList(undefined, categoryId || undefined);
   const updateStatus = useUpdateNewsStatus();
   const submitReview = useSubmitNewsForReview();
   const deleteNews = useDeleteNews();
   const [deleteTarget, setDeleteTarget] = useState<NewsItem | null>(null);
+  const isMutating = updateStatus.isPending || submitReview.isPending || deleteNews.isPending;
+  const isFetching = Boolean(cf || nf);
+  const dataUpdatedAt = Math.max(cu ?? 0, nu ?? 0) || undefined;
   const [categoriesOpen, setCategoriesOpen] = useState(false);
 
   const publish = (item: NewsItem) => {
@@ -64,15 +67,19 @@ export function NewsAdminPage() {
     <>
       <Seo title={t('admin.news')} />
       <AdminPageShell
-        isError={isError}
-        onRetry={() => void refetch()}
+        isError={Boolean(isError)}
+        isFetching={isFetching}
+        onRetry={() => { void refetch(); void cr(); }}
         title={t('admin.news')}
-        isLoading={isLoading}
+        isLoading={Boolean(isLoading)}
+        dataUpdatedAt={dataUpdatedAt}
+        onRefresh={() => { void refetch(); void cr(); }}
         actions={
           <div className="flex flex-wrap items-center gap-2">
             <Select className="w-auto"
               value={categoryId}
               onChange={(e) => setCategoryId(e.target.value)}
+              disabled={Boolean(cf)}
             >
               <option value="">{t('admin.newsAdmin.allCategories')}</option>
               {categories.map((c) => (
@@ -93,6 +100,7 @@ export function NewsAdminPage() {
         <AdminDataTable
           rows={asArray<NewsItem>(data)}
           empty="Nema vijesti — kreirajte prvu."
+          emptyRole="status"
           columns={[
             {
               key: 'title',
@@ -128,18 +136,18 @@ export function NewsAdminPage() {
                       size="sm"
                       variant="outline"
                       onClick={() => submit(r)}
-                      disabled={submitReview.isPending}
+                      disabled={isMutating}
                     >
                       Predaj na pregled
                     </Button>
                   )}
                   {r.status === 'PENDING' && canApprove && (
-                    <Button size="sm" onClick={() => publish(r)} disabled={updateStatus.isPending}>
+                    <Button size="sm" onClick={() => publish(r)} disabled={isMutating}>
                       Odobri i objavi
                     </Button>
                   )}
                   {r.status === 'DRAFT' && canApprove && (
-                    <Button size="sm" onClick={() => publish(r)} disabled={updateStatus.isPending}>
+                    <Button size="sm" onClick={() => publish(r)} disabled={isMutating}>
                       Objavi
                     </Button>
                   )}
@@ -149,11 +157,11 @@ export function NewsAdminPage() {
                 </Link>
                   )}
                   {r.status === 'PUBLISHED' && (
-                    <Button size="sm" variant="ghost" onClick={() => archive(r)}>
+                    <Button size="sm" variant="ghost" onClick={() => archive(r)} disabled={isMutating}>
                       Arhiviraj
                     </Button>
                   )}
-                  <Button size="sm" variant="ghost" onClick={() => setDeleteTarget(r)}>
+                  <Button size="sm" variant="ghost" onClick={() => setDeleteTarget(r)} disabled={isMutating}>
                     Obriši
                   </Button>
                 </div>
