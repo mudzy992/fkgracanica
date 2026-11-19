@@ -127,7 +127,7 @@ export function RolesPage({ embedded = false }: Props) {
             <p className="mt-2 text-sm text-danger">{getApiErrorMessage(updatePerms.error, 'Spremanje dozvola nije uspjelo.')}</p>
           )}
           <Button className="mt-4" onClick={() => void save()} disabled={updatePerms.isPending}>
-            {t('admin.roles.savePermissions', { defaultValue: 'Sačuvaj dozvole' })}
+            {t('admin.rolesPage.savePermissions', { defaultValue: 'Sačuvaj dozvole' })}
           </Button>
         </AdminFormSheet>
       </>
