@@ -145,6 +145,42 @@
             "line": 41,
             "kind": "disabled-ui",
             "why": "Retry dugme je disabled dok isFetching=true — void geoQ.refetch() grana u handleRetry nije dostižna; test pokriva enabled klik."
+        },
+        {
+            "file": "frontend/src/pages/admin/EmailLogPanel.tsx",
+            "line": 31,
+            "kind": "disabled-ui",
+            "why": "Retry dugme je disabled dok isFetching=true — void refetch() grana nije dostižna; test pokriva enabled klik (F-04 EmailLog error)."
+        },
+        {
+            "file": "frontend/src/pages/admin/EmailLogPanel.tsx",
+            "line": 75,
+            "kind": "disabled-ui",
+            "why": "Osvježi dugme je disabled dok isFetching=true — void refetch() grana nije dostižna; test pokriva enabled klik (F-04 EmailLog success)."
+        },
+        {
+            "file": "frontend/src/pages/admin/NotificationsPage.tsx",
+            "line": 33,
+            "kind": "disabled-ui",
+            "why": "Retry dugme u AdminPageShell je disabled dok isFetching=true — onRetry void refetch() grana nije dostižna; test pokriva enabled klik (F-04 Notifications error)."
+        },
+        {
+            "file": "frontend/src/pages/admin/NotificationsPage.tsx",
+            "line": 38,
+            "kind": "disabled-ui",
+            "why": "Osvježi dugme u AdminPageShell je disabled dok isFetching=true — onRefresh void refetch() grana nije dostižna; test pokriva enabled klik (F-04 Notifications success)."
+        },
+        {
+            "file": "frontend/src/pages/admin/LivePendingPage.tsx",
+            "line": 26,
+            "kind": "disabled-ui",
+            "why": "Osvježi dugme u AdminPageShell je disabled dok isFetching=true — onRefresh void refetch() grana nije dostižna; test pokriva enabled klik (F-04 LivePending success)."
+        },
+        {
+            "file": "frontend/src/pages/admin/LivePendingPage.tsx",
+            "line": 27,
+            "kind": "disabled-ui",
+            "why": "Retry dugme u AdminPageShell je disabled dok isFetching=true — onRetry void refetch() grana nije dostižna; test pokriva enabled klik (F-04 LivePending error)."
         }
     ]
 }

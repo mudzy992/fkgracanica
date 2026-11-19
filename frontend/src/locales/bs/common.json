@@ -165,7 +165,8 @@
       "saveFailed": "Spremanje nije uspjelo. Pokušajte ponovo.",
       "moveUp": "Pomjeri gore",
       "moveDown": "Pomjeri dolje",
-      "saveFailedShort": "Spremanje nije uspjelo."
+      "saveFailedShort": "Spremanje nije uspjelo.",
+      "view": "Pregled"
     },
     "mediaUpload": {
       "progressLabel": "Napredak uploada",
@@ -770,12 +771,16 @@
     },
     "emailLog": {
       "noErrors": "Nema grešaka u slanju emailova",
-      "allDelivered": "Svi emailovi su uspješno isporučeni."
+      "allDelivered": "Svi emailovi su uspješno isporučeni.",
+      "to": "Prima",
+      "subject": "Predmet",
+      "error": "Greška"
     },
     "livePendingPage": {
       "title": "Live izvještaji na odobrenje",
       "empty": "Nema utakmica na čekanju.",
-      "match": "Utakmica"
+      "match": "Utakmica",
+      "approve": "Odobri"
     },
     "membershipPage": {
       "title": "Članstvo"
@@ -931,6 +936,11 @@
     "cmsNextMatch": {
       "titlePlaceholder": "Naslov (opcionalno)",
       "stadiumBackground": "Pozadina stadiona (parallax)"
+    },
+    "commsTabs": {
+      "contact": "Kontakt",
+      "newsletter": "Newsletter",
+      "emailLog": "Email log"
     }
   },
   "common": {

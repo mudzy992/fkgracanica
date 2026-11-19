@@ -42,11 +42,11 @@ export function CommsAdminPage() {
 
   const tabs = useMemo(() => {
     const list: { key: Tab; label: string }[] = [];
-    if (canContact) list.push({ key: 'contact', label: 'Kontakt' });
-    if (canNewsletter) list.push({ key: 'newsletter', label: 'Newsletter' });
-    if (canEmailLog) list.push({ key: 'email-log', label: 'Email log' });
+    if (canContact) list.push({ key: 'contact', label: t('admin.commsTabs.contact', { defaultValue: 'Kontakt' }) as string });
+    if (canNewsletter) list.push({ key: 'newsletter', label: t('admin.commsTabs.newsletter', { defaultValue: 'Newsletter' }) as string });
+    if (canEmailLog) list.push({ key: 'email-log', label: t('admin.commsTabs.emailLog', { defaultValue: 'Email log' }) as string });
     return list;
-  }, [canContact, canNewsletter, canEmailLog]);
+  }, [canContact, canNewsletter, canEmailLog, t]);
 
   const tabParam = searchParams.get('tab');
   const activeTab = resolveTab(tabParam, canContact, canNewsletter, canEmailLog);
@@ -67,15 +67,18 @@ export function CommsAdminPage() {
 
   return (
     <>
-      <Seo title={t('admin.comms')} />
+      <Seo title={t('admin.comms') as string} />
       <AdminPageShell
-        title={t('admin.comms')}
+        title={t('admin.comms') as string}
         actions={
           tabs.length > 1 ? (
-            <div className="flex flex-wrap gap-2">
+            <div role="tablist" className="flex flex-wrap gap-2">
               {tabs.map((item) => (
                 <Button
                   key={item.key}
+                  role="tab"
+                  aria-selected={activeTab === item.key}
+                  aria-pressed={activeTab === item.key}
                   size="sm"
                   variant={activeTab === item.key ? 'default' : 'outline'}
                   onClick={() => setTab(item.key)}

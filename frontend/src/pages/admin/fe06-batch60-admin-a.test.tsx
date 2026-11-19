@@ -3,7 +3,16 @@ import { MemoryRouter } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { describe, expect, it, vi } from 'vitest';
 
-vi.mock('react-i18next', () => ({ useTranslation: () => ({ t: (k: string) => k }) }));
+vi.mock('react-i18next', () => ({
+  useTranslation: () => ({
+    t: (k: string, opts?: unknown) => {
+      if (typeof opts === 'string') return opts;
+      const o = opts as Record<string, unknown> | undefined;
+      if (o?.defaultValue) return o.defaultValue as string;
+      return k;
+    },
+  }),
+}));
 
 const contactState = vi.hoisted(() => ({ data: undefined as any, isLoading: false, isError: false }));
 const commsState = vi.hoisted(() => ({ user: undefined as any, moduleFlags: { 'modules.contact': true } }));

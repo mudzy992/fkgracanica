@@ -33,3 +33,4 @@ frontend/src/pages/admin/UsersPage.tsx
 frontend/src/pages/admin/RolesPage.tsx
 frontend/src/pages/admin/fe06-f02-audit.test.tsx
 frontend/src/pages/admin/fe06-f03-analytics.test.tsx
+frontend/src/pages/admin/fe06-f04-notifications-comms.test.tsx

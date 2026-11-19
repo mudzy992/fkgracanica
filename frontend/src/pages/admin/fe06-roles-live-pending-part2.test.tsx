@@ -6,13 +6,13 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { LivePendingPage } from './LivePendingPage';
 
 vi.mock('../../components/admin/AdminPageShell', () => ({
-  AdminPageShell: ({ title, isError, onRetry, children }: {
-    title: string; isError?: boolean; onRetry?: () => void; children: ReactNode;
+  AdminPageShell: ({ title, isLoading, isError, onRetry, children }: {
+    title: string; isLoading?: boolean; isError?: boolean; onRetry?: () => void; children: ReactNode;
   }) => (
     <div>
       <h1>{title}</h1>
       {isError && <button onClick={() => onRetry?.()}>pokušaj-ponovo</button>}
-      {children}
+      {isLoading ? <p>admin.common.loading</p> : children}
     </div>
   ),
   AdminDataTable: ({ rows, empty, columns }: {
@@ -47,7 +47,16 @@ const state = vi.hoisted(() => ({
   seo: [] as (string | undefined)[],
 }));
 
-vi.mock('react-i18next', () => ({ useTranslation: () => ({ t: (k: string) => k }) }));
+vi.mock('react-i18next', () => ({
+  useTranslation: () => ({
+    t: (k: string, opts?: unknown) => {
+      if (typeof opts === 'string') return opts;
+      const o = opts as Record<string, unknown> | undefined;
+      if (o?.defaultValue) return o.defaultValue as string;
+      return k;
+    },
+  }),
+}));
 vi.mock('../../hooks/use-users-admin', () => ({ useCreateRole: () => state.create }));
 vi.mock('../../hooks/use-live-admin', () => ({
   usePendingLiveReports: () => state.pending,
@@ -100,7 +109,7 @@ describe('LivePendingPage', () => {
   it('bez zapisa prikazuje prazno stanje', () => {
     state.pending = { data: [], isLoading: false, isError: false, refetch: vi.fn() };
     renderPage();
-    expect(screen.getByText('admin.livePendingPage.empty')).toBeTruthy();
+    expect(screen.getByText('Nema utakmica na čekanju.')).toBeTruthy();
   });
 
   it('red prikazuje rezultat, takmičenje, datum i status', () => {

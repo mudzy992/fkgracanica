@@ -5,9 +5,10 @@ interface AdminPaginationProps {
   meta: PaginationMeta;
   page: number;
   onPageChange: (page: number) => void;
+  isFetching?: boolean;
 }
 
-export function AdminPagination({ meta, page, onPageChange }: AdminPaginationProps) {
+export function AdminPagination({ meta, page, onPageChange, isFetching }: AdminPaginationProps) {
   if (meta.totalPages <= 1) return null;
 
   return (
@@ -15,18 +16,18 @@ export function AdminPagination({ meta, page, onPageChange }: AdminPaginationPro
       <Button
         variant="outline"
         size="sm"
-        disabled={page <= 1}
+        disabled={page <= 1 || Boolean(isFetching)}
         onClick={() => onPageChange(page - 1)}
       >
         Prethodna
       </Button>
-      <span className="self-center text-sm text-text-muted">
+      <span className="self-center text-sm text-text-muted" aria-live="polite">
         {page} / {meta.totalPages}
       </span>
       <Button
         variant="outline"
         size="sm"
-        disabled={page >= meta.totalPages}
+        disabled={page >= meta.totalPages || Boolean(isFetching)}
         onClick={() => onPageChange(page + 1)}
       >
         Sljedeća

@@ -20,21 +20,29 @@ const TYPE_ICON = { info: Info, success: CheckCircle, warning: AlertTriangle } a
 export function NotificationsPage() {
   const { t } = useTranslation();
   const [page, setPage] = useState(1);
-  const { data, isLoading, isError, refetch } = useNotifications({ page });
+  const { data, isLoading, isError, isFetching, dataUpdatedAt, refetch } = useNotifications({ page });
   const markRead = useMarkNotificationRead();
   const markAll = useMarkAllNotificationsRead();
   const items = data?.data ?? [];
 
   return (
     <>
-      <Seo title={t('notifications.title')} />
+      <Seo title={t('notifications.title') as string} />
       <AdminPageShell
         isError={isError}
         onRetry={() => void refetch()}
-        title={t('notifications.title')}
+        title={t('notifications.title') as string}
         isLoading={isLoading}
+        isFetching={isFetching}
+        dataUpdatedAt={dataUpdatedAt}
+        onRefresh={() => void refetch()}
         actions={
-          <Button variant="outline" size="sm" onClick={() => void runAction(markAll.mutateAsync())}>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => void runAction(markAll.mutateAsync())}
+            disabled={markAll.isPending || Boolean(isFetching)}
+          >
             {t('notifications.markAllRead')}
           </Button>
         }
@@ -71,6 +79,7 @@ export function NotificationsPage() {
                       size="sm"
                       variant="ghost"
                       onClick={() => void runAction(markRead.mutateAsync(n.id))}
+                      disabled={markRead.isPending || Boolean(isFetching)}
                     >
                       {t('notifications.markRead')}
                     </Button>
@@ -81,7 +90,7 @@ export function NotificationsPage() {
             );
           })}
         </ul>
-        {data?.meta && <AdminPagination meta={data.meta} page={page} onPageChange={setPage} />}
+        {data?.meta && <AdminPagination meta={data.meta} page={page} onPageChange={setPage} isFetching={Boolean(isFetching)} />}
       </AdminPageShell>
     </>
   );

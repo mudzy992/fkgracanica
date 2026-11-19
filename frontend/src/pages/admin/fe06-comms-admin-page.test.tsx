@@ -13,7 +13,16 @@ const state = vi.hoisted(() => ({
   emailLog: {} as Record<string, unknown>,
 }));
 
-vi.mock('react-i18next', () => ({ useTranslation: () => ({ t: (k: string) => k }) }));
+vi.mock('react-i18next', () => ({
+  useTranslation: () => ({
+    t: (k: string, opts?: unknown) => {
+      if (typeof opts === 'string') return opts;
+      const o = opts as Record<string, unknown> | undefined;
+      if (o?.defaultValue) return o.defaultValue as string;
+      return k;
+    },
+  }),
+}));
 vi.mock('../../lib/auth', () => ({ useAuth: () => ({ user: { permissions: state.perms } }) }));
 vi.mock('../../hooks', () => ({ useModuleFlags: () => ({ data: state.moduleFlags }) }));
 vi.mock('../../components/seo/Seo', () => ({ Seo: () => null }));
@@ -111,9 +120,9 @@ describe('CommsAdminPage — tabovi i URL', () => {
     state.perms = ['contact.read', 'newsletter.read', 'settings.read'];
     renderAt('/admin/comms?tab=newsletter');
     expect(screen.getByText('newsletter-ugrađen:true')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Newsletter' })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Kontakt' })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Email log' })).toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: 'Newsletter' })).toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: 'Kontakt' })).toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: 'Email log' })).toBeInTheDocument();
   });
 
   it('nedozvoljen tab u URL-u se zamjenjuje prvim dostupnim', async () => {
@@ -127,18 +136,18 @@ describe('CommsAdminPage — tabovi i URL', () => {
     const user = userEvent.setup();
     state.perms = ['contact.read', 'newsletter.read', 'settings.read'];
     renderAt('/admin/comms?tab=contact');
-    await user.click(screen.getByRole('button', { name: 'Email log' }));
+    await user.click(screen.getByRole('tab', { name: 'Email log' }));
     // batch 18: sinhrona provjera odmah nakon klika je bila flaky na CI runneru
     await waitFor(() => expect(screen.getByText('email-log-panel')).toBeInTheDocument());
     await waitFor(() => expect(screen.getByTestId('loc')).toHaveTextContent('tab=email-log'));
-    await user.click(screen.getByRole('button', { name: 'Kontakt' }));
+    await user.click(screen.getByRole('tab', { name: 'Kontakt' }));
     await waitFor(() => expect(screen.getByText('kontakt-ugrađen:true')).toBeInTheDocument());
   });
 
   it('nema tabova kad je dostupan samo email log', () => {
     state.perms = ['settings.read'];
     renderAt();
-    expect(screen.queryByRole('button', { name: 'Email log' })).toBeNull();
+    expect(screen.queryByRole('tab', { name: 'Email log' })).toBeNull();
     expect(screen.getByText('email-log-panel')).toBeInTheDocument();
   });
 

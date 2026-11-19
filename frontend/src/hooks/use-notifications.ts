@@ -4,7 +4,13 @@ import { api } from '../lib/api';
 import { getRealtimeSocket } from '../lib/realtime';
 import type { NotificationItem, PaginatedResponse } from '../types/pagination';
 
-export function useNotifications(params: { unreadOnly?: boolean; page?: number } = {}) {
+export function useNotifications(
+  params: { unreadOnly?: boolean; page?: number } = {},
+  options?: Omit<
+    import('@tanstack/react-query').UseQueryOptions<PaginatedResponse<NotificationItem>>,
+    'queryKey' | 'queryFn'
+  >,
+) {
   const { unreadOnly = false, page = 1 } = params;
   return useQuery({
     queryKey: ['notifications', unreadOnly, page],
@@ -14,6 +20,10 @@ export function useNotifications(params: { unreadOnly?: boolean; page?: number }
           params: { unreadOnly: unreadOnly ? 'true' : undefined, page },
         })
       ).data,
+    staleTime: 30_000,
+    retry: 1,
+    refetchOnWindowFocus: false,
+    ...options,
   });
 }
 
@@ -58,4 +68,27 @@ export function useSettingsRealtime() {
       socket.off('settings:changed', handler);
     };
   }, [qc]);
+}
+
+export type EmailLogRow = { id: string; to: string; subject: string; error: string; createdAt: string };
+export type EmailLogResponse = {
+  data: EmailLogRow[];
+  meta: { total: number; page: number; limit: number; totalPages: number };
+};
+export function useEmailLog(
+  page: number,
+  options?: Omit<
+    import('@tanstack/react-query').UseQueryOptions<EmailLogResponse>,
+    'queryKey' | 'queryFn'
+  >,
+) {
+  return useQuery({
+    queryKey: ['email-log', page],
+    queryFn: async () =>
+      (await api.get<EmailLogResponse>('/email-log', { params: { page, limit: 20 } })).data,
+    staleTime: 30_000,
+    retry: 1,
+    refetchOnWindowFocus: false,
+    ...options,
+  });
 }

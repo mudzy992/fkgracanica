@@ -1,39 +1,56 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useQuery } from '@tanstack/react-query';
-import { api } from '../../lib/api';
+import { useEmailLog } from '../../hooks/use-notifications';
 import { formatDateTime } from '../../lib/utils';
 import { AdminDataTable } from '../../components/admin/AdminPageShell';
-import { AdminPagination } from '../../components/admin/AdminPagination';
+import { Button } from '../../components/ui/button';
+import { Skeleton } from '../../components/ui/skeleton';
 import { Badge } from '../../components/ui/badge';
-
-interface FailedEmailRow {
-  id: string;
-  to: string;
-  subject: string;
-  error: string;
-  createdAt: string;
-}
-
-interface EmailLogResponse {
-  data: FailedEmailRow[];
-  meta: { total: number; page: number; limit: number; totalPages: number };
-}
 
 export function EmailLogPanel() {
   const { t } = useTranslation();
   const [page, setPage] = useState(1);
-  const { data, isLoading } = useQuery({
-    queryKey: ['email-log', page],
-    queryFn: async () =>
-      (await api.get<EmailLogResponse>('/email-log', { params: { page, limit: 20 } })).data,
-  });
+  const { data, isLoading, isError, isFetching, dataUpdatedAt, refetch } = useEmailLog(page);
 
   const rows = data?.data ?? [];
+  const lastUpdated = dataUpdatedAt
+    ? new Date(dataUpdatedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    : null;
 
-  if (isLoading) return <p className="p-4 text-sm text-text-muted">{t('admin.common.loading')}</p>;
+  const emptyLabel = t('admin.emailLog.noErrors', { defaultValue: 'Nema grešaka.' }) as string;
 
-  if (!isLoading && rows.length === 0) {
+  if (isError) {
+    return (
+      <div role="alert" className="flex flex-col gap-3 p-4">
+        <p className="text-sm text-danger">
+          {t('admin.common.loadError', { defaultValue: 'Greška pri učitavanju.' })}
+        </p>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => void refetch()}
+          disabled={Boolean(isFetching)}
+        >
+          {isFetching
+            ? (t('admin.common.loading') as string)
+            : (t('admin.common.retry', { defaultValue: 'Pokušaj ponovo' }) as string)}
+        </Button>
+      </div>
+    );
+  }
+
+  if (isLoading) {
+    return (
+      <div aria-busy="true" className="space-y-3 p-4">
+        {Array.from({ length: 5 }).map((_, i) => (
+          <Skeleton key={i} className="h-12 w-full" />
+        ))}
+        <p className="sr-only">{t('admin.common.loading')}</p>
+      </div>
+    );
+  }
+
+  if (rows.length === 0) {
     return (
       <div className="flex flex-col items-center gap-2 py-12 text-center">
         <p className="text-sm font-medium">{t('admin.emailLog.noErrors')}</p>
@@ -44,25 +61,67 @@ export function EmailLogPanel() {
 
   return (
     <div>
+      {lastUpdated ? (
+        <div className="mb-3 flex items-center justify-end gap-3 px-4 pt-4 text-xs text-text-muted">
+          <span>
+            {t('admin.home.lastUpdated', {
+              defaultValue: 'Ažurirano u {{time}}',
+              time: lastUpdated,
+            })}
+          </span>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => void refetch()}
+            disabled={Boolean(isFetching)}
+          >
+            {isFetching
+              ? (t('admin.common.loading') as string)
+              : (t('admin.home.refresh', { defaultValue: 'Osvježi' }) as string)}
+          </Button>
+        </div>
+      ) : null}
       <AdminDataTable
         rows={rows}
-        empty="Nema grešaka."
+        empty={emptyLabel}
         columns={[
-          { key: 'to', header: 'Prima', render: (r) => r.to },
-          { key: 'subject', header: 'Predmet', render: (r) => r.subject },
+          { key: 'to', header: t('admin.emailLog.to', { defaultValue: 'Prima' }) as string, render: (r) => r.to },
+          { key: 'subject', header: t('admin.emailLog.subject', { defaultValue: 'Predmet' }) as string, render: (r) => r.subject },
           {
             key: 'error',
-            header: 'Greška',
+            header: t('admin.emailLog.error', { defaultValue: 'Greška' }) as string,
             render: (r) => (
               <Badge variant="danger" className="max-w-[280px] truncate text-xs">
                 {r.error}
               </Badge>
             ),
           },
-          { key: 'date', header: 'Datum', render: (r) => formatDateTime(r.createdAt) },
+          { key: 'date', header: t('admin.analyticsPanel.date') as string, render: (r) => formatDateTime(r.createdAt) },
         ]}
       />
-      {data?.meta && <AdminPagination meta={data.meta} page={page} onPageChange={setPage} />}
+      {data?.meta && data.meta.totalPages > 1 && (
+        <div className="flex justify-center gap-2 p-4">
+          <Button
+            variant="outline"
+            size="sm"
+            disabled={page <= 1 || Boolean(isFetching)}
+            onClick={() => setPage((p) => p - 1)}
+          >
+            Prethodna
+          </Button>
+          <span className="self-center text-sm" aria-live="polite">
+            {page} / {data.meta.totalPages}
+          </span>
+          <Button
+            variant="outline"
+            size="sm"
+            disabled={page >= data.meta.totalPages || Boolean(isFetching)}
+            onClick={() => setPage((p) => p + 1)}
+          >
+            Sljedeća
+          </Button>
+        </div>
+      )}
     </div>
   );
 }

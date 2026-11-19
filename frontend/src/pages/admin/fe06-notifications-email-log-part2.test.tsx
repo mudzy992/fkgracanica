@@ -52,6 +52,11 @@ vi.mock('../../hooks/use-notifications', () => ({
   useNotifications: () => state.list,
   useMarkNotificationRead: () => state.markRead,
   useMarkAllNotificationsRead: () => state.markAll,
+  useEmailLog: (page: number) => {
+    const queryFn = async () => (await state.apiGet('/email-log', { params: { page, limit: 20 } })).data;
+    state.queries.push({ queryKey: ['email-log', page], queryFn } as unknown as { queryKey: unknown[] });
+    return state.email;
+  },
 }));
 vi.mock('../../components/seo/Seo', () => ({
   Seo: ({ title }: { title?: string }) => {

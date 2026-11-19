@@ -165,7 +165,8 @@
       "saveFailed": "Saving failed. Please try again.",
       "moveUp": "Move up",
       "moveDown": "Move down",
-      "saveFailedShort": "Saving failed."
+      "saveFailedShort": "Saving failed.",
+      "view": "View"
     },
     "mediaUpload": {
       "progressLabel": "Upload progress",
@@ -770,12 +771,16 @@
     },
     "emailLog": {
       "noErrors": "No email delivery errors",
-      "allDelivered": "All emails were delivered successfully."
+      "allDelivered": "All emails were delivered successfully.",
+      "to": "Recipient",
+      "subject": "Subject",
+      "error": "Error"
     },
     "livePendingPage": {
       "title": "Live reports awaiting approval",
       "empty": "No matches pending.",
-      "match": "Match"
+      "match": "Match",
+      "approve": "Approve"
     },
     "membershipPage": {
       "title": "Membership"
@@ -931,6 +936,11 @@
     "cmsNextMatch": {
       "titlePlaceholder": "Title (optional)",
       "stadiumBackground": "Stadium background (parallax)"
+    },
+    "commsTabs": {
+      "contact": "Contact",
+      "newsletter": "Newsletter",
+      "emailLog": "Email log"
     }
   },
   "common": {
