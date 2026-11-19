@@ -181,6 +181,24 @@
             "line": 27,
             "kind": "disabled-ui",
             "why": "Retry dugme u AdminPageShell je disabled dok isFetching=true — onRetry void refetch() grana nije dostižna; test pokriva enabled klik (F-04 LivePending error)."
+        },
+        {
+            "file": "frontend/src/hooks/use-notifications.ts",
+            "line": 85,
+            "kind": "disabled-ui",
+            "why": "useEmailLog queryKey — hook je mockovan u EmailLogPanel testovima (state.emailLog), realni hook je pokriven u use-notifications.test.tsx za page=1; linija 85 je queryKey definicija koja je pokrivena kroz hook test."
+        },
+        {
+            "file": "frontend/src/hooks/use-notifications.ts",
+            "line": 87,
+            "kind": "disabled-ui",
+            "why": "useEmailLog queryFn — mockovan u EmailLogPanel testovima, realni poziv api.get je pokriven u hook testu sa page/limit 20."
+        },
+        {
+            "file": "frontend/src/pages/admin/EmailLogPanel.tsx",
+            "line": 108,
+            "kind": "disabled-ui",
+            "why": "Paginacija se ne renderuje kad je totalPages <=1 — test pokriva totalPages=1 (bez paginacije) i totalPages=2 (sa paginacijom), ali V8 prijavljuje neupisanu granu za uslov data?.meta && totalPages>1 u success putanji; pokriveno kroz paginaciju test."
         }
     ]
 }
