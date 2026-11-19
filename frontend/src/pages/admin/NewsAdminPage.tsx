@@ -69,11 +69,11 @@ export function NewsAdminPage() {
       <AdminPageShell
         isError={Boolean(isError)}
         isFetching={isFetching}
-        onRetry={() => { void refetch(); void cr(); }}
+        onRetry={() => { void refetch?.(); void cr?.(); }}
         title={t('admin.news')}
         isLoading={Boolean(isLoading)}
         dataUpdatedAt={dataUpdatedAt}
-        onRefresh={() => { void refetch(); void cr(); }}
+        onRefresh={() => { void refetch?.(); void cr?.(); }}
         actions={
           <div className="flex flex-wrap items-center gap-2">
             <Select className="w-auto"
