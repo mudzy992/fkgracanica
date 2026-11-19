@@ -15,7 +15,7 @@ export function AuditPage() {
   const [from, setFrom] = useState('');
   const [to, setTo] = useState('');
   const [page, setPage] = useState(1);
-  const { data, isLoading, isError, refetch } = useAuditLog({
+  const { data, isLoading, isError, isFetching, dataUpdatedAt, refetch } = useAuditLog({
     page,
     action: action || undefined,
     entity: entity || undefined,
@@ -23,6 +23,9 @@ export function AuditPage() {
     to: to || undefined,
   });
   const entries = data?.data ?? [];
+  const emptyLabel = t('admin.auditPage.empty', { defaultValue: 'Nema zapisa.' }) as string;
+  const prevLabel = t('admin.auditPage.previous', { defaultValue: 'Prethodna' }) as string;
+  const nextLabel = t('admin.auditPage.next', { defaultValue: 'Sljedeća' }) as string;
 
   return (
     <>
@@ -32,6 +35,9 @@ export function AuditPage() {
         onRetry={() => void refetch()}
         title={t('admin.auditPage.title')}
         isLoading={isLoading}
+        isFetching={isFetching}
+        dataUpdatedAt={dataUpdatedAt}
+        onRefresh={() => void refetch()}
       >
         <div className="grid gap-2 border-b border-[var(--border-subtle)] p-4 sm:grid-cols-2 lg:grid-cols-4">
           <Input
@@ -49,6 +55,7 @@ export function AuditPage() {
         </div>
         <AdminDataTable
           rows={entries}
+          empty={emptyLabel}
           columns={[
             {
               key: 'action',
@@ -73,21 +80,21 @@ export function AuditPage() {
             <Button
               variant="outline"
               size="sm"
-              disabled={page <= 1}
+              disabled={page <= 1 || Boolean(isFetching)}
               onClick={() => setPage((p) => p - 1)}
             >
-              Prethodna
+              {prevLabel}
             </Button>
-            <span className="self-center text-sm">
+            <span className="self-center text-sm" aria-live="polite">
               {page} / {data.meta.totalPages}
             </span>
             <Button
               variant="outline"
               size="sm"
-              disabled={page >= data.meta.totalPages}
+              disabled={page >= data.meta.totalPages || Boolean(isFetching)}
               onClick={() => setPage((p) => p + 1)}
             >
-              Sljedeća
+              {nextLabel}
             </Button>
           </div>
         )}

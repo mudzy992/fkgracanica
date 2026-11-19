@@ -309,7 +309,10 @@ export {
   useCancelMyTicketOrder,
 } from './use-ticketing';
 
-export function useAuditLog(params: Record<string, string | number | undefined> = {}) {
+export function useAuditLog(
+  params: Record<string, string | number | undefined> = {},
+  options?: Omit<import('@tanstack/react-query').UseQueryOptions<unknown>, 'queryKey' | 'queryFn'>,
+) {
   return useQuery({
     queryKey: ['audit', params],
     queryFn: async () =>
@@ -320,6 +323,10 @@ export function useAuditLog(params: Record<string, string | number | undefined> 
         actor?: { email: string } | null;
         entity?: string | null;
       }>,
+    staleTime: 30_000,
+    retry: 1,
+    refetchOnWindowFocus: false,
+    ...options,
   });
 }
 

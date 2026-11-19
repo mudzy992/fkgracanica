@@ -31,3 +31,4 @@ frontend/src/pages/admin/ticketing/fe06-e02-ticketing.test.tsx
 frontend/src/pages/admin/fe06-f01-users-roles.test.tsx
 frontend/src/pages/admin/UsersPage.tsx
 frontend/src/pages/admin/RolesPage.tsx
+frontend/src/pages/admin/fe06-f02-audit.test.tsx

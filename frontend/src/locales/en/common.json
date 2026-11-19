@@ -632,7 +632,10 @@
       "metaTitle": "Audit",
       "title": "Audit log",
       "action": "Action",
-      "entity": "Entity"
+      "entity": "Entity",
+      "previous": "Previous",
+      "next": "Next",
+      "empty": "No records."
     },
     "commentatorPage": {
       "title": "Commentator",

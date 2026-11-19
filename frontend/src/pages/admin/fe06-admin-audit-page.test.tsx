@@ -15,7 +15,16 @@ const state = vi.hoisted(() => ({
   shell: { isLoading: false, isError: false },
 }));
 
-vi.mock('react-i18next', () => ({ useTranslation: () => ({ t: (k: string) => k }) }));
+vi.mock('react-i18next', () => ({
+  useTranslation: () => ({
+    t: (k: string, opts?: unknown) => {
+      if (typeof opts === 'string') return opts;
+      const o = opts as Record<string, unknown> | undefined;
+      if (o?.defaultValue) return o.defaultValue as string;
+      return k;
+    },
+  }),
+}));
 vi.mock('../../hooks', () => ({
   useAuditLog: (params: Record<string, unknown>) => {
     state.params.push(params);

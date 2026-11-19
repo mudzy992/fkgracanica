@@ -632,7 +632,10 @@
       "metaTitle": "Audit",
       "title": "Audit log",
       "action": "Akcija",
-      "entity": "Entitet"
+      "entity": "Entitet",
+      "previous": "Prethodna",
+      "next": "Sljedeća",
+      "empty": "Nema zapisa."
     },
     "commentatorPage": {
       "title": "Komentator",
