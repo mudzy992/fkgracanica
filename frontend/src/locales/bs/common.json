@@ -591,6 +591,12 @@
       "period": "Period",
       "periodHint": "Po datumu kreiranja uplate / aktivacije"
     },
+    "financeExport": {
+      "xlsx": "Preuzmi Excel",
+      "pdf": "Preuzmi PDF"
+    },
+    "financeIntro": "Pregled uplata ulaznica i procjena članarina za {{from}} – {{to}}.",
+    "financeMembershipNote": "Članarine su procjena: broj članova sa statusom Aktivno u odabranom periodu, pomnožen godišnjom cijenom iz postavki. Pojedinačna online uplata članarine nije u ovom izvještaju kao Payment red.",
     "roundsPanel": {
       "rounds": "Kola",
       "round": "Kolo",

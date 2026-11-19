@@ -30,11 +30,18 @@ export function financeParams(filters: FinanceFilters) {
   return params;
 }
 
-export function useFinanceSummary(filters: FinanceFilters) {
+export function useFinanceSummary(
+  filters: FinanceFilters,
+  options?: Omit<import('@tanstack/react-query').UseQueryOptions<FinanceSummary>, 'queryKey' | 'queryFn'>,
+) {
   return useQuery({
     queryKey: ['finance', 'summary', filters],
     queryFn: async () =>
       (await api.get<FinanceSummary>('/finance/summary', { params: financeParams(filters) })).data,
+    staleTime: 30_000,
+    retry: 1,
+    refetchOnWindowFocus: false,
+    ...options,
   });
 }
 

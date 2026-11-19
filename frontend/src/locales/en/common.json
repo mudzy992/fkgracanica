@@ -591,6 +591,12 @@
       "period": "Period",
       "periodHint": "By payment/activation date"
     },
+    "financeExport": {
+      "xlsx": "Download Excel",
+      "pdf": "Download PDF"
+    },
+    "financeIntro": "Overview of ticket payments and estimated memberships for {{from}} – {{to}}.",
+    "financeMembershipNote": "Memberships are estimated: number of members with Active status in the selected period, multiplied by the annual price from settings. Individual online membership payments are not a Payment row in this report.",
     "roundsPanel": {
       "rounds": "Rounds",
       "round": "Round",

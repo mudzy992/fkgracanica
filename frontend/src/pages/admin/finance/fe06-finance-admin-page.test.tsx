@@ -5,13 +5,34 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { FinanceAdminPage } from '../FinanceAdminPage';
 
 const state = vi.hoisted(() => ({
-  summary: { data: undefined as unknown, isLoading: false, isError: false, refetch: vi.fn() },
+  summary: {
+    data: undefined as unknown,
+    isLoading: false,
+    isError: false,
+    isFetching: false,
+    dataUpdatedAt: 0,
+    refetch: vi.fn(),
+  },
   applied: [] as unknown[],
   exports: [] as unknown[],
   seo: [] as (string | undefined)[],
 }));
 
-vi.mock('react-i18next', () => ({ useTranslation: () => ({ t: (k: string) => k }) }));
+vi.mock('react-i18next', () => ({
+  useTranslation: () => ({
+    t: (k: string, opts?: Record<string, unknown>) => {
+      if (opts?.defaultValue) {
+        let s = opts.defaultValue as string;
+        if (opts.from) s = s.replace('{{from}}', opts.from as string);
+        if (opts.to) s = s.replace('{{to}}', opts.to as string);
+        if (opts.time) s = s.replace('{{time}}', opts.time as string);
+        if (opts.count !== undefined) s = s.replace('{{count}}', String(opts.count));
+        return s;
+      }
+      return k;
+    },
+  }),
+}));
 vi.mock('../../../hooks/use-finance-summary', () => ({
   useFinanceSummary: (filters: unknown) => {
     state.applied.push(filters);
@@ -48,7 +69,14 @@ const summary = { total: 4200 };
 
 describe('FinanceAdminPage', () => {
   beforeEach(() => {
-    state.summary = { data: summary, isLoading: false, isError: false, refetch: vi.fn() };
+    state.summary = {
+      data: summary,
+      isLoading: false,
+      isError: false,
+      isFetching: false,
+      dataUpdatedAt: 0,
+      refetch: vi.fn(),
+    } as unknown as typeof state.summary;
     state.applied = [];
     state.exports = [];
     state.seo = [];
@@ -76,17 +104,36 @@ describe('FinanceAdminPage', () => {
     expect(screen.getByText(/Članarine su procjena/)).toBeTruthy();
   });
 
-  it('dok se učitava prikazuje poruku', () => {
-    state.summary = { data: undefined, isLoading: true, isError: false, refetch: vi.fn() };
+  it('dok se učitava prikazuje skeleton aria-busy', () => {
+    state.summary = {
+      data: undefined,
+      isLoading: true,
+      isError: false,
+      isFetching: true,
+      dataUpdatedAt: 0,
+      refetch: vi.fn(),
+    } as unknown as typeof state.summary;
     render(<FinanceAdminPage />);
-    expect(screen.getByText('admin.common.loading')).toBeTruthy();
+    expect(document.querySelector('[aria-busy="true"]')).toBeTruthy();
     expect(screen.queryByTestId('kpi-grid')).toBeNull();
   });
 
-  it('greška nudi ponovno učitavanje', async () => {
-    state.summary = { data: undefined, isLoading: false, isError: true, refetch: vi.fn() };
+  it('greška nudi ponovno učitavanje uz role=alert i sačuvan Seo/h1', async () => {
+    state.summary = {
+      data: undefined,
+      isLoading: false,
+      isError: true,
+      isFetching: false,
+      dataUpdatedAt: 0,
+      refetch: vi.fn(),
+    } as unknown as typeof state.summary;
     render(<FinanceAdminPage />);
-    await userEvent.click(screen.getByRole('button', { name: 'actions.retry' }));
+    expect(screen.getByRole('alert')).toBeTruthy();
+    expect(screen.getByRole('heading', { name: 'admin.finance' })).toBeTruthy();
+    expect(state.seo).toContain('admin.finance');
+    const btn = screen.getByRole('button', { name: 'Pokušaj ponovo' });
+    expect(btn).not.toBeDisabled();
+    await userEvent.click(btn);
     expect(state.summary.refetch).toHaveBeenCalled();
     expect(screen.queryByTestId('kpi-grid')).toBeNull();
   });
