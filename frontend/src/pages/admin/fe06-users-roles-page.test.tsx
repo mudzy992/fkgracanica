@@ -5,7 +5,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { UsersRolesPage } from './UsersRolesPage';
 import { resetTabPageState, tabPageState as state } from '../../test/doubles/tab-page-doubles';
 
-vi.mock('react-i18next', () => ({ useTranslation: () => ({ t: (k: string) => k }) }));
+vi.mock('react-i18next', () => ({ useTranslation: () => ({ t: (k: string, opts?: Record<string, unknown>) => (opts?.defaultValue as string ?? k) }) }));
 vi.mock('../../lib/auth', async () =>
   (await import('../../test/doubles/tab-page-doubles')).tabAuthModule(),
 );
@@ -69,8 +69,8 @@ describe('UsersRolesPage — dozvole i tabovi', () => {
     state.perms = ['users.read', 'rbac.read'];
     renderAt('/admin/korisnici?tab=roles');
     expect(screen.getByText('panel:roles:true')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'admin.users' })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'admin.roles' })).toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: 'Korisnici' })).toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: 'Uloge' })).toBeInTheDocument();
   });
 
   it('nedozvoljen tab u URL-u zamjenjuje prvim dostupnim', async () => {
@@ -84,7 +84,7 @@ describe('UsersRolesPage — dozvole i tabovi', () => {
     const user = userEvent.setup();
     state.perms = ['users.read', 'rbac.read'];
     renderAt();
-    await user.click(screen.getByRole('button', { name: 'admin.roles' }));
+    await user.click(screen.getByRole('tab', { name: 'Uloge' }));
     // FE-06 (batch 18): sinhrona provjera je bila flaky na sporijem CI runneru —
     // klik mijenja stanje pa se panel i URL sinhronizuju kroz efekat. Čekamo ishod.
     await waitFor(() => expect(screen.getByText('panel:roles:true')).toBeInTheDocument());

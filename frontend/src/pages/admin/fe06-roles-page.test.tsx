@@ -165,16 +165,17 @@ describe('RolesPage', () => {
     expect(screen.getByText('novi-sheet')).toBeInTheDocument();
   });
 
-  it('učitavanje prikazuje skeletone, a greška dugme za ponovni pokušaj', async () => {
+  it('učitavanje prikazuje skeletone aria-busy, a greška dugme za ponovni pokušaj', async () => {
     const user = userEvent.setup();
-    state.roles = { ...state.roles, isLoading: true };
+    state.roles = { ...state.roles, isLoading: true, isFetching: true } as unknown as typeof state.roles;
     const { unmount } = render(<RolesPage />);
+    expect(document.querySelector('[aria-busy="true"]')).toBeTruthy();
     expect(screen.queryByRole('table')).toBeNull();
     unmount();
     const refetch = vi.fn();
-    state.roles = { ...state.roles, isLoading: false, isError: true, refetch };
+    state.roles = { ...state.roles, isLoading: false, isError: true, isFetching: false, refetch } as unknown as typeof state.roles;
     render(<RolesPage />);
-    await user.click(screen.getByRole('button', { name: 'pokušaj-ponovo' }));
+    await user.click(screen.getByRole('button', { name: 'Pokušaj ponovo' }));
     expect(refetch).toHaveBeenCalled();
   });
 

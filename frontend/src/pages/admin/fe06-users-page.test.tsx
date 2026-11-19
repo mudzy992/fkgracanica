@@ -10,7 +10,7 @@ import {
   usersPageState as state,
 } from '../../test/doubles/users-page-doubles';
 
-vi.mock('react-i18next', () => ({ useTranslation: () => ({ t: (k: string) => k }) }));
+vi.mock('react-i18next', () => ({ useTranslation: () => ({ t: (k: string, opts?: Record<string, unknown>) => (opts?.defaultValue as string ?? k) }) }));
 vi.mock('../../lib/auth', async () => (await import('../../test/doubles/users-page-doubles')).usersAuthModule());
 vi.mock('../../hooks', async () => (await import('../../test/doubles/users-page-doubles')).usersHooksModule());
 vi.mock('../../hooks/use-users-admin', async () =>
@@ -71,21 +71,22 @@ describe('UsersPage — prikaz', () => {
   it('učitavanje u ljusci prikazuje indikator umjesto tabele', () => {
     state.isLoading = true;
     renderPage();
-    expect(screen.getByText('učitavanje')).toBeInTheDocument();
+    expect(document.querySelector('[aria-busy="true"]')).toBeTruthy();
     expect(screen.queryByText('marko@fk.ba')).toBeNull();
   });
 
-  it('učitavanje u ugrađenom režimu prikazuje pet skeleton redova', () => {
+  it('učitavanje u ugrađenom režimu prikazuje skeleton aria-busy', () => {
     state.isLoading = true;
     renderPage(true);
-    expect(screen.getAllByText('skeleton')).toHaveLength(5);
+    expect(document.querySelector('[aria-busy="true"]')).toBeTruthy();
+    expect(document.querySelector('.animate-pulse')).toBeTruthy();
   });
 
   it('greška prikazuje retry koji poziva refetch', async () => {
     const user = userEvent.setup();
     state.isError = true;
     renderPage();
-    await user.click(screen.getByRole('button', { name: 'pokušaj-ponovo' }));
+    await user.click(screen.getByRole('button', { name: 'Pokušaj ponovo' }));
     expect(state.refetch).toHaveBeenCalledTimes(1);
   });
 });

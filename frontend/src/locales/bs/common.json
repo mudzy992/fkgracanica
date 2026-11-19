@@ -158,6 +158,9 @@
       "yes": "Da",
       "no": "Ne",
       "actions": "Akcije",
+      "retry": "Pokušaj ponovo",
+      "refresh": "Osvježi",
+      "delete": "Obriši",
       "saving": "Spremanje…",
       "saveFailed": "Spremanje nije uspjelo. Pokušajte ponovo.",
       "moveUp": "Pomjeri gore",
@@ -733,6 +736,20 @@
       "settings": "Postavke",
       "payments": "Online plaćanje"
     },
+    "usersTab": {
+      "users": "Korisnici",
+      "roles": "Uloge"
+    },
+    "usersPage": {
+      "create": "Novi",
+      "empty": "Nema korisnika.",
+      "active": "Aktivan",
+      "inactive": "Neaktivan",
+      "deleteTitle": "Obrisati korisnika?",
+      "name": "Ime",
+      "roles": "Uloge",
+      "status": "Status"
+    },
     "ticketingPayments": {
       "status": "Status online plaćanja",
       "membershipPrice": "Godišnja članarina (KM)",
@@ -766,7 +783,15 @@
     },
     "rolesPage": {
       "system": "Sistemska",
-      "editPermissions": "Uredi dozvole"
+      "editPermissions": "Uredi dozvole",
+      "create": "Nova uloga",
+      "empty": "Nema uloga.",
+      "deleteTitle": "Obrisati ulogu?",
+      "savePermissions": "Sačuvaj dozvole",
+      "name": "Naziv",
+      "description": "Opis",
+      "usersCount": "Korisnici",
+      "permsCount": "Dozvole"
     },
     "seasonEdition": {
       "fromCatalog": "Iz kataloga",

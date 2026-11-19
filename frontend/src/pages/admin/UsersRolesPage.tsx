@@ -30,10 +30,20 @@ export function UsersRolesPage() {
   const { t } = useTranslation();
   const [searchParams, setSearchParams] = useSearchParams();
 
+  const TABS: { key: Tab; labelKey: string; fallback: string }[] = [
+    { key: 'users', labelKey: 'admin.usersTab.users', fallback: 'Korisnici' },
+    { key: 'roles', labelKey: 'admin.usersTab.roles', fallback: 'Uloge' },
+  ];
+
   const tabs = useMemo(() => {
     const list: { key: Tab; label: string }[] = [];
-    if (canUsers) list.push({ key: 'users', label: t('admin.users') });
-    if (canRoles) list.push({ key: 'roles', label: t('admin.roles') });
+    for (const def of TABS) {
+      if (def.key === 'users' && !canUsers) continue;
+      if (def.key === 'roles' && !canRoles) continue;
+      const translated = t(def.labelKey, { defaultValue: def.fallback }) as string;
+      const label = translated === def.labelKey ? def.fallback : translated;
+      list.push({ key: def.key, label });
+    }
     return list;
   }, [canUsers, canRoles, t]);
 
@@ -61,10 +71,13 @@ export function UsersRolesPage() {
         title={t('admin.usersAndRoles')}
         actions={
           tabs.length > 1 ? (
-            <div className="flex flex-wrap gap-2">
+            <div role="tablist" className="flex flex-wrap gap-2">
               {tabs.map((item) => (
                 <Button
                   key={item.key}
+                  role="tab"
+                  aria-selected={activeTab === item.key}
+                  aria-pressed={activeTab === item.key}
                   size="sm"
                   variant={activeTab === item.key ? 'default' : 'outline'}
                   onClick={() => setTab(item.key)}

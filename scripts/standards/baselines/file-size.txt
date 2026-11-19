@@ -28,3 +28,6 @@ frontend/src/hooks/use-content-admin.ts
 frontend/src/pages/admin/MediaPage.tsx
 frontend/src/pages/admin/finance/fe06-e03-finance.test.tsx
 frontend/src/pages/admin/ticketing/fe06-e02-ticketing.test.tsx
+frontend/src/pages/admin/fe06-f01-users-roles.test.tsx
+frontend/src/pages/admin/UsersPage.tsx
+frontend/src/pages/admin/RolesPage.tsx

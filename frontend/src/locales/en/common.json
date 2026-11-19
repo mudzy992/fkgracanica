@@ -158,6 +158,9 @@
       "yes": "Yes",
       "no": "No",
       "actions": "Actions",
+      "retry": "Try again",
+      "refresh": "Refresh",
+      "delete": "Delete",
       "saving": "Saving…",
       "saveFailed": "Saving failed. Please try again.",
       "moveUp": "Move up",
@@ -733,6 +736,20 @@
       "settings": "Settings",
       "payments": "Online payment"
     },
+    "usersTab": {
+      "users": "Users",
+      "roles": "Roles"
+    },
+    "usersPage": {
+      "create": "New",
+      "empty": "No users.",
+      "active": "Active",
+      "inactive": "Inactive",
+      "deleteTitle": "Delete user?",
+      "name": "Name",
+      "roles": "Roles",
+      "status": "Status"
+    },
     "ticketingPayments": {
       "status": "Online payment status",
       "membershipPrice": "Annual membership (KM)",
@@ -766,7 +783,15 @@
     },
     "rolesPage": {
       "system": "System",
-      "editPermissions": "Edit permissions"
+      "editPermissions": "Edit permissions",
+      "create": "New role",
+      "empty": "No roles.",
+      "deleteTitle": "Delete role?",
+      "savePermissions": "Save permissions",
+      "name": "Name",
+      "description": "Description",
+      "usersCount": "Users",
+      "permsCount": "Permissions"
     },
     "seasonEdition": {
       "fromCatalog": "From catalog",

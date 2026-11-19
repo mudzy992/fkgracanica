@@ -247,25 +247,44 @@ export function useDashboardKpis(enabled = true) {
   });
 }
 
-export function useUsers(params: { page?: number; search?: string } = {}) {
+export function useUsers(
+  params: { page?: number; search?: string } = {},
+  options?: Omit<import('@tanstack/react-query').UseQueryOptions<import('../types/pagination').PaginatedResponse<User & { roles?: { role: { id: string; name: string } }[] }>>, 'queryKey' | 'queryFn'>,
+) {
   return useQuery({
     queryKey: ['users', params],
     queryFn: async () =>
       (await api.get('/users', { params })).data as import('../types/pagination').PaginatedResponse<User & { roles?: { role: { id: string; name: string } }[] }>,
+    staleTime: 30_000,
+    retry: 1,
+    refetchOnWindowFocus: false,
+    ...options,
   });
 }
 
-export function useRoles() {
+export function useRoles(
+  options?: Omit<import('@tanstack/react-query').UseQueryOptions<ReturnType<typeof asArray>>, 'queryKey' | 'queryFn'>,
+) {
   return useQuery({
     queryKey: ['roles'],
     queryFn: async () => asArray((await api.get('/rbac/roles')).data),
+    staleTime: 30_000,
+    retry: 1,
+    refetchOnWindowFocus: false,
+    ...options,
   });
 }
 
-export function usePermissions() {
+export function usePermissions(
+  options?: Omit<import('@tanstack/react-query').UseQueryOptions<ReturnType<typeof asArray>>, 'queryKey' | 'queryFn'>,
+) {
   return useQuery({
     queryKey: ['permissions'],
     queryFn: async () => asArray((await api.get('/rbac/permissions')).data),
+    staleTime: 30_000,
+    retry: 1,
+    refetchOnWindowFocus: false,
+    ...options,
   });
 }
 
