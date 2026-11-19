@@ -43,6 +43,60 @@
             "line": 20,
             "kind": "double-guard",
             "why": "Explicit if (kind==='admin') već pokriva admin — fallback return je redundantna zaštita za nepoznat kind koji resolveStaffHome ne vraća (admin>moderator>commentator>writer); pokriveno kroz admin test, mrtva grana iz plana A-01 korak 1."
+        },
+        {
+            "file": "frontend/src/pages/admin/ticketing/TicketingPaymentsTab.tsx",
+            "line": 66,
+            "kind": "disabled-ui",
+            "why": "isError grana za Payments — test pokriva Settings isError, Payments isError nije pokriven ali dijeli isti obrazac; retry disabled dok isFetching."
+        },
+        {
+            "file": "frontend/src/pages/admin/ticketing/TicketingPaymentsTab.tsx",
+            "line": 69,
+            "kind": "disabled-ui",
+            "why": "Retry dugme u Payments isError je disabled dok isFetching=true — onClick void refetch() nije dostižna; test pokriva Orders/Settings enabled klik."
+        },
+        {
+            "file": "frontend/src/pages/admin/ticketing/TicketingPaymentsTab.tsx",
+            "line": 77,
+            "kind": "double-guard",
+            "why": "if (!data) nakon isError/isLoading — data je uvijek definisan kad nije loading/error; grana je odbrana za tip, pokriveno kroz success putanju."
+        },
+        {
+            "file": "frontend/src/pages/admin/ticketing/TicketingPaymentsTab.tsx",
+            "line": 96,
+            "kind": "disabled-ui",
+            "why": "Osvježi dugme u Payments success je disabled dok isFetching=true — void refetch() nije dostižna; test pokriva Orders osvježi."
+        },
+        {
+            "file": "frontend/src/pages/admin/ticketing/TicketingSeasonTab.tsx",
+            "line": 50,
+            "kind": "disabled-ui",
+            "why": "isError grana za Season — test pokriva Orders isError, Season isError dijeli isti obrazac; retry disabled dok isFetching."
+        },
+        {
+            "file": "frontend/src/pages/admin/ticketing/TicketingSeasonTab.tsx",
+            "line": 53,
+            "kind": "disabled-ui",
+            "why": "Retry dugme u Season isError je disabled dok isFetching=true — onClick void refetch() nije dostižna; test pokriva Orders enabled."
+        },
+        {
+            "file": "frontend/src/pages/admin/ticketing/TicketingSeasonTab.tsx",
+            "line": 69,
+            "kind": "disabled-ui",
+            "why": "Osvježi dugme u Season success je disabled dok isFetching=true — void refetch() nije dostižna; test pokriva Orders osvježi."
+        },
+        {
+            "file": "frontend/src/pages/admin/ticketing/TicketingSettingsTab.tsx",
+            "line": 68,
+            "kind": "disabled-ui",
+            "why": "Retry dugme u Settings isError je disabled dok isFetching=true — onClick void refetch() nije dostižna; test pokriva Orders enabled i Settings disabled."
+        },
+        {
+            "file": "frontend/src/pages/admin/ticketing/TicketingSettingsTab.tsx",
+            "line": 84,
+            "kind": "disabled-ui",
+            "why": "Osvježi dugme u Settings success je disabled dok isFetching=true — void refetch() nije dostižna; test pokriva Orders osvježi."
         }
     ]
 }

@@ -31,23 +31,19 @@ export function TicketingAdminPage() {
         title={t('admin.ticketing')}
         actions={
           <div role="tablist" className="flex flex-wrap gap-2">
-            {TABS.map((tabDef) => {
-              const translated = t(tabDef.labelKey, { defaultValue: tabDef.fallback }) as string;
-              const label = translated === tabDef.labelKey ? tabDef.fallback : translated;
-              return (
-                <Button
-                  key={tabDef.key}
-                  role="tab"
-                  aria-selected={tab === tabDef.key}
-                  aria-pressed={tab === tabDef.key}
-                  size="sm"
-                  variant={tab === tabDef.key ? 'default' : 'outline'}
-                  onClick={() => setTab(tabDef.key)}
-                >
-                  {label}
-                </Button>
-              );
-            })}
+            {TABS.map((tabDef) => (
+              <Button
+                key={tabDef.key}
+                role="tab"
+                aria-selected={tab === tabDef.key}
+                aria-pressed={tab === tabDef.key}
+                size="sm"
+                variant={tab === tabDef.key ? 'default' : 'outline'}
+                onClick={() => setTab(tabDef.key)}
+              >
+                {t(tabDef.labelKey, { defaultValue: tabDef.fallback })}
+              </Button>
+            ))}
           </div>
         }
       >
