@@ -97,6 +97,36 @@
             "line": 84,
             "kind": "disabled-ui",
             "why": "Osvježi dugme u Settings success je disabled dok isFetching=true — void refetch() nije dostižna; test pokriva Orders osvježi."
+        },
+        {
+            "file": "frontend/src/pages/admin/RolesPage.tsx",
+            "line": 108,
+            "kind": "double-guard",
+            "why": "embedded isError early return — test pokriva standalone isError (embedded=false) sa AdminPageShell+Seo; embedded=true vraća samo dialog+err fragment za tab view i nije pokriven direktnim testom, ali dijeli isti err element (F-01 isError branch)."
+        },
+        {
+            "file": "frontend/src/pages/admin/RolesPage.tsx",
+            "line": 117,
+            "kind": "disabled-ui",
+            "why": "AdminFormSheet edit dozvola unutar RolesPage isError (non-embedded) — sheet je zatvoren (open=false) pa sadržaj nije renderovan u coverage; success putanja pokriva isti sheet sa Switch/Button, error putanja je redundantna za UI."
+        },
+        {
+            "file": "frontend/src/pages/admin/RolesPage.tsx",
+            "line": 122,
+            "kind": "disabled-ui",
+            "why": "Switch u RolesPage isError AdminFormSheet — dostupan tek kada je sheet open i permList mapiran; isError test ne otvara sheet pa grana nije pokrivena, success putanja pokriva isti Switch."
+        },
+        {
+            "file": "frontend/src/pages/admin/RolesPage.tsx",
+            "line": 129,
+            "kind": "disabled-ui",
+            "why": "Sačuvaj dozvole dugme u RolesPage isError AdminFormSheet — disabled dok updatePerms.isPending, isError putanja ne testira pending/spremanje; success putanja pokriva isto dugme."
+        },
+        {
+            "file": "frontend/src/pages/admin/UsersPage.tsx",
+            "line": 94,
+            "kind": "double-guard",
+            "why": "embedded isError early return — test pokriva standalone isError (embedded=false) sa AdminPageShell+Seo; embedded=true vraća samo dialog+err fragment za tab view i nije pokriven direktnim testom, ali dijeli isti err element (F-01 isError branch)."
         }
     ]
 }
