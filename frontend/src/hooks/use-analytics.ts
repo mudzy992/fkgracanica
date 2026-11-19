@@ -30,11 +30,18 @@ export type H2HAnalytics = {
   matches: TeamAnalytics['recent'];
 };
 
-export function useTeamAnalytics(seasonId?: string) {
+export function useTeamAnalytics(
+  seasonId?: string,
+  options?: Omit<import('@tanstack/react-query').UseQueryOptions<TeamAnalytics>, 'queryKey' | 'queryFn'>,
+) {
   return useQuery({
     queryKey: ['analytics', 'team', seasonId],
     queryFn: async () =>
       (await api.get<TeamAnalytics>('/analytics/team', { params: seasonId ? { seasonId } : undefined })).data,
+    staleTime: 30_000,
+    retry: 1,
+    refetchOnWindowFocus: false,
+    ...options,
   });
 }
 
@@ -53,21 +60,36 @@ export type PlayerAnalytics = {
   seasons: PlayerSeasonRow[];
 };
 
-export function usePlayerAnalytics(playerId?: string) {
+export function usePlayerAnalytics(
+  playerId?: string,
+  options?: Omit<import('@tanstack/react-query').UseQueryOptions<PlayerAnalytics>, 'queryKey' | 'queryFn'>,
+) {
   return useQuery({
     queryKey: ['analytics', 'player', playerId],
     queryFn: async () =>
       (await api.get<PlayerAnalytics>(`/analytics/players/${playerId}`)).data,
     enabled: Boolean(playerId),
+    staleTime: 30_000,
+    retry: 1,
+    refetchOnWindowFocus: false,
+    ...options,
   });
 }
 
-export function useH2H(clubAId?: string, clubBId?: string) {
+export function useH2H(
+  clubAId?: string,
+  clubBId?: string,
+  options?: Omit<import('@tanstack/react-query').UseQueryOptions<H2HAnalytics>, 'queryKey' | 'queryFn'>,
+) {
   return useQuery({
     queryKey: ['analytics', 'h2h', clubAId, clubBId],
     queryFn: async () =>
       (await api.get<H2HAnalytics>('/analytics/h2h', { params: { clubAId, clubBId } })).data,
     enabled: Boolean(clubAId && clubBId && clubAId !== clubBId),
+    staleTime: 30_000,
+    retry: 1,
+    refetchOnWindowFocus: false,
+    ...options,
   });
 }
 
@@ -84,11 +106,18 @@ export type VisitorTotals = {
   total: number;
 };
 
-export function useVisitorTrend(days = 30) {
+export function useVisitorTrend(
+  days = 30,
+  options?: Omit<import('@tanstack/react-query').UseQueryOptions<VisitorTrendRow[]>, 'queryKey' | 'queryFn'>,
+) {
   return useQuery({
     queryKey: ['analytics', 'visitors', 'trend', days],
     queryFn: async () =>
       (await api.get<VisitorTrendRow[]>('/public-analytics/trend', { params: { days } })).data,
+    staleTime: 30_000,
+    retry: 1,
+    refetchOnWindowFocus: false,
+    ...options,
   });
 }
 
@@ -113,10 +142,17 @@ export type VisitorGeoRow = {
   percent: number;
 };
 
-export function useVisitorGeo(days = 30) {
+export function useVisitorGeo(
+  days = 30,
+  options?: Omit<import('@tanstack/react-query').UseQueryOptions<VisitorGeoRow[]>, 'queryKey' | 'queryFn'>,
+) {
   return useQuery({
     queryKey: ['analytics', 'visitors', 'geo', days],
     queryFn: async () =>
       (await api.get<VisitorGeoRow[]>('/public-analytics/geo', { params: { days } })).data,
+    staleTime: 30_000,
+    retry: 1,
+    refetchOnWindowFocus: false,
+    ...options,
   });
 }

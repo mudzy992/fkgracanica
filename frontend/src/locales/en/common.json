@@ -475,7 +475,8 @@
       "dailyTrend": "Daily trend (30 days)",
       "table": "Visits table",
       "date": "Date",
-      "geo": "Geo distribution (30 days)"
+      "geo": "Geo distribution (30 days)",
+      "noTrend": "No trend data."
     },
     "trophyForm": {
       "edit": "Edit trophy",

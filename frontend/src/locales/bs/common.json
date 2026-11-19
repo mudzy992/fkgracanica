@@ -475,7 +475,8 @@
       "dailyTrend": "Dnevni trend (30 dana)",
       "table": "Tabela posjeta",
       "date": "Datum",
-      "geo": "Geo distribucija (30 dana)"
+      "geo": "Geo distribucija (30 dana)",
+      "noTrend": "Nema podataka o trendu."
     },
     "trophyForm": {
       "edit": "Uredi trofej",
