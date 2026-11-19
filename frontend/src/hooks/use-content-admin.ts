@@ -16,11 +16,19 @@ export function useGalleryAdminList(
   });
 }
 
-export function useGalleryDetail(id?: string) {
+export function useGalleryDetail(
+  id?: string,
+  options?: Omit<import('@tanstack/react-query').UseQueryOptions<GalleryItem>, 'queryKey' | 'queryFn'>,
+) {
+  const { enabled: optEnabled, ...rest } = (options ?? {}) as { enabled?: boolean } & Record<string, unknown>;
   return useQuery({
     queryKey: ['gallery', id],
     queryFn: async () => (await api.get<GalleryItem>(`/gallery/${id}`)).data,
-    enabled: !!id,
+    staleTime: 30_000,
+    retry: 1,
+    refetchOnWindowFocus: false,
+    ...rest,
+    enabled: !!id && (optEnabled ?? true),
   });
 }
 

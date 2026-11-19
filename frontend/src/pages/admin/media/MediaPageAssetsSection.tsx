@@ -25,6 +25,7 @@ interface Props {
   meta?: PaginationMeta;
   page: number;
   onPageChange: (page: number) => void;
+  isFetching?: boolean;
 }
 
 export function MediaPageAssetsSection({
@@ -47,9 +48,10 @@ export function MediaPageAssetsSection({
   meta,
   page,
   onPageChange,
+  isFetching,
 }: Props) {
   return (
-    <div className={selectedCount > 0 ? 'pb-20 sm:pb-4' : 'pb-4'}>
+    <div aria-busy={isFetching || undefined} className={selectedCount > 0 ? 'pb-20 sm:pb-4' : 'pb-4'}>
       <MediaAssetsGrid
         assets={assets}
         empty={empty}

@@ -68,11 +68,11 @@ export function AdminPageShellDouble({
   );
 }
 
-export function AdminDataTableDouble({ rows, columns, empty, onRowClick, rowClassName }: {
-  rows: AdminRow[]; columns: AdminColumn[]; empty?: string;
+export function AdminDataTableDouble({ rows, columns, empty, emptyRole, onRowClick, rowClassName }: {
+  rows: AdminRow[]; columns: AdminColumn[]; empty?: string; emptyRole?: 'status' | 'alert';
   onRowClick?: (row: AdminRow) => void; rowClassName?: (row: AdminRow) => string | undefined;
 }) {
-  return rows.length === 0 ? <p role="status">{empty}</p> : (
+  return rows.length === 0 ? (emptyRole ? <p role={emptyRole}>{empty}</p> : <p>{empty}</p>) : (
     <div>
       {rows.map((row) => (
         <div key={row.id} data-testid={`row-${row.id}`} className={rowClassName?.(row)}

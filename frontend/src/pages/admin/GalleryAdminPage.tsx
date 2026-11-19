@@ -24,10 +24,11 @@ export function GalleryAdminPage() {
   const { user } = useAuth();
   const canManage = hasPermission(user?.permissions, 'gallery.manage');
   const canApprove = hasPermission(user?.permissions, 'gallery.approve');
-  const { data, isLoading, isError, refetch } = useGalleryAdminList();
+  const { data, isLoading, isError, isFetching, dataUpdatedAt, refetch } = useGalleryAdminList();
   const publish = useUpdateGalleryStatus();
   const remove = useDeleteGallery();
   const { confirm, dialog } = useConfirm();
+  const isMutating = publish.isPending || remove.isPending;
 
   const onDelete = async (item: GalleryItem) => {
     const ok = await confirm({
@@ -44,10 +45,13 @@ export function GalleryAdminPage() {
       <Seo title={t('admin.gallery')} />
       {dialog}
       <AdminPageShell
-        isError={isError}
+        isError={Boolean(isError)}
+        isFetching={Boolean(isFetching)}
         onRetry={() => void refetch()}
         title={t('admin.gallery')}
-        isLoading={isLoading}
+        isLoading={Boolean(isLoading)}
+        dataUpdatedAt={dataUpdatedAt}
+        onRefresh={() => void refetch()}
         actions={
           canManage ? (
             <Link to="/admin/gallery/new" className={cn(buttonVariants({size: "sm"}))}><Plus className="mr-1 h-4 w-4" />
@@ -57,6 +61,7 @@ export function GalleryAdminPage() {
       >
         <AdminDataTable
           rows={data ?? []}
+          emptyRole="status"
           columns={[
             {
               key: 'title',
@@ -84,6 +89,7 @@ export function GalleryAdminPage() {
                     <Button
                       size="sm"
                       variant="outline"
+                      disabled={isMutating}
                       onClick={() => void runAction(publish.mutateAsync({ id: r.id, status: 'PUBLISHED' }))}
                     >
                       Objavi
@@ -93,6 +99,7 @@ export function GalleryAdminPage() {
                     <Button
                       variant="ghost"
                       size="icon"
+                      disabled={isMutating}
                       onClick={() => void onDelete(r)}
                       aria-label={t('actions.delete')}
                     >

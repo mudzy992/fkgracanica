@@ -15,6 +15,7 @@ export function GalleryAdminPhotos({ galleryId, photos }: Props) {
   const { t } = useTranslation();
   const removePhoto = useRemoveGalleryPhoto();
   const reorder = useReorderGalleryPhotos();
+  const isMutating = removePhoto.isPending || reorder.isPending;
 
   const move = (index: number, dir: -1 | 1) => {
     const next = index + dir;
@@ -28,7 +29,7 @@ export function GalleryAdminPhotos({ galleryId, photos }: Props) {
   }
 
   return (
-    <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+    <div aria-busy={isMutating || undefined} className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
       {photos.map((p, index) => (
         <figure
           key={p.id}
@@ -46,7 +47,7 @@ export function GalleryAdminPhotos({ galleryId, photos }: Props) {
             <Button
               variant="ghost"
               size="icon"
-              disabled={index === 0}
+              disabled={index === 0 || isMutating}
               onClick={() => move(index, -1)}
               aria-label={t('admin.common.moveUp')}
             >
@@ -55,7 +56,7 @@ export function GalleryAdminPhotos({ galleryId, photos }: Props) {
             <Button
               variant="ghost"
               size="icon"
-              disabled={index === photos.length - 1}
+              disabled={index === photos.length - 1 || isMutating}
               onClick={() => move(index, 1)}
 
               aria-label={t('admin.common.moveDown')}
@@ -65,6 +66,7 @@ export function GalleryAdminPhotos({ galleryId, photos }: Props) {
             <Button
               variant="ghost"
               size="icon"
+              disabled={isMutating}
               onClick={() => void runAction(removePhoto.mutateAsync({ galleryId, photoId: p.id }))}
 
               aria-label={t('actions.delete')}

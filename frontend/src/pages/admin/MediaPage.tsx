@@ -48,7 +48,7 @@ export function MediaPage() {
 
   const selection = useMediaSelection();
   const { enqueue, retryRefresh, clearReport, state: uploadState } = useMediaUploadQueue(user?.id ?? '');
-  const { data: foldersRaw, isLoading: fl } = useMediaFolders();
+  const { data: foldersRaw, isLoading: fl, isError: fe, isFetching: ff, dataUpdatedAt: fu, refetch: fr } = useMediaFolders();
   const folders = asArray<MediaFolder>(foldersRaw);
 
   useEffect(() => {
@@ -57,7 +57,7 @@ export function MediaPage() {
   }, [search]);
 
   const globalSearch = !!debouncedSearch;
-  const { data, isLoading: al } = useMediaAssets({
+  const { data, isLoading: al, isError: ae, isFetching: af, dataUpdatedAt: au, refetch: ar } = useMediaAssets({
     folderId: globalSearch ? undefined : folderId,
     page,
     search: debouncedSearch || undefined,
@@ -120,6 +120,10 @@ export function MediaPage() {
     onDelete: canManage ? onFolderDelete : undefined,
   };
 
+  const dataUpdatedAt = Math.max(fu ?? 0, au ?? 0) || undefined;
+  const isFetching = Boolean(ff || af);
+  const isError = Boolean(fe || ae);
+
   return (
     <>
       <Seo title={t('admin.media')} />
@@ -133,7 +137,15 @@ export function MediaPage() {
           if (replaceId) void runAction(replace.mutateAsync({ id: replaceId, file })).finally(() => setReplaceId(null));
         }}
       />
-      <AdminPageShell title={t('admin.media')} isLoading={fl || al}>
+      <AdminPageShell
+        title={t('admin.media')}
+        isLoading={Boolean(fl || al)}
+        isError={isError}
+        isFetching={isFetching}
+        onRetry={() => { void fr(); void ar(); }}
+        dataUpdatedAt={dataUpdatedAt}
+        onRefresh={() => { void fr(); void ar(); }}
+      >
         <MediaPageToolbar
           search={search}
           onSearchChange={(v) => { setSearch(v); setPage(1); selection.clear(); }}
@@ -188,6 +200,7 @@ export function MediaPage() {
             meta={data?.meta}
             page={page}
             onPageChange={setPage}
+            isFetching={Boolean(af)}
           />
         </div>
       </AdminPageShell>

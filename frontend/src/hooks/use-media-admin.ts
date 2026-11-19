@@ -23,14 +23,23 @@ export interface MediaFolder {
   _count?: { assets: number };
 }
 
-export function useMediaFolders() {
+export function useMediaFolders(
+  options?: Omit<import('@tanstack/react-query').UseQueryOptions<MediaFolder[]>, 'queryKey' | 'queryFn'>,
+) {
   return useQuery({
     queryKey: ['media', 'folders'],
     queryFn: async () => asArray<MediaFolder>((await api.get('/media/folders')).data),
+    staleTime: 30_000,
+    retry: 1,
+    refetchOnWindowFocus: false,
+    ...options,
   });
 }
 
-export function useMediaAssets(params: { folderId?: string; page?: number; search?: string; limit?: number } = {}) {
+export function useMediaAssets(
+  params: { folderId?: string; page?: number; search?: string; limit?: number } = {},
+  options?: Omit<import('@tanstack/react-query').UseQueryOptions<PaginatedResponse<MediaAsset>>, 'queryKey' | 'queryFn'>,
+) {
   return useQuery({
     queryKey: ['media', 'assets', params],
     queryFn: async () =>
@@ -42,6 +51,10 @@ export function useMediaAssets(params: { folderId?: string; page?: number; searc
           search: params.search || undefined,
         },
       })).data,
+    staleTime: 30_000,
+    retry: 1,
+    refetchOnWindowFocus: false,
+    ...options,
   });
 }
 

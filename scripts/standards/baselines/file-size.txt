@@ -24,3 +24,5 @@ frontend/src/pages/admin/homes/fe06-commentator-home.test.tsx
 frontend/src/pages/admin/homes/fe06-moderator-home.test.tsx
 frontend/src/pages/admin/homes/fe06-writer-home.test.tsx
 frontend/src/pages/admin/CompetitionsAdminPage.tsx
+frontend/src/hooks/use-content-admin.ts
+frontend/src/pages/admin/MediaPage.tsx

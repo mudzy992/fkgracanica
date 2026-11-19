@@ -43,8 +43,8 @@ export function MediaAssetFormSheet({ asset, open, onOpenChange }: Props) {
     try {
       await update.mutateAsync({
         id: asset!.id,
-        filename,
-        tags,
+        filename: filename.trim(),
+        tags: tags.trim(),
         folderId: folderId || null,
       });
       onOpenChange(false);
@@ -79,7 +79,7 @@ export function MediaAssetFormSheet({ asset, open, onOpenChange }: Props) {
         </div>
         <div>
           <label className="mb-1 block text-sm font-medium">{t('admin.mediaAsset.filename')}</label>
-          <Input value={filename} onChange={(e) => setFilename(e.target.value)} />
+          <Input value={filename} onChange={(e) => setFilename(e.target.value)} disabled={update.isPending} />
         </div>
         <div>
           <label className="mb-1 block text-sm font-medium">{t('admin.mediaAsset.tags')}</label>
@@ -87,6 +87,7 @@ export function MediaAssetFormSheet({ asset, open, onOpenChange }: Props) {
             value={tags}
             onChange={(e) => setTags(e.target.value)}
             placeholder={t('admin.mediaAsset.tagsPlaceholder')}
+            disabled={update.isPending}
           />
         </div>
         <div>
@@ -94,6 +95,7 @@ export function MediaAssetFormSheet({ asset, open, onOpenChange }: Props) {
           <Select
             value={folderId}
             onChange={(e) => setFolderId(e.target.value)}
+            disabled={update.isPending}
           >
             <option value="">{t('admin.mediaAsset.noFolder')}</option>
             {folders.map((f) => (
@@ -108,7 +110,7 @@ export function MediaAssetFormSheet({ asset, open, onOpenChange }: Props) {
             {error}
           </p>
         )}
-        <Button onClick={() => void onSave()} disabled={update.isPending}>
+        <Button onClick={() => void onSave()} disabled={!filename.trim() || update.isPending}>
           Sačuvaj
         </Button>
       </div>
