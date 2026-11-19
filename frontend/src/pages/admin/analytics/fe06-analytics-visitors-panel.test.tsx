@@ -31,7 +31,7 @@ describe('AnalyticsVisitorsPanel', () => {
   it('dok bilo koji upit učitava prikazuje poruku', () => {
     state.geo = { data: [], isLoading: true };
     render(<AnalyticsVisitorsPanel />);
-    expect(screen.getByText('admin.analyticsPanel.loading')).toBeTruthy();
+    expect(document.querySelector('[aria-busy="true"]')).toBeTruthy();
   });
 
   it('prikazuje tri KPI kartice sa ukupnim brojevima', () => {
