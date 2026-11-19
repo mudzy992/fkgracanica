@@ -6,7 +6,7 @@ import { UsersPage } from './UsersPage';
 import { adminShellState } from '../../test/doubles/admin-shell-doubles';
 import { resetUsersPageState, usersPageState as state } from '../../test/doubles/users-page-doubles';
 
-vi.mock('react-i18next', () => ({ useTranslation: () => ({ t: (k: string) => k }) }));
+vi.mock('react-i18next', () => ({ useTranslation: () => ({ t: (k: string, opts?: Record<string, unknown>) => (opts?.defaultValue as string ?? k) }) }));
 vi.mock('../../lib/auth', async () => (await import('../../test/doubles/users-page-doubles')).usersAuthModule());
 vi.mock('../../hooks', async () => (await import('../../test/doubles/users-page-doubles')).usersHooksModule());
 vi.mock('../../hooks/use-users-admin', async () =>

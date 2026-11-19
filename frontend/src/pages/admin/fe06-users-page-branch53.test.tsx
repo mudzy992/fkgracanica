@@ -3,7 +3,7 @@ import { render, screen } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { MemoryRouter } from 'react-router-dom';
 
-vi.mock('react-i18next', () => ({ useTranslation: () => ({ t: (k: string) => k }) }));
+vi.mock('react-i18next', () => ({ useTranslation: () => ({ t: (k: string, opts?: Record<string, unknown>) => (opts?.defaultValue as string ?? k) }) }));
 vi.mock('../../hooks', async (orig) => { const a = await (orig as unknown as () => Promise<Record<string, unknown>>)(); return { ...(a as object), useUsers: vi.fn() }; });
 vi.mock('../../hooks/use-users-admin', () => ({ useDeleteUser: () => ({ mutateAsync: vi.fn() }) }));
 vi.mock('../../lib/auth', () => ({ useAuth: () => ({ user: null }) }));
