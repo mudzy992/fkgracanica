@@ -7,7 +7,7 @@ vi.mock('expo-notifications', () => ({
   setNotificationHandler: vi.fn(),
   addNotificationResponseReceivedListener: vi.fn(() => ({ remove: vi.fn() })),
   requestPermissionsAsync: vi.fn(async () => ({ granted: true })),
-  getExpoPushTokenAsync: vi.fn(async () => ({ data: 'ExponentPushToken[abc]' })),
+  getExpoPushTokenAsync: vi.fn(async () => ({ data: 'ExponentPushToken[example]' })),
 }));
 vi.mock('expo-router', () => ({ router: { push: vi.fn() } }));
 vi.mock('expo-file-system', () => ({
@@ -66,7 +66,7 @@ describe('mob-batch96 — P-MOB09 screen/push/share (test-only)', () => {
     (Constants as any).expoConfig = { extra: { eas: { projectId: 'proj123' } } };
   });
   it('ensurePushRegistration skips when token unchanged', async () => {
-    vi.mocked(SecureStore.getItemAsync).mockResolvedValueOnce('ExponentPushToken[abc]');
+    vi.mocked(SecureStore.getItemAsync).mockResolvedValueOnce('ExponentPushToken[example]');
     await ensurePushRegistration();
     expect(api.post).not.toHaveBeenCalled();
     expect(SecureStore.setItemAsync).not.toHaveBeenCalled();
@@ -74,8 +74,8 @@ describe('mob-batch96 — P-MOB09 screen/push/share (test-only)', () => {
   it('ensurePushRegistration registers new token', async () => {
     vi.mocked(SecureStore.getItemAsync).mockResolvedValueOnce('old');
     await ensurePushRegistration();
-    expect(api.post).toHaveBeenCalledWith('/notifications/devices', expect.objectContaining({ token:'ExponentPushToken[abc]' }));
-    expect(SecureStore.setItemAsync).toHaveBeenCalledWith('fk_push_token','ExponentPushToken[abc]');
+    expect(api.post).toHaveBeenCalledWith('/notifications/devices', expect.objectContaining({ token:'ExponentPushToken[example]' }));
+    expect(SecureStore.setItemAsync).toHaveBeenCalledWith('fk_push_token','ExponentPushToken[example]');
   });
   it('ensurePushRegistration swallows errors', async () => {
     vi.mocked(Notifications.getExpoPushTokenAsync).mockRejectedValueOnce(new Error('503'));
