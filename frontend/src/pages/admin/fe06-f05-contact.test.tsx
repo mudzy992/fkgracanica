@@ -1,22 +1,13 @@
 import { render, screen, within } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
-import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ContactAdminPage } from './ContactAdminPage';
 
-// jsdom nema nativni <dialog>.showModal — stub da mounted sheet ne baci TypeError i da sadržaj bude dostupan
-beforeAll(() => {
-  const show = function (this: HTMLDialogElement) { this.setAttribute('open', ''); };
-  const close = function (this: HTMLDialogElement) { this.removeAttribute('open'); };
-  // prepiši bez obzira postoji li nativna implementacija (jsdom baca NotSupported)
-  Object.defineProperty(HTMLDialogElement.prototype, 'showModal', { value: show, configurable: true, writable: true });
-  Object.defineProperty(HTMLDialogElement.prototype, 'close', { value: close, configurable: true, writable: true });
-  try {
-    Object.defineProperty(HTMLDialogElement.prototype, 'open', {
-      get() { return this.hasAttribute('open'); },
-      configurable: true,
-    });
-  } catch { /* već definisano */ }
-});
+vi.mock('../../components/ui/dialog', () => ({
+  Dialog: ({ open, children }: { open: boolean; children: React.ReactNode }) => (open ? <div>{children}</div> : null),
+  DialogHeader: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+  DialogBody: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+}));
 
 const state = vi.hoisted(() => ({
   list: {

@@ -3,7 +3,15 @@ import { render, screen } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { MemoryRouter } from 'react-router-dom';
 
-vi.mock('react-i18next', () => ({ useTranslation: () => ({ t: (k: string) => k }) }));
+vi.mock('react-i18next', () => ({
+  useTranslation: () => ({
+    t: (k: string, opts?: unknown) => {
+      const o = opts as Record<string, unknown> | undefined;
+      if (o?.defaultValue) return o.defaultValue as string;
+      return k;
+    },
+  }),
+}));
 vi.mock('../../hooks/use-contact-admin', () => ({
   useContactMessages: () => ({ data: { data: [], meta: { page: 1, totalPages: 1 } }, isLoading: false, isError: false, refetch: vi.fn() }),
   useMarkContactRead: () => ({ mutateAsync: vi.fn() }),

@@ -5,7 +5,20 @@ import { ContactAdminPage } from './ContactAdminPage';
 import { contactAdminState as state } from '../../test/doubles/contact-admin-doubles';
 import { adminShellState } from '../../test/doubles/admin-shell-doubles';
 
-vi.mock('react-i18next', () => ({ useTranslation: () => ({ t: (k: string) => k }) }));
+vi.mock('react-i18next', () => ({
+  useTranslation: () => ({
+    t: (k: string, opts?: unknown) => {
+      const o = opts as Record<string, unknown> | undefined;
+      if (o?.defaultValue) {
+        let s = o.defaultValue as string;
+        if (o.name) s = s.replace('{{name}}', o.name as string);
+        return s;
+      }
+      if (typeof opts === 'string') return opts as string;
+      return k;
+    },
+  }),
+}));
 vi.mock('../../hooks/use-contact-admin', () => ({
   useContactMessages: (params: unknown) => {
     state.listArgs.push(params);

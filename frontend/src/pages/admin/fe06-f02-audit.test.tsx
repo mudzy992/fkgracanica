@@ -210,6 +210,6 @@ describe('F-02 Audit — lastUpdated/Osvježi (P2-2)', () => {
       refetch,
     } as unknown as typeof state.audit;
     rerender(<AuditPage />);
-    expect(screen.getByRole('button', { name: 'admin.common.loading' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Učitavanje…' })).toBeDisabled();
   });
 });

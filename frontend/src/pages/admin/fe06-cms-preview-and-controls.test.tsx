@@ -4,7 +4,15 @@ import { CmsPreviewPanel } from './cms/CmsPreviewPanel';
 import { CommentatorControls } from './commentator/CommentatorControls';
 import { ContactMessageSheet } from './ContactMessageSheet';
 
-vi.mock('react-i18next', () => ({ useTranslation: () => ({ t: (k: string) => `t:${k}` }) }));
+vi.mock('react-i18next', () => ({
+  useTranslation: () => ({
+    t: (k: string, opts?: unknown) => {
+      const o = opts as Record<string, unknown> | undefined;
+      if (o?.defaultValue) return o.defaultValue as string;
+      return `t:${k}`;
+    },
+  }),
+}));
 vi.mock('../../cms/WidgetRenderer', () => ({
   WidgetRenderer: ({ section }: { section: { id: string; config: Record<string, unknown> } }) => (
     <div data-testid={`w-${section.id}`}>{JSON.stringify(section.config)}</div>

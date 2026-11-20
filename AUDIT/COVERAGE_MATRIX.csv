@@ -1553,7 +1553,7 @@
 "frontend/src/pages/admin/fe06-f02-audit.test.tsx","frontend","src","216","pokriveno testom","F-02 Audit P2-1..P2-4 6t","F-02","2026-11-19"
 "frontend/src/pages/admin/fe06-f03-analytics.test.tsx","frontend","src","412","pokriveno testom","F-03 Analytics P2-1..P2-6 9t","F-03","2026-11-19"
 "frontend/src/pages/admin/fe06-f04-notifications-comms.test.tsx","frontend","src","436","pokriveno testom","F-04 P2-1..P2-6 10t","F-04","2026-11-19"
-"frontend/src/pages/admin/fe06-f05-contact.test.tsx","frontend","src","380","pokriveno testom","F-05 Contact P2-1..P2-8 lastUpdated/aria-busy/role=alert+emptyRole+paginacija i18n","F-05","2026-11-20"
+"frontend/src/pages/admin/fe06-f05-contact.test.tsx","frontend","src","371","pokriveno testom","F-05 Contact P2-1..P2-8 lastUpdated/aria-busy/role=alert+emptyRole+paginacija i18n","F-05","2026-11-20"
 "frontend/src/pages/admin/fe06-gallery-admin-parts-part2.test.tsx","frontend","src","125","pokriveno testom","FE-06 coverage batch 19–22: novi test fajl (vitest)","FE-06","2026-11-06"
 "frontend/src/pages/admin/fe06-gallery-admin-parts.test.tsx","frontend","src","173","pokriveno testom","FE-06 coverage batch 19–22: novi test fajl (vitest)","FE-06","2026-11-06"
 "frontend/src/pages/admin/fe06-hall-of-fame-admin-page-branch47.test.tsx","frontend","src","52","pokriveno testom","B-FE07: legacy FE-06 test batch — pokriveno postojećim testovima, zatvaranje 2026-11-17","FE-07","2026-11-17"

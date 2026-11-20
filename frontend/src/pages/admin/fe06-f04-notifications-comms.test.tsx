@@ -231,7 +231,7 @@ describe('F-04 Notifications — lastUpdated/Osvježi + pagination aria-live (P2
         <NotificationsPage />
       </MemoryRouter>,
     );
-    const btn2 = screen.getByRole('button', { name: 'admin.common.loading' });
+    const btn2 = screen.getByRole('button', { name: 'Učitavanje…' });
     expect(btn2).toBeDisabled();
     const prev = screen.getByRole('button', { name: 'Prethodna' });
     expect(prev).toBeDisabled();
@@ -430,6 +430,6 @@ describe('F-04 LivePending — loading/error/lastUpdated (P2-6)', () => {
       </MemoryRouter>,
     );
     expect(screen.getByRole('button', { name: 'Odobri' })).toBeDisabled();
-    expect(screen.getByRole('button', { name: 'admin.common.loading' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Učitavanje…' })).toBeDisabled();
   });
 });

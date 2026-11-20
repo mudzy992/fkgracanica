@@ -5,7 +5,16 @@ import { ContactAdminPage } from './ContactAdminPage';
 import { contactAdminState as state } from '../../test/doubles/contact-admin-doubles';
 import { adminShellState } from '../../test/doubles/admin-shell-doubles';
 
-vi.mock('react-i18next', () => ({ useTranslation: () => ({ t: (k: string) => k }) }));
+vi.mock('react-i18next', () => ({
+  useTranslation: () => ({
+    t: (k: string, opts?: unknown) => {
+      const o = opts as Record<string, unknown> | undefined;
+      if (o?.defaultValue) return o.defaultValue as string;
+      if (typeof opts === 'string') return opts as string;
+      return k;
+    },
+  }),
+}));
 vi.mock('../../hooks/use-contact-admin', () => ({
   useContactMessages: (params: unknown) => {
     state.listArgs.push(params);
@@ -48,7 +57,7 @@ beforeEach(() => {
 describe('ContactAdminPage — prikaz i filteri', () => {
   it('prikazuje naslov, praznu listu i dugme za sve pročitano', () => {
     render(<ContactAdminPage />);
-    expect(screen.getByText('admin.contactPage.title')).toBeInTheDocument();
+    expect(screen.getByText('Kontakt poruke')).toBeInTheDocument();
     expect(screen.getByText('Nema poruka.')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Označi sve pročitanim' })).toBeInTheDocument();
   });
@@ -66,7 +75,7 @@ describe('ContactAdminPage — prikaz i filteri', () => {
   it('pretraga se šalje i vraća na prvu stranicu', async () => {
     const user = userEvent.setup();
     render(<ContactAdminPage />);
-    await user.type(screen.getByPlaceholderText('admin.usersAdmin.search'), 'dres');
+    await user.type(screen.getByPlaceholderText('Pretraži'), 'dres');
     await waitFor(() => expect(state.listArgs.at(-1)).toEqual({ page: 1, search: 'dres', unreadOnly: false }));
   });
 
@@ -108,7 +117,7 @@ describe('ContactAdminPage — prikaz i filteri', () => {
   it('embedded režim skriva ljusku i naslov, ali zadržava akciju', () => {
     state.list = { ...state.list, data: { data: [message()], meta: undefined } };
     render(<ContactAdminPage embedded />);
-    expect(screen.queryByText('admin.contactPage.title')).toBeNull();
+    expect(screen.queryByText('Kontakt poruke')).toBeNull();
     expect(screen.getByRole('button', { name: 'Označi sve pročitanim' })).toBeInTheDocument();
     expect(screen.getByTestId('row-msg1')).toBeInTheDocument();
   });
