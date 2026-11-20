@@ -48,7 +48,9 @@ export function AdminPageShell({
         <div className="mb-3 flex items-center justify-end gap-3 text-xs text-text-muted">
           <span>{t('admin.home.lastUpdated', { defaultValue: 'Ažurirano u {{time}}', time: lastUpdated })}</span>
           <Button variant="outline" size="sm" onClick={onRefresh} disabled={Boolean(isFetching)}>
-            {isFetching ? t('admin.common.loading') : t('admin.home.refresh', { defaultValue: 'Osvježi' })}
+            {isFetching
+              ? (t('admin.common.loading', { defaultValue: 'Učitavanje…' }) as string)
+              : (t('admin.home.refresh', { defaultValue: 'Osvježi' }) as string)}
           </Button>
         </div>
       ) : null}

@@ -645,7 +645,22 @@
       "publicLive": "Public live view"
     },
     "contactPage": {
-      "title": "Contact messages"
+      "title": "Contact messages",
+      "markAllRead": "Mark all as read",
+      "unreadOnly": "Unread only",
+      "empty": "No messages.",
+      "searchPlaceholder": "Search",
+      "deleteTitle": "Delete message?",
+      "deleteDesc": "From: {{name}}",
+      "read": "Read",
+      "new": "New",
+      "header": {
+        "name": "Name",
+        "email": "Email",
+        "subject": "Subject",
+        "status": "Status",
+        "date": "Date"
+      }
     },
     "galleryBatch": {
       "partial": "Some photos may already have been added; the operation did not complete. The gallery has been refreshed. Review it before selecting again; after an uncertain network response a photo may appear later.",
@@ -863,7 +878,10 @@
     },
     "contactMessage": {
       "date": "Date",
-      "message": "Message"
+      "message": "Message",
+      "from": "From",
+      "titleFallback": "Contact message",
+      "markRead": "Mark as read"
     },
     "newsCategories": {
       "newPlaceholder": "New category name",

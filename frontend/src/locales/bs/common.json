@@ -645,7 +645,22 @@
       "publicLive": "Javni live prikaz"
     },
     "contactPage": {
-      "title": "Kontakt poruke"
+      "title": "Kontakt poruke",
+      "markAllRead": "Označi sve pročitanim",
+      "unreadOnly": "Samo nepročitane",
+      "empty": "Nema poruka.",
+      "searchPlaceholder": "Pretraži",
+      "deleteTitle": "Obrisati poruku?",
+      "deleteDesc": "Od: {{name}}",
+      "read": "Pročitano",
+      "new": "Novo",
+      "header": {
+        "name": "Ime",
+        "email": "Email",
+        "subject": "Naslov",
+        "status": "Status",
+        "date": "Datum"
+      }
     },
     "galleryBatch": {
       "partial": "Neke fotografije možda su već dodane; dodavanje nije u potpunosti uspjelo. Galerija je osvježena. Pregledajte je prije ponovnog odabira; kod neizvjesnog mrežnog odgovora slika se može pojaviti i kasnije.",
@@ -863,7 +878,10 @@
     },
     "contactMessage": {
       "date": "Datum",
-      "message": "Poruka"
+      "message": "Poruka",
+      "from": "Od",
+      "titleFallback": "Kontakt poruka",
+      "markRead": "Označi kao pročitano"
     },
     "newsCategories": {
       "newPlaceholder": "Naziv nove kategorije",

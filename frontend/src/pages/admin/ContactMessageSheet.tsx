@@ -27,11 +27,11 @@ export function ContactMessageSheet({
     <AdminFormSheet
       open={open}
       onOpenChange={onOpenChange}
-      title={message.subject ?? 'Kontakt poruka'}
+      title={message.subject ?? (t('admin.contactMessage.titleFallback', { defaultValue: 'Kontakt poruka' }) as string)}
     >
       <dl className="space-y-4 text-sm">
         <div>
-          <dt className="text-text-muted">Od</dt>
+          <dt className="text-text-muted">{t('admin.contactMessage.from', { defaultValue: 'Od' })}</dt>
           <dd className="font-medium">
             <a href={`mailto:${message.email}`} className={adminLinkClass}>
               {message.name} &lt;{message.email}&gt;
@@ -39,17 +39,17 @@ export function ContactMessageSheet({
           </dd>
         </div>
         <div>
-          <dt className="text-text-muted">{t('admin.contactMessage.date')}</dt>
+          <dt className="text-text-muted">{t('admin.contactMessage.date', { defaultValue: 'Datum' }) as string}</dt>
           <dd>{formatDateTime(message.createdAt)}</dd>
         </div>
         <div>
-          <dt className="mb-1 text-text-muted">{t('admin.contactMessage.message')}</dt>
+          <dt className="mb-1 text-text-muted">{t('admin.contactMessage.message', { defaultValue: 'Poruka' }) as string}</dt>
           <dd className="whitespace-pre-wrap rounded-lg bg-surface p-4">{message.message}</dd>
         </div>
       </dl>
       {!message.isRead && (
         <Button className="mt-6 w-full" onClick={() => onMarkRead(message.id)} disabled={isMarking}>
-          Označi kao pročitano
+          {t('admin.contactMessage.markRead', { defaultValue: 'Označi kao pročitano' })}
         </Button>
       )}
     </AdminFormSheet>
