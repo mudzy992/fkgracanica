@@ -148,39 +148,15 @@
         },
         {
             "file": "frontend/src/pages/admin/EmailLogPanel.tsx",
-            "line": 31,
-            "kind": "disabled-ui",
-            "why": "Retry dugme je disabled dok isFetching=true — void refetch() grana nije dostižna; test pokriva enabled klik (F-04 EmailLog error)."
-        },
-        {
-            "file": "frontend/src/pages/admin/EmailLogPanel.tsx",
             "line": 75,
             "kind": "disabled-ui",
             "why": "Osvježi dugme je disabled dok isFetching=true — void refetch() grana nije dostižna; test pokriva enabled klik (F-04 EmailLog success)."
-        },
-        {
-            "file": "frontend/src/pages/admin/NotificationsPage.tsx",
-            "line": 33,
-            "kind": "disabled-ui",
-            "why": "Retry dugme u AdminPageShell je disabled dok isFetching=true — onRetry void refetch() grana nije dostižna; test pokriva enabled klik (F-04 Notifications error)."
-        },
-        {
-            "file": "frontend/src/pages/admin/NotificationsPage.tsx",
-            "line": 38,
-            "kind": "disabled-ui",
-            "why": "Osvježi dugme u AdminPageShell je disabled dok isFetching=true — onRefresh void refetch() grana nije dostižna; test pokriva enabled klik (F-04 Notifications success)."
         },
         {
             "file": "frontend/src/pages/admin/LivePendingPage.tsx",
             "line": 26,
             "kind": "disabled-ui",
             "why": "Osvježi dugme u AdminPageShell je disabled dok isFetching=true — onRefresh void refetch() grana nije dostižna; test pokriva enabled klik (F-04 LivePending success)."
-        },
-        {
-            "file": "frontend/src/pages/admin/LivePendingPage.tsx",
-            "line": 27,
-            "kind": "disabled-ui",
-            "why": "Retry dugme u AdminPageShell je disabled dok isFetching=true — onRetry void refetch() grana nije dostižna; test pokriva enabled klik (F-04 LivePending error)."
         },
         {
             "file": "frontend/src/hooks/use-notifications.ts",
@@ -199,6 +175,24 @@
             "line": 108,
             "kind": "disabled-ui",
             "why": "Paginacija se ne renderuje kad je totalPages <=1 — test pokriva totalPages=1 (bez paginacije) i totalPages=2 (sa paginacijom), ali V8 prijavljuje neupisanu granu za uslov data?.meta && totalPages>1 u success putanji; pokriveno kroz paginaciju test."
+        },
+        {
+            "file": "frontend/src/pages/admin/ContactAdminPage.tsx",
+            "line": 151,
+            "kind": "disabled-ui",
+            "why": "Osvježi dugme u lastUpdatedBar je disabled dok isFetching=true — void refetch() grana nije dostižna; test pokriva enabled klik (F-05 Contact success)."
+        },
+        {
+            "file": "frontend/src/pages/admin/ContactAdminPage.tsx",
+            "line": 169,
+            "kind": "disabled-ui",
+            "why": "Retry dugme u embedded isError je disabled dok isFetching=true — void refetch() grana nije dostižna; test pokriva enabled klik (F-05 Contact embedded error)."
+        },
+        {
+            "file": "frontend/src/pages/admin/ContactAdminPage.tsx",
+            "line": 232,
+            "kind": "disabled-ui",
+            "why": "Osvježi/Retry dugme u AdminPageShell je disabled dok isFetching=true — onRefresh/onRetry void refetch() grana nije dostižna; test pokriva enabled klik (F-05 Contact standalone)."
         }
     ]
 }
