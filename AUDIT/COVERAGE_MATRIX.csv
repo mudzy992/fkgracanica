@@ -2276,6 +2276,7 @@
 "mobile/src/lib/mob-batch91.test.ts","mobile","src","114","pokriveno testom","P-MOB04","Mobile","2026-11-20"
 "mobile/src/lib/mob-batch92.test.ts","mobile","src","92","pokriveno testom","P-MOB05","Mobile","2026-11-20"
 "mobile/src/lib/mob-batch93.test.ts","mobile","src","106","pokriveno testom","P-MOB06","Mobile","2026-11-20"
+"mobile/src/lib/mob-batch94.test.ts","mobile","src","98","pokriveno testom","P-MOB07","Mobile","2026-11-20"
 "mobile/src/lib/open-maps.ts","mobile","src","19","pokriveno testom","P-MOB43: pokriveno (openMaps)","Mobile","2026-11-16"
 "mobile/src/lib/permissions.ts","mobile","src","51","pokriveno testom","P-MOB47: pokriveno (hasPermission/isStaffUser)","Mobile","2026-11-16"
 "mobile/src/lib/push.ts","mobile","src","68","pokriveno testom","P-MOB52: pokriveno (registerPushDeepLinks/ensurePushRegistration/clearPushRegistration)","Mobile","2026-11-17"
