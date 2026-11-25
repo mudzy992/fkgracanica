@@ -1,0 +1,93 @@
+import { describe, expect, it } from 'vitest';
+import { getApiErrorMessage } from './api-error';
+import { activeSeasonCompetitions, pickDefaultParticipation } from './club-participation';
+import { mediaUrl } from './media';
+import { hasAnyPermission, hasPermission, isStaffUser } from './permissions';
+import { parseYouTubeId } from './youtube-id';
+import { youtubeEmbedSrc } from './youtube-embed';
+
+describe('mob-batch204 — P-MOB117 api/club/media/permission/youtube (test-only)', () => {
+  it('getApiErrorMessage string array', () => {
+    expect(getApiErrorMessage({ isAxiosError: true, response: { data: { message: 'Oops' } } } as any, 'fb')).toBe('Oops');
+    expect(getApiErrorMessage({ isAxiosError: true, response: { data: { message: ['a', 'b'] } } } as any, 'fb')).toBe('a, b');
+  });
+  it('getApiErrorMessage fallback', () => {
+    expect(getApiErrorMessage(new Error('boom'), 'fb')).toBe('boom');
+    expect(getApiErrorMessage(null, 'fb')).toBe('fb');
+    expect(getApiErrorMessage(new Error(''), 'fb')).toBe('fb');
+  });
+  it('getApiErrorMessage numeric', () => {
+    const err = Object.assign(new Error('m'), { isAxiosError: true, response: { data: { message: 404 } } });
+    expect(getApiErrorMessage(err, 'fb')).toBe('m');
+  });
+  it('pickDefaultParticipation newest', () => {
+    const items: any[] = [
+      { seasonId: '1', seasonName: 'S', yearStart: 2021, isActive: true, competitionId: 'c1', competitionName: 'Kup', isLeague: false },
+      { seasonId: '2', seasonName: 'S', yearStart: 2023, isActive: true, competitionId: 'c2', competitionName: 'Liga', isLeague: true },
+      { seasonId: '3', seasonName: 'S', yearStart: 2024, isActive: true, competitionId: 'c3', competitionName: 'Liga', isLeague: true },
+    ];
+    expect(pickDefaultParticipation(items)?.seasonId).toBe('3');
+  });
+  it('pickDefaultParticipation fallback', () => {
+    const b: any[] = [{ seasonId: 'a', seasonName: 'S', yearStart: 2020, isActive: false, competitionId: 'c1', competitionName: 'A', isLeague: true }, { seasonId: 'b', seasonName: 'S', yearStart: 2021, isActive: false, competitionId: 'c2', competitionName: 'B', isLeague: true }];
+    expect(pickDefaultParticipation(b)?.seasonId).toBe('b');
+    expect(pickDefaultParticipation([])).toBeUndefined();
+  });
+  it('activeSeasonCompetitions', () => {
+    const items: any[] = [
+      { seasonId: '1', seasonName: 'S', yearStart: 2023, isActive: true, competitionId: 'c1', competitionName: 'Z Kup', isLeague: false },
+      { seasonId: '2', seasonName: 'S', yearStart: 2023, isActive: true, competitionId: 'c2', competitionName: 'A Liga', isLeague: true },
+    ];
+    expect(activeSeasonCompetitions(items)[0].isLeague).toBe(true);
+    expect(activeSeasonCompetitions(items).length).toBe(2);
+  });
+  it('mediaUrl null http', () => {
+    expect(mediaUrl(null)).toBeNull();
+    expect(mediaUrl('')).toBeNull();
+    expect(mediaUrl('http://cdn/x.jpg')).toBe('http://cdn/x.jpg');
+    expect(mediaUrl('https://cdn/x.jpg')).toBe('https://cdn/x.jpg');
+  });
+  it('mediaUrl variants', () => {
+    expect(mediaUrl('originals/p.jpg', 'thumb')).toContain('thumbs/p.webp');
+    expect(mediaUrl('originals/p.jpg', 'medium')).toContain('medium/p.webp');
+    expect(mediaUrl('originals/p.jpg', 'original')).toContain('originals/p.jpg');
+  });
+  it('mediaUrl uploads', () => {
+    expect(mediaUrl('uploads/originals/a.jpg', 'thumb')).toContain('thumbs/a.webp');
+    expect(mediaUrl('./originals/b.jpg', 'medium')).toContain('medium/b.webp');
+    expect(mediaUrl('other/path.jpg', 'thumb')).toContain('other/path.jpg');
+  });
+  it('hasPermission', () => {
+    const u: any = { permissions: ['news.manage'] };
+    expect(hasPermission(u, 'news.manage')).toBe(true);
+    expect(hasPermission(u, 'x')).toBe(false);
+    expect(hasPermission(null, 'x')).toBe(false);
+  });
+  it('hasAnyPermission', () => {
+    const u: any = { permissions: ['a', 'b'] };
+    expect(hasAnyPermission(u, ['x', 'a'])).toBe(true);
+    expect(hasAnyPermission(u, ['x', 'y'])).toBe(false);
+    expect(hasAnyPermission(null, ['a'])).toBe(false);
+  });
+  it('isStaffUser', () => {
+    expect(isStaffUser({ permissions: ['news.manage'] } as any)).toBe(true);
+    expect(isStaffUser({ permissions: ['random'] } as any)).toBe(false);
+    expect(isStaffUser(undefined)).toBe(false);
+  });
+  it('parseYouTubeId basic', () => {
+    expect(parseYouTubeId('https://youtu.be/abc123')).toBe('abc123');
+    expect(parseYouTubeId('https://www.youtube.com/watch?v=vid999')).toBe('vid999');
+    expect(parseYouTubeId('https://www.youtube.com/embed/xyz')).toBe('xyz');
+  });
+  it('parseYouTubeId live shorts invalid', () => {
+    expect(parseYouTubeId('https://www.youtube.com/live/live1')).toBe('live1');
+    expect(parseYouTubeId('https://www.youtube.com/shorts/s2')).toBe('s2');
+    expect(parseYouTubeId('bad url')).toBeNull();
+    expect(parseYouTubeId('https://example.com/watch?v=123')).toBeNull();
+  });
+  it('youtubeEmbedSrc', () => {
+    expect(youtubeEmbedSrc('vid123', true)).toContain('mute=1');
+    expect(youtubeEmbedSrc('vid123', false)).toContain('mute=0');
+    expect(youtubeEmbedSrc('vid123')).toContain('autoplay=1');
+  });
+});
