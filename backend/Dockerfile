@@ -12,13 +12,17 @@ RUN apt-get update && apt-get install -y --no-install-recommends openssl && rm -
 COPY package.json package-lock.json ./
 COPY backend/package.json ./backend/
 COPY frontend/package.json ./frontend/
+COPY frontend-next/package.json ./frontend-next/
 COPY mobile/package.json ./mobile/
 # P-CI04-2 napredno (a) BuildKit cache — `npm ci` kešira tarball-ove u
 # BuildKit cache mountu (`/root/.npm`), pa Coolify redeploy bez promjene
 # locka preskače download (2-3 min → ~20 s). Zahtijeva DOCKER_BUILDKIT=1
 # (Coolify ga pali automatski od Docker 23; lokalno `DOCKER_BUILDKIT=1`
 # `docker compose build`). Bez BuildKita fallback je običan `npm ci`.
-RUN --mount=type=cache,target=/root/.npm npm ci --no-audit --no-fund
+# FIX 2026-11-27: `node:22-bookworm-slim` ima npm@10 koji ne hoistuje
+# `next@16.4.6`/`vite@8.4.0` ispravno (Missing react). Lokalni CI koristi
+# `npx npm@11 install --legacy-peer-deps` — Docker mora isto (npx npm@11 ci).
+RUN --mount=type=cache,target=/root/.npm npx npm@11 ci --no-audit --no-fund
 
 FROM deps AS build
 WORKDIR /app
@@ -50,6 +54,7 @@ COPY --from=build /app/package.json ./package.json
 COPY --from=build /app/package-lock.json ./package-lock.json
 COPY --from=build /app/backend/package.json ./backend/package.json
 COPY --from=build /app/frontend/package.json ./frontend/package.json
+COPY --from=build /app/frontend-next/package.json ./frontend-next/package.json
 COPY --from=build /app/mobile/package.json ./mobile/package.json
 COPY --from=build /app/node_modules ./node_modules
 # BE-09c/P-B09c-3: devDependencies (jest, eslint, ts-node, typescript) ne idu u

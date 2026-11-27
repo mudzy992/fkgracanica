@@ -17,10 +17,12 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 COPY backend/package.json ./backend/
 COPY frontend/package.json ./frontend/
+COPY frontend-next/package.json ./frontend-next/
 COPY mobile/package.json ./mobile/
 
 # P-CI04-2 napredno (a) BuildKit cache — isti kao backend/Dockerfile.
-RUN --mount=type=cache,target=/root/.npm npm ci --no-audit --no-fund
+# FIX 2026-11-27: npx npm@11 za next@16.4.6 hoist bug (kao backend).
+RUN --mount=type=cache,target=/root/.npm npx npm@11 ci --no-audit --no-fund
 
 COPY frontend ./frontend
 
