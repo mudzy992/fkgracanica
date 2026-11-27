@@ -22,9 +22,9 @@ COPY frontend-next/package.json ./frontend-next/
 COPY mobile/package.json ./mobile/
 
 # P-CI04-2 napredno (a) BuildKit cache — isti kao backend/Dockerfile.
-# FIX 2026-11-27: npx npm@11 za next@16.4.6 hoist bug (kao backend).
+# FIX 2026-11-27: npm i -g npm@11 za next@16.4.6 hoist bug (kao backend) — npx npm@11 u BuildKit mountu ostaje npm@10 pa EUSAGE (Coolify 16:38).
 # FIX 2026-11-27: bookworm-slim umjesto alpine — alpine nema openssl/python za bcrypt/msgpackr (backend deps u root locku) pa `npm ci` pada sa exit 1.
-RUN --mount=type=cache,target=/root/.npm bash -c 'npx npm@11 ci --legacy-peer-deps --no-audit --no-fund --loglevel=verbose 2>&1 | tee /tmp/npm.log; test ${PIPESTATUS[0]} -eq 0 || (echo "=== NPM CI FAILED ==="; cat /tmp/npm.log; echo "=== NPM DEBUG LOGS ==="; cat /root/.npm/_logs/*.log 2>/dev/null | tail -n 500; exit 1)'
+RUN --mount=type=cache,target=/root/.npm npm install -g npm@11 --no-audit --no-fund && npm ci --legacy-peer-deps --no-audit --no-fund
 
 COPY frontend ./frontend
 
