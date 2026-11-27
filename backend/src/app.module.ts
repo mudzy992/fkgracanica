@@ -45,6 +45,8 @@ import { ShowcaseModule } from './showcase/showcase.module';
 import { AppReleasesModule } from './app-releases/app-releases.module';
 import { PublicAnalyticsModule } from './public-analytics/public-analytics.module';
 import { EmailLogModule } from './email-log/email-log.module';
+import { ShopModule } from './shop/shop.module';
+import { LoyaltyModule } from './loyalty/loyalty.module';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
 import configuration from './config/configuration';
@@ -114,6 +116,8 @@ import { validateEnv } from './config/env.validate';
     AppReleasesModule,
     PublicAnalyticsModule,
     EmailLogModule,
+    ShopModule,
+    LoyaltyModule,
   ],
   providers: [
     { provide: APP_FILTER, useClass: HttpExceptionFilter },
