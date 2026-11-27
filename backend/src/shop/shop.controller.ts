@@ -1,8 +1,11 @@
-import { Body, Controller, Get, Post, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { ShopService } from './shop.service';
 import { Public } from '../common/decorators/public.decorator';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
+import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
+import { PermissionsGuard } from '../common/guards/permissions.guard';
+import { RequirePermissions } from '../common/decorators/permissions.decorator';
 import type { AuthUser } from '../common/types/auth-user.type';
 
 @ApiTags('shop')
@@ -12,25 +15,44 @@ export class ShopController {
 
   @Get('products')
   @Public()
-  findAll() {
+  async findAll() {
     return this.service.findAll();
   }
 
   @Post('checkout')
-  checkout(
+  @UseGuards(JwtAuthGuard)
+  async checkout(
     @CurrentUser() user: AuthUser,
     @Body() body: { productIds: string[]; provider?: string },
   ) {
     const ids = Array.isArray(body.productIds) ? body.productIds : [];
-    return {
-      userId: user.id,
-      ...this.service.checkout(ids, body.provider),
-    };
+    return this.service.checkout(ids, body.provider, user.id);
   }
 
   @Get('cart')
   cart(@Query('ids') ids?: string) {
     const list = ids ? ids.split(',').filter(Boolean) : [];
     return this.service.checkout(list);
+  }
+
+  @Post('admin/products')
+  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @RequirePermissions('shop.manage')
+  adminCreate(@Body() body: { name: string; price: number; tag?: string }) {
+    return this.service.adminCreate(body);
+  }
+
+  @Patch('admin/products/:id')
+  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @RequirePermissions('shop.manage')
+  adminUpdate(@Param('id') id: string, @Body() body: { name?: string; price?: number; tag?: string; isActive?: boolean }) {
+    return this.service.adminUpdate(id, body);
+  }
+
+  @Delete('admin/products/:id')
+  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @RequirePermissions('shop.manage')
+  adminDelete(@Param('id') id: string) {
+    return this.service.adminDelete(id);
   }
 }
