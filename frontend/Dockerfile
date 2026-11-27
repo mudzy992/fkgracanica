@@ -9,9 +9,10 @@
 # je padao na Coolify deployu. Sada je lock jedan (root) i identičan onome koji
 # CI koristi, pa se build i testovi nikad ne razilaze.
 
-FROM node:22-alpine AS builder
+FROM node:22-bookworm-slim AS builder
 
 WORKDIR /app
+RUN apt-get update && apt-get install -y --no-install-recommends openssl && rm -rf /var/lib/apt/lists/*
 
 # Manifesti svih workspace-a: `npm ci` validira cijeli tree iz root locka.
 COPY package.json package-lock.json ./
@@ -22,6 +23,7 @@ COPY mobile/package.json ./mobile/
 
 # P-CI04-2 napredno (a) BuildKit cache — isti kao backend/Dockerfile.
 # FIX 2026-11-27: npx npm@11 za next@16.4.6 hoist bug (kao backend).
+# FIX 2026-11-27: bookworm-slim umjesto alpine — alpine nema openssl/python za bcrypt/msgpackr (backend deps u root locku) pa `npm ci` pada sa exit 1.
 RUN --mount=type=cache,target=/root/.npm npx npm@11 ci --legacy-peer-deps --no-audit --no-fund
 
 COPY frontend ./frontend
