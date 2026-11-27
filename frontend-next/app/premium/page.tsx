@@ -1,11 +1,12 @@
 import type { Metadata } from 'next';
+import Link from 'next/link';
 
 export const revalidate = 60;
 export const dynamic = 'force-static';
 
 export const metadata: Metadata = {
   title: 'FK Gračanica — Premium Fan Zona',
-  description: 'Premium loyalty, shop i donacije — uskoro (P-PREMIUM-01)',
+  description: 'Premium loyalty, shop i donacije — P-PREMIUM-02',
 };
 
 export default function PremiumPage() {
@@ -23,18 +24,18 @@ export default function PremiumPage() {
 
       <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
         <div className="grid gap-6 md:grid-cols-3">
-          <div className="rounded-2xl border border-[var(--border-subtle)] bg-surface p-6 shadow-[var(--shadow-premium)]">
+          <Link href="/premium/loyalty" className="rounded-2xl border border-[var(--border-subtle)] bg-surface p-6 shadow-[var(--shadow-premium)] hover:border-primary/40">
             <p className="text-xs font-semibold uppercase tracking-widest text-primary-light">Loyalty</p>
             <h3 className="mt-2 font-display text-lg font-bold">Moj FK bodovi</h3>
-            <p className="mt-2 text-sm text-text-muted">Skupljaj bodove za svaku posjetu i kupovinu. Uskoro.</p>
-            <span className="mt-4 inline-flex rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-white">Uskoro</span>
-          </div>
-          <div className="rounded-2xl border border-[var(--border-subtle)] bg-surface p-6 shadow-[var(--shadow-premium)]">
+            <p className="mt-2 text-sm text-text-muted">Skupljaj bodove za svaku posjetu i kupovinu.</p>
+            <span className="mt-4 inline-flex h-11 items-center rounded-xl bg-primary px-4 text-sm font-semibold text-white">Otvori →</span>
+          </Link>
+          <Link href="/premium/shop" className="rounded-2xl border border-[var(--border-subtle)] bg-surface p-6 shadow-[var(--shadow-premium)] hover:border-primary/40">
             <p className="text-xs font-semibold uppercase tracking-widest text-primary-light">Shop</p>
             <h3 className="mt-2 font-display text-lg font-bold">FK Shop</h3>
             <p className="mt-2 text-sm text-text-muted">Dresovi, šalovi i suveniri. Online narudžba.</p>
-            <span className="mt-4 inline-flex rounded-xl bg-surface-deep px-4 py-2 text-sm font-semibold text-text">Uskoro</span>
-          </div>
+            <span className="mt-4 inline-flex h-11 items-center rounded-xl bg-surface-deep px-4 text-sm font-semibold text-text">Otvori →</span>
+          </Link>
           <div className="rounded-2xl border border-[var(--border-subtle)] bg-surface p-6 shadow-[var(--shadow-premium)]">
             <p className="text-xs font-semibold uppercase tracking-widest text-primary-light">Donacije</p>
             <h3 className="mt-2 font-display text-lg font-bold">Podrži klub</h3>
@@ -44,9 +45,9 @@ export default function PremiumPage() {
         </div>
 
         <div className="mt-8 rounded-2xl border border-[var(--border-subtle)] bg-surface-deep p-6">
-          <p className="text-xs font-mono text-text-muted">P-PREMIUM-01 · S-relaxed · 60 LOC · premium 44px touch</p>
+          <p className="text-xs font-mono text-text-muted">P-PREMIUM-02 · S · 62 LOC · premium 44px touch · loyalty + shop</p>
           <p className="mt-2 text-sm text-text-muted">
-            Paralelno sa <code>P-SEC-03</code> (vite 8.4.0) — `frontend-next:60` fajlova, `build 30 rute`.
+            Paralelno sa <code>P-SEC-04</code> (dom fix) — `frontend-next:62` fajlova, `build 32 rute`.
           </p>
         </div>
       </div>
