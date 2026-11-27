@@ -5,7 +5,7 @@
 # INF-01/F-019). Frontend je već prebačen na root u CI-04; backend je bio
 # posljednji standalone lock (P-CI04-1).
 
-FROM node:22-bookworm-slim AS deps
+FROM node:24-bookworm-slim AS deps
 WORKDIR /app
 RUN apt-get update && apt-get install -y --no-install-recommends openssl && rm -rf /var/lib/apt/lists/*
 # Manifesti svih workspace-a: `npm ci` validira cijeli tree iz root locka.
@@ -37,7 +37,7 @@ COPY backend ./backend
 RUN npm run db:generate
 RUN npm run build -w backend
 
-FROM node:22-bookworm-slim AS runner
+FROM node:24-bookworm-slim AS runner
 WORKDIR /app
 ENV NODE_ENV=production
 ENV LANG=C.UTF-8

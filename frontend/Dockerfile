@@ -9,7 +9,7 @@
 # je padao na Coolify deployu. Sada je lock jedan (root) i identičan onome koji
 # CI koristi, pa se build i testovi nikad ne razilaze.
 
-FROM node:22-bookworm-slim AS builder
+FROM node:24-bookworm-slim AS builder
 
 WORKDIR /app
 RUN apt-get update && apt-get install -y --no-install-recommends openssl && rm -rf /var/lib/apt/lists/*
@@ -38,7 +38,7 @@ ENV VITE_SOCKET_IO_PATH=$VITE_SOCKET_IO_PATH
 RUN npm run build -w frontend
 
 
-FROM node:22-alpine AS runner
+FROM node:24-alpine AS runner
 
 WORKDIR /app
 
