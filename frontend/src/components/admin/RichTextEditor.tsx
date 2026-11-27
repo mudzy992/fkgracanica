@@ -10,6 +10,7 @@ import { Dialog, DialogBody, DialogHeader } from '../ui/dialog';
 import { richTextExtensions } from './rich-text-extensions';
 import { RichTextToolbar } from './RichTextToolbar';
 import { getStoredHtml, parseStoredHtml, sanitizePastedIframes } from './secure-youtube';
+import { safeEditorYoutubeSrc } from './secure-youtube-url';
 
 interface Props {
   value: string;
@@ -74,6 +75,22 @@ export function RichTextEditor({ value, onChange, className, tall }: Props) {
             return true;
           }
           setPasteUnavailable(false);
+          // Single YouTube URL as plain text should become embed, not link.
+          // Handle explicitly to avoid Link autolink race.
+          const trimmed = text.trim();
+          const youtubeSrc = trimmed && !html && !asPlain ? safeEditorYoutubeSrc(trimmed) : null;
+          if (youtubeSrc) {
+            event.preventDefault();
+            const { state, dispatch } = view;
+            const youtubeType = state.schema.nodes.youtube;
+            if (youtubeType) {
+              const node = youtubeType.create({ src: youtubeSrc });
+              dispatch(state.tr.replaceSelectionWith(node).scrollIntoView());
+            } else {
+              view.pasteText(text, event);
+            }
+            return true;
+          }
           if (view.composing || /<iframe[\s/>]/i.test(html)) {
             // Avoid native/fallback insertion even on browsers with a broken Clipboard API.
             event.preventDefault();
