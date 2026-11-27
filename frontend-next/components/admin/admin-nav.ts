@@ -41,6 +41,7 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
   {
     label: 'Monetizacija',
     items: [
+      { to: '/admin/finance', label: 'Finansije', perms: ['finance.read'] },
       { to: '/admin/clanstvo-admin', label: 'Članstvo', perms: ['membership.manage'] },
       { to: '/admin/ulaznice-admin', label: 'Ulaznice', perms: ['ticketing.manage'] },
       { to: '/admin/shop', label: 'Shop', perms: ['shop.manage'] },
