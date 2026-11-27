@@ -457,6 +457,7 @@
 "backend/test/youtube-optional.e2e-spec.ts","backend","test","144","pokriveno testom","P-FE06-20: stvarni HTTP i izolovani PG, 3 opcionalna ulaza | CI ✅ 41908944135","FE-06","2026-11-04"
 "docker-compose.yml","infra","root","227","popravljeno","B-CI04-02: uklonjen DATABASE_URL build-arg (Coolify ga izvozi u runtime env)","CI-04","2026-11-03"
 "frontend-next/app/admin/analitika/page.tsx","frontend-next","app","98","nepregledano","","",""
+"frontend-next/app/admin/audit/page.tsx","frontend-next","app","56","nepregledano","","",""
 "frontend-next/app/admin/finance/page.tsx","frontend-next","app","92","nepregledano","","",""
 "frontend-next/app/admin/galerija/page.tsx","frontend-next","app","115","pokriveno testom","P-DASH-02: /admin/galerija Moderator gallery queue PENDING→PUBLISHED gallery.approve (115)","DASH-02","2026-11-27"
 "frontend-next/app/admin/layout.tsx","frontend-next","app","25","pokriveno testom","P-DASH-01: /admin layout — QueryClient+AuthProvider (premium S-relaxed, 25)","DASH-01","2026-11-27"
