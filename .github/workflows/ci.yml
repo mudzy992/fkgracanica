@@ -78,7 +78,7 @@ jobs:
             echo "Početni coverage baseline — nema prethodnog commita."
           fi
       - name: npm ci (root lock — F-015 popravljen u CI-01)
-        run: npm ci --legacy-peer-deps
+        run: npx npm@11 ci --legacy-peer-deps --no-audit --no-fund
       - name: prisma generate (Docker build radi ovo na buildu)
         run: npm run db:generate
       - name: prisma validate
@@ -213,7 +213,7 @@ jobs:
           node-version: 22
           cache: npm
       - name: npm ci
-        run: npm ci --legacy-peer-deps
+        run: npx npm@11 ci --legacy-peer-deps --no-audit --no-fund
       - name: Install Chromium and system dependencies
         working-directory: frontend
         run: |
@@ -291,7 +291,7 @@ jobs:
           node-version: 22
           cache: npm
       - name: npm ci
-        run: npm ci --legacy-peer-deps
+        run: npx npm@11 ci --legacy-peer-deps --no-audit --no-fund
       - name: prisma generate
         run: npm run db:generate
       - name: prisma migrate deploy
@@ -369,7 +369,7 @@ jobs:
             echo "$key=$value" >> "$GITHUB_ENV"
           done
       - name: npm ci
-        run: npm ci --legacy-peer-deps
+        run: npx npm@11 ci --legacy-peer-deps --no-audit --no-fund
       - name: Instaliraj Chromium i sistemske zavisnosti
         working-directory: frontend
         run: |
