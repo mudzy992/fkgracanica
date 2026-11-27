@@ -464,6 +464,7 @@
 "frontend-next/app/admin/live/page.tsx","frontend-next","app","109","pokriveno testom","P-DASH-04 + P-BUG-01: /admin/live Komentator semafor + start error Card (109) — B-FE06-28","DASH-04","2026-11-27"
 "frontend-next/app/admin/mediji/page.tsx","frontend-next","app","81","pokriveno testom","P-DASH-03: /admin/mediji Writer media.read+upload biblioteka (81)","DASH-03","2026-11-27"
 "frontend-next/app/admin/page.tsx","frontend-next","app","113","pokriveno testom","P-DASH-01: /admin Dashboard KPI 15 — fetch /dashboard/kpis ISR-off stale30s premium Card (113)","DASH-01","2026-11-27"
+"frontend-next/app/admin/platform-status/page.tsx","frontend-next","app","3","nepregledano","","",""
 "frontend-next/app/admin/profil/page.tsx","frontend-next","app","50","pokriveno testom","P-DASH-06: /admin/profil Član 0 + sve role — profil + linkovi /clanstvo /ulaznice (50)","DASH-06","2026-11-27"
 "frontend-next/app/admin/scan/page.tsx","frontend-next","app","81","pokriveno testom","P-DASH-05: /admin/scan Redar admissions.scan QR validate/inspect (81)","DASH-05","2026-11-27"
 "frontend-next/app/admin/shop/page.tsx","frontend-next","app","82","pokriveno testom","P-PREMIUM-05: admin shop CRUD shop.manage (81)","PREMIUM-05","2026-11-27"
