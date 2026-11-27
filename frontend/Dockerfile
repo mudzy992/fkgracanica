@@ -22,7 +22,7 @@ COPY mobile/package.json ./mobile/
 
 # P-CI04-2 napredno (a) BuildKit cache — isti kao backend/Dockerfile.
 # FIX 2026-11-27: npx npm@11 za next@16.4.6 hoist bug (kao backend).
-RUN --mount=type=cache,target=/root/.npm npx npm@11 ci --no-audit --no-fund
+RUN --mount=type=cache,target=/root/.npm npx npm@11 ci --legacy-peer-deps --no-audit --no-fund
 
 COPY frontend ./frontend
 

@@ -22,7 +22,7 @@ COPY mobile/package.json ./mobile/
 # FIX 2026-11-27: `node:22-bookworm-slim` ima npm@10 koji ne hoistuje
 # `next@16.4.6`/`vite@8.4.0` ispravno (Missing react). Lokalni CI koristi
 # `npx npm@11 install --legacy-peer-deps` — Docker mora isto (npx npm@11 ci).
-RUN --mount=type=cache,target=/root/.npm npx npm@11 ci --no-audit --no-fund
+RUN --mount=type=cache,target=/root/.npm npx npm@11 ci --legacy-peer-deps --no-audit --no-fund
 
 FROM deps AS build
 WORKDIR /app
