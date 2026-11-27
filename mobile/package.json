@@ -16,7 +16,7 @@
         "@tiptap/react": "3.35.0",
         "@tiptap/starter-kit": "3.35.0",
         "axios": "^1.18.1",
-        "expo": "~57.0.16",
+        "expo": "^58.1.0",
         "expo-application": "~57.0.2",
         "expo-build-properties": "~57.0.14",
         "expo-camera": "~57.0.4",
@@ -31,7 +31,7 @@
         "expo-linking": "~57.0.7",
         "expo-media-library": "~57.0.4",
         "expo-notifications": "~57.0.14",
-        "expo-router": "~57.0.16",
+        "expo-router": "^58.0.33",
         "expo-screen-orientation": "~57.0.1",
         "expo-secure-store": "~57.0.1",
         "expo-sharing": "~57.0.15",
@@ -52,10 +52,10 @@
         "socket.io-client": "^4.8.3"
     },
     "devDependencies": {
+        "@types/node": "^20.0.0",
         "@types/react": "~19.2.2",
         "typescript": "~6.0.3",
-        "vitest": "5.1.0",
-        "@types/node": "^20.0.0"
+        "vitest": "5.1.0"
     },
     "scripts": {
         "start": "expo start",
