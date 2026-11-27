@@ -16,3 +16,6 @@ frontend/node_modules/
 mobile/node_modules/
 .cursor/reference/
 *.apk
+.next/
+frontend-next/.next/
+frontend-next/node_modules/

@@ -4,7 +4,8 @@
   "workspaces": [
     "backend",
     "frontend",
-    "mobile"
+    "mobile",
+    "frontend-next"
   ],
   "dependencies": {
     "react": "19.2.3",
@@ -57,6 +58,8 @@
     "db:migrate": "npm run prisma:migrate -w backend",
     "db:seed": "npm run prisma:seed -w backend",
     "db:seed:rbac": "npm run prisma:seed:rbac -w backend",
-    "db:generate": "npm run prisma:generate -w backend"
+    "db:generate": "npm run prisma:generate -w backend",
+    "dev:frontend-next": "npm run dev -w frontend-next",
+    "build:frontend-next": "npm run build -w frontend-next"
   }
 }

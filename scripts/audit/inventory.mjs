@@ -29,6 +29,7 @@ const EXCLUDE_DIRS = [
   { re: /^frontend\/public(\/|$)/, reason: 'statički web resursi (PWA/ikone) — ne izvorni kod' },
   { re: /^frontend\/src\/assets(\/|$)/, reason: 'statički resursi frontendа' },
   { re: /(^|\/)\.expo(\/|$)/, reason: 'generisani Expo cache' },
+  { re: /(^|\/)\.next(\/|$)/, reason: 'Next.js build cache (Turbopack)' },
 ];
 
 /** Eksplicitni izuzeci po fajlu (regex na relativnu putanju) + razlog. */
@@ -51,7 +52,7 @@ const INCLUDE_NAMES = new Set(['Dockerfile', 'docker-compose.yml', 'pre-push', '
 
 function layerOf(rel) {
   const top = rel.split(sep)[0];
-  if (top === 'backend' || top === 'frontend' || top === 'mobile') return top;
+  if (top === 'backend' || top === 'frontend' || top === 'mobile' || top === 'frontend-next') return top;
   if (top === 'scripts') return 'scripts';
   return 'infra';
 }

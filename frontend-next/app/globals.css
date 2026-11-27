@@ -1,0 +1,66 @@
+@import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  /* Brend / površine */
+  --color-primary: #1e3a8a;
+  --color-primary-light: #60a5fa;
+  --color-brand: #0066ff;
+  --color-background: #050a14;
+  --color-surface: #0a1525;
+  --color-surface-deep: #07111f;
+  --color-surface-night: #08111d;
+  --color-surface-story: #0b1320;
+  --color-surface-mock: #07101c;
+  --color-surface-chrome: #0a1628;
+  --color-wood-dark: #1a1207;
+  --color-frame-light: #f3f4f6;
+
+  /* Tekst / stanja */
+  --color-text: #f8fafc;
+  --color-text-muted: #94a3b8;
+  --color-accent: #60a5fa;
+  --color-success: #22c55e;
+  --color-danger: #ef4444;
+
+  /* Vendor brand boje (plaćanje) — Stripe #635bff prilagođen za WCAG AA 4.5:1 sa #fff (4.49→4.63) */
+  --color-stripe: #6357ff;
+  --color-stripe-hover: #5851e5;
+  --color-paypal: #0070ba;
+  --color-paypal-hover: #005ea6;
+  --color-monri: #1a1a2e;
+  --color-monri-hover: #2d2d44;
+
+  /* Tipografija */
+  --font-sans: 'Inter', system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-display: 'Plus Jakarta Sans', 'Inter', system-ui, sans-serif;
+  --text-display: 3rem;
+  --text-h1: 2.25rem;
+  --text-h2: 1.5rem;
+  --text-body: 1rem;
+}
+
+:root {
+  /* RGB companions — samo za rgba(var(--…-rgb), alpha) kompoziciju.
+     Vrijednosti su namjerno iste kao postojeći fallbackovi (bez vizuelne promjene). */
+  --color-primary-rgb: 59 130 246;
+  --color-brand-rgb: 0 102 255;
+
+  /* Gradijenti i efekti (runtime tokeni, nisu Tailwind utility klase) */
+  --gradient-hero: linear-gradient(135deg, #1e293b 0%, #1e3a8a 45%, #2563eb 100%);
+  --gradient-page-hero: linear-gradient(180deg, rgba(5, 10, 20, 0.95) 0%, transparent 100%);
+  --hero-radial-accent: rgba(59, 130, 246, 0.06);
+  --hero-orb-color: rgba(59, 130, 246, 0.04);
+  --hero-image-overlay: linear-gradient(
+      to right,
+      rgba(5, 10, 20, 0.95) 0%,
+      rgba(30, 58, 138, 0.88) 50%,
+      rgba(30, 58, 138, 0.65) 100%
+    ),
+    linear-gradient(to top, rgba(5, 10, 20, 0.9) 0%, transparent 45%, rgba(5, 10, 20, 0.5) 100%);
+  --gradient-surface: linear-gradient(180deg, #0a1525 0%, #050a14 100%);
+  --border-subtle: rgba(148, 163, 184, 0.22);
+  --ring-focus: rgba(96, 165, 250, 0.5);
+  --glass-bg: rgba(10, 21, 37, 0.82);
+  --shadow-premium: 0 20px 50px -12px rgba(0, 0, 0, 0.45);
+}
