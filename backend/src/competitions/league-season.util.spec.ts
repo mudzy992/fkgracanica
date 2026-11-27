@@ -47,7 +47,7 @@ describe('league-season.util', () => {
   it('unsets isLeague on every other competition', async () => {
     const updateMany = jest.fn();
     await ensureSingleLeagueCompetition(
-      { competition: { updateMany } } as never,
+      { competition: { updateMany } },
       'keep-id',
     );
     expect(updateMany).toHaveBeenCalledWith({
@@ -63,7 +63,7 @@ describe('league-season.util', () => {
     ]);
     const picked = await findDefaultLeagueEdition({
       seasonCompetition: { findMany },
-    } as never);
+    });
     expect(findMany).toHaveBeenCalledWith({
       where: { competition: { isLeague: true } },
       include: { season: true, competition: true },
@@ -79,7 +79,7 @@ describe('league-season.util', () => {
     ]);
     const picked = await findDefaultLeagueEdition({
       seasonCompetition: { findMany },
-    } as never);
+    });
     expect(picked?.id).toBe('ed-new');
   });
 

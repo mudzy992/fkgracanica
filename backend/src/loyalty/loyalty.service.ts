@@ -20,25 +20,57 @@ export class LoyaltyService {
   async getPoints(userId: string) {
     let points = 870;
     try {
-      const agg = await (this.prisma as unknown as { loyaltyTransaction: { aggregate: (a: unknown) => Promise<{ _sum: { points: number | null } }> } }).loyaltyTransaction.aggregate({
+      const agg = await (
+        this.prisma as unknown as {
+          loyaltyTransaction: {
+            aggregate: (
+              a: unknown,
+            ) => Promise<{ _sum: { points: number | null } }>;
+          };
+        }
+      ).loyaltyTransaction.aggregate({
         where: { userId },
         _sum: { points: true },
       });
       if (agg._sum.points != null) points = agg._sum.points;
-    } catch {}
-    const tier = points >= 1500 ? TIERS[2] : points >= 500 ? TIERS[1] : TIERS[0];
+    } catch {
+      void 0;
+    }
+    const tier =
+      points >= 1500 ? TIERS[2] : points >= 500 ? TIERS[1] : TIERS[0];
     const next = points >= 1500 ? null : points >= 500 ? TIERS[2] : TIERS[1];
-    const progress = next ? Math.round(((points - tier.min) / (next.min - tier.min)) * 100) : 100;
-    return { userId, points, tier: tier.name, next: next?.name ?? null, progress, tiers: TIERS };
+    const progress = next
+      ? Math.round(((points - tier.min) / (next.min - tier.min)) * 100)
+      : 100;
+    return {
+      userId,
+      points,
+      tier: tier.name,
+      next: next?.name ?? null,
+      progress,
+      tiers: TIERS,
+    };
   }
 
   async earn(userId: string, amountKm: number, reason: string = 'kupovina') {
     const earned = Math.floor(amountKm * 10);
     try {
-      await (this.prisma as unknown as { loyaltyTransaction: { create: (a: unknown) => Promise<unknown> } }).loyaltyTransaction.create({
+      await (
+        this.prisma as unknown as {
+          loyaltyTransaction: { create: (a: unknown) => Promise<unknown> };
+        }
+      ).loyaltyTransaction.create({
         data: { userId, points: earned, reason },
       });
-      const agg = await (this.prisma as unknown as { loyaltyTransaction: { aggregate: (a: unknown) => Promise<{ _sum: { points: number | null } }> } }).loyaltyTransaction.aggregate({
+      const agg = await (
+        this.prisma as unknown as {
+          loyaltyTransaction: {
+            aggregate: (
+              a: unknown,
+            ) => Promise<{ _sum: { points: number | null } }>;
+          };
+        }
+      ).loyaltyTransaction.aggregate({
         where: { userId },
         _sum: { points: true },
       });

@@ -1,4 +1,14 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { ShopService } from './shop.service';
 import { Public } from '../common/decorators/public.decorator';
@@ -43,7 +53,11 @@ export class ShopController {
   @Patch('admin/products/:id')
   @UseGuards(PermissionsGuard)
   @RequirePermissions('shop.manage')
-  adminUpdate(@Param('id') id: string, @Body() body: { name?: string; price?: number; tag?: string; isActive?: boolean }) {
+  adminUpdate(
+    @Param('id') id: string,
+    @Body()
+    body: { name?: string; price?: number; tag?: string; isActive?: boolean },
+  ) {
     return this.service.adminUpdate(id, body);
   }
 
