@@ -17,19 +17,17 @@ export class ShopController {
   }
 
   @Post('checkout')
-  checkout(
+  async checkout(
     @CurrentUser() user: AuthUser,
     @Body() body: { productIds: string[]; provider?: string },
   ) {
     const ids = Array.isArray(body.productIds) ? body.productIds : [];
-    return {
-      userId: user.id,
-      ...this.service.checkout(ids, body.provider),
-    };
+    const res = await this.service.checkout(ids, body.provider, user.id);
+    return { userId: user.id, ...res };
   }
 
   @Get('cart')
-  cart(@Query('ids') ids?: string) {
+  async cart(@Query('ids') ids?: string) {
     const list = ids ? ids.split(',').filter(Boolean) : [];
     return this.service.checkout(list);
   }
