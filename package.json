@@ -69,5 +69,8 @@
     "db:generate": "npm run prisma:generate -w backend",
     "dev:frontend-next": "npm run dev -w frontend-next",
     "build:frontend-next": "npm run build -w frontend-next"
+  },
+  "devDependencies": {
+    "vite": "8.4.0"
   }
 }
