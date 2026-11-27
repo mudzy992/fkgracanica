@@ -451,7 +451,7 @@
 "docker-compose.yml","infra","root","227","popravljeno","B-CI04-02: uklonjen DATABASE_URL build-arg (Coolify ga izvozi u runtime env)","CI-04","2026-11-03"
 "frontend-next/app/admin/galerija/page.tsx","frontend-next","app","115","pokriveno testom","P-DASH-02: /admin/galerija Moderator gallery queue PENDING→PUBLISHED gallery.approve (115)","DASH-02","2026-11-27"
 "frontend-next/app/admin/layout.tsx","frontend-next","app","25","pokriveno testom","P-DASH-01: /admin layout — QueryClient+AuthProvider (premium S-relaxed, 25)","DASH-01","2026-11-27"
-"frontend-next/app/admin/live/page.tsx","frontend-next","app","104","pokriveno testom","P-DASH-04: /admin/live Komentator live.manage + matches.manage semafor (104)","DASH-04","2026-11-27"
+"frontend-next/app/admin/live/page.tsx","frontend-next","app","109","pokriveno testom","P-DASH-04 + P-BUG-01: /admin/live Komentator semafor + start error Card (109) — B-FE06-28","DASH-04","2026-11-27"
 "frontend-next/app/admin/mediji/page.tsx","frontend-next","app","81","pokriveno testom","P-DASH-03: /admin/mediji Writer media.read+upload biblioteka (81)","DASH-03","2026-11-27"
 "frontend-next/app/admin/page.tsx","frontend-next","app","113","pokriveno testom","P-DASH-01: /admin Dashboard KPI 15 — fetch /dashboard/kpis ISR-off stale30s premium Card (113)","DASH-01","2026-11-27"
 "frontend-next/app/admin/profil/page.tsx","frontend-next","app","50","pokriveno testom","P-DASH-06: /admin/profil Član 0 + sve role — profil + linkovi /clanstvo /ulaznice (50)","DASH-06","2026-11-27"

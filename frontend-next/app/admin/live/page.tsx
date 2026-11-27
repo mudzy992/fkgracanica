@@ -89,6 +89,11 @@ export default function LiveAdminPage() {
               </Card>
             ))
           )}
+          {start.isError ? (
+            <Card className="border-danger/20 bg-danger/10 p-3 text-center">
+              <p className="text-xs text-danger">Greška start: {(start.error as Error).message}</p>
+            </Card>
+          ) : null}
         </div>
       )}
 
