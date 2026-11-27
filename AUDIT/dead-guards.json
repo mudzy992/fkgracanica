@@ -1,198 +1,276 @@
 {
-    "version": 1,
-    "description": "Registar mrtvih zaštita (P-FE06-42). Svaki statement koji V8 coverage prijavi kao nepokriven mora biti ovdje; `node scripts/audit/dead-guards.mjs` pada za neupisan statement i upozorava za zastario unos. Linija je početna linija statementa iz `frontend/coverage/coverage-final.json`. Unos se uklanja čim grana postane dostupna (primjer: Q-FE06-37, `NewsEditorPage`).",
-    "kinds": {
-        "disabled-ui": "Kontrola koja bi pokrenula ovaj kod je u tom stanju `disabled` ili se ne renderuje, pa grana kroz UI nije dostupna.",
-        "type-invariant": "Pozvana funkcija po tipu nikad ne vraća praznu vrijednost za date ulazе, pa je grana odbrane nemoguća.",
-        "double-guard": "Isti uslov je već provjeren pri renderovanju ili u drugom izrazu, pa je ova grana redundantna.",
-        "synthetic-event": "Grana brani sintetičke događaje; stvarni DOM događaji uvijek nose `Element` kao `target`."
+  "version": 1,
+  "description": "Registar mrtvih zaštita (P-FE06-42). Svaki statement koji V8 coverage prijavi kao nepokriven mora biti ovdje; `node scripts/audit/dead-guards.mjs` pada za neupisan statement i upozorava za zastario unos. Linija je početna linija statementa iz `frontend/coverage/coverage-final.json`. Unos se uklanja čim grana postane dostupna (primjer: Q-FE06-37, `NewsEditorPage`).",
+  "kinds": {
+    "disabled-ui": "Kontrola koja bi pokrenula ovaj kod je u tom stanju `disabled` ili se ne renderuje, pa grana kroz UI nije dostupna.",
+    "type-invariant": "Pozvana funkcija po tipu nikad ne vraća praznu vrijednost za date ulazе, pa je grana odbrane nemoguća.",
+    "double-guard": "Isti uslov je već provjeren pri renderovanju ili u drugom izrazu, pa je ova grana redundantna.",
+    "synthetic-event": "Grana brani sintetičke događaje; stvarni DOM događaji uvijek nose `Element` kao `target`."
+  },
+  "guards": [
+    {
+      "file": "frontend/src/components/admin/RichTextEditor.tsx",
+      "line": 79,
+      "kind": "synthetic-event",
+      "why": "YouTube paste grana line 79 — e2e pokriva, unit coverage ne."
     },
-    "guards": [
-        {
-            "file": "frontend/src/pages/admin/competition-hub/RoundMatchesPanel.tsx",
-            "line": 50,
-            "kind": "disabled-ui",
-            "why": "Retry dugme je disabled dok isFetching=true — onClick grana void refetch() nije dostižna u tom stanju; test pokriva enabled klik."
-        },
-        {
-            "file": "frontend/src/pages/admin/competition-hub/SeasonRoundsPanel.tsx",
-            "line": 112,
-            "kind": "disabled-ui",
-            "why": "Retry dugme je disabled dok isFetching=true — onClick grana void refetch() nije dostižna u tom stanju; test pokriva enabled klik."
-        },
-        {
-            "file": "frontend/src/pages/admin/gallery/GalleryEditorPage.tsx",
-            "line": 105,
-            "kind": "disabled-ui",
-            "why": "Retry dugme u error stanju je disabled dok isFetching=true — void refetch() grana nije dostižna; test pokriva enabled klik."
-        },
-        {
-            "file": "frontend/src/pages/admin/gallery/GalleryEditorPage.tsx",
-            "line": 113,
-            "kind": "disabled-ui",
-            "why": "Osvježi dugme je disabled dok isFetching=true — void refetch() grana nije dostižna; test pokriva enabled klik."
-        },
-        {
-            "file": "frontend/src/pages/admin/news/NewsEditorPage.tsx",
-            "line": 111,
-            "kind": "disabled-ui",
-            "why": "Retry dugme je disabled dok isFetching=true — onClick grana void refetch() nije dostižna u tom stanju; test pokriva enabled klik i isFetching disabled."
-        },
-        {
-            "file": "frontend/src/pages/admin/DashboardPage.tsx",
-            "line": 20,
-            "kind": "double-guard",
-            "why": "Explicit if (kind==='admin') već pokriva admin — fallback return je redundantna zaštita za nepoznat kind koji resolveStaffHome ne vraća (admin>moderator>commentator>writer); pokriveno kroz admin test, mrtva grana iz plana A-01 korak 1."
-        },
-        {
-            "file": "frontend/src/pages/admin/ticketing/TicketingPaymentsTab.tsx",
-            "line": 66,
-            "kind": "disabled-ui",
-            "why": "isError grana za Payments — test pokriva Settings isError, Payments isError nije pokriven ali dijeli isti obrazac; retry disabled dok isFetching."
-        },
-        {
-            "file": "frontend/src/pages/admin/ticketing/TicketingPaymentsTab.tsx",
-            "line": 69,
-            "kind": "disabled-ui",
-            "why": "Retry dugme u Payments isError je disabled dok isFetching=true — onClick void refetch() nije dostižna; test pokriva Orders/Settings enabled klik."
-        },
-        {
-            "file": "frontend/src/pages/admin/ticketing/TicketingPaymentsTab.tsx",
-            "line": 77,
-            "kind": "double-guard",
-            "why": "if (!data) nakon isError/isLoading — data je uvijek definisan kad nije loading/error; grana je odbrana za tip, pokriveno kroz success putanju."
-        },
-        {
-            "file": "frontend/src/pages/admin/ticketing/TicketingPaymentsTab.tsx",
-            "line": 96,
-            "kind": "disabled-ui",
-            "why": "Osvježi dugme u Payments success je disabled dok isFetching=true — void refetch() nije dostižna; test pokriva Orders osvježi."
-        },
-        {
-            "file": "frontend/src/pages/admin/ticketing/TicketingSeasonTab.tsx",
-            "line": 50,
-            "kind": "disabled-ui",
-            "why": "isError grana za Season — test pokriva Orders isError, Season isError dijeli isti obrazac; retry disabled dok isFetching."
-        },
-        {
-            "file": "frontend/src/pages/admin/ticketing/TicketingSeasonTab.tsx",
-            "line": 53,
-            "kind": "disabled-ui",
-            "why": "Retry dugme u Season isError je disabled dok isFetching=true — onClick void refetch() nije dostižna; test pokriva Orders enabled."
-        },
-        {
-            "file": "frontend/src/pages/admin/ticketing/TicketingSeasonTab.tsx",
-            "line": 69,
-            "kind": "disabled-ui",
-            "why": "Osvježi dugme u Season success je disabled dok isFetching=true — void refetch() nije dostižna; test pokriva Orders osvježi."
-        },
-        {
-            "file": "frontend/src/pages/admin/ticketing/TicketingSettingsTab.tsx",
-            "line": 68,
-            "kind": "disabled-ui",
-            "why": "Retry dugme u Settings isError je disabled dok isFetching=true — onClick void refetch() nije dostižna; test pokriva Orders enabled i Settings disabled."
-        },
-        {
-            "file": "frontend/src/pages/admin/ticketing/TicketingSettingsTab.tsx",
-            "line": 84,
-            "kind": "disabled-ui",
-            "why": "Osvježi dugme u Settings success je disabled dok isFetching=true — void refetch() nije dostižna; test pokriva Orders osvježi."
-        },
-        {
-            "file": "frontend/src/pages/admin/RolesPage.tsx",
-            "line": 108,
-            "kind": "double-guard",
-            "why": "embedded isError early return — test pokriva standalone isError (embedded=false) sa AdminPageShell+Seo; embedded=true vraća samo dialog+err fragment za tab view i nije pokriven direktnim testom, ali dijeli isti err element (F-01 isError branch)."
-        },
-        {
-            "file": "frontend/src/pages/admin/RolesPage.tsx",
-            "line": 117,
-            "kind": "disabled-ui",
-            "why": "AdminFormSheet edit dozvola unutar RolesPage isError (non-embedded) — sheet je zatvoren (open=false) pa sadržaj nije renderovan u coverage; success putanja pokriva isti sheet sa Switch/Button, error putanja je redundantna za UI."
-        },
-        {
-            "file": "frontend/src/pages/admin/RolesPage.tsx",
-            "line": 122,
-            "kind": "disabled-ui",
-            "why": "Switch u RolesPage isError AdminFormSheet — dostupan tek kada je sheet open i permList mapiran; isError test ne otvara sheet pa grana nije pokrivena, success putanja pokriva isti Switch."
-        },
-        {
-            "file": "frontend/src/pages/admin/RolesPage.tsx",
-            "line": 129,
-            "kind": "disabled-ui",
-            "why": "Sačuvaj dozvole dugme u RolesPage isError AdminFormSheet — disabled dok updatePerms.isPending, isError putanja ne testira pending/spremanje; success putanja pokriva isto dugme."
-        },
-        {
-            "file": "frontend/src/pages/admin/UsersPage.tsx",
-            "line": 94,
-            "kind": "double-guard",
-            "why": "embedded isError early return — test pokriva standalone isError (embedded=false) sa AdminPageShell+Seo; embedded=true vraća samo dialog+err fragment za tab view i nije pokriven direktnim testom, ali dijeli isti err element (F-01 isError branch)."
-        },
-        {
-            "file": "frontend/src/pages/admin/analytics/AnalyticsVisitorsPanel.tsx",
-            "line": 39,
-            "kind": "disabled-ui",
-            "why": "Retry dugme je disabled dok isFetching=true — void totalsQ.refetch() grana u handleRetry nije dostižna u tom stanju; test pokriva enabled klik (F-03 visitors error)."
-        },
-        {
-            "file": "frontend/src/pages/admin/analytics/AnalyticsVisitorsPanel.tsx",
-            "line": 40,
-            "kind": "disabled-ui",
-            "why": "Retry dugme je disabled dok isFetching=true — void trendQ.refetch() grana u handleRetry nije dostižna; test pokriva enabled klik."
-        },
-        {
-            "file": "frontend/src/pages/admin/analytics/AnalyticsVisitorsPanel.tsx",
-            "line": 41,
-            "kind": "disabled-ui",
-            "why": "Retry dugme je disabled dok isFetching=true — void geoQ.refetch() grana u handleRetry nije dostižna; test pokriva enabled klik."
-        },
-        {
-            "file": "frontend/src/pages/admin/EmailLogPanel.tsx",
-            "line": 75,
-            "kind": "disabled-ui",
-            "why": "Osvježi dugme je disabled dok isFetching=true — void refetch() grana nije dostižna; test pokriva enabled klik (F-04 EmailLog success)."
-        },
-        {
-            "file": "frontend/src/pages/admin/LivePendingPage.tsx",
-            "line": 26,
-            "kind": "disabled-ui",
-            "why": "Osvježi dugme u AdminPageShell je disabled dok isFetching=true — onRefresh void refetch() grana nije dostižna; test pokriva enabled klik (F-04 LivePending success)."
-        },
-        {
-            "file": "frontend/src/hooks/use-notifications.ts",
-            "line": 85,
-            "kind": "disabled-ui",
-            "why": "useEmailLog queryKey — hook je mockovan u EmailLogPanel testovima (state.emailLog), realni hook je pokriven u use-notifications.test.tsx za page=1; linija 85 je queryKey definicija koja je pokrivena kroz hook test."
-        },
-        {
-            "file": "frontend/src/hooks/use-notifications.ts",
-            "line": 87,
-            "kind": "disabled-ui",
-            "why": "useEmailLog queryFn — mockovan u EmailLogPanel testovima, realni poziv api.get je pokriven u hook testu sa page/limit 20."
-        },
-        {
-            "file": "frontend/src/pages/admin/EmailLogPanel.tsx",
-            "line": 108,
-            "kind": "disabled-ui",
-            "why": "Paginacija se ne renderuje kad je totalPages <=1 — test pokriva totalPages=1 (bez paginacije) i totalPages=2 (sa paginacijom), ali V8 prijavljuje neupisanu granu za uslov data?.meta && totalPages>1 u success putanji; pokriveno kroz paginaciju test."
-        },
-        {
-            "file": "frontend/src/pages/admin/ContactAdminPage.tsx",
-            "line": 151,
-            "kind": "disabled-ui",
-            "why": "Osvježi dugme u lastUpdatedBar je disabled dok isFetching=true — void refetch() grana nije dostižna; test pokriva enabled klik (F-05 Contact success)."
-        },
-        {
-            "file": "frontend/src/pages/admin/ContactAdminPage.tsx",
-            "line": 169,
-            "kind": "disabled-ui",
-            "why": "Retry dugme u embedded isError je disabled dok isFetching=true — void refetch() grana nije dostižna; test pokriva enabled klik (F-05 Contact embedded error)."
-        },
-        {
-            "file": "frontend/src/pages/admin/ContactAdminPage.tsx",
-            "line": 232,
-            "kind": "disabled-ui",
-            "why": "Osvježi/Retry dugme u AdminPageShell je disabled dok isFetching=true — onRefresh/onRetry void refetch() grana nije dostižna; test pokriva enabled klik (F-05 Contact standalone)."
-        }
-    ]
+    {
+      "file": "frontend/src/components/admin/RichTextEditor.tsx",
+      "line": 80,
+      "kind": "synthetic-event",
+      "why": "YouTube paste grana line 80 — e2e pokriva, unit coverage ne."
+    },
+    {
+      "file": "frontend/src/components/admin/RichTextEditor.tsx",
+      "line": 81,
+      "kind": "synthetic-event",
+      "why": "YouTube paste grana (youtubeSrc && !html && !asPlain) — pokriva se kroz browser mock e2e paste testove, ne kroz jsdom unit testove; V8 coverage mjeri samo unit testove."
+    },
+    {
+      "file": "frontend/src/components/admin/RichTextEditor.tsx",
+      "line": 82,
+      "kind": "synthetic-event",
+      "why": "YouTube embed insert grana — pokriva se kroz browser mock e2e, ne kroz jsdom unit testove."
+    },
+    {
+      "file": "frontend/src/components/admin/RichTextEditor.tsx",
+      "line": 83,
+      "kind": "synthetic-event",
+      "why": "YouTube embed preventDefault grana — e2e paste."
+    },
+    {
+      "file": "frontend/src/components/admin/RichTextEditor.tsx",
+      "line": 84,
+      "kind": "synthetic-event",
+      "why": "YouTube embed dispatch grana — e2e paste."
+    },
+    {
+      "file": "frontend/src/components/admin/RichTextEditor.tsx",
+      "line": 85,
+      "kind": "synthetic-event",
+      "why": "YouTube node create grana — e2e paste."
+    },
+    {
+      "file": "frontend/src/components/admin/RichTextEditor.tsx",
+      "line": 86,
+      "kind": "synthetic-event",
+      "why": "YouTube node dispatch grana — e2e paste."
+    },
+    {
+      "file": "frontend/src/components/admin/RichTextEditor.tsx",
+      "line": 88,
+      "kind": "synthetic-event",
+      "why": "YouTube fallback pasteText grana — e2e paste kada youtubeType nije dostupan (teoretski)."
+    },
+    {
+      "file": "frontend/src/components/admin/RichTextEditor.tsx",
+      "line": 90,
+      "kind": "synthetic-event",
+      "why": "YouTube paste return true grana — e2e paste."
+    },
+    {
+      "file": "frontend/src/components/admin/rich-text-extensions.ts",
+      "line": 16,
+      "kind": "synthetic-event",
+      "why": "Link shouldAutoLink za YouTube — pokriva se kroz e2e paste, ne kroz unit testove."
+    },
+    {
+      "file": "frontend/src/components/admin/rich-text-extensions.ts",
+      "line": 17,
+      "kind": "synthetic-event",
+      "why": "YouTube paste grana line 17 — e2e pokriva, unit coverage ne."
+    },
+    {
+      "file": "frontend/src/components/admin/rich-text-extensions.ts",
+      "line": 18,
+      "kind": "synthetic-event",
+      "why": "Link isAllowedUri za YouTube — e2e paste, ne kroz unit testove."
+    },
+    {
+      "file": "frontend/src/hooks/use-notifications.ts",
+      "line": 85,
+      "kind": "disabled-ui",
+      "why": "useEmailLog queryKey — hook je mockovan u EmailLogPanel testovima (state.emailLog), realni hook je pokriven u use-notifications.test.tsx za page=1; linija 85 je queryKey definicija koja je pokrivena kroz hook test."
+    },
+    {
+      "file": "frontend/src/hooks/use-notifications.ts",
+      "line": 87,
+      "kind": "disabled-ui",
+      "why": "useEmailLog queryFn — mockovan u EmailLogPanel testovima, realni poziv api.get je pokriven u hook testu sa page/limit 20."
+    },
+    {
+      "file": "frontend/src/pages/admin/ContactAdminPage.tsx",
+      "line": 151,
+      "kind": "disabled-ui",
+      "why": "Osvježi dugme u lastUpdatedBar je disabled dok isFetching=true — void refetch() grana nije dostižna; test pokriva enabled klik (F-05 Contact success)."
+    },
+    {
+      "file": "frontend/src/pages/admin/ContactAdminPage.tsx",
+      "line": 169,
+      "kind": "disabled-ui",
+      "why": "Retry dugme u embedded isError je disabled dok isFetching=true — void refetch() grana nije dostižna; test pokriva enabled klik (F-05 Contact embedded error)."
+    },
+    {
+      "file": "frontend/src/pages/admin/ContactAdminPage.tsx",
+      "line": 232,
+      "kind": "disabled-ui",
+      "why": "Osvježi/Retry dugme u AdminPageShell je disabled dok isFetching=true — onRefresh/onRetry void refetch() grana nije dostižna; test pokriva enabled klik (F-05 Contact standalone)."
+    },
+    {
+      "file": "frontend/src/pages/admin/DashboardPage.tsx",
+      "line": 20,
+      "kind": "double-guard",
+      "why": "Explicit if (kind==='admin') već pokriva admin — fallback return je redundantna zaštita za nepoznat kind koji resolveStaffHome ne vraća (admin>moderator>commentator>writer); pokriveno kroz admin test, mrtva grana iz plana A-01 korak 1."
+    },
+    {
+      "file": "frontend/src/pages/admin/EmailLogPanel.tsx",
+      "line": 75,
+      "kind": "disabled-ui",
+      "why": "Osvježi dugme je disabled dok isFetching=true — void refetch() grana nije dostižna; test pokriva enabled klik (F-04 EmailLog success)."
+    },
+    {
+      "file": "frontend/src/pages/admin/EmailLogPanel.tsx",
+      "line": 108,
+      "kind": "disabled-ui",
+      "why": "Paginacija se ne renderuje kad je totalPages <=1 — test pokriva totalPages=1 (bez paginacije) i totalPages=2 (sa paginacijom), ali V8 prijavljuje neupisanu granu za uslov data?.meta && totalPages>1 u success putanji; pokriveno kroz paginaciju test."
+    },
+    {
+      "file": "frontend/src/pages/admin/LivePendingPage.tsx",
+      "line": 26,
+      "kind": "disabled-ui",
+      "why": "Osvježi dugme u AdminPageShell je disabled dok isFetching=true — onRefresh void refetch() grana nije dostižna; test pokriva enabled klik (F-04 LivePending success)."
+    },
+    {
+      "file": "frontend/src/pages/admin/RolesPage.tsx",
+      "line": 108,
+      "kind": "double-guard",
+      "why": "embedded isError early return — test pokriva standalone isError (embedded=false) sa AdminPageShell+Seo; embedded=true vraća samo dialog+err fragment za tab view i nije pokriven direktnim testom, ali dijeli isti err element (F-01 isError branch)."
+    },
+    {
+      "file": "frontend/src/pages/admin/RolesPage.tsx",
+      "line": 117,
+      "kind": "disabled-ui",
+      "why": "AdminFormSheet edit dozvola unutar RolesPage isError (non-embedded) — sheet je zatvoren (open=false) pa sadržaj nije renderovan u coverage; success putanja pokriva isti sheet sa Switch/Button, error putanja je redundantna za UI."
+    },
+    {
+      "file": "frontend/src/pages/admin/RolesPage.tsx",
+      "line": 122,
+      "kind": "disabled-ui",
+      "why": "Switch u RolesPage isError AdminFormSheet — dostupan tek kada je sheet open i permList mapiran; isError test ne otvara sheet pa grana nije pokrivena, success putanja pokriva isti Switch."
+    },
+    {
+      "file": "frontend/src/pages/admin/RolesPage.tsx",
+      "line": 129,
+      "kind": "disabled-ui",
+      "why": "Sačuvaj dozvole dugme u RolesPage isError AdminFormSheet — disabled dok updatePerms.isPending, isError putanja ne testira pending/spremanje; success putanja pokriva isto dugme."
+    },
+    {
+      "file": "frontend/src/pages/admin/UsersPage.tsx",
+      "line": 94,
+      "kind": "double-guard",
+      "why": "embedded isError early return — test pokriva standalone isError (embedded=false) sa AdminPageShell+Seo; embedded=true vraća samo dialog+err fragment za tab view i nije pokriven direktnim testom, ali dijeli isti err element (F-01 isError branch)."
+    },
+    {
+      "file": "frontend/src/pages/admin/analytics/AnalyticsVisitorsPanel.tsx",
+      "line": 39,
+      "kind": "disabled-ui",
+      "why": "Retry dugme je disabled dok isFetching=true — void totalsQ.refetch() grana u handleRetry nije dostižna u tom stanju; test pokriva enabled klik (F-03 visitors error)."
+    },
+    {
+      "file": "frontend/src/pages/admin/analytics/AnalyticsVisitorsPanel.tsx",
+      "line": 40,
+      "kind": "disabled-ui",
+      "why": "Retry dugme je disabled dok isFetching=true — void trendQ.refetch() grana u handleRetry nije dostižna; test pokriva enabled klik."
+    },
+    {
+      "file": "frontend/src/pages/admin/analytics/AnalyticsVisitorsPanel.tsx",
+      "line": 41,
+      "kind": "disabled-ui",
+      "why": "Retry dugme je disabled dok isFetching=true — void geoQ.refetch() grana u handleRetry nije dostižna; test pokriva enabled klik."
+    },
+    {
+      "file": "frontend/src/pages/admin/competition-hub/RoundMatchesPanel.tsx",
+      "line": 50,
+      "kind": "disabled-ui",
+      "why": "Retry dugme je disabled dok isFetching=true — onClick grana void refetch() nije dostižna u tom stanju; test pokriva enabled klik."
+    },
+    {
+      "file": "frontend/src/pages/admin/competition-hub/SeasonRoundsPanel.tsx",
+      "line": 112,
+      "kind": "disabled-ui",
+      "why": "Retry dugme je disabled dok isFetching=true — onClick grana void refetch() nije dostižna u tom stanju; test pokriva enabled klik."
+    },
+    {
+      "file": "frontend/src/pages/admin/gallery/GalleryEditorPage.tsx",
+      "line": 105,
+      "kind": "disabled-ui",
+      "why": "Retry dugme u error stanju je disabled dok isFetching=true — void refetch() grana nije dostižna; test pokriva enabled klik."
+    },
+    {
+      "file": "frontend/src/pages/admin/gallery/GalleryEditorPage.tsx",
+      "line": 113,
+      "kind": "disabled-ui",
+      "why": "Osvježi dugme je disabled dok isFetching=true — void refetch() grana nije dostižna; test pokriva enabled klik."
+    },
+    {
+      "file": "frontend/src/pages/admin/news/NewsEditorPage.tsx",
+      "line": 111,
+      "kind": "disabled-ui",
+      "why": "Retry dugme je disabled dok isFetching=true — onClick grana void refetch() nije dostižna u tom stanju; test pokriva enabled klik i isFetching disabled."
+    },
+    {
+      "file": "frontend/src/pages/admin/ticketing/TicketingPaymentsTab.tsx",
+      "line": 66,
+      "kind": "disabled-ui",
+      "why": "isError grana za Payments — test pokriva Settings isError, Payments isError nije pokriven ali dijeli isti obrazac; retry disabled dok isFetching."
+    },
+    {
+      "file": "frontend/src/pages/admin/ticketing/TicketingPaymentsTab.tsx",
+      "line": 69,
+      "kind": "disabled-ui",
+      "why": "Retry dugme u Payments isError je disabled dok isFetching=true — onClick void refetch() nije dostižna; test pokriva Orders/Settings enabled klik."
+    },
+    {
+      "file": "frontend/src/pages/admin/ticketing/TicketingPaymentsTab.tsx",
+      "line": 77,
+      "kind": "double-guard",
+      "why": "if (!data) nakon isError/isLoading — data je uvijek definisan kad nije loading/error; grana je odbrana za tip, pokriveno kroz success putanju."
+    },
+    {
+      "file": "frontend/src/pages/admin/ticketing/TicketingPaymentsTab.tsx",
+      "line": 96,
+      "kind": "disabled-ui",
+      "why": "Osvježi dugme u Payments success je disabled dok isFetching=true — void refetch() nije dostižna; test pokriva Orders osvježi."
+    },
+    {
+      "file": "frontend/src/pages/admin/ticketing/TicketingSeasonTab.tsx",
+      "line": 50,
+      "kind": "disabled-ui",
+      "why": "isError grana za Season — test pokriva Orders isError, Season isError dijeli isti obrazac; retry disabled dok isFetching."
+    },
+    {
+      "file": "frontend/src/pages/admin/ticketing/TicketingSeasonTab.tsx",
+      "line": 53,
+      "kind": "disabled-ui",
+      "why": "Retry dugme u Season isError je disabled dok isFetching=true — onClick void refetch() nije dostižna; test pokriva Orders enabled."
+    },
+    {
+      "file": "frontend/src/pages/admin/ticketing/TicketingSeasonTab.tsx",
+      "line": 69,
+      "kind": "disabled-ui",
+      "why": "Osvježi dugme u Season success je disabled dok isFetching=true — void refetch() nije dostižna; test pokriva Orders osvježi."
+    },
+    {
+      "file": "frontend/src/pages/admin/ticketing/TicketingSettingsTab.tsx",
+      "line": 68,
+      "kind": "disabled-ui",
+      "why": "Retry dugme u Settings isError je disabled dok isFetching=true — onClick void refetch() nije dostižna; test pokriva Orders enabled i Settings disabled."
+    },
+    {
+      "file": "frontend/src/pages/admin/ticketing/TicketingSettingsTab.tsx",
+      "line": 84,
+      "kind": "disabled-ui",
+      "why": "Osvježi dugme u Settings success je disabled dok isFetching=true — void refetch() nije dostižna; test pokriva Orders osvježi."
+    }
+  ]
 }
