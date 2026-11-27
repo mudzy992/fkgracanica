@@ -44,12 +44,14 @@ export function RichTextEditor({ value, onChange, className, tall }: Props) {
           return false;
         },
         paste: (view, event) => {
-          if (view.hasFocus()) {
+          {
             // A click may move the DOM caret before the browser delivers selectionchange.
             // Let ProseMirror reconcile through its normal selection observer before pasting,
             // preserving real node/text selections as well as pending DOM changes.
             const doc = view.dom.ownerDocument;
             doc.dispatchEvent(new Event('selectionchange'));
+            // Also ensure view is focused so paste inserts at caret, not stale selection.
+            if (!view.hasFocus()) view.focus();
           }
           let html = '';
           let text = '';
@@ -84,6 +86,7 @@ export function RichTextEditor({ value, onChange, className, tall }: Props) {
       },
       transformPastedHTML: (html) => sanitizePastedIframes(html, t('video.embeddedUnavailable')),
       attributes: {
+        'aria-label': t('video.editorLabel'),
         class: cn(
           'prose prose-sm max-w-none px-3 py-2 focus:outline-none [&_img]:rounded-lg [&_iframe]:aspect-video [&_iframe]:w-full',
           tall ? 'min-h-[28rem]' : 'min-h-[180px]',

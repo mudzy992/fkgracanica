@@ -9,7 +9,9 @@
     "embeddedUnavailable": "Embedded video unavailable: invalid link.",
     "unavailable": "Video unavailable. Please check the YouTube link.",
     "liveUnavailable": "Live stream unavailable. Please check the YouTube link.",
-    "audioUnavailable": "Prematch audio unavailable. Please check the YouTube link."
+    "audioUnavailable": "Prematch audio unavailable. Please check the YouTube link.",
+    "editorLabel": "Text editor",
+    "editorPlaceholder": "Rich text editor"
   },
   "nav": {
     "home": "Home",

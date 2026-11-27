@@ -43,6 +43,8 @@ export function createView(
   let node = initial;
   const dom = document.createElement('div');
   dom.setAttribute('data-youtube-video', '');
+  dom.setAttribute('role', 'group');
+  dom.setAttribute('aria-label', i18n.t('video.embeddedTitle'));
   dom.contentEditable = 'false';
 
   const render = () => {
@@ -56,10 +58,12 @@ export function createView(
     }
     const notice = document.createElement('p');
     notice.setAttribute('role', 'status');
+    notice.setAttribute('aria-live', 'polite');
     notice.className = 'text-sm text-text-muted';
     notice.textContent = i18n.t('video.editorUnavailable');
     const remove = document.createElement('button');
     remove.type = 'button';
+    remove.setAttribute('aria-label', i18n.t('video.removeEmbedded'));
     remove.className = 'text-sm underline p-2 min-h-6 min-w-6';
     remove.textContent = i18n.t('video.removeEmbedded');
     remove.addEventListener('click', () => {
