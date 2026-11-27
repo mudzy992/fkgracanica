@@ -45,14 +45,12 @@ export function RichTextEditor({ value, onChange, className, tall }: Props) {
           return false;
         },
         paste: (view, event) => {
-          {
+          if (view.hasFocus()) {
             // A click may move the DOM caret before the browser delivers selectionchange.
             // Let ProseMirror reconcile through its normal selection observer before pasting,
             // preserving real node/text selections as well as pending DOM changes.
             const doc = view.dom.ownerDocument;
             doc.dispatchEvent(new Event('selectionchange'));
-            // Also ensure view is focused so paste inserts at caret, not stale selection.
-            if (!view.hasFocus()) view.focus();
           }
           let html = '';
           let text = '';
