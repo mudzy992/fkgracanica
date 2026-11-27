@@ -21,8 +21,8 @@ COPY mobile/package.json ./mobile/
 # `docker compose build`). Bez BuildKita fallback je običan `npm ci`.
 # FIX 2026-11-27: `node:22-bookworm-slim` ima npm@10 koji ne hoistuje
 # `next@16.4.6`/`vite@8.4.0` ispravno (Missing react). Lokalni CI koristi
-# `npx npm@11 install --legacy-peer-deps` — Docker mora isto (npx npm@11 ci).
-RUN --mount=type=cache,target=/root/.npm npx npm@11 ci --legacy-peer-deps --no-audit --no-fund
+# `npx npm@11 install --legacy-peer-deps` — Docker mora isto (npm i -g npm@11 && npm ci) — npx npm@11 u BuildKit cache mountu ostaje na npm@10 (Coolify 16:38 log npm v10.9.9) pa pada na EUSAGE.
+RUN --mount=type=cache,target=/root/.npm npm install -g npm@11 --no-audit --no-fund && npm ci --legacy-peer-deps --no-audit --no-fund
 
 FROM deps AS build
 WORKDIR /app
