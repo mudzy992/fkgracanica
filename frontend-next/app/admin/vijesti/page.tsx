@@ -23,6 +23,8 @@ async function fetchNews(status?: string): Promise<NewsItem[]> {
 export default function VijestiAdminPage() {
   const { user } = useAuth();
   const canApprove = hasPermission(user?.permissions, 'news.approve');
+  const canSubmit = hasPermission(user?.permissions, 'news.submit');
+  const canManage = hasPermission(user?.permissions, 'news.manage');
   const [filter, setFilter] = useState<string>('');
   const qc = useQueryClient();
   const { data, isLoading, isError, refetch, isFetching } = useQuery({
@@ -43,6 +45,18 @@ export default function VijestiAdminPage() {
     onSuccess: () => qc.invalidateQueries({ queryKey: ['admin', 'news'] }),
   });
 
+  const submit = useMutation({
+    mutationFn: async (id: string) =>
+      fetch(`${getApiUrl()}/news/${id}/submit`, {
+        method: 'PATCH',
+        headers: { ...getAuthHeader() },
+      }).then((r) => {
+        if (!r.ok) throw new Error('Predaja nije uspjela');
+        return r.json();
+      }),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['admin', 'news'] }),
+  });
+
   const tabs: [string, string][] = [
     ['', 'Sve'],
     ['PENDING', 'Na čekanju'],
@@ -54,7 +68,10 @@ export default function VijestiAdminPage() {
     <div className="space-y-6">
       <div>
         <h1 className="font-display text-2xl font-bold">Vijesti</h1>
-        <p className="mt-1 text-sm text-text-muted">Moderator 27 · news.manage + news.approve · premium queue</p>
+        <p className="mt-1 text-sm text-text-muted">
+          {canSubmit && !canApprove ? 'Writer 5 · news.manage + news.submit · predaja na odobrenje' : 'Moderator 27 · news.manage + news.approve · premium queue'}
+          {canManage ? ' · +create' : ''}
+        </p>
         <div className="mt-3 flex flex-wrap gap-2">
           {tabs.map(([v, l]) => (
             <Button key={v} variant={filter === v ? 'premium' : 'outline'} size="sm" onClick={() => setFilter(v)}>
@@ -99,7 +116,17 @@ export default function VijestiAdminPage() {
                       {approve.isPending ? '…' : 'Odobri i objavi'}
                     </Button>
                   ) : null}
-                  <Button size="sm" variant="outline" disabled>
+                  {n.status === 'DRAFT' && canSubmit && !canApprove ? (
+                    <Button size="sm" variant="outline" disabled={submit.isPending} onClick={() => submit.mutate(n.id)}>
+                      Predaj na pregled
+                    </Button>
+                  ) : null}
+                  {n.status === 'DRAFT' && canApprove ? (
+                    <Button size="sm" variant="outline" disabled={approve.isPending} onClick={() => approve.mutate(n.id)}>
+                      Objavi direktno
+                    </Button>
+                  ) : null}
+                  <Button size="sm" variant="ghost" disabled>
                     Uredi
                   </Button>
                 </div>
