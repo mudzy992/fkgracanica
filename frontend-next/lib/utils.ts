@@ -1,5 +1,8 @@
-export function cn(...inputs: (string | boolean | undefined | null)[]): string {
-  return inputs.filter(Boolean).join(' ');
+import { clsx, type ClassValue } from 'clsx';
+import { twMerge } from 'tailwind-merge';
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
 }
 
 export function formatDate(date: string | Date): string {
@@ -13,7 +16,6 @@ export function formatDate(date: string | Date): string {
 
 export function stripHtml(html: string): string {
   if (!html) return '';
-  // Server-safe strip: remove tags via regex (no DOMParser)
   return html
     .replace(/<[^>]*>/g, ' ')
     .replace(/&nbsp;/g, ' ')
