@@ -60,7 +60,7 @@ export function createView(
     notice.textContent = i18n.t('video.editorUnavailable');
     const remove = document.createElement('button');
     remove.type = 'button';
-    remove.className = 'text-sm underline';
+    remove.className = 'text-sm underline inline-flex min-h-6 min-w-6 items-center justify-center px-2 py-1';
     remove.textContent = i18n.t('video.removeEmbedded');
     remove.addEventListener('click', () => {
       const position = getPos();

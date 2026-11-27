@@ -13,7 +13,7 @@ import { APPROVED_PUBLIC } from './approved-public-routes';
  * (klijent se generiše samo u CI-ju).
  *
  * Invarijante:
- *  1. Skup ruta s @Public (klasa ili metoda) = TAČNO odobrenih 71 ruta —
+ *  1. Skup ruta s @Public (klasa ili metoda) = TAČNO odobrenih 73 ruta —
  *     niti jedna više (rupe u zaštiti), niti jedna manje (pao portal).
  *  2. Nijedan kontroler više nema lokalni JwtAuthGuard (jedina istina =
  *     globalna APP_GUARD registracija).
@@ -122,12 +122,12 @@ describe('BE-02 route access (javno vs zaštićeno)', () => {
     publicRoutes = [...new Set(publicRoutes)].sort();
   });
 
-  it('javne rute = tačno odobrenih 70 (bez rupa i bez viška)', () => {
+  it('javne rute = tačno odobrenih 72 (bez rupa i bez viška)', () => {
     const approved = [...APPROVED_PUBLIC].sort();
     const missing = approved.filter((r) => !publicRoutes.includes(r));
     const extra = publicRoutes.filter((r) => !approved.includes(r));
     expect({ missing, extra }).toEqual({ missing: [], extra: [] });
-    expect(publicRoutes.length).toBe(70);
+    expect(publicRoutes.length).toBe(72);
   });
 
   it('nijedan kontroler nema više lokalni JwtAuthGuard (globalni je jedina istina)', () => {

@@ -1,5 +1,5 @@
 /**
- * Odobrenih 70 javnih ruta (71 − gallery/:id zaštićen u BE-04/P-B04-1) — BE-02 / Q-12(a) — D-006.
+ * Odobrenih 72 javnih ruta (73 − gallery/:id zaštićen u BE-04/P-B04-1) — BE-02 / Q-12(a) — D-006.
  *
  * Izvor: audit javnih ruta iz `AUDIT/segments/BE-01.md` (aneks), potvrđen
  * Nest metapodacima u `route-access.spec.ts`. Svaka promjena (nova javna
@@ -64,6 +64,8 @@ export const APPROVED_PUBLIC = [
   'GET /api/v1/statistics/standings',
   'GET /api/v1/statistics/top-assists',
   'GET /api/v1/statistics/top-scorers',
+  'GET /api/v1/loyalty/tiers',
+  'GET /api/v1/shop/products',
   'GET /api/v1/ticketing/config',
   'GET /api/v1/ticketing/matches/ticketable',
   'GET /api/v1/trophies',

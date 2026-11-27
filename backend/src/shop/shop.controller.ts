@@ -3,7 +3,6 @@ import { ApiTags } from '@nestjs/swagger';
 import { ShopService } from './shop.service';
 import { Public } from '../common/decorators/public.decorator';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
-import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { PermissionsGuard } from '../common/guards/permissions.guard';
 import { RequirePermissions } from '../common/decorators/permissions.decorator';
 import type { AuthUser } from '../common/types/auth-user.type';
@@ -20,7 +19,6 @@ export class ShopController {
   }
 
   @Post('checkout')
-  @UseGuards(JwtAuthGuard)
   async checkout(
     @CurrentUser() user: AuthUser,
     @Body() body: { productIds: string[]; provider?: string },
@@ -36,21 +34,21 @@ export class ShopController {
   }
 
   @Post('admin/products')
-  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @UseGuards(PermissionsGuard)
   @RequirePermissions('shop.manage')
   adminCreate(@Body() body: { name: string; price: number; tag?: string }) {
     return this.service.adminCreate(body);
   }
 
   @Patch('admin/products/:id')
-  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @UseGuards(PermissionsGuard)
   @RequirePermissions('shop.manage')
   adminUpdate(@Param('id') id: string, @Body() body: { name?: string; price?: number; tag?: string; isActive?: boolean }) {
     return this.service.adminUpdate(id, body);
   }
 
   @Delete('admin/products/:id')
-  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @UseGuards(PermissionsGuard)
   @RequirePermissions('shop.manage')
   adminDelete(@Param('id') id: string) {
     return this.service.adminDelete(id);

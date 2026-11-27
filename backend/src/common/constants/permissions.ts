@@ -48,6 +48,7 @@ export const PERMISSIONS = [
     key: 'app-releases.manage',
     description: 'Upravljanje Android app releaseima',
   },
+  { key: 'shop.manage', description: 'Upravljanje shop proizvodima' },
 ] as const;
 
 export type PermissionKey = (typeof PERMISSIONS)[number]['key'];
