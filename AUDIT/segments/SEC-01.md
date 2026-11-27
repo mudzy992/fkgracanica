@@ -114,4 +114,4 @@ npm install  # vraća 4.7.9 / 2.0.7 / 1.10.0, audit 99 (3 critical)
 - `P-DASH-05` Redar
 - `P-DASH-06` Član
 
-Status segmenta: ZATVOREN
+Status segmenta: ZATVOREN — deps (bez fajlova u matrici, samo package.json/lock)
