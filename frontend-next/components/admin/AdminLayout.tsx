@@ -52,7 +52,7 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
           <nav className="space-y-6">
             {ADMIN_NAV_GROUPS.map((group) => {
               const visible = group.items.filter(
-                (it) => !user?.permissions || hasAnyPermission(user.permissions, it.perms) || it.perms.includes('dashboard.read'),
+                (it) => !user?.permissions || it.perms.length === 0 || hasAnyPermission(user.permissions, it.perms) || it.perms.includes('dashboard.read'),
               );
               if (!visible.length) return null;
               return (

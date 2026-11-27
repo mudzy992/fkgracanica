@@ -46,11 +46,19 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
     ],
   },
   {
+    label: 'Ulaz',
+    items: [{ to: '/admin/scan', label: 'Skeniranje', perms: ['admissions.scan', 'ticketing.manage'] }],
+  },
+  {
     label: 'Sistem',
     items: [
       { to: '/admin/postavke', label: 'Postavke', perms: ['settings.read'] },
       { to: '/admin/korisnici', label: 'Korisnici i role', perms: ['users.read', 'rbac.read'] },
       { to: '/admin/audit', label: 'Audit', perms: ['audit.read'] },
     ],
+  },
+  {
+    label: 'Račun',
+    items: [{ to: '/admin/profil', label: 'Moj profil', perms: [] }],
   },
 ];
